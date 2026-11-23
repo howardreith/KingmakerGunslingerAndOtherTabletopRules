@@ -118,7 +118,9 @@ namespace KingmakerGunslinger.Blueprints
                 weaponType.CriticalRollEdge != 20 ||
                 weaponType.CriticalModifier != (DamageCriticalModifierType)spec.CriticalMultiplier ||
                 weaponType.IsTwoHanded != spec.IsTwoHanded ||
-                !weaponType.Weight.Equals(spec.WeightPounds))
+                // Authored weight: the effective getter may read zero under a
+                // deliberate global weight override (AuthoredItemWeight).
+                !AuthoredItemWeight.StoredEquals(weaponType, spec.WeightPounds))
             {
                 throw new InvalidOperationException(
                     "Production firearm damage, critical, handedness, or weight did not persist.");

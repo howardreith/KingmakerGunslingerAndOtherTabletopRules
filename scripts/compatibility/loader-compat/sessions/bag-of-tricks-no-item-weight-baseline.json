@@ -1,0 +1,38 @@
+{
+  "name": "bag-of-tricks-no-item-weight-baseline",
+  "description": "Bag of Tricks No Item Weight baseline (BW01, docs/BAG-OF-TRICKS-NO-ITEM-WEIGHT-COMPATIBILITY.md). Run once on the published v0.0.193 package: UMM 0.31.1 with the real Bag of Tricks 1.16.4. Launch 1 turns No Item Weight on through Bag of Tricks' own settings object and saves it; launch 2, a fresh process with the setting on at startup, must reproduce the report: the spear type profile fails on the weight effective getter (stored 10, live 0, patched by BagOfTricks) and blueprint initialization fails.",
+  "ownerMods": [
+    "BagOfTricks"
+  ],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "setting-on",
+      "gameArguments": [ "locale=enGB" ],
+      "harness": {
+        "steps": [
+          { "op": "botWeightSetting", "label": "initial", "match": "" },
+          { "op": "botWeightSetting", "label": "turn-on", "match": "on", "save": true, "expect": "on" }
+        ]
+      }
+    },
+    {
+      "label": "baseline-on-at-startup",
+      "gameArguments": [ "locale=enGB" ],
+      "expectLog": {
+        "present": [
+          "Elven Branched Spear type profile is invalid",
+          "weight [effective-getter]",
+          "getterPatches=BagOfTricks"
+        ],
+        "absent": [ "[blueprints][initialize.complete]" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "botWeightSetting", "label": "startup", "match": "", "expect": "on", "continueOnFailure": true },
+          { "op": "kmgInitialization", "label": "baseline", "expect": "failed", "match": "weight [effective-getter]", "continueOnFailure": true }
+        ]
+      }
+    }
+  ]
+}

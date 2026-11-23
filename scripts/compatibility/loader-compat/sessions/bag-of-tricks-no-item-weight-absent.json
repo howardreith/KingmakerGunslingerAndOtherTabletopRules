@@ -1,0 +1,131 @@
+{
+  "name": "bag-of-tricks-no-item-weight-absent",
+  "description": "Bag of Tricks No Item Weight compatibility, Bag of Tricks absent (docs/BAG-OF-TRICKS-NO-ITEM-WEIGHT-COMPATIBILITY.md). UMM 0.31.1 with the product alone and default modules. Launch 1 must initialize normally with Magic Circle published, census every registered product item with live weights equal to their unpatched weights and stored weights matching their construction contracts, reject a synthetic missing required identity, and give representative real items (armor, a type-inheriting weapon and legacy repair items included) whose tooltip, stack and carried weights are the authored ones, with native prices and tooltips. Launch 2 makes the spear weapon type's Weight getter throw inside the product's spear validation (an unreadable runtime weight): the product reads that getter only for its bounded nonfatal diagnostic, so startup must still complete. Launch 3 makes the Magic Circle spell-list publication throw: the global bootstrap still completes, and the publication-status check must report the partial publication.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "absent-startup",
+      "gameArguments": [ "locale=enGB" ],
+      "expectLog": {
+        "present": [ "[blueprints][initialize.complete]", "[elven-branched-spear][foundation.ready]" ],
+        "absent": [ "[initialize.failed]", "][publication.failed]", "Elven Branched Spear type profile is invalid", "weight.runtime-override" ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "expectMods", "match": "KingmakerGunslinger,KmgLoaderCompatHarness", "expect": "BagOfTricks", "continueOnFailure": true },
+          { "op": "botWeightSetting", "label": "absent", "match": "", "expect": "absent", "continueOnFailure": true },
+          { "op": "kmgInitialization", "label": "absent", "expect": "completed", "continueOnFailure": true },
+          { "op": "kmgPublicationStatus", "label": "absent", "match": "MagicCircles=set,MagicCirclePublication=set,TeleportationScrolls=set", "continueOnFailure": true },
+          {
+            "op": "kmgWeightCensus", "label": "absent", "expect": "intended",
+            "contains": [ "f28f6031c2908d84d945865a80f67177", "6fd0a849531617844b195f452661b2cd" ],
+            "invariants": {
+              "contract:KMG.Spells.MagicCircle.": "donor:c2cadc1c19cc4b54eb73b987f540ddca",
+              "contract:KMG.Spells.Teleport.Scroll": "donor:02086fbbda266ed4b8e9124abe5abd75",
+              "contract:KMG.Spells.GreaterTeleport.Scroll": "donor:0033529da3b90bd226232e1962ca34ba|013c0f5972c1b794b869b284ba426542",
+              "contract:KMG.Spells.WordOfRecall.Scroll": "donor:00843bddf42908953a0d77e7155c20f0|0437d7a2ea4b01542907c4d5fb12c4da",
+              "contract:KMG.Items.CordOfStubbornResolve": "value:1",
+              "contract:KMG.Gunsmithing.GunsmithKit": "value:2",
+              "contract:KMG.Gunsmithing.OverhaulKit": "value:1",
+              "contract:KMG.Test.LeadBulletItem": "value:0.1",
+              "contract:KMG.Test.BlackPowderItem": "value:0.1",
+              "contract:KMG.Test.FirearmRepairKitItem": "value:1",
+              "contract:KMG.Ammunition.PaperCartridge": "value:0",
+              "contract:KMG.ElvenBranchedSpear.": "value:10",
+              "contract:KMG.EasternWeapons.Wakizashi.": "value:2",
+              "contract:KMG.EasternWeapons.Katana.": "value:6",
+              "contract:KMG.EasternWeapons.Nodachi.": "value:8",
+              "contract:KMG.Firearms.": "type",
+              "contract:KMG.Deeds.": "type",
+              "contract:KMG.Test.TestMusketItem": "type",
+              "contract:KMG.Summoning.": "value:0"
+            },
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgWeightCensus", "label": "missing-identity-selftest", "expect": "intended",
+            "expectFailure": "planned item KMG.Synthetic.MissingWeightItem (0000000000000000000000000000beef) does not resolve",
+            "invariants": {
+              "extraManifestEntry": "KMG.Synthetic.MissingWeightItem=0000000000000000000000000000beef:BlueprintItem",
+              "contract:KMG.Spells.MagicCircle.": "donor:c2cadc1c19cc4b54eb73b987f540ddca",
+              "contract:KMG.Spells.Teleport.Scroll": "donor:02086fbbda266ed4b8e9124abe5abd75",
+              "contract:KMG.Spells.GreaterTeleport.Scroll": "donor:0033529da3b90bd226232e1962ca34ba|013c0f5972c1b794b869b284ba426542",
+              "contract:KMG.Spells.WordOfRecall.Scroll": "donor:00843bddf42908953a0d77e7155c20f0|0437d7a2ea4b01542907c4d5fb12c4da",
+              "contract:KMG.Items.CordOfStubbornResolve": "value:1",
+              "contract:KMG.Gunsmithing.GunsmithKit": "value:2",
+              "contract:KMG.Gunsmithing.OverhaulKit": "value:1",
+              "contract:KMG.Test.LeadBulletItem": "value:0.1",
+              "contract:KMG.Test.BlackPowderItem": "value:0.1",
+              "contract:KMG.Test.FirearmRepairKitItem": "value:1",
+              "contract:KMG.Ammunition.PaperCartridge": "value:0",
+              "contract:KMG.ElvenBranchedSpear.": "value:10",
+              "contract:KMG.EasternWeapons.Wakizashi.": "value:2",
+              "contract:KMG.EasternWeapons.Katana.": "value:6",
+              "contract:KMG.EasternWeapons.Nodachi.": "value:8",
+              "contract:KMG.Firearms.": "type",
+              "contract:KMG.Deeds.": "type",
+              "contract:KMG.Test.TestMusketItem": "type",
+              "contract:KMG.Summoning.": "value:0"
+            },
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgWeightItems", "label": "absent", "expect": "intended",
+            "match": "KMG.ElvenBranchedSpear.BaseItem,KMG.EasternWeapons.Katana.MasterworkItem,KMG.Firearms.EarlyPistolItem,KMG.Firearms.PistolPlus1Item,KMG.Firearms.ReliableMusketPlus2Item,KMG.Test.TestMusketItem,KMG.Test.LeadBulletItem*10,KMG.Ammunition.PaperCartridge*5,KMG.Test.FirearmRepairKitItem*3,KMG.Gunsmithing.GunsmithKit,KMG.Items.CordOfStubbornResolve,KMG.Summoning.Giant.HillHideArmor,KMG.Spells.MagicCircle.Evil.Scroll*2,KMG.Spells.Teleport.Scroll,guid:6fd0a849531617844b195f452661b2cd",
+            "invariants": { "battered": "KMG.Firearms.EarlyPistolItem" },
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgItemPricing",
+            "label": "absent",
+            "type": "f28f6031c2908d84d945865a80f67177,6fd0a849531617844b195f452661b2cd,6efea466862f014469cec6c3f2b85cb7,19a5092244dcf99478dcd73c974828b1",
+            "expect": "native",
+            "match": "battered",
+            "invariants": { "repeat": "20" },
+            "continueOnFailure": true
+          }
+        ]
+      }
+    },
+    {
+      "label": "unreadable-runtime-weight",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "throwingWeaponTypeGetters": "owned:Weight"
+      },
+      "expectLog": {
+        "present": [ "[blueprints][initialize.complete]", "weight.runtime-override" ],
+        "absent": [ "[initialize.failed]", "Elven Branched Spear type profile is invalid" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "unreadable-runtime-weight", "expect": "completed", "continueOnFailure": true }
+        ]
+      }
+    },
+    {
+      "label": "magic-circle-publication-failure-detected",
+      "gameArguments": [ "locale=enGB" ],
+      "conditions": {
+        "failMagicCircleSpellListPublication": "true"
+      },
+      "expectLog": {
+        "present": [ "[blueprints][initialize.complete]", "[magic-circle][publication.failed]" ],
+        "absent": [ "[initialize.failed]" ]
+      },
+      "harness": {
+        "steps": [
+          { "op": "kmgInitialization", "label": "contained-publication-failure", "expect": "completed", "continueOnFailure": true },
+          {
+            "op": "kmgPublicationStatus", "label": "partial-publication", "match": "MagicCircles=set,MagicCirclePublication=set,TeleportationScrolls=set",
+            "expectFailure": "MagicCirclePublication is null, expected set", "continueOnFailure": true
+          }
+        ]
+      }
+    }
+  ]
+}

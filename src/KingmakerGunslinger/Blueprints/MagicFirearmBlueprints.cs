@@ -140,7 +140,12 @@ namespace KingmakerGunslinger.Blueprints
                         LocalizationService.Create(spec.Symbol + ".Description",
                             DescriptionFor(spec, family.Spec.Definition)),
                         LocalizationService.Create(spec.Symbol + ".Flavor", spec.Flavor),
-                        spec.Cost, source.Weight);
+                        // The family's authoritative catalog weight, never the
+                        // source's effective getter: a global weight override
+                        // (Bag of Tricks' No Item Weight) reads zero there, and
+                        // copying it would leave this item's authored data
+                        // wrong once the override is turned off.
+                        spec.Cost, family.Spec.WeightPounds);
                     SetEnchantments(clone, spec.Enchantments.ToArray());
                     FirearmWeaponPresentation.ApplyItemVariant(clone,
                         spec.Symbol, spec.Kind);
@@ -162,7 +167,10 @@ namespace KingmakerGunslinger.Blueprints
                 !actual.SequenceEqual(spec.Enchantments) ||
                 !ReferenceEquals(GetWeaponType(item), family.WeaponType) ||
                 item.Cost != spec.Cost ||
-                !item.Weight.Equals(family.Item.Weight) ||
+                // Authored weights against the catalog, so two effective
+                // getters that both read zero cannot hide a wrong stored value.
+                !AuthoredItemWeight.StoredEquals(item, family.Spec.WeightPounds) ||
+                !AuthoredItemWeight.StoredEquals(family.Item, family.Spec.WeightPounds) ||
                 BlueprintItemAccess.Resolve().Capture(item).IsStackable ||
                 spec.Kind == FirearmKind.Rifle ||
                 spec.Kind == FirearmKind.Revolver ||
