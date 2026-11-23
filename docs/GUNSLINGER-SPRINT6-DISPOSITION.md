@@ -1,6 +1,9 @@
 # Sprint 6 disposition: saves, lifecycle cleanup and migrations
 
-Status: **records-only disposition checkpoint, returned for review (2026-11-23).** Nothing is merged or released.
+Status: **accepted by the owner (2026-11-23); merged and released.** PRs #198 to #216 were merged bottom-up into master
+(PR #216 as `ee4df4e442`) and released as stable v0.0.195 (release commit `ef0e1fe15d`, PR #217); see
+`docs/BUILD-AND-RELEASE.md`. The delivery columns and section 3's integration row below record the state at the
+review (2026-11-23T19:31Z) and are kept as history. Release does not change any qualification gap listed here.
 
 > Sprint 6's supported development implementation is complete for the accepted scopes. Historical incidents and the
 > explicitly retained qualification gaps remain unresolved as listed. The evidence does not imply global
