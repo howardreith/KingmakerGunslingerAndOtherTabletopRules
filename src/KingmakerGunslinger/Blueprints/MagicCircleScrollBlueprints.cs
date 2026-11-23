@@ -42,7 +42,10 @@ namespace KingmakerGunslinger.Blueprints
             var access = BlueprintItemAccess.Resolve();
             string key = "KMG.MagicCircle." + alignment + ".Scroll";
             access.Configure(scroll, LocalizationService.Create(key + ".Name", "Scroll of Magic Circle against " + alignment),
-                LocalizationService.Create(key + ".Description", spell.Description), LocalizationService.Create(key + ".Flavor", string.Empty), donor.Cost, donor.Weight);
+                LocalizationService.Create(key + ".Description", spell.Description), LocalizationService.Create(key + ".Flavor", string.Empty), donor.Cost,
+                // The donor scroll's authored m_Weight, never its effective
+                // getter, which reads zero under a global weight override.
+                AuthoredItemWeight.Stored(donor));
             // Separate parchment-shell composite, matching Recall/Teleport.
             access.SetIcon(scroll, icon);
             return scroll;

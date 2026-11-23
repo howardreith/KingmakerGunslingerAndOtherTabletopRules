@@ -1,5 +1,105 @@
 # Build, package, and publish
 
+## 0.0.194 publication authorization
+
+**Published (completed).** Stable
+[v0.0.194](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.194)
+is Latest and not a prerelease. The tag peels to the release commit `805f9d59a1` (PR #201), which was `origin/master`
+when the publisher ran.
+
+- **Gate.** The publisher's complete suite passed 3,166/3,166 with 0 failures, and the release194 validator passed.
+- **Builds.** Two deterministic exact-reference builds against the pinned UMM 0.31.1 loader references:
+  - package SHA-256 `0e894ceb871a91a0105f05c08ce3feeaba5f6ebecead15be432e88aa10c1b8e6`;
+  - DLL SHA-256 `07214501757b1df026d462a90b3512919260ed0e7f814117299a7be6e19b1f35`.
+- **Reference bundle.** `artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`,
+  as for v0.0.193.
+- **First publisher attempt.** The first run refused after 169 s, before building or publishing, with "No running game
+  permitted for source-only tests". A peer session had started a loader-compat game in the meantime. No tag, release
+  or asset was created. After the peer granted a no-Kingmaker window, the second run published.
+- **Public download test.** A fresh download of the three assets matched `SHA256SUMS.txt`, and the manifest names
+  the release commit `805f9d59a14733170a07ce1d016e1df6647c79c1` with two deterministic builds. The package has one
+  `KingmakerGunslinger` root (458 files); its `Info.json` reads 0.0.194 with `ManagerVersion` 0.31.1 and `Id`
+  `KingmakerGunslinger`, beside the DLL hash above.
+- **Native check on the published bytes.** The downloaded public package ran in the disposable loader-compat game
+  copy on Unity Mod Manager **0.31.1.0** through master's runner with the full `bag-of-tricks-no-item-weight.json`
+  session, Bag of Tricks 1.16.4 (`d0362659…a0e6`) and Call of the Wild 1.14.4c-2.1. The harness was built from
+  master (source unchanged since `c4e1259457`): `e5287daa74759a9fd09aaa80026a2850ce30bab6606f2a1ba2d46e15c5c9ff0a`.
+  The game loaded the DLL above (version 0.0.194) in every launch. Session
+  `20261122T180014Z-umm-0.31.1-bag-of-tricks-no-item-weight` (summary `f761a78f…3ee8`, lease
+  `runtime-20261122T180014Z-a68b3abe…`): **PASS 6/6**, exit 0, 665 s.
+  - Launch 1 (104 s): the reporter's modules set through real panel clicks; No Item Weight turned on through Bag of
+    Tricks' own settings.
+  - Launch 2 (163 s, `harness-result.json` `deb484f1…6b97`), setting on at startup:
+    - initialization completed with Magic Circle and Teleportation published, and the Longspear donor unchanged;
+    - the census passed on and live-off;
+    - real items, including stacks, armor, the Test Musket and repair kits, read 0 and followed the in-inventory
+      toggles, including items added in each state;
+    - the fixture was saved;
+    - the new sorcerer's Summon Monster I summon and the residue check passed.
+  - Launch 3 (118 s): the saved fixture reloaded with the setting on.
+  - Launch 4 (70 s): a wrong stored spear weight failed startup with
+    `weight [owned-field]: expected=10 actual=0 donor=9; getter not read (runtime setting); fields only`.
+  - Launch 5 (71 s): a wrong live spear reach failed startup with `attack-range [effective-getter]`.
+  - Launch 6 (124 s), setting off at startup: the same fixture reloaded with normal weights, and the complementary
+    toggles, prices and tooltips passed, with no runtime-override line.
+  - Restoration: the registry readback matched the verified backup (`verified`), owner files were unchanged (95
+    saves), no host conflict was observed, the lease completed, and every lock was released. A no-Kingmaker window
+    was agreed with the one active peer session and released afterwards.
+
+  The Bag of Tricks-absent session ran on the development candidate of the same product source and was not repeated
+  on the published bytes.
+- **Timing.** The successful publisher run took 988 s.
+- **Installation.** The installed mod was not touched; the publisher performed no deployment.
+- **Merges.** PR #199 merged as `8f36604fb6`; release PR #201 as `805f9d59a1`.
+
+Originally authorized as follows.
+
+On 2026-11-22, after the owner review of PR #199 with ChatGPT, Howie accepted the lab-restoration scope exception and
+wrote: "This is accepted. Please merge and cut a release." PR #199 (Bag of Tricks No Item Weight compatibility) was
+marked ready and merged as `8f36604fb6`. No channel was named, so this follows v0.0.193 as the next stable patch,
+v0.0.194, from master `8f36604fb6`.
+
+- **Reviewed product.** Master `8f36604fb6`. Its `src/KingmakerGunslinger` tree is
+  `d9167aadf5771140f400296f45f8b95ebff56c80`, identical to the reviewed PR head `43b4ec4711` and to the natively
+  tested development candidate `c4e1259457e0`. The product change from v0.0.193 is thirteen files, listed and pinned
+  in `tools/validate_bag_of_tricks_no_item_weight_release194.py`:
+  - the product delta from the v0.0.193 tag target under `src/KingmakerGunslinger`, `assets`, `assets-source`,
+    `blueprints` and `Directory.Build.props` is exactly those thirteen files, in both directions;
+  - the reviewed product tree is the natively tested one;
+  - `Info.json`, the UMM 0.31.1 loader pins and the build inputs are unchanged from v0.0.193 and the reviewed master;
+  - only the three AssemblyInfo version attributes and the Info and props version values may change;
+  - all 7,935 released identities stay exact and in order, and none is appended;
+  - the creature catalog is unchanged, with only the owner-withdrawn Stirge withheld (1,208 public choices);
+  - v0.0.192's DEF-05 inherited-template policy stays;
+  - one static release record is added.
+- **Owner-authorized test pin refresh.** The complete domain suite on the reviewed PR head (product identical to
+  master `8f36604fb6`) passed 3,165 of 3,166. The one failure was `model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged`,
+  which pins five product files PR #199 changed deliberately: `ProductionFirearmBlueprints.cs`,
+  `MagicFirearmBlueprints.cs`, `BasicAmmunitionBlueprints.cs`, `EasternWeaponBlueprints.cs` and
+  `ElvenBranchedSpearBlueprints.cs`. Each pin still equalled its v0.0.193 file. PR #199's focused gate did not select
+  this test. On 2026-11-22 Howie chose "Refresh pins, then release": those five pins in
+  `tests/KingmakerGunslinger.DomainTests/ModelDVendorTests.cs` now read the merged files' hashes. No other pin changes.
+- **Preparation.** On the release branch, the repository wrapper (dispatched to the release194 validator, PASS) and
+  the complete suite (3,166/3,166, 0 failures, with the owner-authorized pin refresh) took 646 s.
+- **Native evidence.** Development candidate `c4e1259457e0` (package `c2f6a95d…fca52`, DLL `d31be89b…42c2`) in the
+  disposable loader-compat game copy on UMM 0.31.1 with the real Bag of Tricks 1.16.4, as recorded in
+  `docs/BAG-OF-TRICKS-NO-ITEM-WEIGHT-COMPATIBILITY.md`:
+  - the published v0.0.193 package reproduces the failure with No Item Weight on (baseline `20261122T143947Z`);
+  - the candidate starts with the setting on and the reporter's modules; all 213 item identities read 0 on and their
+    normal weights off, real instances and stacks follow live toggles, save/reload works both ways, and the new
+    sorcerer's Fire Beetle summon succeeds (`20261122T161435Z`, 6/6);
+  - Bag of Tricks absent keeps normal weights, prices and tooltips (`20261122T155547Z`, 3/3).
+
+  The release build differs from that candidate by version metadata and build stamps. It is run in the game after
+  publication, and the result is added here.
+- **Accepted exception.** Exact restoration of the disposable lab to its pre-mission live configuration was not
+  demonstrated; the owner installation, saves and registry were verified. The owner accepted this on 2026-11-22.
+- **Not established.** The reporter's full installation and raw log; byte identity with the reporter's Bag of Tricks
+  copy; rendered tooltip text.
+- **Publication path.** The ordinary exact-reference publisher from clean, pushed master with
+  `docs/RELEASE-NOTES-0.0.194.md` and the explicit summon-overhaul-baseline reference bundle. It runs the complete
+  gate and two deterministic builds, then publishes.
+
 ## 0.0.193 publication authorization
 
 **Published (completed).** Stable

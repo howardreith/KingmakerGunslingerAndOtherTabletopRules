@@ -171,6 +171,7 @@ VALIDATORS = {
     "0.0.191": "validate_grit_ui_recipient_release191.py",
     "0.0.192": "validate_gunslinger_remediation_release192.py",
     "0.0.193": "validate_spear_bootstrap_tooltip_repair_release193.py",
+    "0.0.194": "validate_bag_of_tricks_no_item_weight_release194.py",
 }
 
 
