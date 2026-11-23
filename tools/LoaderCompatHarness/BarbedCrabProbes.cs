@@ -54,7 +54,7 @@ namespace KmgLoaderCompatHarness
     /// Modes: "barbed", "crab", "save" (one native save with an active Barbed hold and a two-link Crab), "reload" (the
     /// fresh process loading that save).
     /// </summary>
-    internal sealed class BarbedCrabProbe : IOwnedProbe
+    internal sealed partial class BarbedCrabProbe : IOwnedProbe
     {
         private const BindingFlags Any = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         private const string UnrelatedBuffGuid = "b175001b42b1a02479881b72fe132116";
@@ -125,7 +125,8 @@ namespace KmgLoaderCompatHarness
             bool paused = Game.Instance.IsPaused;
             try
             {
-                IEnumerable<object> body = mode == "barbed" ? Barbed() : mode == "crab" ? Crab() : mode == "save" ? Save() : mode == "reload" ? Reload() : null;
+                IEnumerable<object> body = mode == "barbed" ? Barbed() : mode == "crab" ? Crab() : mode == "save" ? Save() : mode == "reload" ? Reload() :
+                    mode.StartsWith("lethal", StringComparison.Ordinal) ? Lethal(mode) : null;
                 if (body == null) { problems.Add("unknown mode " + mode); yield break; }
                 foreach (object step in body) yield return step;
             }
@@ -136,8 +137,16 @@ namespace KmgLoaderCompatHarness
 
         /// <summary>Grapple maneuvers, damage, saves and spell resistance touching tracked units, in the observer's sequence.</summary>
         private sealed class RuleTrace : IGlobalRulebookHandler<RuleCombatManeuver>, IGlobalRulebookHandler<RuleDealDamage>,
-            IGlobalRulebookHandler<RuleSavingThrow>, IGlobalRulebookHandler<RuleSpellResistanceCheck>, IGlobalRulebookHandler<RuleSkillCheck>
+            IGlobalRulebookHandler<RuleSavingThrow>, IGlobalRulebookHandler<RuleSpellResistanceCheck>, IGlobalRulebookHandler<RuleSkillCheck>,
+            IGlobalRulebookHandler<RuleHealDamage>
         {
+            public void OnEventAboutToTrigger(RuleHealDamage evt) { }
+            public void OnEventDidTrigger(RuleHealDamage evt)
+            {
+                if (evt == null || !Tracked.Contains(evt.Target)) return;
+                HoldLifecycleObserver.Add("rule.heal", new JObject { ["initiator"] = evt.Initiator?.UniqueId, ["target"] = evt.Target?.UniqueId, ["value"] = evt.Value,
+                    ["targetDamageAfter"] = evt.Target.Descriptor.Damage });
+            }
             public void OnEventAboutToTrigger(RuleSkillCheck evt) { }
             public void OnEventDidTrigger(RuleSkillCheck evt)
             {
@@ -165,7 +174,9 @@ namespace KmgLoaderCompatHarness
                 HoldLifecycleObserver.Add("rule.damage", new JObject
                 {
                     ["initiator"] = evt.Initiator?.UniqueId, ["target"] = evt.Target?.UniqueId, ["damage"] = evt.Damage,
-                    ["weapon"] = evt.DamageBundle?.Weapon?.Blueprint?.name, ["attackRoll"] = evt.AttackRoll != null
+                    ["weapon"] = evt.DamageBundle?.Weapon?.Blueprint?.name, ["attackRoll"] = evt.AttackRoll != null,
+                    ["targetDamageAfter"] = evt.Target.Descriptor.Damage, ["targetHP"] = (int)evt.Target.Descriptor.Stats.HitPoints,
+                    ["targetLifeState"] = evt.Target.Descriptor.State.LifeState.ToString()
                 });
             }
             public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
@@ -527,16 +538,18 @@ namespace KmgLoaderCompatHarness
             if (!held()) problems.Add(name + ": the real attacks did not establish a hold within six attacks");
         }
 
-        private IEnumerable<object> EstablishBarbed(string name, Action<Link1> done)
+        private IEnumerable<object> EstablishBarbed(string name, Action<Link1> done) => EstablishSingle("barbed-devil", name, done);
+
+        private IEnumerable<object> EstablishSingle(string key, string name, Action<Link1> done)
         {
             Vector3 spot = NextSpot();
             UnitEntityData t = SpawnTarget(spot);
-            UnitEntityData h = t == null ? null : Summon("barbed-devil", Around(spot, 90f, 1.0f));
+            UnitEntityData h = t == null ? null : Summon(key, Around(spot, 90f, 1.0f));
             if (h == null) { problems.Add(name + ": units not created"); yield break; }
             yield return null;
             object grab = Grab(h);
             var s = new Link1 { Name = name, H = h, T = t, Grab = grab, Hold = HoldBuffOf(grab), Held = HeldBuffOf(grab), Weapons = GrabWeapons(h, grab), Seq0 = LastSeq, Spot = spot };
-            if (grab == null || s.Weapons.Length == 0) { problems.Add(name + ": the Barbed Devil has no grab component or grab limb"); yield break; }
+            if (grab == null || s.Weapons.Length == 0) { problems.Add(name + ": the " + key + " has no grab component or grab limb"); yield break; }
             int seq = LastSeq;
             foreach (object step in AttackUntil(name, h, t, s.Weapons[0], () => HeldSingle(h, t))) yield return step;
             s.Unrelated = AddUnrelated(t);

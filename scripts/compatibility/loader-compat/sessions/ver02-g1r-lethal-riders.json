@@ -1,0 +1,48 @@
+{
+  "name": "ver02-g1r-lethal-riders",
+  "description": "S6 VER-02 G1-R: five selected lethal-release paths on four single-link owners, on the accepted C3a product. A Constrictor Snake weapon-lethal maintain; B Constrictor Snake constrict-lethal after surviving the weapon damage; C Salamander constrict-lethal; D Crocodile later-round death roll lethal; E Barbed Devil later-round Impale lethal. Each case: a real hold from a real attack, one ordinary rider round, a disclosed fixture health setting (target Damage = HP - margin; the disposable target's native dying allowance released so Dead = Damage >= HP; B/C margin = establishing weapon maximum + 1 from a read-only RuleCalculateWeaponStats), then the decisive native round; the killing damage, its rider bracket, the native Dead transition and the release location are recorded; then cleanup, two quiet rounds, a fresh real grab, and two same-owner independent controls. Disclosed: holder BAB 100; target HP 100000 and escape stats -100; summon deadlines extended to 600 s; appear buffs removed; brains off; units woken; navmesh placement within 10.5 m of the summoner; pauses.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "lethal",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgBarbedCrab",
+            "label": "lethal",
+            "match": "lethal",
+            "timeoutSeconds": 900
+          }
+        ]
+      }
+    }
+  ]
+}

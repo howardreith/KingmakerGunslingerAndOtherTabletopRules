@@ -92,6 +92,13 @@ namespace KmgLoaderCompatHarness
             limbsType = product.GetType("KingmakerGunslinger.Summoning.SummonLimbs", true);
             Patch(harmony, grabType.GetMethod("DealConstrict", Any), nameof(ConstrictPrefix), nameof(ConstrictPostfix), patched);
             Patch(harmony, multiType.GetMethod("OnNewRound"), nameof(MultiRoundPrefix), nameof(MultiRoundPostfix), patched);
+            // G1-R diagnostics: writes to a watched unit's Damage, and the native life controller's tick on it (read-only).
+            Patch(harmony, typeof(UnitDescriptor).GetProperty("Damage").GetSetMethod(true), nameof(DamageSetPrefix), null, patched);
+            Patch(harmony, typeof(Kingmaker.Controllers.Units.UnitLifeController).GetMethod("TickOnUnit", Any), nameof(LifeTickPrefix), nameof(LifeTickPostfix), patched);
+            Patch(harmony, product.GetType("KingmakerGunslinger.Summoning.SummonGrappleDamage", true).GetMethod("DealWeaponDamage", Any), nameof(WeaponDamagePrefix), nameof(WeaponDamagePostfix), patched);
+            Patch(harmony, grabType.GetMethod("DealDeathRoll", Any), nameof(DeathRollPrefix), nameof(DeathRollPostfix), patched);
+            Patch(harmony, grabType.GetMethod("DealImpale", Any), nameof(ImpalePrefix), nameof(ImpalePostfix), patched);
+            Patch(harmony, product.GetType("KingmakerGunslinger.Summoning.SalamanderConstrictDamage", true).GetMethod("Deal", Any), nameof(SalamanderPrefix), nameof(SalamanderPostfix), patched);
             Patch(harmony, product.GetType("KingmakerGunslinger.Summoning.SummonHeldComponent", true).GetMethod("OnNewRound"), nameof(HeldRoundPrefix), nameof(HeldRoundPostfix), patched);
             Patch(harmony, typeof(Game).GetMethod("HandleAreaBeginUnloading", Any), nameof(GameUnloadPrefix), null, patched);
             Patch(harmony, typeof(Game).GetMethod("OnAreaLoaded", Any), nameof(GameLoadedPrefix), nameof(GameLoadedPostfix), patched);
@@ -154,7 +161,26 @@ namespace KmgLoaderCompatHarness
         private static void TurnOffPrefix(object __instance) { Add("hold.OnTurnOff", Logic(__instance)); }
         private static void DeactivatePrefix(object __instance) { Add("hold.OnFactDeactivate", Logic(__instance)); }
         private static void MaintainPostfix(UnitEntityData owner, UnitEntityData target, string __result)
-        { Add("MaintainLink", new JObject { ["owner"] = owner?.UniqueId, ["target"] = target?.UniqueId, ["result"] = __result }); }
+        {
+            Add("MaintainLink", new JObject { ["owner"] = owner?.UniqueId, ["target"] = target?.UniqueId, ["result"] = __result,
+                ["targetLifeState"] = target?.Descriptor?.State.LifeState.ToString(), ["targetDamage"] = target?.Descriptor?.Damage });
+        }
+
+        // ---- G1-R: brackets around each rider damage owner, with the target's life state (read-only)
+        private static JObject Rider(UnitEntityData owner, UnitEntityData target) => new JObject
+        {
+            ["owner"] = owner?.UniqueId, ["target"] = target?.UniqueId,
+            ["targetLifeState"] = target?.Descriptor?.State.LifeState.ToString(), ["targetDamage"] = target?.Descriptor?.Damage,
+            ["targetHP"] = target?.Descriptor == null ? (int?)null : (int)target.Descriptor.Stats.HitPoints
+        };
+        private static void WeaponDamagePrefix(UnitEntityData owner, UnitEntityData target) { Add("rider.weapon.begin", Rider(owner, target)); }
+        private static void WeaponDamagePostfix(UnitEntityData owner, UnitEntityData target, int __result) { JObject r = Rider(owner, target); r["dealt"] = __result; Add("rider.weapon.end", r); }
+        private static void DeathRollPrefix(UnitEntityData owner, UnitEntityData target) { Add("rider.deathRoll.begin", Rider(owner, target)); }
+        private static void DeathRollPostfix(UnitEntityData owner, UnitEntityData target, string __result) { JObject r = Rider(owner, target); r["result"] = __result; Add("rider.deathRoll.end", r); }
+        private static void ImpalePrefix(UnitEntityData owner, UnitEntityData target) { Add("rider.impale.begin", Rider(owner, target)); }
+        private static void ImpalePostfix(UnitEntityData owner, UnitEntityData target, string __result) { JObject r = Rider(owner, target); r["result"] = __result; Add("rider.impale.end", r); }
+        private static void SalamanderPrefix(UnitEntityData owner, UnitEntityData target) { Add("rider.salamanderConstrict.begin", Rider(owner, target)); }
+        private static void SalamanderPostfix(UnitEntityData owner, UnitEntityData target) { Add("rider.salamanderConstrict.end", Rider(owner, target)); }
         private static void ReleasePostfix(UnitEntityData owner, UnitEntityData target)
         { Add("SummonHoldComponent.Release", Pair(owner, target)); }
         private static void ReleaseLinkPostfix(UnitEntityData owner, UnitEntityData target)
@@ -173,10 +199,42 @@ namespace KmgLoaderCompatHarness
                     b.Blueprint.ComponentsArray != null && b.Blueprint.ComponentsArray.Any(c => c.GetType() == holdType || c.GetType() == multiType)),
                 ["targetPart"] = held != null, ["targetPartInitiator"] = held?.Initiator.Value?.UniqueId,
                 ["distance"] = owner == null || target == null ? (double?)null : Vector3.Distance(owner.Position, target.Position),
+                ["targetLifeState"] = target?.Descriptor?.State.LifeState.ToString(),
                 ["targetConscious"] = target != null && target.Descriptor != null && target.Descriptor.State.IsConscious,
                 ["reachPrimary"] = owner != null && target != null && owner.Body != null && owner.Body.PrimaryHand != null &&
                     Kingmaker.Controllers.Combat.UnitEngagementExtension.IsReach(owner, target, owner.Body.PrimaryHand)
             };
+        }
+
+        internal static readonly HashSet<UnitDescriptor> WatchedDamage = new HashSet<UnitDescriptor>();
+        private static void DamageSetPrefix(UnitDescriptor __instance, int value)
+        {
+            if (__instance == null || !WatchedDamage.Contains(__instance)) return;
+            int current = __instance.Damage;
+            if (value == current) return;
+            var row = new JObject { ["unit"] = __instance.Unit?.UniqueId, ["from"] = current, ["to"] = value, ["lifeState"] = __instance.State.LifeState.ToString() };
+            if (value < current)
+            {
+                string stack = new System.Diagnostics.StackTrace(1, false).ToString();
+                row["stack"] = stack.Length > 1800 ? stack.Substring(0, 1800) : stack;
+            }
+            Add("diag.damageSet", row);
+        }
+        private static void LifeTickPrefix(UnitEntityData unit, out string __state)
+        {
+            __state = unit?.Descriptor?.State.LifeState.ToString();
+            if (unit?.Descriptor == null || !WatchedDamage.Contains(unit.Descriptor)) return;
+            if (unit.Descriptor.Damage < (int)unit.Descriptor.Stats.HitPoints) return;
+            Add("diag.lifeTick.begin", new JObject { ["unit"] = unit.UniqueId, ["damage"] = unit.Descriptor.Damage, ["hp"] = (int)unit.Descriptor.Stats.HitPoints,
+                ["con"] = (int)unit.Descriptor.Stats.Constitution, ["lifeState"] = __state, ["allowDying"] = (bool)unit.Descriptor.State.AllowDyingCondition,
+                ["regenerate"] = (bool)unit.Descriptor.State.IsRegenerate, ["markedForDeath"] = unit.Descriptor.State.MarkedForDeath });
+        }
+        private static void LifeTickPostfix(UnitEntityData unit, string __state)
+        {
+            if (unit?.Descriptor == null || !WatchedDamage.Contains(unit.Descriptor)) return;
+            string now = unit.Descriptor.State.LifeState.ToString();
+            if (now == __state && unit.Descriptor.Damage < (int)unit.Descriptor.Stats.HitPoints) return;
+            Add("diag.lifeTick.end", new JObject { ["unit"] = unit.UniqueId, ["damage"] = unit.Descriptor.Damage, ["lifeState"] = now, ["was"] = __state });
         }
 
         private static void MultiRoundPrefix(object __instance) { Add("multiHold.OnNewRound.begin", new JObject { ["owner"] = OwnerOf(__instance)?.Unit?.UniqueId }); }
@@ -202,7 +260,10 @@ namespace KmgLoaderCompatHarness
         }
 
         private static void ConstrictPrefix(UnitEntityData owner, UnitEntityData target, out int __state)
-        { __state = target == null || target.Descriptor == null ? -1 : target.Descriptor.Damage; }
+        {
+            __state = target == null || target.Descriptor == null ? -1 : target.Descriptor.Damage;
+            Add("DealConstrict.begin", Rider(owner, target));
+        }
 
         private static void ConstrictPostfix(object __instance, UnitEntityData owner, UnitEntityData target, int __state)
         {
@@ -211,7 +272,8 @@ namespace KmgLoaderCompatHarness
             Add("DealConstrict", new JObject { ["owner"] = owner?.UniqueId, ["target"] = target?.UniqueId, ["limb"] = LimbOf(owner, weapon),
                 ["constrictDice"] = __instance == null ? 0 : (int)grabType.GetField("ConstrictDiceCount").GetValue(__instance),
                 ["weapon"] = weapon?.Blueprint?.name, ["damageBefore"] = __state, ["damageAfter"] = after, ["delta"] = after - __state,
-                ["targetDead"] = target != null && target.Descriptor != null && target.Descriptor.State.IsDead });
+                ["targetDead"] = target != null && target.Descriptor != null && target.Descriptor.State.IsDead,
+                ["targetLifeState"] = target?.Descriptor?.State.LifeState.ToString() });
         }
         private static void ResetPrefix() { Add("ResetLoadedGrapples", new JObject()); }
 
