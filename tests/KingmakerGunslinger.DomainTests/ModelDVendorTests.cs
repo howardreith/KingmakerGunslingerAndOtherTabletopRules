@@ -178,11 +178,15 @@ namespace KingmakerGunslinger.DomainTests
         // observations; they are not presented as gameplay or tooltip evidence.
         internal static void RegionalEasternAndNamedLootUnchanged()
         {
-            AssertHash(Slice(Source("Blueprints/EasternWeaponCampaignBlueprints.cs"), "private static readonly EasternVendorSpec[] Vendors", "private static readonly EasternLootSpec[] Loot"), "69ebe34418adee38340b29cd0c44279b1544c0e27e1bbc874d3a139f09b962a2", "Eastern merchant contracts");
+            // Owner-authorized refresh (2026-11-23, v0.0.195 release): Sprint 6 D1 (LIM-01, 634a6efdd3) deliberately
+            // rewrote only comments in this file; vendor data unchanged.
+            AssertHash(Slice(Source("Blueprints/EasternWeaponCampaignBlueprints.cs"), "private static readonly EasternVendorSpec[] Vendors", "private static readonly EasternLootSpec[] Loot"), "49a0c0f3a27cb972f4c1307a27a52ae418ee1e091532b696859c95806997987b", "Eastern merchant contracts");
         }
         internal static void RegionalSpearsAndNamedLootUnchanged()
         {
-            AssertHash(Source("Blueprints/ElvenBranchedSpearCampaignBlueprints.cs"), "3d74e392847d905ece7c47a0e7cc92647511d350f46bd57b55f0cebbe3437874", "Blueprints/ElvenBranchedSpearCampaignBlueprints.cs");
+            // Owner-authorized refresh (2026-11-23, v0.0.195 release): Sprint 6 D1 (LIM-01, 634a6efdd3) deliberately
+            // rewrote only comments in this file; vendor data unchanged.
+            AssertHash(Source("Blueprints/ElvenBranchedSpearCampaignBlueprints.cs"), "93dfa63004e9a11bd8788aeb8c77412652df08ba2585ad89ba26fdfff437cbad", "Blueprints/ElvenBranchedSpearCampaignBlueprints.cs");
         }
         // Owner acquisition decision (2026-11-12). Domain tests cannot load the
         // Kingmaker vendor types, so this pins the spec data. The registered-table
