@@ -1,8 +1,15 @@
 # Sprint 6 checkpoint C3a (VER-02, G3): Purple Worm and Giant Flytrap swallow/engulf lifecycle
 
-Status: **two G3 defects demonstrated on the accepted baseline, repaired at their owners, and qualified natively for the
-Purple Worm and Giant Flytrap; returned for manual review** (2026-11-23). **C3a is not complete coverage of G3.** VER-02
-stays open. Nothing is merged or released.
+Status: **C3a R1 returned for manual review** (2026-11-23). **C3a is not complete coverage of G3.** VER-02 stays open.
+Nothing is merged or released.
+
+- **Accepted by the first C3a review:**
+  - the D1 victim-death repair, for the demonstrated Purple Worm/Giant Flytrap scope;
+  - D2's constructed-fixture reproduction, immediate save preservation, and the complete-save/fresh-load-reset
+    evidence, at their stated scope.
+- **R1** (section 7) adds a focused check of three things: active-engulf expiry, a real repeated terminal, and
+  continuing periodic payload behavior after a save.
+- Where section 7 corrects an earlier section, section 7 governs.
 
 - Branch `codex/s6-ver02-c3a-swallow-engulf` is stacked on C2a's acceptance-records head `afb4af0ba0`
   (`codex/s6-ver02-c2a-save-suspension`, draft PR #206), then #205, #204, #203, #200 and #198. The stack is not rebased.
@@ -33,14 +40,15 @@ Sources: `Summoning/ExpandedSummoningSpecialCombatComponents.cs`, `Summoning/Sum
     payload, added with the swallower as caster.
   - The native `UnitSwallowWholeController`: every 6 s on a living swallowed unit, `TryToBreakFree` runs
     (`TryBreakFree`, Default flags). A unit marked free is spat out (with an animation if the view has one).
-  - `HandleUnitDeath` and `HandleUnitDestroyed` on the swallower spit everyone out. The native part never reacts to
-    the **victim's** death.
+  - `HandleUnitDeath` and `HandleUnitDestroyed` on the swallower spit everyone out.
+  - The native part does not release a unit merely because that unit dies inside. Its releases are the swallower's own
+    death or destruction, a successful break-free, and explicit `Free`/`SpitOut` calls.
 - **Link ownership.** The swallower's `UnitPartSummonGrappleLinks` record `target|limb|index|weapon|Engulfed|Repaired`.
   The live answer (`Reconcile`) keeps an Engulfed record while the target is in the native `SwallowedUnits` list.
   Limb occupancy and `HeldCount` count swallowed units.
 - **Carrier.** `SummonSwallowLifecycleComponent` on each swallower's **combat-traits buff**. That buff also carries the
   grab component, and it lasts the summon's lifetime. Its components:
-  - `OnTurnOff` → `SpitOut(true)`;
+  - **baseline behavior:** `OnTurnOff` → `SpitOut(true)` unconditionally (changed in section 3);
   - `HandleUnitDeath`/`HandleUnitDestroyed` → exact victim release, only when `ReleaseOnVictimDeath`
     (`Free`, record `Release`, payload `RemoveFact`).
 - **Load.** `ResetLoadedGrapples` frees every swallowed unit and removes the payload (the accepted reset).
@@ -79,8 +87,10 @@ The probe never inserts parts, payloads or records, and never calls `SwallowHeld
 `b3029e3b…3bea`). After the swallowed Worm victim died inside:
 
 - it stayed in the native `SwallowedUnits` list, with `UnitPartSwallowed` and untargetable on the corpse;
-- its Engulfed link stayed live, and the Worm's only mouth stayed occupied (`HeldCount` 1);
-- four real bites at a new Medium target were refused, so the mouth could not be reused.
+- its Engulfed link stayed live, and the Worm's only mouth stayed occupied (`HeldCount` 1), observed over the following
+  round;
+- four real bites at a new Medium target were refused, so the mouth could not be reused within the observed window.
+  No longer duration was measured.
 
 The Flytrap mixed case behaved the same for the engulfed victim's mouth: four bites refused, while the held sibling
 stayed intact.
@@ -256,3 +266,142 @@ complete input.
   session or Kingmaker process was present when checked before the runs and the build.
 
 **VER-02: open.**
+
+## 7. C3a R1: active-engulf expiry, payload cadence through a save, and two real terminals (2026-11-23)
+
+**Identities and validation.**
+
+- Reviewed head `cb6bf3f12d`.
+- The product is **unchanged**: candidate `9e902dfa80` (package `704cb0b4…79c9`, DLL `431f13da…5676`) was reused.
+  - The only product-source edit in R1 is a comment: the victim-death handler comment now says all four owners opt in,
+    and that the native part does not release merely on victim death.
+  - The package was not rebuilt.
+- **Test cleanup.** `EverySwallowerReleasesAVictimThatDiesInside()` and its registration were removed. Its source-string
+  count did not establish one correct opt-in per owner. The original C3a gate result (14 of 3179) stays as the
+  historical record of what was run.
+- **R1 gate:** `-Filter 'grapple;c2a-hold;swallow;expanded-summoning.sprint4'`. Production compilation 16.6 s; 13 of
+  3178 tests passed, 0 failures.
+- **Harness:** `bd8892be…c617` (`artifacts/loader-compat-harness-ver02-c3a-r1`), with two new `kmgSwallow` modes,
+  `activeExpiry` and `saveCadence`.
+- **Session:** `scripts/compatibility/loader-compat/sessions/ver02-c3a-r1-focused.json`.
+- **Fixture:** `KMCS_AFTER_NORMAL_012_MODONLY.zks`; product alone; RTWP. Disclosed setup as in section 2.
+
+**Native session `20261123T012518Z-owner-0.33.0-ver02-c3a-r1-focused`: PASS 2 of 2 (96 s, 110 s).**
+
+### 7.1 Active engulf expiry (launch 1)
+
+- **Preconditions** (asserted immediately before expiry, paused):
+  - the Flytrap held a living Medium victim **engulfed through the real maintain path** (`MaintainLink`
+    `swallowed:63`): reciprocal native swallow, Engulfed payload with the Flytrap as caster, untargetable,
+    CantMove/CantAct, raw Engulfed record, live link, mouth occupied;
+  - it also held a living, engulf-ineligible Large horse, which is held, CantMove and occupying its mouth;
+  - the crocodile control pair was held;
+  - both victims were alive.
+- **Unrelated effects:** a Bull's Strength on each victim and on the control target.
+- **Expiry:** `SummonedUnitBuff` deadline shortened, then explicit native `BuffCollection.UpdateNextEvent`/`Tick`; the
+  marker was removed by that tick.
+- **Asserted outcomes:**
+  - the holder was destroyed;
+  - both owned relationships were released: no swallowed part or list membership, no payload, no held state, no live
+    link, no CantMove/CantAct/untargetable/Entangled on either living victim;
+  - over **13.0 s of game time** that followed, neither victim took damage and nothing was recreated;
+  - both victims' unrelated effects were kept, and the control pair stayed held.
+- **Captured path:** native `SpitOut(all)` (the dying holder's own handler), then `UnitPartSwallowed.OnRemove`, then the
+  carrier's `swallow.OnTurnOff` (owner on; `SpitOut` again, a no-op), then the hold `OnTurnOff`, `ReleaseLink` for the
+  sibling, then `OnFactDeactivate`.
+- **Captured damage:** the victims took periodic damage before the release (engulfed 129 → 145, sibling 130 → 196) and
+  none after it.
+
+### 7.2 Payload cadence through a permitted save (launch 2)
+
+The Worm swallow and the mixed Flytrap engulf were each established through the real summon, bite and maintain path.
+Each payload then aged through a real round.
+
+**Native payload state.** `Buff.RoundNumber` and, by reflection, the internal `NextTickTime`/`TickTime`. These are
+asserted where marked.
+
+| | Paused, before save | After the finished save | Next genuine round (same running game) |
+|---|---|---|---|
+| Worm payload (`PurpleWorm.Swallowed`) | instance −1048864000, round 1, next tick 432490790000, interval 6 s, damage 218 | identical | round **2**, next tick 432550790000 (exactly +6 s), same instance, damage **250** |
+| Flytrap payload (`GiantFlytrap.Engulfed`) | instance 1598095360, round 1, next tick 432492050000, interval 6 s, damage 152 | identical | round **2**, next tick 432552050000 (exactly +6 s), same instance, damage **173** |
+
+**Asserted:**
+
+- native save admission (allowed);
+- full completion: callback received, no commit in progress, no loading in progress. A wait that expired with work
+  unfinished would fail;
+- an unchanged game clock;
+- an unchanged payload instance, round number, next tick, interval, caster and victim damage (no save-time damage);
+- exact raw records and mouth occupancy;
+- both swallows and the held sibling preserved;
+- the control's unrelated effect kept.
+
+**Then, in the same running game** (asserted), at game time past the later pre-save next tick:
+
+- each payload's round number is exactly +1;
+- its next tick is exactly the pre-save schedule plus one interval;
+- the instance is unchanged, so there was no restart and no duplicate;
+- its victim took new damage;
+- the held sibling is still held. An untraced disappearance would fail; a traced maintain release would be recorded as
+  legitimate. None occurred.
+
+**Captured:**
+
+- the save's callbacks: hold `OnTurnOff` ×2 and `swallow.OnTurnOff` ×2, all with owner off and no release;
+- the next-round outcomes (maintain results);
+- no escape occurred.
+
+The fresh-load reset evidence from section 5 is reused. No reload was rerun, because the changed observer does not
+touch that path.
+
+### 7.3 Two real terminals on the post-save Worm (launch 2)
+
+1. **First terminal: carrier removal** with the holder alive. Native `RemoveFact` on the Worm's actual
+   `PurpleWorm.CombatTraits` buff ran `swallow.OnTurnOff` (owner on), then `SpitOut(all)`, then `UnitPartSwallowed.OnRemove`.
+   - Asserted: the carrier is gone, the holder stayed alive, and the victim is freed (no swallow state, payload or
+     constraints).
+   - Captured: the raw Engulfed record stayed on the living holder. Its live answer is empty, its occupancy is free,
+     and without its traits the Worm has no grab component (inert).
+2. **Second terminal: native expiry.** `SummonedUnitBuff` was present; its deadline was shortened, then explicit native
+   `UpdateNextEvent`/`Tick` ran.
+   - Asserted: the Worm was destroyed; over 13.0 s of game time the freed victim took no further damage and was not
+     re-swallowed; the control pair and its unrelated effect were intact.
+   - Captured: native `SpitOut(all)` at the death, a no-op.
+
+This also covers the previously unexecuted **Worm carrier-removal** boundary and a **Worm expiry** (of an already
+released Worm).
+
+### 7.4 Corrections to the first C3a record and summaries
+
+- **Flytrap expiry.** `trapExpiry` in `003442Z` ran after the engulfed victim had died. Its regrabbed replacement was
+  never promoted and was not tracked, and the assertions covered only the held sibling. It is **not** an active-engulf
+  expiry; active engulf expiry was unqualified until 7.1.
+- **The old "repeated terminal"** (`003442Z` launch 2) was a quiet recheck only: the dead Worm had no expiry buff. No
+  second-terminal credit. The real second terminal is 7.3.
+- **Mouth reuse.** Reuse at the first bite was **observed**; successful reuse within the bounded attempts was
+  **asserted**.
+- **Carrier removal.** In `003442Z`, the holder being alive was **captured**. In 7.3 it is **asserted**.
+- **Reload check.** It allows an empty `UnitPartSwallowWhole` on a swallower. It rejects live list membership, victim
+  swallowed parts, payloads, held states, untargetable, CantMove/CantAct, and raw records.
+- **D1** is post-death blockage and refused regrabs within the observed window. No "for the rest of the summon's life"
+  duration was demonstrated.
+- **Native release paths.** The native swallow part does not release merely because a victim dies. Its other release
+  paths (swallower death or destruction, break-free, explicit free) are not limited to swallower death.
+- **Carrier turn-off.** The unconditional `OnTurnOff` → `SpitOut(true)` is **baseline** behavior; the repaired behavior
+  is section 3.
+- **D2 ordinary reachability remains unresolved.** It was not reattempted in R1.
+
+**Remaining G3 and VER-02 coverage:**
+
+- Dire Crocodile and Tyrannosaurus (they share the changed carrier; not natively exercised).
+- Escape/break-free.
+- Flytrap holder death.
+- Turn-based mode.
+- Several victims in one Flytrap.
+- D2 ordinary reachability.
+- G4, G5 (fixture-blocked), the G1 variants, and the Xill/Scorpion/Crab configurations.
+
+**VER-02 open.**
+
+**Restoration.** The R1 session's transactions completed with game settings applied and owner files verified. No peer
+session or Kingmaker process was present before the run.
