@@ -1,0 +1,123 @@
+{
+  "name": "ver02-g4-stirge-attachment",
+  "description": "S6 checkpoint G4 / VER-02: retained Stirge attachment lifecycle and the shared Remove Stirge action, on the accepted C3a product (unchanged). The Stirge stays withdrawn from public summon menus; the fixture invokes the product's retained (unpublished) Stirge execution ability directly and changes no publication. Attachments come only from real touch attacks with the Stirge's exact touch weapon. Launch 1 (lifecycle): two Stirges A and B on one prey P with an independent Stirge/prey control (unrelated Bull's Strength); A dies (B stays attached and keeps draining); P's own Remove Stirge ability removes B through the native command (P's Mobility raised to 300, disclosed); then an active summon expiry (shortened native deadline) and a prey death, each with a fresh control. Launch 2 (save): an active attachment after one drain round through a finished native save, with one labelled synthetic orphan Remove Stirge fact on a disposable unit no Stirge targets; the running process is then observed. Launch 3 (reload): a fresh process loads that save. Disclosed: Stirge BAB 100, prey HP raised, appear buffs removed, brains off, units woken, navmesh placement, pauses for observation.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "lifecycle",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgStirge",
+            "label": "lifecycle",
+            "match": "lifecycle",
+            "timeoutSeconds": 560
+          }
+        ]
+      }
+    },
+    {
+      "label": "save",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgStirge",
+            "label": "save",
+            "match": "save",
+            "timeoutSeconds": 560
+          }
+        ]
+      }
+    },
+    {
+      "label": "reload",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "$written:ver02g4",
+        "steps": [
+          {
+            "op": "expectLoadedFrom",
+            "match": "ver02g4"
+          },
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgStirge",
+            "label": "reload",
+            "match": "reload",
+            "timeoutSeconds": 560
+          }
+        ]
+      }
+    }
+  ]
+}

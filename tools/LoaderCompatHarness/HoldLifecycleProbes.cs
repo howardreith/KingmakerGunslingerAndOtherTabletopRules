@@ -71,6 +71,15 @@ namespace KmgLoaderCompatHarness
             Patch(harmony, typeof(UnitPartSwallowWhole).GetMethod("SpitOut"), nameof(NativeSpitOutPrefix), null, patched);
             Patch(harmony, typeof(UnitPartSwallowWhole).GetMethod("Free"), nameof(NativeFreePrefix), null, patched);
             Patch(harmony, typeof(UnitPartSwallowed).GetMethod("OnRemove"), nameof(NativeSwallowedRemovePrefix), null, patched);
+            // G4: the retained Stirge attachment owner (read-only).
+            stirgeHold = product.GetType("KingmakerGunslinger.Summoning.StirgeHoldComponent", true);
+            Patch(harmony, product.GetType("KingmakerGunslinger.Summoning.StirgeAttachComponent", true).GetMethod("TryAttach", Any), null, nameof(StirgeTryAttachPostfix), patched);
+            Patch(harmony, stirgeHold.GetMethod("OnNewRound"), nameof(StirgeNewRoundPrefix), nameof(StirgeNewRoundPostfix), patched);
+            Patch(harmony, stirgeHold.GetMethod("OnTurnOff"), nameof(StirgeTurnOffPrefix), null, patched);
+            Patch(harmony, stirgeHold.GetMethod("Detach", Any), nameof(StirgeDetachPrefix), nameof(StirgeDetachPostfix), patched);
+            Patch(harmony, stirgeHold.GetMethod("ReleaseRemoveAction", Any), nameof(StirgeReleaseActionPrefix), nameof(StirgeReleaseActionPostfix), patched);
+            Patch(harmony, product.GetType("KingmakerGunslinger.Summoning.ContextActionRemoveStirge", true).GetMethod("RunAction"), nameof(StirgeRemoveActionPrefix), nameof(StirgeRemoveActionPostfix), patched);
+            Patch(harmony, product.GetType("KingmakerGunslinger.Summoning.SummonGrappleAreaSafeguard", true).GetMethod("SweepStirge", Any), null, nameof(StirgeSweepPostfix), patched);
             Patch(harmony, typeof(Game).GetMethod("HandleAreaBeginUnloading", Any), nameof(GameUnloadPrefix), null, patched);
             Patch(harmony, typeof(Game).GetMethod("OnAreaLoaded", Any), nameof(GameLoadedPrefix), nameof(GameLoadedPostfix), patched);
             installed = true;
@@ -167,6 +176,57 @@ namespace KmgLoaderCompatHarness
         private static void GameUnloadPrefix() { Add("Game.HandleAreaBeginUnloading", new JObject()); }
         private static void GameLoadedPrefix() { Add("Game.OnAreaLoaded.begin", new JObject()); }
         private static void GameLoadedPostfix() { Add("Game.OnAreaLoaded.end", new JObject()); }
+
+        // ---- G4 Stirge observation (read-only)
+        private static Type stirgeHold;
+
+        private static UnitEntityData StirgeTargetOf(object logic) => stirgeHold.GetField("m_Target", Any).GetValue(logic) as UnitEntityData;
+        private static int StirgeCumulativeOf(object logic) => (int)stirgeHold.GetField("m_CumulativeDamage", Any).GetValue(logic);
+        internal static UnitEntityData StirgeAttachedTarget(UnitEntityData owner) => stirgeHold.GetMethod("AttachedTarget", Any).Invoke(null, new object[] { owner }) as UnitEntityData;
+        private static bool HasRemove(UnitEntityData unit)
+        {
+            var remove = stirgeHold.GetField("RemoveAbility", Any).GetValue(null) as Kingmaker.Blueprints.Facts.BlueprintUnitFact;
+            return unit != null && unit.Descriptor != null && remove != null && unit.Descriptor.HasFact(remove);
+        }
+        private static JObject StirgeLogic(object logic)
+        {
+            UnitDescriptor owner = OwnerOf(logic);
+            UnitEntityData target = StirgeTargetOf(logic);
+            return new JObject { ["owner"] = owner?.Unit?.UniqueId, ["ownerName"] = owner?.CustomName, ["ownerTurnedOn"] = owner != null && owner.IsTurnedOn,
+                ["ownerDead"] = owner != null && owner.State.IsDead, ["target"] = target?.UniqueId, ["targetDead"] = target != null && target.Descriptor.State.IsDead,
+                ["cumulative"] = StirgeCumulativeOf(logic), ["targetConDamage"] = target == null ? (int?)null : target.Descriptor.Stats.Constitution.Damage };
+        }
+        private static void StirgeTryAttachPostfix(object __instance, UnitEntityData target, bool touchHit, bool __result)
+        { Add("stirge.TryAttach", new JObject { ["owner"] = OwnerOf(__instance)?.Unit?.UniqueId, ["target"] = target?.UniqueId, ["touchHit"] = touchHit, ["attached"] = __result }); }
+        private static void StirgeNewRoundPrefix(object __instance) { Add("stirge.OnNewRound.begin", StirgeLogic(__instance)); }
+        private static void StirgeNewRoundPostfix(object __instance) { Add("stirge.OnNewRound.end", StirgeLogic(__instance)); }
+        private static void StirgeTurnOffPrefix(object __instance) { Add("stirge.OnTurnOff", StirgeLogic(__instance)); }
+        private static void StirgeDetachPrefix(UnitEntityData owner)
+        { Add("stirge.Detach.begin", new JObject { ["owner"] = owner?.UniqueId, ["attachedTarget"] = StirgeAttachedTarget(owner)?.UniqueId }); }
+        private static void StirgeDetachPostfix(UnitEntityData owner, bool __result)
+        { Add("stirge.Detach.end", new JObject { ["owner"] = owner?.UniqueId, ["removedHold"] = __result }); }
+        private static void StirgeReleaseActionPrefix(UnitEntityData target)
+        { Add("stirge.ReleaseRemoveAction.begin", new JObject { ["target"] = target?.UniqueId, ["hadAction"] = HasRemove(target) }); }
+        private static void StirgeReleaseActionPostfix(UnitEntityData target)
+        { Add("stirge.ReleaseRemoveAction.end", new JObject { ["target"] = target?.UniqueId, ["hasAction"] = HasRemove(target) }); }
+        private static UnitEntityData ActionUnit(object action, string property)
+        {
+            object value = action.GetType().GetProperty(property, Any)?.GetValue(action, null);
+            if (value is Kingmaker.UnitLogic.Mechanics.MechanicsContext context) return context.MaybeCaster;
+            if (value is Kingmaker.Utility.TargetWrapper wrapper) return wrapper.Unit;
+            return null;
+        }
+        private static void StirgeRemoveActionPrefix(object __instance)
+        {
+            UnitEntityData stirge = ActionUnit(__instance, "Target");
+            Add("stirge.RemoveAction.begin", new JObject { ["prey"] = ActionUnit(__instance, "Context")?.UniqueId, ["stirge"] = stirge?.UniqueId, ["attachedTarget"] = StirgeAttachedTarget(stirge)?.UniqueId });
+        }
+        private static void StirgeRemoveActionPostfix(object __instance)
+        {
+            UnitEntityData stirge = ActionUnit(__instance, "Target");
+            Add("stirge.RemoveAction.end", new JObject { ["prey"] = ActionUnit(__instance, "Context")?.UniqueId, ["stirge"] = stirge?.UniqueId, ["attachedTarget"] = StirgeAttachedTarget(stirge)?.UniqueId });
+        }
+        private static void StirgeSweepPostfix(int __result) { Add("stirge.SweepStirge", new JObject { ["released"] = __result }); }
     }
 
     /// <summary>
