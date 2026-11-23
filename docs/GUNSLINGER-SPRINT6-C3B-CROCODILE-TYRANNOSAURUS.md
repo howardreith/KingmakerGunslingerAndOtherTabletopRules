@@ -1,7 +1,8 @@
 # Sprint 6 checkpoint C3b (VER-02, G3): Dire Crocodile and Tyrannosaurus swallow lifecycle
 
-Status: **qualified natively on the accepted C3a product with no product change; returned for manual review**
-(2026-11-23). VER-02 stays open. Nothing is merged or released.
+Status: **C3b accepted by manual review (2026-11-23) for its demonstrated development scope**, at head `647af2c1ba`
+(base `1efff0fa3e`; product `9e902dfa80` unchanged). Section 7 records the decision and the narrowed claims; where it
+corrects an earlier section, section 7 governs. VER-02 stays open. Nothing is merged or released.
 
 - Branch `codex/s6-ver02-c3b-crocodile-tyrannosaurus` is stacked on the C3a acceptance-records head `1efff0fa3e`
   (`codex/s6-ver02-c3a-swallow-engulf`, draft PR #207), then #206, #205, #204, #203, #200 and #198. The stack is not
@@ -45,7 +46,7 @@ presented as a fresh check of `9e902dfa80`):
   spawn through a real eligible bite (`RuleAttackWithWeapon`). The product's own later-round `MaintainLink` promoted it.
 - **Asserted:** the maintain trace shows `swallowed:N` for the holder (`selectedSwallow`), so a death-roll hold is never
   counted.
-- **Tyrannosaurus noncritical principal setup:** if the establishing bite applied the configured Bleeding Critical buff
+- **Tyrannosaurus bleed-free principal setup** (the enforced condition is bleed absent): if the establishing bite applied the configured Bleeding Critical buff
   (read from the creature's own `TyrannosaurusBleedingCritical` component), that setup was discarded for a fresh one,
   up to three times. Bleed was asserted absent on the principal victim at promotion and at the next payload round.
   - In the first, failed run (`014648Z`) one setup was discarded this way.
@@ -103,9 +104,12 @@ Same session, after the cadence.
 - The Dire Crocodile victim's Athletics was raised (0 → 300; disclosed). The native controller and rule made the
   attempt (`UnitSwallowWholeController` → `UnitPartSwallowed.TryToBreakFree` → `TryBreakFree`). Nothing set the free
   flag, called `Free` or removed the payload.
-- **Matched evidence** (asserted), in order, for the exact holder and victim:
+- **Matched evidence.** The gate requires the exact holder's `native.SpitOut(all: false)`, followed by the exact
+  victim's `native.Free` by this holder and the exact victim's `UnitPartSwallowed.OnRemove` naming this swallower.
+  The full ordered trace below is captured; the gate does not separately enforce `Free` before `OnRemove`, prove call
+  nesting, or observe the successful break-free rule result (that upstream mechanism is supported by source):
   1. `native.SpitOut(all: false)` by the Dire Crocodile;
-  2. `native.Free` of this victim by this holder (called inside that `SpitOut`);
+  2. `native.Free` of this victim by this holder (native `SpitOut(false)` calls `Free`; source);
   3. this victim's `UnitPartSwallowed.OnRemove`, naming this swallower.
   - It fails on any other cause for this holder: `SpitOut(all: true)`, the victim-death handler, or a `Free` before the
     spit-out.
@@ -170,7 +174,7 @@ Session `20261123T015126Z-owner-0.33.0-ver02-c3b-crocodile-tyrannosaurus`, launc
 
 | Session | Harness | Launch | Cause |
 |---|---|---|---|
-| `20261123T014648Z` | `efc35569…90a7` | 1 FAIL | **Observer/fixture.** The crocodile control's hold was gone at the cadence check, and no cause was traced because the observer had reached its 600-event cap. The cadence assertions themselves passed (Dire Crocodile 98 → 117, Tyrannosaurus 104 → 124 at the next round). |
+| `20261123T014648Z` | `efc35569…90a7` | 1 FAIL | **FAIL: the control hold ended for an unattributed reason.** The observer had exhausted its 600-event limit, which prevented attribution; it does not establish the cause. The observer capacity was raised afterwards. The cadence assertions in that launch passed (Dire Crocodile 98 → 117, Tyrannosaurus 104 → 124 at the next round). |
 | | | 2 FAIL | **Legitimate rule outcome.** The Tyrannosaurus' maintain returned `released` (traced) before promotion. |
 | | | 3 blocked | No written save. |
 | `20261123T015126Z` | `f3a4c99b…db8a` | 1 FAIL | **Oracle defect.** The escape happened (`SpitOut(false)` → `Free` → `OnRemove` for the exact victim), but the check counted native `Free` called inside `SpitOut` as a foreign cause. Launches 2–3 PASS (section 3.4). |
@@ -179,7 +183,7 @@ Session `20261123T015126Z-owner-0.33.0-ver02-c3b-crocodile-tyrannosaurus`, launc
 
 - the observer cap raised;
 - a traced legitimate maintain release of the control is recorded (an untraced loss still fails);
-- after a traced legitimate release before promotion, one fresh setup is allowed (bounded);
+- after a traced legitimate release before promotion, a fresh setup is allowed; the implementation's budget is two additional promotion setups across the probe;
 - the escape oracle fixed to the native chain.
 
 ## 4. Assertions, observations and inferences
@@ -221,3 +225,35 @@ Crab configurations.
 
 **Restoration:** every session's transaction completed with game settings applied and owner files verified. No peer
 session or Kingmaker process was present when checked before the runs.
+
+## 7. Review decision and narrowed claims (2026-11-23)
+
+**C3b is accepted** for its demonstrated development scope.
+
+| Area | Disposition |
+|---|---|
+| Promotion and payload timing | Accepted for both consumers |
+| Dire Crocodile escape | Accepted for the controlled native escape case (Athletics 300 disclosed) |
+| Tyrannosaurus victim death | Release and mouth reuse asserted; the callback path is captured |
+| Dire Crocodile active-swallow expiry | Accepted; representative active-swallow expiry evidence |
+| Written save and fresh reload | Accepted at the stated evidence levels |
+
+**Narrowed claims:**
+
+- **`014648Z` launch 1** remains FAIL, with an unattributed control release. Observer saturation explains the missing
+  attribution, not the release's cause.
+- **The escape gate** requires the exact-identity `Free` and `OnRemove` after the exact holder's `SpitOut(false)`. The
+  full internal ordering, the call nesting and the upstream successful break-free rule are captured or source-inferred,
+  not directly asserted.
+- **Tyrannosaurus victim death:** release and mouth reuse are asserted; the `HandleUnitDeath` → `Free` → `OnRemove`
+  path is captured.
+- **Mouth reuse:** reuse at the first bite was observed; reuse within the four allowed attempts was asserted.
+- **Tyrannosaurus setup:** the enforced condition is bleed-free. "Noncritical" is stronger than the gate establishes.
+- **Dire Crocodile active expiry** supplies representative active-swallow expiry evidence. It does not turn the Worm's
+  earlier post-release expiry into an active-swallow test.
+- **Retry budget:** the implementation allows two additional promotion setups across the probe, not one.
+- **Retry classification:** it accepted any result beginning with `released`. Before reuse (C3c) it is narrowed to the
+  exact ordinary failed-maintain result `released`, for the exact holder and target, inside that attempt's observation
+  window. Invalid-owner or invalid-target releases keep their own diagnosis.
+
+This is a records-only update, with no product build or native rerun.
