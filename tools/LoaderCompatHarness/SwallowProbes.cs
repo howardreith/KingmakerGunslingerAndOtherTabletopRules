@@ -103,7 +103,8 @@ namespace KmgLoaderCompatHarness
             try
             {
                 IEnumerable<object> body = mode == "victims" ? Victims() : mode == "holders" ? Holders() : mode == "save" ? Save() : mode == "reload" ? Reload() :
-                    mode == "reach" ? Reach() : mode == "activeExpiry" ? ActiveExpiry() : mode == "saveCadence" ? SaveCadence() : null;
+                    mode == "reach" ? Reach() : mode == "activeExpiry" ? ActiveExpiry() : mode == "saveCadence" ? SaveCadence() :
+                    mode == "c3bLifecycle" ? C3bLifecycle() : mode == "c3bSave" ? C3bSave() : mode == "c3bReload" ? C3bReload() : null;
                 if (body == null) { problems.Add("unknown mode " + mode); yield break; }
                 foreach (object step in body) yield return step;
             }
@@ -207,7 +208,7 @@ namespace KmgLoaderCompatHarness
             for (int index = 0; index < kinds.Length; index++)
             {
                 float angle = holder.Orientation + (kinds.Length == 1 ? 0f : index == 0 ? -40f : 40f);
-                Vector3 at = ObstacleAnalyzer.TraceAlongNavmesh(holder.Position, holder.Position + Quaternion.Euler(0, angle, 0) * Vector3.forward * (key == "purple-worm" ? 4.0f : key == "crocodile" ? 1.0f : 3.0f));
+                Vector3 at = ObstacleAnalyzer.TraceAlongNavmesh(holder.Position, holder.Position + Quaternion.Euler(0, angle, 0) * Vector3.forward * (key == "purple-worm" || key == "tyrannosaurus" ? 4.0f : key == "crocodile" ? 1.0f : 3.0f));
                 UnitEntityData t;
                 if (kinds[index] == "horse")
                 {
@@ -239,7 +240,11 @@ namespace KmgLoaderCompatHarness
         }
 
         /// <summary>Lets the product's own later-round maintain promote every eligible victim (bounded by game time).</summary>
-        private IEnumerable<object> AwaitPromotion(Rel r, int[] eligible, string name)
+        private IEnumerable<object> AwaitPromotion(Rel r, int[] eligible, string name) { return AwaitPromotion(r, eligible, name, false); }
+
+        private bool lastPromotionTracedRelease;
+
+        private IEnumerable<object> AwaitPromotion(Rel r, int[] eligible, string name, bool tolerateTracedRelease)
         {
             int seq = LastSeq;
             foreach (object step in SettleGameTime(1.0, 45f, () => eligible.All(i => IsSwallowed(r, i)))) yield return step;
@@ -247,6 +252,8 @@ namespace KmgLoaderCompatHarness
             result["promotion." + name] = new JObject { ["maintain"] = maintain, ["state"] = State(r),
                 ["nativeSwallow"] = Events(seq, e => (string)e["what"] == "native.Swallow" && (string)e["owner"] == r.Holder.UniqueId) };
             promotionOk = eligible.All(i => IsSwallowed(r, i));
+            lastPromotionTracedRelease = maintain.OfType<JObject>().Any(e => ((string)e["result"] ?? "").StartsWith("released", StringComparison.Ordinal));
+            if (!promotionOk && tolerateTracedRelease && lastPromotionTracedRelease) yield break;
             foreach (int i in eligible)
                 if (!IsSwallowed(r, i))
                     problems.Add(name + ": victim " + i + " was not promoted by the maintain path (maintain trace: " + maintain.ToString(Formatting.None) + ")");
@@ -619,10 +626,11 @@ namespace KmgLoaderCompatHarness
             float until = Time.realtimeSinceStartup + 120f;
             while ((!saved || Game.Instance.SaveManager.CommitInProgress || LoadingProcess.Instance.IsLoadingInProcess) && Time.realtimeSinceStartup < until)
                 yield return null;
-            var after = new JObject { ["completed"] = saved, ["gameClockUnchanged"] = Game.Instance.TimeController.GameTime == clock,
+            bool finished = saved && !Game.Instance.SaveManager.CommitInProgress && !LoadingProcess.Instance.IsLoadingInProcess;
+            var after = new JObject { ["completed"] = saved, ["finished"] = finished, ["gameClockUnchanged"] = Game.Instance.TimeController.GameTime == clock,
                 ["worm"] = State(w), ["trap"] = State(f), ["callbacks"] = Events(seq, e => true) };
             cases["afterSave"] = after;
-            if (!saved) { problems.Add("save: the native save did not complete"); yield break; }
+            if (!finished) { problems.Add("save: the native save did not finish (callback " + saved + ", commit " + Game.Instance.SaveManager.CommitInProgress + ", loading " + LoadingProcess.Instance.IsLoadingInProcess + ")"); yield break; }
             // The accepted policy: a permitted save keeps the ongoing relationship in the running session.
             ExpectSwallowed(w, 0, "save.after");
             ExpectSwallowed(f, 0, "save.after");
@@ -825,6 +833,301 @@ namespace KmgLoaderCompatHarness
             ExpectHeld(control, 0, "terminals.control");
             if (controlUnrelated == null || !control.Targets[0].Descriptor.Buffs.RawFacts.Contains(controlUnrelated)) problems.Add("terminals: the control's unrelated effect was not kept");
             cases["controlFinal"] = State(control);
+        }
+
+        // ---------------------------------------------------------------- C3b: Dire Crocodile and Tyrannosaurus
+
+        internal static readonly string[] C3bNames = { "KMG_C3b_Croc", "KMG_C3b_CrocVictim", "KMG_C3b_Rex", "KMG_C3b_RexVictim" };
+
+        /// <summary>The Tyrannosaurus' configured Bleeding Critical buff (read from its own component), for attribution.</summary>
+        private BlueprintBuff BleedOf(UnitEntityData rex)
+        {
+            foreach (var fact in rex.Descriptor.Progression.Features.Enumerable.Cast<Kingmaker.Blueprints.Facts.Fact>().Concat(rex.Descriptor.Buffs.RawFacts.Cast<Kingmaker.Blueprints.Facts.Fact>()))
+                foreach (var component in fact.Blueprint.ComponentsArray ?? new BlueprintComponent[0])
+                    if (component.GetType().Name == "TyrannosaurusBleedingCritical")
+                        return component.GetType().GetField("Bleed", Any)?.GetValue(component) as BlueprintBuff;
+            return null;
+        }
+
+        private int promotionRetries;
+
+        /// <summary>The crocodile control: still held, or released by a traced legitimate maintain result for that exact holder and target.</summary>
+        private void ExpectControl(Rel control, string name)
+        {
+            if (IsHeld(control, 0)) { ExpectHeld(control, 0, name); return; }
+            bool traced = HoldLifecycleObserver.Events.Any(e => (string)e["what"] == "MaintainLink" && (string)e["owner"] == control.Holder.UniqueId &&
+                (string)e["target"] == control.Targets[0].UniqueId && ((string)e["result"] ?? "").StartsWith("released", StringComparison.Ordinal));
+            ((JArray)(result["controlOutcomes"] ?? (result["controlOutcomes"] = new JArray()))).Add(name + ": not held; traced legitimate maintain release " + traced);
+            if (!traced) problems.Add(name + ": the control relationship ended without a traced legitimate release");
+        }
+
+        private static bool HasBuff(UnitEntityData unit, BlueprintBuff blueprint) =>
+            blueprint != null && unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Any(b => ReferenceEquals(b.Blueprint, blueprint));
+
+        /// <summary>A promoted swallow for one consumer; for the Tyrannosaurus a noncritical (bleed-free) principal setup.</summary>
+        private IEnumerable<object> EstablishSwallow(string name, string key, Vector3 spot, Action<Rel> done)
+        {
+            Rel chosen = null;
+            var attempts = new JArray();
+            result["setup." + name] = attempts;
+            for (int attempt = 0; attempt < 3 && chosen == null; attempt++)
+            {
+                Rel r = null;
+                foreach (object step in Establish(name, key, spot, new[] { "medium" }, x => r = x)) yield return step;
+                if (r == null) yield break;
+                BlueprintBuff bleed = key == "tyrannosaurus" ? BleedOf(r.Holder) : null;
+                bool bled = HasBuff(r.Targets[0], bleed);
+                attempts.Add(new JObject { ["attempt"] = attempt, ["bleedBlueprint"] = bleed?.name, ["establishingBiteCausedBleed"] = bled });
+                if (key == "tyrannosaurus" && bleed == null) { problems.Add(name + ": the Tyrannosaurus' Bleeding Critical buff was not found"); yield break; }
+                if (bled)
+                {
+                    // A critical establishing bite: discard this victim and holder and use a fresh noncritical setup.
+                    r.Targets[0].Destroy(); r.Holder.Destroy();
+                    continue;
+                }
+                chosen = r;
+            }
+            if (chosen == null) { problems.Add(name + ": no noncritical establishing bite in three setups"); yield break; }
+            foreach (object step in AwaitPromotion(chosen, new[] { 0 }, name, true)) yield return step;
+            if (!promotionOk && lastPromotionTracedRelease && promotionRetries < 2)
+            {
+                // A traced, legitimate maintain release before promotion (a game outcome, recorded): one fresh setup.
+                promotionRetries++;
+                ((JArray)(result["legitimateReleasesBeforePromotion"] ?? (result["legitimateReleasesBeforePromotion"] = new JArray()))).Add(name + ": " + result["promotion." + name]["maintain"].ToString(Formatting.None));
+                chosen.Targets[0].Destroy(); chosen.Holder.Destroy();
+                foreach (object step in EstablishSwallow(name, key, spot, done)) yield return step;
+                yield break;
+            }
+            if (!promotionOk) { problems.Add(name + ": victim was not promoted (" + result["promotion." + name]["maintain"].ToString(Formatting.None) + ")"); yield break; }
+            JArray maintain = (JArray)result["promotion." + name]["maintain"];
+            bool selectedSwallow = maintain.OfType<JObject>().Any(e => ((string)e["result"] ?? "").StartsWith("swallowed:", StringComparison.Ordinal));
+            result["selection." + name] = new JObject { ["selectedSwallow"] = selectedSwallow, ["maintain"] = maintain };
+            if (!selectedSwallow) { problems.Add(name + ": the maintain path did not select swallow for the eligible victim"); yield break; }
+            ExpectSwallowed(chosen, 0, name + ".promoted");
+            BlueprintBuff b2 = key == "tyrannosaurus" ? BleedOf(chosen.Holder) : null;
+            if (b2 != null && HasBuff(chosen.Targets[0], b2)) problems.Add(name + ": bleed is present on the principal victim (attribution would be ambiguous)");
+            done(chosen);
+        }
+
+        private IEnumerable<object> C3bLifecycle()
+        {
+            var cases = new JObject();
+            result["cases"] = cases;
+            Rel control = null;
+            foreach (object step in EstablishControl(x => control = x)) yield return step;
+            if (control == null) yield break;
+            Buff controlUnrelated = control.Targets[0].Descriptor.Buffs.RawFacts.OfType<Buff>().FirstOrDefault(b => b.Blueprint.AssetGuid == UnrelatedBuffGuid);
+            Rel d = null, t = null;
+            foreach (object step in EstablishSwallow("croc", "dire-crocodile", wormSpot, x => d = x)) yield return step;
+            if (d == null) yield break;
+            foreach (object step in EstablishSwallow("rex", "tyrannosaurus", trapSpot, x => t = x)) yield return step;
+            if (t == null) yield break;
+            Buff unrelatedRex = AddUnrelated(t.Targets[0]);
+            // Age both payloads through a real periodic round.
+            foreach (object step in SettleGameTime(1.0, 30f, () => PayloadOf(d, 0)?.RoundNumber >= 1 && PayloadOf(t, 0)?.RoundNumber >= 1)) yield return step;
+            Game.Instance.IsPaused = true;
+            yield return null;
+            JObject pd = PayloadRound(d, 0), pt = PayloadRound(t, 0);
+            JObject sd = State(d), st = State(t);
+            var row = new JObject { ["crocPayload"] = pd, ["rexPayload"] = pt, ["croc"] = sd, ["rex"] = st, ["control"] = State(control),
+                ["gameSeconds"] = Game.Instance.TimeController.GameTime.TotalSeconds };
+            cases["beforeSave"] = row;
+            int before = problems.Count;
+            if (pd == null || (int)pd["roundNumber"] < 1 || pt == null || (int)pt["roundNumber"] < 1) problems.Add("cadence: a payload did not age through a real round");
+            if ((string)pd?["caster"] != d.Holder.UniqueId || (string)pt?["caster"] != t.Holder.UniqueId) problems.Add("cadence: a payload's caster is not its holder");
+            ExpectSwallowed(d, 0, "cadence.beforeSave"); ExpectSwallowed(t, 0, "cadence.beforeSave");
+            bool allowed = Game.Instance.SaveManager.IsSaveAllowed();
+            row["saveAllowed"] = allowed;
+            if (!allowed) problems.Add("cadence: native save admission refused");
+            if (problems.Count > before) yield break;
+            int seq = LastSeq;
+            TimeSpan clock = Game.Instance.TimeController.GameTime;
+            bool saved = false;
+            Game.Instance.SaveGame(Game.Instance.SaveManager.CreateNewSave("ver02c3bcadence"), () => saved = true);
+            float until = Time.realtimeSinceStartup + 120f;
+            while ((!saved || Game.Instance.SaveManager.CommitInProgress || LoadingProcess.Instance.IsLoadingInProcess) && Time.realtimeSinceStartup < until)
+                yield return null;
+            bool finished = saved && !Game.Instance.SaveManager.CommitInProgress && !LoadingProcess.Instance.IsLoadingInProcess;
+            JObject pd2 = PayloadRound(d, 0), pt2 = PayloadRound(t, 0);
+            var after = new JObject { ["callbackReceived"] = saved, ["commitInProgress"] = Game.Instance.SaveManager.CommitInProgress, ["loadingInProgress"] = LoadingProcess.Instance.IsLoadingInProcess,
+                ["gameClockUnchanged"] = Game.Instance.TimeController.GameTime == clock, ["crocPayload"] = pd2, ["rexPayload"] = pt2, ["croc"] = State(d), ["rex"] = State(t), ["callbacks"] = Events(seq, e => true) };
+            cases["afterSave"] = after;
+            if (!finished) { problems.Add("cadence: the save did not finish"); yield break; }
+            if (Game.Instance.TimeController.GameTime != clock) problems.Add("cadence: the paused save changed the game clock");
+            foreach (var pair in new[] { new { b = pd, a = pd2, n = "croc" }, new { b = pt, a = pt2, n = "rex" } })
+            {
+                if (pair.a == null) { problems.Add("cadence: the " + pair.n + " payload is gone after the save"); continue; }
+                foreach (string key in new[] { "instance", "roundNumber", "nextTickTicks", "tickTimeTicks", "caster", "damage" })
+                    if (!JToken.DeepEquals(pair.b[key], pair.a[key])) problems.Add("cadence: the save changed the " + pair.n + " payload " + key);
+            }
+            if (!JToken.DeepEquals(sd["raw.links"], ((JObject)after["croc"])["raw.links"]) || !JToken.DeepEquals(st["raw.links"], ((JObject)after["rex"])["raw.links"])) problems.Add("cadence: the save changed raw records");
+            if (!JToken.DeepEquals(sd["occupancy"], ((JObject)after["croc"])["occupancy"]) || !JToken.DeepEquals(st["occupancy"], ((JObject)after["rex"])["occupancy"])) problems.Add("cadence: the save changed occupancy");
+            ExpectSwallowed(d, 0, "cadence.afterSave"); ExpectSwallowed(t, 0, "cadence.afterSave");
+            if (controlUnrelated == null || !control.Targets[0].Descriptor.Buffs.RawFacts.Contains(controlUnrelated)) problems.Add("cadence: the control's unrelated effect was lost");
+            if (unrelatedRex == null || !t.Targets[0].Descriptor.Buffs.RawFacts.Contains(unrelatedRex)) problems.Add("cadence: the rex victim's unrelated effect was lost");
+            if (problems.Count > before) yield break;
+            long target = Math.Max((long)pd["nextTickTicks"], (long)pt["nextTickTicks"]) + TimeSpan.FromSeconds(0.5).Ticks;
+            int seqRound = LastSeq;
+            foreach (object step in SettleGameTime(0.0, 30f, () => Game.Instance.TimeController.GameTime.Ticks >= target)) yield return step;
+            JObject pd3 = PayloadRound(d, 0), pt3 = PayloadRound(t, 0);
+            cases["nextPayloadRound"] = new JObject { ["crocPayload"] = pd3, ["rexPayload"] = pt3, ["croc"] = State(d), ["rex"] = State(t),
+                ["events"] = Events(seqRound, e => true) };
+            foreach (var pair in new[] { new { b = pd, a = pd3, n = "croc" }, new { b = pt, a = pt3, n = "rex" } })
+            {
+                if (pair.a == null) { problems.Add("cadence: the " + pair.n + " payload disappeared before its next round"); continue; }
+                if ((int)pair.a["roundNumber"] != (int)pair.b["roundNumber"] + 1) problems.Add("cadence: the " + pair.n + " payload round " + pair.a["roundNumber"] + ", expected " + ((int)pair.b["roundNumber"] + 1));
+                if ((long)pair.a["nextTickTicks"] != (long)pair.b["nextTickTicks"] + (long)pair.b["tickTimeTicks"]) problems.Add("cadence: the " + pair.n + " payload is off the pre-save schedule");
+                if ((int)pair.a["instance"] != (int)pair.b["instance"]) problems.Add("cadence: the " + pair.n + " payload instance changed");
+                if ((int)pair.a["damage"] <= (int)pair.b["damage"]) problems.Add("cadence: the " + pair.n + " payload dealt no damage in its next round");
+            }
+            BlueprintBuff bleed = BleedOf(t.Holder);
+            cases["nextPayloadRound"]["rexVictimBleed"] = HasBuff(t.Targets[0], bleed);
+            if (HasBuff(t.Targets[0], bleed)) problems.Add("cadence: bleed appeared on the rex victim; its damage is not attributable to the swallowed payload");
+            ExpectControl(control, "cadence.control");
+            if (problems.Count > before) yield break;
+
+            // Real native escape on the Dire Crocodile victim; the Tyrannosaurus swallow is the ownership control.
+            // Disclosed fixture adjustment: the swallowed victim's Athletics is raised so that the native break-free check
+            // (UnitSwallowWholeController -> UnitPartSwallowed.TryToBreakFree -> TryBreakFree) can succeed. Nothing sets
+            // ShouldBeFree, calls Free or removes the payload.
+            var escape = new JObject();
+            cases["crocEscape"] = escape;
+            UnitEntityData victim = d.Targets[0];
+            escape["athleticsBefore"] = (int)victim.Descriptor.Stats.SkillAthletics.ModifiedValue;
+            victim.Descriptor.Stats.SkillAthletics.BaseValue = 300;
+            escape["athleticsSet"] = (int)victim.Descriptor.Stats.SkillAthletics.ModifiedValue;
+            int dmgBefore = victim.Descriptor.Damage;
+            seq = LastSeq;
+            foreach (object step in SettleGameTime(0.0, 30f, () => !IsSwallowed(d, 0))) yield return step;
+            JArray events = Events(seq, e => true);
+            escape["events"] = events;
+            // Native escape: the controller's SpitOut(all: false) frees the units marked free by their own break-free
+            // check, by calling Free(unit) itself. So the matched chain is SpitOut(false) by this holder, then Free of
+            // this victim by this holder, then this victim's UnitPartSwallowed.OnRemove. A spit-out of all, the
+            // victim-death handler, or a Free without a preceding SpitOut(false) is a different cause.
+            JObject spit = events.OfType<JObject>().FirstOrDefault(e => (string)e["what"] == "native.SpitOut" && (string)e["owner"] == d.Holder.UniqueId && e["all"].Type == JTokenType.Boolean && !(bool)e["all"]);
+            bool spitFree = spit != null;
+            int spitSeq = spit == null ? int.MaxValue : (int)spit["seq"];
+            bool freeAfterSpit = events.OfType<JObject>().Any(e => (string)e["what"] == "native.Free" && (string)e["owner"] == d.Holder.UniqueId && (string)e["unit"] == victim.UniqueId && (int)e["seq"] > spitSeq);
+            bool exactRemove = events.OfType<JObject>().Any(e => (string)e["what"] == "native.UnitPartSwallowed.OnRemove" && (string)e["unit"] == victim.UniqueId && (string)e["swallower"] == d.Holder.UniqueId && (int)e["seq"] > spitSeq);
+            bool otherCause = events.OfType<JObject>().Any(e => ((string)e["what"] == "native.SpitOut" && (string)e["owner"] == d.Holder.UniqueId && e["all"].Type == JTokenType.Boolean && (bool)e["all"]) ||
+                ((string)e["what"] == "native.Free" && (string)e["owner"] == d.Holder.UniqueId && (int)e["seq"] < spitSeq) || ((string)e["what"] == "swallow.HandleUnitDeath" && (string)e["owner"] == d.Holder.UniqueId));
+            exactRemove = exactRemove && freeAfterSpit;
+            escape["nativeSpitOutFreeOnly"] = spitFree; escape["exactVictimRemoval"] = exactRemove; escape["otherReleaseCause"] = otherCause;
+            escape["after"] = State(d);
+            if (!spitFree || !exactRemove || otherCause) problems.Add("crocEscape: the release is not a matched native escape of this victim from this holder (" + events.ToString(Formatting.None) + ")");
+            ExpectFreed(d, 0, "crocEscape");
+            ExpectSwallowed(t, 0, "crocEscape.rexControl");
+            foreach (object step in ExpectQuiet(d, new[] { 0 }, "crocEscape", escape)) yield return step;
+            escape["damageBeforeAfterQuiet"] = new JArray(dmgBefore, victim.Descriptor.Damage);
+            UnitEntityData fresh = SpawnMedium(ObstacleAnalyzer.TraceAlongNavmesh(d.Holder.Position, d.Holder.Position + d.Holder.OrientationDirection * 3f));
+            int bites = 0;
+            for (; bites < 4 && fresh.Get<UnitPartGrappleTarget>() == null; bites++)
+            {
+                Rulebook.Trigger(new RuleAttackWithWeapon(d.Holder, fresh, d.Weapons[0], 0));
+                yield return null;
+            }
+            escape["reuse"] = new JObject { ["bites"] = bites, ["newTargetHeld"] = fresh.Get<UnitPartGrappleTarget>() != null };
+            if (fresh.Get<UnitPartGrappleTarget>() == null) problems.Add("crocEscape: the freed mouth could not take a new victim within four bites");
+            ExpectSwallowed(t, 0, "crocEscape.rexControl.afterReuse");
+            ExpectControl(control, "crocEscape.control");
+
+            // Exact victim-death release and mouth reuse on the Tyrannosaurus.
+            var death = new JObject { ["before"] = State(t) };
+            cases["rexVictimDeath"] = death;
+            seq = LastSeq;
+            GameHelper.KillUnit(t.Targets[0]);
+            foreach (object step in SettleGameTime(1.0, 20f, () => !IsSwallowed(t, 0))) yield return step;
+            death["after"] = State(t);
+            death["events"] = Events(seq, e => ((string)e["what"]).StartsWith("swallow.", StringComparison.Ordinal) || ((string)e["what"]).StartsWith("native.", StringComparison.Ordinal));
+            ExpectFreed(t, 0, "rexVictimDeath");
+            if (unrelatedRex == null || !t.Targets[0].Descriptor.Buffs.RawFacts.Contains(unrelatedRex))
+                death["unrelatedAfterDeath"] = "removed by the death purge (not StayOnDeath)";
+            UnitEntityData fresh2 = SpawnMedium(ObstacleAnalyzer.TraceAlongNavmesh(t.Holder.Position, t.Holder.Position + t.Holder.OrientationDirection * 4f));
+            int bites2 = 0;
+            for (; bites2 < 4 && fresh2.Get<UnitPartGrappleTarget>() == null; bites2++)
+            {
+                Rulebook.Trigger(new RuleAttackWithWeapon(t.Holder, fresh2, t.Weapons[0], 0));
+                yield return null;
+            }
+            death["reuse"] = new JObject { ["bites"] = bites2, ["newTargetHeld"] = fresh2.Get<UnitPartGrappleTarget>() != null };
+            if (fresh2.Get<UnitPartGrappleTarget>() == null) problems.Add("rexVictimDeath: the freed mouth could not take a new victim within four bites");
+            ExpectControl(control, "rexVictimDeath.control");
+            if (controlUnrelated == null || !control.Targets[0].Descriptor.Buffs.RawFacts.Contains(controlUnrelated)) problems.Add("c3b: the control's unrelated effect was lost");
+            cases["controlFinal"] = State(control);
+        }
+
+        private IEnumerable<object> C3bSave()
+        {
+            var cases = new JObject();
+            result["cases"] = cases;
+            Rel d = null, t = null;
+            foreach (object step in EstablishSwallow("croc", "dire-crocodile", wormSpot, x => d = x)) yield return step;
+            if (d == null) yield break;
+            foreach (object step in EstablishSwallow("rex", "tyrannosaurus", trapSpot, x => t = x)) yield return step;
+            if (t == null) yield break;
+            Game.Instance.IsPaused = true;
+            yield return null;
+            int before = problems.Count;
+            ExpectSwallowed(d, 0, "save.before"); ExpectSwallowed(t, 0, "save.before");
+            bool allowed = Game.Instance.SaveManager.IsSaveAllowed();
+            cases["beforeSave"] = new JObject { ["saveAllowed"] = allowed, ["croc"] = State(d), ["rex"] = State(t), ["crocPayload"] = PayloadRound(d, 0), ["rexPayload"] = PayloadRound(t, 0) };
+            if (!allowed) problems.Add("save: native save admission refused");
+            if (problems.Count > before) yield break;
+            d.Holder.Descriptor.CustomName = C3bNames[0]; d.Targets[0].Descriptor.CustomName = C3bNames[1];
+            t.Holder.Descriptor.CustomName = C3bNames[2]; t.Targets[0].Descriptor.CustomName = C3bNames[3];
+            foreach (UnitEntityData u in new[] { d.Holder, d.Targets[0], t.Holder, t.Targets[0] }) { created.Remove(u); awakeAdded.Remove(u); }
+            TimeSpan clock = Game.Instance.TimeController.GameTime;
+            bool saved = false;
+            Game.Instance.SaveGame(Game.Instance.SaveManager.CreateNewSave("ver02c3b"), () => saved = true);
+            float until = Time.realtimeSinceStartup + 120f;
+            while ((!saved || Game.Instance.SaveManager.CommitInProgress || LoadingProcess.Instance.IsLoadingInProcess) && Time.realtimeSinceStartup < until)
+                yield return null;
+            bool finished = saved && !Game.Instance.SaveManager.CommitInProgress && !LoadingProcess.Instance.IsLoadingInProcess;
+            cases["afterSave"] = new JObject { ["finished"] = finished, ["gameClockUnchanged"] = Game.Instance.TimeController.GameTime == clock, ["croc"] = State(d), ["rex"] = State(t) };
+            if (!finished) { problems.Add("save: the save did not finish"); yield break; }
+            ExpectSwallowed(d, 0, "save.after"); ExpectSwallowed(t, 0, "save.after");
+            if (problems.Count > before) yield break;
+
+            // Active-swallow holder terminal: the Dire Crocodile's native expiry while its victim is swallowed; the
+            // Tyrannosaurus swallow is the ownership control. (The written save already holds both, alive.)
+            var expiry = new JObject { ["before"] = State(d) };
+            cases["crocActiveExpiry"] = expiry;
+            int seq = LastSeq;
+            Buff marker = d.Holder.Descriptor.Buffs.Enumerable.First(b => ReferenceEquals(b.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff));
+            typeof(Buff).GetProperty("EndTime", Any).SetValue(marker, Game.Instance.TimeController.GameTime - TimeSpan.FromMilliseconds(1), null);
+            d.Holder.Descriptor.Buffs.UpdateNextEvent();
+            d.Holder.Descriptor.Buffs.Tick();
+            foreach (object step in SettleGameTime(1.0, 25f, () => d.Holder.Destroyed && !IsSwallowed(d, 0))) yield return step;
+            expiry["after"] = State(d);
+            expiry["events"] = Events(seq, e => ((string)e["what"]).StartsWith("swallow.", StringComparison.Ordinal) || ((string)e["what"]).StartsWith("native.", StringComparison.Ordinal));
+            if (!d.Holder.Destroyed) problems.Add("crocActiveExpiry: the holder was not destroyed");
+            ExpectFreed(d, 0, "crocActiveExpiry");
+            ExpectSwallowed(t, 0, "crocActiveExpiry.rexControl");
+            foreach (object step in ExpectQuiet(d, new[] { 0 }, "crocActiveExpiry", expiry)) yield return step;
+            ExpectSwallowed(t, 0, "crocActiveExpiry.rexControl.afterQuiet");
+            created.Add(d.Targets[0]); created.Add(t.Holder); created.Add(t.Targets[0]);
+        }
+
+        private IEnumerable<object> C3bReload()
+        {
+            UnitEntityData[] units = C3bNames.Select(n => Game.Instance.State.Units.FirstOrDefault(u => u.Descriptor.CustomName == n)).ToArray();
+            result["found"] = new JArray(units.Select(u => (object)(u != null)).ToArray());
+            if (units.Any(u => u == null)) { problems.Add("reload: a named unit is missing"); yield break; }
+            created.AddRange(units);
+            foreach (UnitEntityData u in units) Wake(u);
+            var row = new JObject();
+            result["reload"] = row;
+            row["atLoad"] = Snapshot(units);
+            CheckReset(units, "reload.atLoad");
+            int[] damage = units.Select(u => u.Descriptor.Damage).ToArray();
+            TimeSpan start = Game.Instance.TimeController.GameTime;
+            foreach (object step in SettleGameTime(13.0, 40f, () => true)) yield return step;
+            row["gameSeconds"] = (Game.Instance.TimeController.GameTime - start).TotalSeconds;
+            row["afterRounds"] = Snapshot(units);
+            if ((double)row["gameSeconds"] < 12.0) problems.Add("reload: fewer than two rounds of game time passed");
+            for (int i = 0; i < units.Length; i++) if (units[i].Descriptor.Damage != damage[i]) problems.Add("reload: " + C3bNames[i] + " took damage after the reset");
+            CheckReset(units, "reload.afterRounds");
         }
 
         // ---------------------------------------------------------------- reach (ordinary route)
