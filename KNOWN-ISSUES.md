@@ -1,5 +1,19 @@
 # Known issues and conservative adaptations
 
+- A creature that died inside a summoned Purple Worm or Giant Flytrap stayed "swallowed" and kept that mouth shut for
+  the rest of the summon's life (S6 VER-02 G3; repaired on branch `codex/s6-ver02-c3a-swallow-engulf`, checkpoint
+  C3a, returned for review; not merged, not released).
+  - The worm's single mouth, or the flytrap's mouth, could not bite and hold a new foe. The game's own swallow logic
+    only frees victims when the swallower dies.
+  - Repaired: these two now free a victim that dies inside, as the Dire Crocodile and Tyrannosaurus already did.
+  - Observed natively on the accepted development candidate `044355c2a9`. That the published versions behave the same
+    is inferred from identical source.
+- Saving while a summoned Purple Worm or Giant Flytrap has swallowed or engulfed a creature released it (S6 VER-02 G3;
+  repaired on the same branch).
+  - Shown in a constructed test only: the game permitted the save, and the save freed the victims in the running game.
+    Whether ordinary play reaches a permitted save in that state was not established.
+  - With the repair, a save keeps the swallow in the running game. A later load still resets it by design.
+  - Details: `docs/GUNSLINGER-SPRINT6-C3A-SWALLOW-ENGULF.md`.
 - Saving while an Expanded Summoning creature holds a target ended the hold (S6 VER-02 F1; repaired on branch
   `codex/s6-ver02-c2a-save-suspension`, checkpoint C2a R1, returned for review; not merged, not released).
   - Reached in ordinary play with a single-link holder: a crocodile's own attack grabs an enemy, a party caster
