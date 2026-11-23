@@ -1,5 +1,59 @@
 # Build, package, and publish
 
+## 0.0.195 publication authorization
+
+**Authorized; not yet published.**
+
+On 2026-11-23, after the Sprint 6 disposition review of PR #216, Howie wrote: "This is accepted. Please merge this and
+all other sprint 6 PRs and cut a new release once they are all merged." The 16 stacked Sprint 6 pull requests #198 to
+#216 were marked ready and merged bottom-up into master as merge commits, ending with PR #216 as `ee4df4e442`. No
+channel was named, so this follows v0.0.194 as the next stable patch, v0.0.195, from master `ee4df4e442`.
+
+- **Integration.** The stack forked from `dfc182aee7` (v0.0.193 records); master had moved to v0.0.194 (`06abcc775e`).
+  Four branches conflicted with master in one line of the loader-compat harness (the condition-admission check in
+  `tools/LoaderCompatHarness/ReproductionConditions.cs`, which Bag of Tricks' weight conditions and the Sprint 6 probes
+  both extended). Master was merged into each of them with an ordinary merge commit that keeps both admissions: A1
+  `4ce996e6bb` (#198), A2 `0305588ea6` (#200), C2a `49cd72f151` (#206) and D3 `c6b3bee751` (#215). No history was
+  rewritten. The merged master tree equals the reviewed stack top `94233cf750` merged with `06abcc775e` under the same
+  resolution.
+- **Reviewed product.** Master `ee4df4e442`. Each story was accepted in manual review at its own head
+  (`docs/GUNSLINGER-SPRINT6-DISPOSITION.md`). The product change from v0.0.194 is seventeen files under
+  `src/KingmakerGunslinger`, listed and pinned in `tools/validate_gunslinger_sprint6_release195.py`:
+  - the product delta from the v0.0.194 tag target under `src/KingmakerGunslinger`, `assets`, `assets-source`,
+    `blueprints` and `Directory.Build.props` is exactly those seventeen files, in both directions, and the accepted
+    Sprint 6 product change from the fork is the same seventeen;
+  - sixteen are byte-identical to the accepted Sprint 6 source `5fdc422265`, which is the accepted D1 candidate
+    `634a6efdd3` plus one comment-only change (checked to touch only comment lines); the project file is v0.0.194's
+    plus exactly the four Sprint 6 compile entries;
+  - `Info.json`, the UMM 0.31.1 loader pins and the build inputs are unchanged from v0.0.194 and the reviewed master;
+  - only the three AssemblyInfo version attributes and the Info and props version values may change;
+  - all 7,935 released identities stay exact and in order, and none is appended;
+  - the creature catalog is unchanged, with only the owner-withdrawn Stirge withheld (1,208 public choices);
+  - v0.0.192's DEF-05 inherited-template policy stays;
+  - one static release record is added.
+- **Owner-authorized test pin refresh.** The complete domain suite on the release branch passed 3,186 of 3,188. The two
+  failures were `model-d.RegionalEasternAndNamedLootUnchanged` (the vendor-spec slice of
+  `EasternWeaponCampaignBlueprints.cs`) and `model-d.RegionalSpearsAndNamedLootUnchanged`
+  (`ElvenBranchedSpearCampaignBlueprints.cs`). Each pin still equalled its v0.0.194 file; D1 (`634a6efdd3`) deliberately
+  rewrote only comments in both (vendor data unchanged), and its focused gate did not select these tests. On 2026-11-23
+  Howie chose "Refresh pins, then release": those two pins in `tests/KingmakerGunslinger.DomainTests/ModelDVendorTests.cs`
+  now read the merged files' hashes. No other pin changes.
+- **Preparation.** On the release branch, the repository wrapper (dispatched to the release195 validator, PASS) and
+  the complete suite (3,188/3,188, 0 failures, with the owner-authorized pin refresh) took 476 s. The loader-compat
+  harness built from the merged master compiles (`04c9d1d44ecd54c29f488eef0e0d60ca14a628f9e62a77b7277c25e12033cfa`).
+- **Native evidence.** Development candidates per checkpoint, as recorded in the disposition and the checkpoint records,
+  in the disposable loader-compat game copy on UMM owner profile 0.33.0. Every Sprint 6 candidate was built on the
+  v0.0.193 base and so lacks v0.0.194's Bag of Tricks change; earlier owners were not requalified on the final D1
+  package. No session ran on the merged master product. The release build is run in the game after publication, and
+  the result is added here.
+- **Not established.** REP-05 and REP-06 stay blocked and unattributed; LIM-02's authentic pre-fix-save qualification
+  is unexecuted; LIM-03 is qualified only on an induced route; VER-02 stays open with G5 fixture-blocked; turn-based
+  mode, other loader versions and profiles, downgrade and the other unexecuted cases in the disposition stand. The
+  release notes list the player-facing ones.
+- **Publication path.** The ordinary exact-reference publisher from clean, pushed master with
+  `docs/RELEASE-NOTES-0.0.195.md` and the explicit summon-overhaul-baseline reference bundle. It runs the complete
+  gate and two deterministic builds, then publishes.
+
 ## 0.0.194 publication authorization
 
 **Published (completed).** Stable
