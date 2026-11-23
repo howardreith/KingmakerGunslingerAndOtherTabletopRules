@@ -1,0 +1,35 @@
+{
+  "name": "ver02-c1-grapple-terminals",
+  "description": "S6 checkpoint C1 / VER-02: terminal cleanup of the single-link native grapple owner (SummonGrabComponent with one held target; native UnitPartGrappleInitiator/UnitPartGrappleTarget, the hold buff with SummonHoldComponent, the grappled buff and the holder's UnitPartSummonGrappleLinks record). The product runs alone. Launch 1 loads the disposable fixture save and summons Expanded Summoning crocodiles through the product's own execution ability; each establishes a hold on a disposable target through the engine's RuleAttackWithWeapon for its bite. Real terminals follow: holder death, target death, a second terminal on an ended pair (the surviving holder's native expiry), a holding summon's native SummonedUnitBuff expiry, and the native Dismissal spell where it applies. An independent holding pair and an unrelated buff are the controls; direct release calls are a control only. Raw stored link records and live constraints are read separately before teardown. One pair is left holding, named, and saved. Launch 2, a fresh process, loads that save and checks the native load reset (ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD) at load and after native controller ticks.",
+  "ownerMods": [],
+  "fixtureSaves": [ "KMCS_AFTER_NORMAL_012_MODONLY.zks" ],
+  "launches": [
+    {
+      "label": "terminals",
+      "gameArguments": [ "locale=enGB" ],
+      "expectLog": { "present": [ "[blueprints][initialize.complete]" ], "absent": [ "[initialize.failed]" ] },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          { "op": "kmgModules", "label": "all-on", "match": "" },
+          { "op": "kmgInitialization", "label": "create", "expect": "completed" },
+          { "op": "kmgGrapple", "label": "terminals", "match": "terminals", "timeoutSeconds": 400 },
+          { "op": "saveGame", "label": "ver02c1", "timeoutSeconds": 120 }
+        ]
+      }
+    },
+    {
+      "label": "reload",
+      "gameArguments": [ "locale=enGB" ],
+      "expectLog": { "present": [ "[blueprints][initialize.complete]" ], "absent": [ "[initialize.failed]" ] },
+      "harness": {
+        "save": "$written:ver02c1",
+        "steps": [
+          { "op": "expectLoadedFrom", "match": "ver02c1" },
+          { "op": "kmgModules", "label": "all-on", "match": "" },
+          { "op": "kmgGrapple", "label": "reload", "match": "reload", "timeoutSeconds": 200 }
+        ]
+      }
+    }
+  ]
+}
