@@ -558,6 +558,17 @@ namespace KmgLoaderCompatHarness
                     return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
                 }
 
+                case "kmgVendorRetirement":
+                {
+                    // S6 D1 / LIM-01: "match" is seed, reconcile:native, reconcile:protected or reload:protected (VendorRetirementProbes.cs).
+                    string identity = StepIdentity(step);
+                    if (!probes.IsActive) probes.Begin(identity, new VendorRetirementProbe(step.Match));
+                    ProbeOutcome outcome = probes.Poll(identity);
+                    if (outcome == null) return StepStatus.Running;
+                    RecordProbe(outcome);
+                    return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
+                }
+
                 case "kmgBarbedCrab":
                 {
                     // S6 VER-02 G1/G2: "match" is barbed, crab, save or reload (see BarbedCrabProbes.cs).

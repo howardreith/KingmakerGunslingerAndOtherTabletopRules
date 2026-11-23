@@ -382,9 +382,14 @@
   summons use the ordinary-attack brain. Autonomous decisions with the retained action
   were not observed, and no actual old save was cold-loaded.
 - Oleg's cold iron branched spears (withdrawn in v0.0.183). Shared vendor stock
-  persists only item types and counts. If the stocked cold iron spear was bought and a
-  cold iron spear was later sold back to Oleg, the engine's update removes that sold
-  copy from his stock. Player inventory is never touched. Not observed natively.
+  persists only item types and counts, so a stocked original and a copy sold back to
+  Oleg cannot be told apart. Under the owner policy of 2026-11-23 (Sprint 6 D1,
+  LIM-01, development candidate `634a6efdd3`), the withdrawn rows are no longer
+  stocked on fresh tables, and any cold iron spear already in Oleg's saved stock is
+  kept rather than subtracted. Some authored stock can therefore remain buyable in an
+  older save. On the accepted product before D1 the engine's update removed such a copy, a
+  copy whose saved representation is also consistent with a sold-back one (observed natively
+  with constructed vendor data). Player inventory is never touched.
 - Inherited summon templates: the removal set is a hand-maintained list (v0.0.186). Twelve creature
   keys are declared as needing an inherited celestial or fiendish template stripped. Measured against
   the installed library across all 281 untemplated Summon Monster placements, that list disagrees in
@@ -514,10 +519,10 @@
   `docs/EXPANDED-SUMMONING-WRAPPER-LADDER-SCOPE.md`). They are not fulfilled. Every existing wrapper row of these creatures (15) and its adapters (52)
   are unchanged. The roster report now shows 1,208 admitted, 9 withheld, 0 missing and 15 approved out of scope
   against the unchanged 1,232 ideal; the original ideal is not fully published.
-- Dire Narlmarches and Pitax regional weapon stock (withdrawn in v0.0.185). It has the same native limitation as Oleg's spears:
-  if a stocked Eastern weapon or spear was bought and a matching one was later sold back to that trader,
-  the engine's update removes the sold copy. A save with no persisted known-item history keeps the old
-  stocked copy. Player inventory is never touched. Not observed natively.
+- Dire Narlmarches and Pitax regional weapon stock (withdrawn in v0.0.185). Same policy as Oleg's spears
+  (Sprint 6 D1, LIM-01): fresh tables carry no authored branched spear or Eastern rows, and every copy already
+  in a saved stock (original or sold back, which the save cannot distinguish) is kept. A purchased copy is never
+  replenished. A save with no persisted known-item history also keeps its copies. Player inventory is never touched.
 - Thornstep (retired from acquisition in v0.0.183). In its former Riverine Rise
   container, a copy the party never held (persisted item time still zero) is removed;
   a claimed-and-returned copy, deposits and the container's other loot are kept. A

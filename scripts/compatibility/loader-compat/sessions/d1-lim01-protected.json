@@ -1,0 +1,116 @@
+{
+  "name": "d1-lim01-protected",
+  "description": "S6 D1 / LIM-01: retired shared-vendor rows and ambiguous materialized copies through native SharedVendorTables persistence and first-access reconciliation. Constructed legacy-shaped vendor data (not an organic legacy save, not UI trading): the seed launch writes TableData (blueprint/count Entries and KnownItems) for Oleg (cold iron spear stocked 1 with history; masterwork cold iron bought out), Pitax (spear and Eastern rows: single, multiple, mixed and bought-out, plus a native row lowered by one), Dire Narlmarches (missing history) and one unrelated native control table (cold iron spear with history), adds retired items to party inventory and stash, and saves natively. A fresh process then loads it so the engine's own first GetTable access reconciles each table. Candidate: the reconcile launch expects the LIM-01 protection and saves; a further fresh process reloads that save and expects no change.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "seed",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {},
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgVendorRetirement",
+            "label": "seed",
+            "match": "seed",
+            "timeoutSeconds": 300
+          }
+        ]
+      }
+    },
+    {
+      "label": "reconcileProtected",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {},
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "$written:d1seed",
+        "steps": [
+          {
+            "op": "expectLoadedFrom",
+            "match": "d1seed"
+          },
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgVendorRetirement",
+            "label": "reconcile-protected",
+            "match": "reconcile:protected",
+            "timeoutSeconds": 300
+          }
+        ]
+      }
+    },
+    {
+      "label": "reloadProtected",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {},
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "$written:d1recon",
+        "steps": [
+          {
+            "op": "expectLoadedFrom",
+            "match": "d1recon"
+          },
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgVendorRetirement",
+            "label": "reload-protected",
+            "match": "reload:protected",
+            "timeoutSeconds": 300
+          }
+        ]
+      }
+    }
+  ]
+}

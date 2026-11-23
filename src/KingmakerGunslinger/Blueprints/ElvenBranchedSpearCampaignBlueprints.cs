@@ -16,8 +16,10 @@ namespace KingmakerGunslinger.Blueprints
         {
             // Owner playtest repair (2026-11-11): Oleg stocks no cold iron
             // branched spears. Publication removes those two rows from this one
-            // table; native SharedVendorTables known-item reconciliation then
-            // removes an already generated, unsold stocked copy in older saves.
+            // table, so fresh tables never stock them. Already materialized
+            // copies in older saves are preserved (LIM-01, owner policy of
+            // 2026-11-23, RetiredVendorHistoryPatch): shared vendor data cannot
+            // tell an unsold original from a sold-back copy.
             new VendorSpec("f720440559fc00949900bfa1575196ac",
                 "C11_OlegVendorTable", new[] {
                     ElvenBranchedSpearItemKind.Mundane,
@@ -28,8 +30,8 @@ namespace KingmakerGunslinger.Blueprints
             // Owner acquisition decision (2026-11-12): the Dire Narlmarches
             // village and Pitax traders stock no authored branched spears. Both
             // exact targets stay with empty desired stock so publication removes
-            // project-owned fixed rows and native known-item reconciliation
-            // decrements already generated, unsold stocked copies.
+            // project-owned fixed rows. Already materialized copies are
+            // preserved as ambiguous (LIM-01, RetiredVendorHistoryPatch).
             new VendorSpec("f072a8f6889b5f345b7f4e7c74cb3e4c",
                 "DireNarlmarchesVillageVendorTable",
                 new ElvenBranchedSpearItemKind[0], null),
