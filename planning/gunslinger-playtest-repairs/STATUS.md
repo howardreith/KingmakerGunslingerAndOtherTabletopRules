@@ -158,6 +158,12 @@ then as a full project for the review correction.
     - If the stocked copy is unsold, the stacked count drops from 2 to 1.
     - The sold item is vendor stock, not player inventory. There is no safer provenance to use, so this is
       recorded as the precise Oleg migration limitation rather than changed.
+    - **Superseded 2026-11-23 (Sprint 6 D1, LIM-01):** under the new owner policy, the exact retired Oleg,
+      Dire Narlmarches and Pitax history rows are lowered before this native diff
+      (`Acquisition/RetiredVendorHistoryPatch.cs`), so ambiguous materialized copies are preserved instead of
+      subtracted. The native decrement described above was reproduced on the accepted product, and the
+      protection was qualified on candidate `634a6efdd3`. See `docs/GUNSLINGER-SPRINT6-D1-LIM01-VENDOR-RETIREMENT.md`.
+      The text above stays as the original record.
 - **Thornstep (`RetiredLootReconciliationPatch`, a prefix on the exact source's `LootComponent.OnDataSetted`).**
   - **The native behavior the review identified.** `LootPersistentData.UpdateLoot` would call
     `Loot.Remove(Thornstep, 1)` by blueprint, from the end of the collection. That deletes a copy the player
