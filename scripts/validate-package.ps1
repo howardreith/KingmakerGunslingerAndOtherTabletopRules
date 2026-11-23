@@ -343,7 +343,7 @@ try {
         }
     }
     $humanMesh = Join-Path $modDirectory 'assets\sprint17-serpents\salamander-human-mesh.json'
-    if ((Get-KmgSha256 -Path $humanMesh) -cne 'b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19') {
+    if ((Get-KmgSha256 -Path $humanMesh) -cne '0837e7964404188a592d20f4cae77dc9b5a459d93360b9474174bc4f4c9ae30e') {
         throw 'The separately packaged Salamander human/tail mesh differs from its reviewed original export.'
     }
     $iconNames = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',

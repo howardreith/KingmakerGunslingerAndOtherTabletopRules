@@ -212,5 +212,48 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(false, (bool)nalfeshnee.Payload["articulatedWings"], "The wings still follow the chest.");
             Assertions.Equal(2, (int)nalfeshnee.Payload["visibleWings"], "Two wings are retained.");
         }
+
+        // VIS-02: the human/tail Salamander shipped 16 triangle corners whose
+        // own vertex normal faced against the triangle: a fold where the body
+        // section turned all at once at the tail root (the waist pleat) and a
+        // quarter-turn ring twist in the left middle finger. Normals are the
+        // shipped Blender vertex normals, so agreement is judged per corner.
+        internal static void Vis02SalamanderWaistAndFingersAreSound()
+        {
+            const string path = "assets/sprint17-serpents/salamander-human-mesh.json";
+            DecodedMesh mesh = Decode(path);
+            AssertSoundClosedExport(mesh, path);
+            int opposing = 0;
+            for (int f = 0; f < mesh.Triangles.Length; f += 3)
+            {
+                float[] a = mesh.Positions[mesh.Triangles[f]], b = mesh.Positions[mesh.Triangles[f + 1]], c = mesh.Positions[mesh.Triangles[f + 2]];
+                double[] face = Cross(Sub(b, a), Sub(c, a));
+                for (int corner = 0; corner < 3; corner++)
+                {
+                    float[] n = mesh.Normals[mesh.Triangles[f + corner]];
+                    if (face[0] * n[0] + face[1] * n[1] + face[2] * n[2] < 0) opposing++;
+                }
+            }
+            Assertions.Equal(0, opposing, "No triangle corner faces against its own shipped vertex normal.");
+
+            // Every finger keeps a distal segment with real girth.
+            foreach (string side in new[] { "L", "R" })
+                for (int digit = 1; digit <= 3; digit++)
+                {
+                    string bone = side + "_Toe_" + digit + "_02";
+                    int index = Array.IndexOf(mesh.Bones, bone);
+                    Assertions.True(index >= 0, bone + " is exported.");
+                    var ring = Enumerable.Range(0, mesh.Positions.Length)
+                        .Where(v => mesh.BoneIndices[v][0] == index && mesh.BoneWeights[v][0] > .99f).ToList();
+                    Assertions.True(ring.Count >= 8, bone + " keeps its distal finger rings.");
+                    var centre = new float[3];
+                    for (int k = 0; k < 3; k++) centre[k] = ring.Average(v => mesh.Positions[v][k]);
+                    double spread = ring.Max(v => Length(Sub(mesh.Positions[v], centre)));
+                    Assertions.True(spread > .01, bone + " is not collapsed.");
+                }
+            Assertions.Equal(36, mesh.Bones.Length, "The 26 human and 10 tail drivers are retained.");
+            Assertions.True(mesh.Payload["originalTailSlap"] != null && mesh.Payload["originalTailRest"] != null,
+                "The owned tail rest and slap are retained.");
+        }
     }
 }

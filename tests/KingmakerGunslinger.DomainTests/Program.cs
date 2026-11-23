@@ -1435,6 +1435,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("summon-playtest-r7.glabrezu-small-arms-fused", SummonPlaytestR7Tests.GlabrezuSmallArmsAreOneSkinWithTheChest),
             Case("summon-playtest-r7.export-loader-contracts", SummonPlaytestR7Tests.RevisedExportsSatisfyTheirLoaderContracts),
             Case("sprint7-visual.vis01-nalfeshnee-wing-roots-sound", Sprint7VisualRepairTests.Vis01NalfeshneeWingRootsAreSound),
+            Case("sprint7-visual.vis02-salamander-waist-fingers-sound", Sprint7VisualRepairTests.Vis02SalamanderWaistAndFingersAreSound),
             Case("summon-playtest-r6.aid-cast-style", SummonPlaytestR6Tests.AidCastStyleSurvivesTargetRewriting),
             Case("summon-playtest-r6.redcap-kmg-origin", SummonPlaytestR6Tests.RedcapBindingRequiresKmgSummonContext),
             Case("summon-playtest-r6.observer-cast-gesture", SummonPlaytestR6Tests.ObserverRejectsMissingCastGesture),
