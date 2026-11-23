@@ -1,0 +1,161 @@
+{
+  "name": "ver02-c3a-swallow-engulf",
+  "description": "S6 checkpoint C3a / VER-02 G3: swallow/engulf lifecycle of the Purple Worm and Giant Flytrap on the accepted C2a R1 product. The product runs alone with the read-only hold lifecycle observer. Each relationship is established by summoning through the product's execution ability, a real eligible bite, and promotion by the product's own later-round maintain. Launch 1 (victims): Worm promotion, a real payload round and the swallowed victim's death with a mouth-reuse check; Flytrap mixed case (engulfed Medium victim plus held Large horse), payload round, engulfed victim's death with sibling and reuse checks, then accelerated summon expiry. Launch 2 (holders): Worm holder death with quiet rounds, a repeated terminal, and genuine removal of the Flytrap's combat-traits carrier with quiet rounds. A crocodile pair and unrelated buffs are the controls. Launch 3 (save): an active Worm swallow and an active Flytrap engulf with a held sibling through a native save, asserting admission and preservation in the running session. Launch 4 (reload): the fresh process loading that save, checking the accepted reset and quiet rounds. Disclosed: BAB 100, victim HP raised, appear buffs removed, brains off, units woken, navmesh placement.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "victims",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgSwallow",
+            "label": "victims",
+            "match": "victims",
+            "timeoutSeconds": 540
+          }
+        ]
+      }
+    },
+    {
+      "label": "holders",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgSwallow",
+            "label": "holders",
+            "match": "holders",
+            "timeoutSeconds": 540
+          }
+        ]
+      }
+    },
+    {
+      "label": "save",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgSwallow",
+            "label": "save",
+            "match": "save",
+            "timeoutSeconds": 540
+          }
+        ]
+      }
+    },
+    {
+      "label": "reload",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "$written:ver02c3a",
+        "steps": [
+          {
+            "op": "expectLoadedFrom",
+            "match": "ver02c3a"
+          },
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgSwallow",
+            "label": "reload",
+            "match": "reload",
+            "timeoutSeconds": 540
+          }
+        ]
+      }
+    }
+  ]
+}
