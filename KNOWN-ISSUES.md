@@ -534,8 +534,11 @@
   container, a copy the party never held (persisted item time still zero) is removed;
   a claimed-and-returned copy, deposits and the container's other loot are kept. A
   Thornstep the engine added to a container generated before the placement existed is
-  also never held, so it is removed too. Offline policy tests and a model of the native
-  diff only; not observed natively (`planning/gunslinger-playtest-repairs/STATUS.md`).
+  also never held, so it is removed too. At most the recorded count is removed; an extra
+  never-held copy beyond it is not removed by this path once the history row is retired.
+  Accepted (Sprint 6 D3) as intentional behavior, observed natively on an induced route
+  (dropped-loot bags given the exact former-source reference, constructed inputs, load,
+  repeat and fresh reload); no real Riverine Rise container or organic old save was loaded.
 - With Call of the Wild's "metamagic for spontaneous spell conversion" setting
   enabled, Herald Caller and Druid conversion popups over a prepared slot also
   list Call of the Wild's own rows: the feature's lower-tier quantity spells, with

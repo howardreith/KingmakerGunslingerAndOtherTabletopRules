@@ -195,6 +195,10 @@ then as a full project for the review correction.
     - **Missing history:** retained.
   - **Remaining limitation.** A Thornstep added by the engine to a container generated before the placement
     existed also has zero time and is removed. That copy has likewise never been held.
+  - **Later (Sprint 6 D3, LIM-03, 2026-11-23):** observed natively on an induced route (engine dropped-loot bags
+    carrying the exact former-source reference, constructed inputs, automatic load reconciliation, direct repeat and
+    fresh reload), with no product change. See `docs/GUNSLINGER-SPRINT6-D3-LIM03-THORNSTEP-RETIREMENT.md`. The text
+    above stays as the original record.
 
 ## Validation
 

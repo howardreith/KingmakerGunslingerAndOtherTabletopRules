@@ -1,0 +1,120 @@
+{
+  "name": "d3-lim03-thornstep",
+  "description": "S6 D3 / LIM-03: Thornstep retirement at its exact former source (Forest_GoodLoot01 3322c56f\u2026). TEST-ONLY construction: the fixture area has no loot container, so the seed spawns seven engine dropped-loot bags (real LootComponent, saved and re-attached by EnsureComponentData), builds their data with the native LootPersistentData constructor and native UpdateLoot (engine-added copy), performs real party-inventory transfers and returns, marks each Thornstep with a test-only SellTime identity marker, writes the predeclared expectations to the isolated profile and saves. Later launches INDUCE the former-source reference on six bags (condition thornstepInducedSource) before the product prefix and native UpdateLoot run at load. Not Riverine Rise, not an organic old save, not an area transition.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "seed",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {},
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgThornstepRetirement",
+            "label": "seed",
+            "match": "seed",
+            "timeoutSeconds": 300
+          }
+        ]
+      }
+    },
+    {
+      "label": "reconcile",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "thornstepInducedSource": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "$written:d3seed",
+        "steps": [
+          {
+            "op": "expectLoadedFrom",
+            "match": "d3seed"
+          },
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgThornstepRetirement",
+            "label": "reconcile",
+            "match": "reconcile",
+            "timeoutSeconds": 300
+          }
+        ]
+      }
+    },
+    {
+      "label": "reload",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "thornstepInducedSource": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "$written:d3recon",
+        "steps": [
+          {
+            "op": "expectLoadedFrom",
+            "match": "d3recon"
+          },
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgThornstepRetirement",
+            "label": "reload",
+            "match": "reload",
+            "timeoutSeconds": 300
+          }
+        ]
+      }
+    }
+  ]
+}
