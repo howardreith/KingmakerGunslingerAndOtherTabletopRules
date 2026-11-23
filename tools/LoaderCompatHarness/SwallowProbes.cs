@@ -104,7 +104,8 @@ namespace KmgLoaderCompatHarness
             {
                 IEnumerable<object> body = mode == "victims" ? Victims() : mode == "holders" ? Holders() : mode == "save" ? Save() : mode == "reload" ? Reload() :
                     mode == "reach" ? Reach() : mode == "activeExpiry" ? ActiveExpiry() : mode == "saveCadence" ? SaveCadence() :
-                    mode == "c3bLifecycle" ? C3bLifecycle() : mode == "c3bSave" ? C3bSave() : mode == "c3bReload" ? C3bReload() : null;
+                    mode == "c3bLifecycle" ? C3bLifecycle() : mode == "c3bSave" ? C3bSave() : mode == "c3bReload" ? C3bReload() :
+                    mode == "c3cMulti" ? C3cMulti() : mode == "c3cReload" ? C3cReload() : null;
                 if (body == null) { problems.Add("unknown mode " + mode); yield break; }
                 foreach (object step in body) yield return step;
             }
@@ -122,6 +123,8 @@ namespace KmgLoaderCompatHarness
             internal object Grab;
             internal BlueprintBuff HoldBuff, HeldBuff, SwallowedBuff, TraitsBuff;
             internal bool Multi;
+            /// <summary>Observer sequence number when this relationship's setup began (its observation window).</summary>
+            internal int Since;
         }
 
         private UnitEntityData Summon(string key) { return Summon(key, false); }
@@ -188,6 +191,7 @@ namespace KmgLoaderCompatHarness
         /// </summary>
         private IEnumerable<object> Establish(string name, string key, Vector3 spot, string[] kinds, Action<Rel> done)
         {
+            int since = LastSeq;
             UnitEntityData holder = Summon(key);
             if (holder == null) { problems.Add(name + ": " + key + " not summoned"); yield break; }
             Place(holder, spot);
@@ -197,7 +201,7 @@ namespace KmgLoaderCompatHarness
             if (grab == null) { problems.Add(name + ": no grab component"); yield break; }
             var r = new Rel
             {
-                Name = name, Holder = holder, Grab = grab, Multi = (bool)grabType.GetProperty("MultiLink", Any).GetValue(grab, null),
+                Name = name, Since = since, Holder = holder, Grab = grab, Multi = (bool)grabType.GetProperty("MultiLink", Any).GetValue(grab, null),
                 HoldBuff = (BlueprintBuff)grabType.GetField("HoldBuff").GetValue(grab),
                 HeldBuff = (BlueprintBuff)grabType.GetField("GrappledBuff").GetValue(grab),
                 SwallowedBuff = (BlueprintBuff)grabType.GetField("SwallowedBuff").GetValue(grab),
@@ -242,18 +246,36 @@ namespace KmgLoaderCompatHarness
         /// <summary>Lets the product's own later-round maintain promote every eligible victim (bounded by game time).</summary>
         private IEnumerable<object> AwaitPromotion(Rel r, int[] eligible, string name) { return AwaitPromotion(r, eligible, name, false); }
 
-        private bool lastPromotionTracedRelease;
+        /// <summary>
+        /// True when the last promotion attempt ended in an ordinary failed maintain: the product's exact result
+        /// "released" (a failed grapple check), for this attempt's holder and one of its eligible targets, inside this
+        /// attempt's observation window. Invalid-owner/target releases ("released:invalid-...") are not ordinary.
+        /// </summary>
+        private bool lastPromotionOrdinaryRelease;
 
-        private IEnumerable<object> AwaitPromotion(Rel r, int[] eligible, string name, bool tolerateTracedRelease)
+        /// <summary>Explicit setup budget: additional setups allowed per probe after an ordinary failed maintain.</summary>
+        private const int PromotionRetryBudget = 2;
+
+        private static bool IsOrdinaryFailedMaintain(JObject e, UnitEntityData holder, IEnumerable<string> targets, int since) =>
+            (string)e["what"] == "MaintainLink" && (int)e["seq"] > since && (string)e["owner"] == holder.UniqueId &&
+            targets.Contains((string)e["target"]) && (string)e["result"] == "released";
+
+        private IEnumerable<object> AwaitPromotion(Rel r, int[] eligible, string name, bool tolerateOrdinaryRelease)
         {
             int seq = LastSeq;
-            foreach (object step in SettleGameTime(1.0, 45f, () => eligible.All(i => IsSwallowed(r, i)))) yield return step;
+            string[] ids = eligible.Select(i => r.Targets[i].UniqueId).ToArray();
+            foreach (object step in SettleGameTime(1.0, 45f, () => eligible.All(i => IsSwallowed(r, i)) ||
+                HoldLifecycleObserver.Events.Any(e => IsOrdinaryFailedMaintain(e, r.Holder, ids, seq)))) yield return step;
             JArray maintain = Events(seq, e => (string)e["what"] == "MaintainLink" && (string)e["owner"] == r.Holder.UniqueId);
-            result["promotion." + name] = new JObject { ["maintain"] = maintain, ["state"] = State(r),
+            var attempt = new JObject { ["window.sinceSeq"] = seq, ["maintain"] = maintain, ["state"] = State(r),
                 ["nativeSwallow"] = Events(seq, e => (string)e["what"] == "native.Swallow" && (string)e["owner"] == r.Holder.UniqueId) };
+            result["promotion." + name] = attempt;
+            ((JArray)(result["promotionAttempts." + name] ?? (result["promotionAttempts." + name] = new JArray()))).Add(attempt);
             promotionOk = eligible.All(i => IsSwallowed(r, i));
-            lastPromotionTracedRelease = maintain.OfType<JObject>().Any(e => ((string)e["result"] ?? "").StartsWith("released", StringComparison.Ordinal));
-            if (!promotionOk && tolerateTracedRelease && lastPromotionTracedRelease) yield break;
+            lastPromotionOrdinaryRelease = maintain.OfType<JObject>().Any(e => IsOrdinaryFailedMaintain(e, r.Holder, ids, seq));
+            attempt["promoted"] = promotionOk;
+            attempt["ordinaryFailedMaintain"] = lastPromotionOrdinaryRelease;
+            if (!promotionOk && tolerateOrdinaryRelease && lastPromotionOrdinaryRelease) yield break;
             foreach (int i in eligible)
                 if (!IsSwallowed(r, i))
                     problems.Add(name + ": victim " + i + " was not promoted by the maintain path (maintain trace: " + maintain.ToString(Formatting.None) + ")");
@@ -855,10 +877,10 @@ namespace KmgLoaderCompatHarness
         private void ExpectControl(Rel control, string name)
         {
             if (IsHeld(control, 0)) { ExpectHeld(control, 0, name); return; }
-            bool traced = HoldLifecycleObserver.Events.Any(e => (string)e["what"] == "MaintainLink" && (string)e["owner"] == control.Holder.UniqueId &&
-                (string)e["target"] == control.Targets[0].UniqueId && ((string)e["result"] ?? "").StartsWith("released", StringComparison.Ordinal));
-            ((JArray)(result["controlOutcomes"] ?? (result["controlOutcomes"] = new JArray()))).Add(name + ": not held; traced legitimate maintain release " + traced);
-            if (!traced) problems.Add(name + ": the control relationship ended without a traced legitimate release");
+            bool traced = HoldLifecycleObserver.Events.Any(e => IsOrdinaryFailedMaintain(e, control.Holder, new[] { control.Targets[0].UniqueId }, control.Since));
+            ((JArray)(result["controlOutcomes"] ?? (result["controlOutcomes"] = new JArray()))).Add(name +
+                ": not held; ordinary failed maintain traced " + traced + "; the control is no longer an active ownership witness");
+            if (!traced) problems.Add(name + ": the control relationship ended without a traced ordinary failed maintain");
         }
 
         private static bool HasBuff(UnitEntityData unit, BlueprintBuff blueprint) =>
@@ -868,8 +890,7 @@ namespace KmgLoaderCompatHarness
         private IEnumerable<object> EstablishSwallow(string name, string key, Vector3 spot, Action<Rel> done)
         {
             Rel chosen = null;
-            var attempts = new JArray();
-            result["setup." + name] = attempts;
+            var attempts = (JArray)(result["setup." + name] ?? (result["setup." + name] = new JArray()));
             for (int attempt = 0; attempt < 3 && chosen == null; attempt++)
             {
                 Rel r = null;
@@ -889,9 +910,10 @@ namespace KmgLoaderCompatHarness
             }
             if (chosen == null) { problems.Add(name + ": no noncritical establishing bite in three setups"); yield break; }
             foreach (object step in AwaitPromotion(chosen, new[] { 0 }, name, true)) yield return step;
-            if (!promotionOk && lastPromotionTracedRelease && promotionRetries < 2)
+            if (!promotionOk && lastPromotionOrdinaryRelease && promotionRetries < PromotionRetryBudget)
             {
-                // A traced, legitimate maintain release before promotion (a game outcome, recorded): one fresh setup.
+                // An ordinary failed maintain before promotion (a game outcome, recorded): a fresh setup, within the
+                // probe-wide budget. Every attempt's trace stays under promotionAttempts.<name> and setup.<name>.
                 promotionRetries++;
                 ((JArray)(result["legitimateReleasesBeforePromotion"] ?? (result["legitimateReleasesBeforePromotion"] = new JArray()))).Add(name + ": " + result["promotion." + name]["maintain"].ToString(Formatting.None));
                 chosen.Targets[0].Destroy(); chosen.Holder.Destroy();
@@ -1127,6 +1149,256 @@ namespace KmgLoaderCompatHarness
             row["afterRounds"] = Snapshot(units);
             if ((double)row["gameSeconds"] < 12.0) problems.Add("reload: fewer than two rounds of game time passed");
             for (int i = 0; i < units.Length; i++) if (units[i].Descriptor.Damage != damage[i]) problems.Add("reload: " + C3bNames[i] + " took damage after the reset");
+            CheckReset(units, "reload.afterRounds");
+        }
+
+        /// <summary>
+        /// Establish then promote (all of <paramref name="eligible"/>), with a fresh setup only after an ordinary failed
+        /// maintain, within <see cref="PromotionRetryBudget"/>. Every attempt's evidence is kept.
+        /// </summary>
+        private IEnumerable<object> EstablishPromoted(string name, string key, Vector3 spot, string[] kinds, int[] eligible, Action<Rel> done)
+        {
+            var attempts = (JArray)(result["setupAttempts." + name] ?? (result["setupAttempts." + name] = new JArray()));
+            while (true)
+            {
+                Rel r = null;
+                foreach (object step in Establish(name, key, spot, kinds, x => r = x)) yield return step;
+                if (r == null) yield break;
+                var row = new JObject { ["attempt"] = attempts.Count, ["holder"] = r.Holder.UniqueId,
+                    ["targets"] = new JArray(r.Targets.Select(t => (object)t.UniqueId).ToArray()),
+                    ["eligibility"] = result["eligibility." + name]?.DeepClone(), ["established"] = result["established." + name]?.DeepClone() };
+                attempts.Add(row);
+                foreach (object step in AwaitPromotion(r, eligible, name, true)) yield return step;
+                row["promoted"] = promotionOk; row["ordinaryFailedMaintain"] = lastPromotionOrdinaryRelease;
+                if (promotionOk) { done(r); yield break; }
+                if (!lastPromotionOrdinaryRelease) { problems.Add(name + ": not promoted (" + result["promotion." + name]["maintain"].ToString(Formatting.None) + ")"); yield break; }
+                if (promotionRetries >= PromotionRetryBudget) { problems.Add(name + ": ordinary failed maintain with the retry budget exhausted"); yield break; }
+                promotionRetries++;
+                foreach (UnitEntityData t in r.Targets) t.Destroy();
+                r.Holder.Destroy();
+            }
+        }
+
+        /// <summary>Each grab limb's identity and its current occupant, keyed by the weapon item, not a list index.</summary>
+        private JArray Mouths(Rel r, ItemEntityWeapon[] mouths)
+        {
+            MethodInfo occupant = links.GetMethod("OccupantOf", Any);
+            return new JArray(mouths.Select(w => (object)new JObject { ["limb"] = LimbId(r.Holder, w), ["blueprint"] = w.Blueprint.name,
+                ["occupant"] = r.Holder.Destroyed ? null : (occupant.Invoke(null, new object[] { r.Holder, w }) as UnitEntityData)?.UniqueId }).ToArray());
+        }
+
+        /// <summary>A stable limb identity on its holder: the body slot that carries the weapon item (by reference).</summary>
+        private static string LimbId(UnitEntityData holder, ItemEntityWeapon w)
+        {
+            if (ReferenceEquals(holder.Body.PrimaryHand.MaybeWeapon, w)) return "primaryHand";
+            if (holder.Body.AdditionalLimbs != null)
+                for (int k = 0; k < holder.Body.AdditionalLimbs.Count; k++)
+                    if (ReferenceEquals(holder.Body.AdditionalLimbs[k].MaybeWeapon, w)) return "additionalLimb" + k;
+            return "unslotted:" + w.Blueprint.name;
+        }
+
+        private string OccupantIn(JArray mouths, Rel r, ItemEntityWeapon w) =>
+            (string)mouths.OfType<JObject>().First(m => (string)m["limb"] == LimbId(r.Holder, w))["occupant"];
+
+        // ---------------------------------------------------------------- C3c: two engulfed victims in one Giant Flytrap
+
+        internal static readonly string[] C3cNames = { "KMG_C3c_Trap", "KMG_C3c_VictimB", "KMG_C3c_VictimC" };
+
+        /// <summary>
+        /// One Flytrap with two living engulfed victims (A, B) promoted through the real maintain path on different
+        /// mouths; A dies (exact removal, B preserved and continuing); A's mouth takes C through a real bite and
+        /// promotion; B and C go through a finished native save with paused-state preservation and the next payload
+        /// round; then the Flytrap dies with both engulfed. A Purple Worm swallow is the independent ownership control.
+        /// </summary>
+        private IEnumerable<object> C3cMulti()
+        {
+            var cases = new JObject();
+            result["cases"] = cases;
+            // Independent ownership control: a Purple Worm swallow (a native swallow needs no per-round maintain).
+            Rel control = null;
+            foreach (object step in EstablishPromoted("control", "purple-worm", wormSpot, new[] { "medium" }, new[] { 0 }, x => control = x)) yield return step;
+            if (control == null) yield break;
+            Buff controlUnrelated = AddUnrelated(control.Targets[0]);
+
+            // A and B: two Medium victims on two different mouths of one Flytrap, both engulfed.
+            Rel f = null;
+            foreach (object step in EstablishPromoted("multi", "giant-flytrap", trapSpot, new[] { "medium", "medium" }, new[] { 0, 1 }, x => f = x)) yield return step;
+            if (f == null) yield break;
+            ItemEntityWeapon mouthA = f.Weapons[0], mouthB = f.Weapons[1];
+            if (ReferenceEquals(mouthA, mouthB)) { problems.Add("multi: A and B were bitten by the same limb"); yield break; }
+            Buff unrelatedB = AddUnrelated(f.Targets[1]);
+            Game.Instance.IsPaused = true;
+            yield return null;
+            int before = problems.Count;
+            JObject two = State(f);
+            two["mouths"] = Mouths(f, new[] { mouthA, mouthB });
+            cases["twoEngulfed"] = two;
+            ExpectSwallowed(f, 0, "multi.A"); ExpectSwallowed(f, 1, "multi.B");
+            var list = two["native.swallowedUnits"] as JArray ?? new JArray();
+            if (list.Count != 2 || !list.Any(v => (string)v == f.Targets[0].UniqueId) || !list.Any(v => (string)v == f.Targets[1].UniqueId))
+                problems.Add("multi: the Flytrap's native swallowed list does not hold exactly A and B: " + list);
+            if (OccupantIn((JArray)two["mouths"], f, mouthA) != f.Targets[0].UniqueId || OccupantIn((JArray)two["mouths"], f, mouthB) != f.Targets[1].UniqueId)
+                problems.Add("multi: A and B do not occupy their own distinct mouths: " + two["mouths"].ToString(Formatting.None));
+            if ((((JArray)two["raw.links"]) ?? new JArray()).Count(l => ((string)l).Split('|')[4] == "1") != 2) problems.Add("multi: not exactly two raw Engulfed records");
+            ExpectSwallowed(control, 0, "multi.control");
+            if (problems.Count > before) yield break;
+
+            // A dies inside: exact removal; B preserved on the same Flytrap and continuing.
+            JObject bBefore = PayloadRound(f, 1);
+            var death = new JObject { ["before"] = two, ["bPayload"] = bBefore };
+            cases["victimADeath"] = death;
+            int seq = LastSeq;
+            GameHelper.KillUnit(f.Targets[0]);
+            foreach (object step in SettleGameTime(0.0, 10f, () => !IsSwallowed(f, 0))) yield return step;
+            JObject afterA = State(f);
+            afterA["mouths"] = Mouths(f, new[] { mouthA, mouthB });
+            death["after"] = afterA;
+            death["events"] = Events(seq, e => ((string)e["what"]).StartsWith("swallow.", StringComparison.Ordinal) || ((string)e["what"]).StartsWith("native.", StringComparison.Ordinal));
+            death["bPayloadAfter"] = PayloadRound(f, 1);
+            ExpectFreed(f, 0, "victimADeath.A");
+            if (OccupantIn((JArray)afterA["mouths"], f, mouthA) != null) problems.Add("victimADeath: A's mouth is not available");
+            if (OccupantIn((JArray)afterA["mouths"], f, mouthB) != f.Targets[1].UniqueId) problems.Add("victimADeath: B's mouth changed");
+            var listA = afterA["native.swallowedUnits"] as JArray ?? new JArray();
+            if (listA.Count != 1 || (string)listA[0] != f.Targets[1].UniqueId) problems.Add("victimADeath: the native list does not hold exactly B: " + listA);
+            ExpectSwallowed(f, 1, "victimADeath.B");
+            JObject bAfter = (JObject)death["bPayloadAfter"];
+            if (bAfter == null || (int)bAfter["instance"] != (int)bBefore["instance"] || (string)bAfter["caster"] != f.Holder.UniqueId)
+                problems.Add("victimADeath: B's payload instance or ownership changed");
+            if (bAfter != null && (int)bAfter["roundNumber"] < (int)bBefore["roundNumber"]) problems.Add("victimADeath: B's payload round was reset");
+            ExpectSwallowed(control, 0, "victimADeath.control");
+            if (problems.Count > before) yield break;
+            // B's next genuine payload round: on its schedule, same instance, new damage.
+            JObject bRef = PayloadRound(f, 1);
+            long bTarget = (long)bRef["nextTickTicks"] + TimeSpan.FromSeconds(0.5).Ticks;
+            foreach (object step in SettleGameTime(0.0, 20f, () => Game.Instance.TimeController.GameTime.Ticks >= bTarget)) yield return step;
+            JObject bNext = PayloadRound(f, 1);
+            death["bNextRound"] = bNext;
+            if (bNext == null || (int)bNext["roundNumber"] != (int)bRef["roundNumber"] + 1 || (long)bNext["nextTickTicks"] != (long)bRef["nextTickTicks"] + (long)bRef["tickTimeTicks"] ||
+                (int)bNext["instance"] != (int)bRef["instance"] || (int)bNext["damage"] <= (int)bRef["damage"])
+                problems.Add("victimADeath: B's payload did not continue on its schedule: " + bRef + " -> " + bNext);
+            if (problems.Count > before) yield break;
+
+            // A's freed mouth takes C through a real bite; C is promoted through the real maintain path.
+            UnitEntityData c = SpawnMedium(ObstacleAnalyzer.TraceAlongNavmesh(f.Holder.Position, f.Holder.Position + Quaternion.Euler(0, f.Holder.Orientation - 60f, 0) * Vector3.forward * 2.5f));
+            // C is bitten with A's freed limb; index 2 of the helper arrays is C on mouthA (the mapping is asserted by limb below).
+            f.Targets = new[] { f.Targets[0], f.Targets[1], c };
+            f.Weapons = new[] { mouthA, mouthB, mouthA };
+            var reuse = new JObject();
+            cases["mouthReuse"] = reuse;
+            int bites = 0;
+            for (; bites < 4 && !IsHeld(f, 2); bites++)
+            {
+                Rulebook.Trigger(new RuleAttackWithWeapon(f.Holder, c, f.Weapons[2], 0));
+                yield return null;
+            }
+            reuse["bites"] = bites;
+            reuse["held"] = IsHeld(f, 2);
+            if (!IsHeld(f, 2)) { problems.Add("mouthReuse: A's freed mouth did not take C within four bites"); yield break; }
+            foreach (object step in AwaitPromotion(f, new[] { 2 }, "reuseC")) yield return step;
+            if (!promotionOk) yield break;
+            Game.Instance.IsPaused = true;
+            yield return null;
+            JObject bc = State(f);
+            bc["mouths"] = Mouths(f, new[] { mouthA, mouthB });
+            reuse["state"] = bc;
+            ExpectSwallowed(f, 1, "mouthReuse.B"); ExpectSwallowed(f, 2, "mouthReuse.C");
+            var list2 = bc["native.swallowedUnits"] as JArray ?? new JArray();
+            if (list2.Count != 2 || !list2.Any(v => (string)v == f.Targets[1].UniqueId) || !list2.Any(v => (string)v == c.UniqueId))
+                problems.Add("mouthReuse: the Flytrap does not own exactly B and C: " + list2);
+            if (OccupantIn((JArray)bc["mouths"], f, mouthA) != c.UniqueId || OccupantIn((JArray)bc["mouths"], f, mouthB) != f.Targets[1].UniqueId)
+                problems.Add("mouthReuse: C is not on A's former mouth, or B moved: " + bc["mouths"].ToString(Formatting.None));
+            if ((((JArray)bc["raw.links"]) ?? new JArray()).Count(l => ((string)l).Split('|')[4] == "1") != 2) problems.Add("mouthReuse: not exactly two raw Engulfed records");
+            ExpectSwallowed(control, 0, "mouthReuse.control");
+            if (problems.Count > before) yield break;
+
+            // B and C through a finished native save, then their next payload rounds.
+            foreach (object step in SettleGameTime(1.0, 30f, () => PayloadOf(f, 2)?.RoundNumber >= 1 && PayloadOf(f, 1)?.RoundNumber >= 1)) yield return step;
+            Game.Instance.IsPaused = true;
+            yield return null;
+            JObject pb = PayloadRound(f, 1), pc = PayloadRound(f, 2), s0 = State(f);
+            s0["mouths"] = Mouths(f, new[] { mouthA, mouthB });
+            var save = new JObject { ["bPayload"] = pb, ["cPayload"] = pc, ["state"] = s0 };
+            cases["save"] = save;
+            bool allowed = Game.Instance.SaveManager.IsSaveAllowed();
+            save["saveAllowed"] = allowed;
+            if (!allowed) { problems.Add("save: native save admission refused"); yield break; }
+            f.Holder.Descriptor.CustomName = C3cNames[0]; f.Targets[1].Descriptor.CustomName = C3cNames[1]; c.Descriptor.CustomName = C3cNames[2];
+            foreach (UnitEntityData u in new[] { f.Holder, f.Targets[1], c }) { created.Remove(u); awakeAdded.Remove(u); }
+            TimeSpan clock = Game.Instance.TimeController.GameTime;
+            bool saved = false;
+            Game.Instance.SaveGame(Game.Instance.SaveManager.CreateNewSave("ver02c3c"), () => saved = true);
+            float until = Time.realtimeSinceStartup + 120f;
+            while ((!saved || Game.Instance.SaveManager.CommitInProgress || LoadingProcess.Instance.IsLoadingInProcess) && Time.realtimeSinceStartup < until)
+                yield return null;
+            bool finished = saved && !Game.Instance.SaveManager.CommitInProgress && !LoadingProcess.Instance.IsLoadingInProcess;
+            JObject pb2 = PayloadRound(f, 1), pc2 = PayloadRound(f, 2), s1 = State(f);
+            s1["mouths"] = Mouths(f, new[] { mouthA, mouthB });
+            save["after"] = new JObject { ["callbackReceived"] = saved, ["finished"] = finished, ["gameClockUnchanged"] = Game.Instance.TimeController.GameTime == clock,
+                ["bPayload"] = pb2, ["cPayload"] = pc2, ["state"] = s1 };
+            if (!finished) { problems.Add("save: the save did not finish"); yield break; }
+            if (Game.Instance.TimeController.GameTime != clock) problems.Add("save: the paused save changed the game clock");
+            foreach (var pair in new[] { new { b = pb, a = pb2, n = "B" }, new { b = pc, a = pc2, n = "C" } })
+                foreach (string key in new[] { "instance", "roundNumber", "nextTickTicks", "tickTimeTicks", "caster", "damage" })
+                    if (pair.a == null || !JToken.DeepEquals(pair.b[key], pair.a[key])) problems.Add("save: the save changed " + pair.n + "'s payload " + key);
+            foreach (string key in new[] { "native.swallowedUnits", "raw.links", "live.reconciled", "mouths" })
+                if (!JToken.DeepEquals(s0[key], s1[key])) problems.Add("save: the save changed " + key);
+            ExpectSwallowed(f, 1, "save.B"); ExpectSwallowed(f, 2, "save.C");
+            if (unrelatedB == null || !f.Targets[1].Descriptor.Buffs.RawFacts.Contains(unrelatedB)) problems.Add("save: B's unrelated effect was lost");
+            if (problems.Count > before) yield break;
+            long next = Math.Max((long)pb["nextTickTicks"], (long)pc["nextTickTicks"]) + TimeSpan.FromSeconds(0.5).Ticks;
+            foreach (object step in SettleGameTime(0.0, 30f, () => Game.Instance.TimeController.GameTime.Ticks >= next)) yield return step;
+            JObject pb3 = PayloadRound(f, 1), pc3 = PayloadRound(f, 2);
+            save["nextRound"] = new JObject { ["bPayload"] = pb3, ["cPayload"] = pc3 };
+            foreach (var pair in new[] { new { b = pb, a = pb3, n = "B" }, new { b = pc, a = pc3, n = "C" } })
+                if (pair.a == null || (int)pair.a["roundNumber"] != (int)pair.b["roundNumber"] + 1 || (long)pair.a["nextTickTicks"] != (long)pair.b["nextTickTicks"] + (long)pair.b["tickTimeTicks"] ||
+                    (int)pair.a["instance"] != (int)pair.b["instance"] || (int)pair.a["damage"] <= (int)pair.b["damage"])
+                    problems.Add("save: " + pair.n + "'s payload did not continue on the retained schedule");
+            ExpectSwallowed(control, 0, "save.control");
+            if (problems.Count > before) yield break;
+
+            // The living Flytrap dies with both B and C engulfed.
+            Game.Instance.IsPaused = true;
+            yield return null;
+            ExpectSwallowed(f, 1, "holderDeath.precondition.B"); ExpectSwallowed(f, 2, "holderDeath.precondition.C");
+            if (problems.Count > before) yield break;
+            var hd = new JObject { ["before"] = State(f) };
+            ((JObject)hd["before"])["mouths"] = Mouths(f, new[] { mouthA, mouthB });
+            cases["holderDeath"] = hd;
+            seq = LastSeq;
+            TimeSpan killedAt = Game.Instance.TimeController.GameTime;
+            GameHelper.KillUnit(f.Holder);
+            foreach (object step in SettleGameTime(0.0, 20f, () => !IsSwallowed(f, 1) && !IsSwallowed(f, 2))) yield return step;
+            hd["releaseGameSeconds"] = (Game.Instance.TimeController.GameTime - killedAt).TotalSeconds;
+            hd["released"] = !IsSwallowed(f, 1) && !IsSwallowed(f, 2);
+            hd["after"] = State(f);
+            hd["events"] = Events(seq, e => ((string)e["what"]).StartsWith("swallow.", StringComparison.Ordinal) || ((string)e["what"]).StartsWith("native.", StringComparison.Ordinal));
+            ExpectFreed(f, 1, "holderDeath.B"); ExpectFreed(f, 2, "holderDeath.C");
+            foreach (object step in ExpectQuiet(f, new[] { 1, 2 }, "holderDeath", hd)) yield return step;
+            ExpectSwallowed(control, 0, "holderDeath.control");
+            if (controlUnrelated == null || !control.Targets[0].Descriptor.Buffs.RawFacts.Contains(controlUnrelated)) problems.Add("holderDeath: the control's unrelated effect was lost");
+            if (unrelatedB == null || !f.Targets[1].Descriptor.Buffs.RawFacts.Contains(unrelatedB)) problems.Add("holderDeath: B's unrelated effect was lost");
+            hd["controlFinal"] = State(control);
+            created.Add(f.Holder); created.Add(f.Targets[1]); created.Add(c);
+        }
+
+        private IEnumerable<object> C3cReload()
+        {
+            UnitEntityData[] units = C3cNames.Select(n => Game.Instance.State.Units.FirstOrDefault(u => u.Descriptor.CustomName == n)).ToArray();
+            result["found"] = new JArray(units.Select(u => (object)(u != null)).ToArray());
+            if (units.Any(u => u == null)) { problems.Add("reload: a named participant is missing"); yield break; }
+            created.AddRange(units);
+            foreach (UnitEntityData u in units) Wake(u);
+            var row = new JObject();
+            result["reload"] = row;
+            row["atLoad"] = Snapshot(units);
+            CheckReset(units, "reload.atLoad");
+            int[] damage = units.Select(u => u.Descriptor.Damage).ToArray();
+            TimeSpan start = Game.Instance.TimeController.GameTime;
+            foreach (object step in SettleGameTime(13.0, 40f, () => true)) yield return step;
+            row["gameSeconds"] = (Game.Instance.TimeController.GameTime - start).TotalSeconds;
+            row["afterRounds"] = Snapshot(units);
+            if ((double)row["gameSeconds"] < 12.0) problems.Add("reload: fewer than two rounds of game time passed");
+            for (int i = 0; i < units.Length; i++) if (units[i].Descriptor.Damage != damage[i]) problems.Add("reload: " + C3cNames[i] + " took damage after the reset");
             CheckReset(units, "reload.afterRounds");
         }
 
