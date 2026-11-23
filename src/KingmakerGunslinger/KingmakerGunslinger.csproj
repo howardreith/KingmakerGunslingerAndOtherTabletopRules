@@ -737,6 +737,7 @@
     <Compile Include="Blueprints\BokkenFirearmSupplyVendorBlueprints.cs" />
     <Compile Include="Blueprints\BeneathStolenLandsVendorBlueprints.cs" />
     <Compile Include="Blueprints\BlueprintItemAccess.cs" />
+    <Compile Include="Blueprints\AuthoredItemWeight.cs" />
     <Compile Include="Blueprints\BlueprintUnitFactAccess.cs" />
     <Compile Include="Blueprints\OwnedMutationRollback.cs" />
     <Compile Include="Blueprints\BlueprintCloneService.cs" />

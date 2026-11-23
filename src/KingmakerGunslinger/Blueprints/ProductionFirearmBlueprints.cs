@@ -324,7 +324,7 @@ namespace KingmakerGunslinger.Blueprints
 
             if (!string.Equals(entry.Item.Name, entry.Spec.DisplayName, StringComparison.Ordinal) ||
                 entry.Item.Cost != entry.Spec.CostGold ||
-                !entry.Item.Weight.Equals(entry.Spec.WeightPounds) ||
+                !AuthoredItemWeight.StoredEquals(entry.Item, entry.Spec.WeightPounds) ||
                 entry.Item.IsActuallyStackable)
             {
                 throw new InvalidOperationException(

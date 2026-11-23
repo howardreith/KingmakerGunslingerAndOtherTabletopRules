@@ -92,7 +92,7 @@ namespace KingmakerGunslinger.Blueprints
                     "Registered stackable Firearm Repair Kit guid={0}; cost={1}; weight={2}; sourceGuid={3}.",
                     registry.ResolveGuid(Symbol),
                     repairKit.Cost,
-                    repairKit.Weight,
+                    AuthoredItemWeight.Stored(repairKit),
                     BasicAmmunitionBlueprints.NativeDiamondDustGuid));
             return repairKit;
         }
@@ -114,7 +114,9 @@ namespace KingmakerGunslinger.Blueprints
 
             if (!item.IsActuallyStackable ||
                 item.Cost != Cost ||
-                !item.Weight.Equals(Weight))
+                // Authored weight; the effective getter may read zero under a
+                // deliberate global weight override (AuthoredItemWeight).
+                !AuthoredItemWeight.StoredEquals(item, Weight))
             {
                 throw new InvalidOperationException(
                     "The Firearm Repair Kit has incorrect stack, cost, or weight settings.");

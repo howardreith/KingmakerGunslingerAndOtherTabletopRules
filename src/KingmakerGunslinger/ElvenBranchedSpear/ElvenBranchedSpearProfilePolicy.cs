@@ -80,6 +80,8 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
             {
                 return string.Equals(EngineActual, ElvenBranchedSpearProfilePolicy.Deferred,
                         StringComparison.Ordinal) ||
+                    string.Equals(EngineActual, ElvenBranchedSpearProfilePolicy.NotRead,
+                        StringComparison.Ordinal) ||
                     string.Equals(EngineExpected, EngineActual, StringComparison.Ordinal);
             }
         }
@@ -94,7 +96,8 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
         /// The owned field is right but the live getter - what players and the
         /// engine actually use - disagrees with the engine contract for that
         /// field, or throws. Fatal whoever patches the getter: patch owners are
-        /// reported as context, never as an exemption.
+        /// reported as context, never as an exemption. Runtime-modifiable
+        /// predicates (weight) are judged on the owned field only.
         /// </summary>
         EffectiveGetterMismatch = 1
     }
@@ -151,6 +154,13 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
         /// identity). It is never judged; the definitive validation reads it.
         /// </summary>
         internal const string Deferred = "<deferred>";
+
+        /// <summary>
+        /// Recorded in every getter slot of a field-only observation whose live
+        /// value is a runtime setting (weight): the getter is never read, so no
+        /// getter value is reported, and the diagnostic says so.
+        /// </summary>
+        internal const string NotRead = "<not-read>";
 
         /// <summary>The spear's serialized reach, as on the native Longspear.</summary>
         internal const int ReachFeet = 10;
@@ -249,9 +259,27 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
             return string.Join(",", granted.ToArray());
         }
 
+        /// <summary>The weight predicate: authored (serialized) data only.</summary>
+        internal const string WeightPredicate = "weight";
+
         /// <summary>
-        /// The owned serialized field and the owned getter are the invariants.
-        /// Donor values are comparison context only and never decide a verdict.
+        /// Predicates whose effective value is a legitimate runtime setting
+        /// rather than part of the weapon's mechanics. A deliberate global
+        /// override such as Bag of Tricks' No Item Weight makes every weight
+        /// getter return zero; that is valid behavior, so only the owned
+        /// serialized field of these predicates is judged. Every mechanical
+        /// predicate (damage, reach, proficiency, enchantments, handedness ...)
+        /// keeps its effective-getter check.
+        /// </summary>
+        internal static bool IsRuntimeModifiable(string predicate)
+        {
+            return string.Equals(predicate, WeightPredicate, StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// The owned serialized field and the owned getter are the invariants,
+        /// except that a runtime-modifiable predicate's getter never decides a
+        /// verdict. Donor values are comparison context only.
         /// </summary>
         internal static SpearProfileFindingKind? Classify(
             SpearProfileObservation observation)
@@ -259,7 +287,8 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
             if (observation == null) throw new ArgumentNullException("observation");
             if (!observation.OwnedFieldMatches)
                 return SpearProfileFindingKind.OwnedFieldMismatch;
-            if (observation.EngineMatches) return null;
+            if (observation.EngineMatches || IsRuntimeModifiable(observation.Predicate))
+                return null;
             return SpearProfileFindingKind.EffectiveGetterMismatch;
         }
 
@@ -297,8 +326,14 @@ namespace KingmakerGunslinger.ElvenBranchedSpear
                 text.Append(value.Predicate).Append(" [").Append(Kind(values[index].Kind))
                     .Append("]: expected=").Append(Bound(value.ExpectedField))
                     .Append(" actual=").Append(Bound(value.OwnedField))
-                    .Append(" donor=").Append(Bound(value.DonorField))
-                    .Append("; getter expected=").Append(Bound(value.EngineExpected))
+                    .Append(" donor=").Append(Bound(value.DonorField));
+                if (string.Equals(value.EngineActual, NotRead, StringComparison.Ordinal))
+                {
+                    // Field-only observation: no live value was read or is reported.
+                    text.Append("; getter not read (runtime setting); fields only");
+                    continue;
+                }
+                text.Append("; getter expected=").Append(Bound(value.EngineExpected))
                     .Append(" actual=").Append(Bound(value.EngineActual))
                     .Append(" donor=").Append(Bound(value.DonorEngine))
                     .Append("; getterPatches=").Append(Owners(value));
