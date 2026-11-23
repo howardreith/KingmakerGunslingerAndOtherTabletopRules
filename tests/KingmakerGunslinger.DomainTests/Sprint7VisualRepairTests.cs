@@ -252,8 +252,65 @@ namespace KingmakerGunslinger.DomainTests
                     Assertions.True(spread > .01, bone + " is not collapsed.");
                 }
             Assertions.Equal(36, mesh.Bones.Length, "The 26 human and 10 tail drivers are retained.");
+            Assertions.Equal("eb0d5eaaf4bec8bf68506d42f299ded5d3d86cb676ff72e53f15d0cfbce9bfd2", (string)mesh.Payload["rigSha256"],
+                "The export names the exact private human bind capture.");
             Assertions.True(mesh.Payload["originalTailSlap"] != null && mesh.Payload["originalTailRest"] != null,
                 "The owned tail rest and slap are retained.");
+        }
+
+        // VIS-03: exactly the owned point-targeted DoubleMove movement actions
+        // in the ledger, and nothing else, get the movement target row.
+        internal static void Vis03MovementTargetIdentitiesAreExact()
+        {
+            JObject ledger = JObject.Parse(File.ReadAllText("blueprints/blueprints.json"));
+            var owned = ledger["entries"].Where(entry =>
+                    (string)entry["plannedType"] == "BlueprintAbility" &&
+                    (((string)entry["symbol"]).StartsWith("KMG.Summoning.Special.", StringComparison.Ordinal) &&
+                     (((string)entry["symbol"]).EndsWith(".Trample", StringComparison.Ordinal) ||
+                      (string)entry["symbol"] == "KMG.Summoning.Special.Brachiosaurus.Overrun")))
+                .Select(entry => (string)entry["guid"]).OrderBy(guid => guid, StringComparer.Ordinal).ToList();
+            Assertions.Equal(10, owned.Count, "The ledger has nine owned Tramples and one owned Overrun.");
+            Assertions.True(owned.SequenceEqual(Summoning.SummonActionTooltipPolicy.MovementTargetAbilityGuids
+                    .OrderBy(guid => guid, StringComparer.Ordinal)),
+                "The presented set is exactly the ledger's owned movement actions.");
+            foreach (string guid in owned)
+            {
+                Assertions.True(Summoning.SummonActionTooltipPolicy.PresentsMovementTarget(guid, true, true),
+                    guid + " presents its movement target.");
+                Assertions.False(Summoning.SummonActionTooltipPolicy.PresentsMovementTarget(guid, false, true),
+                    guid + " keeps native text if it stops using DoubleMove range.");
+                Assertions.False(Summoning.SummonActionTooltipPolicy.PresentsMovementTarget(guid, true, false),
+                    guid + " keeps native text if it stops targeting a point.");
+            }
+            // The native overrun the owned actions are cloned from and the two
+            // owned overrun features keep their native presentation.
+            foreach (string foreign in new[] {
+                "1a3b471ecea51f7439a946b23577fd70",
+                "c9f41b8d20e7456eae3d6c1f5a8b7204",
+                "b45179f0d157465f899c0b9d096b67a6" })
+                Assertions.False(Summoning.SummonActionTooltipPolicy.PresentsMovementTarget(foreign, true, true),
+                    foreign + " keeps its native presentation.");
+            Assertions.False(Summoning.SummonActionTooltipPolicy.PresentsMovementTarget(null, true, true),
+                "A blueprint without an identity keeps its native presentation.");
+        }
+
+        // VIS-03: the target row keeps the native localized prefix and line
+        // ending and states the native DoubleMove legality distance, with no
+        // fictional number, range or school.
+        internal static void Vis03MovementTargetTextIsTruthful()
+        {
+            string row = Summoning.SummonActionTooltipPolicy.MovementTarget("Target point",
+                Summoning.SummonActionTooltipPolicy.MovementTargetRange);
+            Assertions.Equal("Target point within twice this creature's speed.\n", row,
+                "The row names the movement distance the native range check uses.");
+            Assertions.False(row.Contains("ft") || row.Contains("feet") || row.Contains("None"),
+                "No placeholder distance or school remains.");
+            try
+            {
+                Summoning.SummonActionTooltipPolicy.MovementTarget("", "x");
+                Assertions.True(false, "An empty native prefix is refused.");
+            }
+            catch (ArgumentException) { }
         }
     }
 }

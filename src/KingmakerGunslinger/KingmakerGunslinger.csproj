@@ -45,6 +45,7 @@
     <Compile Include="Summoning\SummonActionTimingPolicy.cs" />
     <Compile Include="Summoning\SummonPortraitPolicy.cs" />
     <Compile Include="Summoning\SummonActionTooltipPolicy.cs" />
+    <Compile Include="Summoning\SummonMovementTargetTooltipPatch.cs" />
     <Compile Include="Summoning\MephitBreathPolicy.cs" />
     <Compile Include="Summoning\SummonPlaytestR5Policy.cs" />
     <Compile Include="Summoning\R5CotwSpells.cs" />
