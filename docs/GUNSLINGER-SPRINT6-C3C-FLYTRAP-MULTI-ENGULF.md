@@ -1,7 +1,8 @@
 # Sprint 6 checkpoint C3c (VER-02, G3): two engulfed victims in one Giant Flytrap, and the G3 disposition
 
-Status: **qualified natively on the accepted C3a product with no product change; returned for manual review**
-(2026-11-23), with a proposed G3 disposition (section 6). VER-02 stays open. Nothing is merged or released.
+Status: **C3c and G3 accepted by manual review (2026-11-23)** for the selected representative development scope, at
+head `43b8a3a914` (base `05a8044706`; product `9e902dfa80` unchanged). Section 7 records the decision and the narrowed
+claims; where it corrects an earlier section, section 7 governs. VER-02 stays open. Nothing is merged or released.
 
 - Branch `codex/s6-ver02-c3c-flytrap-multi-engulf` is stacked on the C3b acceptance-records head `05a8044706`
   (`codex/s6-ver02-c3b-crocodile-tyrannosaurus`, draft PR #208), then #207 and the earlier drafts. The stack is not
@@ -84,9 +85,10 @@ These do not reopen C3b. In this run no retry was used (each setup's first attem
 
 - A: no native membership, victim part, payload, held state or live link;
 - A's limb (`primaryHand`) free; B's limb still B; the native list holds exactly B;
-- B fully engulfed by the same Flytrap, with the **same payload instance** and caster, and its round not reset;
-- B's next genuine payload round on its retained schedule: round 0 → 1, next tick exactly +6 s, same instance, damage
-  126 → 142;
+- B fully engulfed by the same Flytrap, with the **same payload instance** and caster, and its round number not
+  lower than before the death;
+- B's next genuine payload round on the schedule read **after** the removal: round 0 → 1, next tick exactly +6 s, same
+  instance, damage 126 → 142. (The gate does not compare B's deadline across the death; see section 7.)
 - the Worm control intact.
 
 **Captured:**
@@ -109,7 +111,8 @@ C, a fresh Medium spawn, was bitten with A's freed `primaryHand` limb.
 
 ### 4.4 The two-entry relationship through a save
 
-B and C were both aged through genuine payload rounds, then the game was paused.
+B and C were aged (a bounded wait for round ≥ 1 on both; the captured rounds were 3 and 1, not separately gated), then
+the game was paused.
 
 | | Paused, before save | After the finished save | Next genuine round |
 |---|---|---|---|
@@ -140,7 +143,8 @@ After that save, the living Flytrap was killed with `GameHelper.KillUnit` while 
 
 **Asserted:**
 
-- immediately before: both relationships active;
+- immediately before: both relationships active (reciprocal swallow, payload, constraints, record, live link; that
+  both victims were alive is captured, not separately gated);
 - both released: no swallowed part, list membership, payload, held state, live link, CantMove, CantAct, untargetable or
   Entangled on either;
 - over **13.0 s** of game time after it: no damage to either and nothing recreated;
@@ -202,13 +206,13 @@ G3 covers the four published swallow consumers: Purple Worm and Giant Flytrap (C
 | Turn-based mode | None | Same components; a different round-timing route | — | Not executed |
 | D2 ordinary-play reachability | Constructed reproduction only (C3a) | — | — | Unresolved |
 
-**Recommendation: accept G3 for representative development scope.**
+**Recommendation (as returned): accept G3 for representative development scope.** Section 7 records the accepted,
+narrower wording: the selected RTWP owner/terminal scope, not "every mechanism".
 
-- Every mechanism has direct execution on at least one consumer, and the state shape that differs materially (several
-  entries on one owner) has now been executed through removal, reuse, save, holder-wide release and reset.
-- The remaining items are unexecuted repetitions of shared implementation: other species' escape, expiry, holder death
-  or carrier removal, and Dire Crocodile victim death. None runs a separate product code path that existing evidence
-  leaves unexercised, so none needs another G3 checkpoint.
+- Each row above has direct RTWP execution on at least one consumer, and the distinct two-entry Flytrap state has been
+  executed through removal, reuse, save, holder-wide release and reset.
+- The other unexecuted per-consumer repetitions (other species' escape, expiry, holder death or carrier removal, and
+  Dire Crocodile victim death) are retained as limits; they do not automatically create further G3 checkpoints.
 - **Accurately retained, not PASS:**
   - **Turn-based mode** uses a distinct round-timing route. It is a cross-cutting VER-02/turn-based question rather
     than a G3 species gap; qualify it separately if the owner wants it.
@@ -225,3 +229,38 @@ G3 covers the four published swallow consumers: Purple Worm and Giant Flytrap (C
 
 **Restoration:** the session's transaction completed with game settings applied and owner files verified. No peer
 session or Kingmaker process was present when checked before the run.
+
+## 7. Review decision and narrowed claims (2026-11-23)
+
+**C3c and G3 are accepted for the selected representative development scope on product 9e902dfa80, including the four
+published swallow consumers and the distinct two-entry Flytrap state.** The accepted scope is the selected RTWP
+owner/terminal set in section 6, not every mechanism or every path.
+
+**Explicitly retained limits:**
+
+- owner-off plus area-unload behavior (under G5) is source-inferred;
+- turn-based timing is unexecuted;
+- one-of-two native escape is unexecuted;
+- bleed through reset is historical only (Sprint 24);
+- D2 ordinary-play save reachability is unresolved;
+- the other unexecuted per-consumer repetitions stay limits, without automatically creating more G3 checkpoints.
+
+**Narrowed claims:**
+
+- **A-death timing.** The gate asserts B's payload instance, caster and a non-decreasing round across A's death, then
+  the next round on the schedule read after the removal. It does not compare B's original deadline across the death.
+  The captured values do show it unchanged: before the death, round 0, next tick 432488340000; after the death, round 0,
+  next tick 432488340000 (captured, not gated).
+- **Living state and payload aging.** That the victims were alive before the holder death, and that B and C had aged to
+  rounds 3 and 1 before the save, are captured observations; the bounded waits did not re-assert their postconditions.
+  The asserted save comparison (unchanged values, then round +1 on schedule) stands.
+- **Retry-helper limits to correct before the helpers' next relevant reuse** (neither alternative was used in C3c;
+  no retry occurred):
+  1. a window that contains both an invalid-state release and an exact `released` is currently treated as an ordinary
+     retry; it must not be;
+  2. `AwaitPromotion` inserts the attempt object into `promotion.<name>` and then into `promotionAttempts.<name>`
+     before setting `promoted`/`ordinaryFailedMaintain`. Newtonsoft clones a parented token on the second insertion,
+     so the history copies lack those outcome fields (visible in the C3c result: `null` in `promotionAttempts`). The
+     fields must be set before insertion.
+
+This is a records-only update, with no product build or native rerun.
