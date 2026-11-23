@@ -1,0 +1,85 @@
+{
+  "name": "ver02-c3c-flytrap-multi-engulf",
+  "description": "S6 checkpoint C3c / VER-02 G3: two simultaneously engulfed victims owned by one Giant Flytrap, on the accepted C3a product (unchanged). The product runs alone with the read-only hold lifecycle observer. Launch 1 (multi): a Purple Worm swallow is the independent ownership control (with an unrelated Bull's Strength effect); one Flytrap holds two Medium victims A and B through real bites on two distinct limbs and both are engulfed by its own later-round maintain. A dies through the native death path (exact removal, A's limb freed, B unchanged and continuing on its schedule); A's freed limb takes C through a real bite and C is promoted by the real maintain; B and C age through a payload round and go through a finished native save with paused-state preservation, then the next payload round; then the living Flytrap dies with both engulfed (release, bounded quiet interval, control intact). Launch 2 (reload): a fresh process loads the save written before the Flytrap's death and checks the intentional reset for the named holder and both saved victims. Disclosed setup: holder BAB 100, victim HP raised, appear buffs removed, brains off, units woken, navmesh placement, pauses for observation; a fresh setup only after an ordinary failed maintain (exact result 'released', exact holder and target, attempt window), at most two per probe, every attempt kept.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "multi",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgSwallow",
+            "label": "multi",
+            "match": "c3cMulti",
+            "timeoutSeconds": 560
+          }
+        ]
+      }
+    },
+    {
+      "label": "reload",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "$written:ver02c3c",
+        "steps": [
+          {
+            "op": "expectLoadedFrom",
+            "match": "ver02c3c"
+          },
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgSwallow",
+            "label": "reload",
+            "match": "c3cReload",
+            "timeoutSeconds": 560
+          }
+        ]
+      }
+    }
+  ]
+}
