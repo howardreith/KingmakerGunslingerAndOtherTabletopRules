@@ -569,6 +569,17 @@ namespace KmgLoaderCompatHarness
                     return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
                 }
 
+                case "kmgThornstepRetirement":
+                {
+                    // S6 D3 / LIM-03: "match" is seed, reconcile or reload (ThornstepRetirementProbes.cs).
+                    string identity = StepIdentity(step);
+                    if (!probes.IsActive) probes.Begin(identity, new ThornstepRetirementProbe(step.Match));
+                    ProbeOutcome outcome = probes.Poll(identity);
+                    if (outcome == null) return StepStatus.Running;
+                    RecordProbe(outcome);
+                    return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
+                }
+
                 case "kmgLegacyMarker":
                 {
                     // S6 D2 / LIM-02 diagnostic control: "match" is mark or reload (LegacyMarkerProbes.cs).

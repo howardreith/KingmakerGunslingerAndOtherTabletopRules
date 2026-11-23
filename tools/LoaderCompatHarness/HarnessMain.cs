@@ -52,6 +52,7 @@ namespace KmgLoaderCompatHarness
                 result["isolation"] = ProfileIsolation.Apply(harmony, request.ProfileDir);
                 LoggedExceptions.Install(harmony);
                 result["loggerExceptionHooks"] = LoggedExceptions.Patched;
+                ThornstepFixture.ProfileDir = request.ProfileDir;
                 result["conditions"] = ReproductionConditions.Apply(harmony, request.Conditions);
             }
             catch (Exception exception)

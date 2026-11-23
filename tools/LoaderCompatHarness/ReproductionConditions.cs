@@ -105,7 +105,7 @@ namespace KmgLoaderCompatHarness
             foreach (string name in conditions.Keys)
             {
                 if (!known.Contains(name) && !SpearRepairConditions.Known.Contains(name) && name != ControlledRageObserver.Condition &&
-                    name != BrownFurObserver.Condition && name != HoldLifecycleObserver.Condition)
+                    name != BrownFurObserver.Condition && name != HoldLifecycleObserver.Condition && name != ThornstepFixture.Condition)
                     throw new InvalidOperationException("unknown harness condition " + name);
             }
 
@@ -126,6 +126,13 @@ namespace KmgLoaderCompatHarness
             {
                 HoldLifecycleObserver.Request();
                 applied[HoldLifecycleObserver.Condition] = "record summon hold lifecycle callbacks (unload/arrival/turn-off/deactivate/release) read-only";
+            }
+
+            if (Enabled(conditions, ThornstepFixture.Condition))
+            {
+                // S6 D3 / LIM-03: TEST-ONLY induced former-source reference on the seed's named dropped-loot bags.
+                ThornstepFixture.Install(harmony);
+                applied[ThornstepFixture.Condition] = "induce Forest_GoodLoot01 on the manifest's bags before OnDataSetted; observe loaded and reconciled data";
             }
 
             SpearRepairConditions.Apply(harmony, conditions, applied);
