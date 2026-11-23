@@ -192,6 +192,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewSpiderSummonerCompletion(fixture, phase)) yield return frame;
                 yield break;
             }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39S7ModelsPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                using (var mode = Cleanup2EnterNativeDefault(fixture, phase))
+                    foreach (int frame in ReviewSprint7Models(fixture, phase, mode)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39S7ModelsInteriorPhase)
+            {
+                foreach (int frame in ReviewSprint7Models(fixture, phase, null)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39S7GhaelePhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                using (var mode = Cleanup2EnterNativeDefault(fixture, phase))
+                    foreach (int frame in ReviewSprint7Ghaele(fixture, phase, mode)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39S7GhaeleInteriorPhase)
+            {
+                foreach (int frame in ReviewSprint7Ghaele(fixture, phase, null)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39S7UiPhase)
+            {
+                using (var mode = Cleanup2EnterNativeDefault(fixture, phase))
+                    foreach (int frame in ReviewSprint7Ui(fixture, phase, mode)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39S7EffectsPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                using (var mode = Cleanup2EnterNativeDefault(fixture, phase))
+                    foreach (int frame in ReviewSprint7Effects(fixture, phase, mode)) yield return frame;
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestModelsInteriorPhase)
             {
                 foreach (int frame in ReviewSummonPlaytestModelsR7(fixture, phase, null)) yield return frame;

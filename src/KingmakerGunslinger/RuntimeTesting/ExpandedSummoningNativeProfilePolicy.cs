@@ -21,6 +21,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         // Repair R7: the three revised models, bright outdoors and in the static interior.
         internal const string Sprint39PlaytestModelsPhase = "summon-playtest-r7-models";
         internal const string Sprint39PlaytestModelsInteriorPhase = "summon-playtest-r7-models-interior";
+        // Sprint 7 (S7 T1-T7): Ghaele lifetime, revised models with turns,
+        // owned movement-action windows and the impact cue, dust breath and
+        // listening samples. Outdoor phases use the native Default fixture.
+        internal const string Sprint39S7GhaelePhase = "summon-s7-ghaele";
+        internal const string Sprint39S7GhaeleInteriorPhase = "summon-s7-ghaele-interior";
+        internal const string Sprint39S7ModelsPhase = "summon-s7-models";
+        internal const string Sprint39S7ModelsInteriorPhase = "summon-s7-models-interior";
+        internal const string Sprint39S7UiPhase = "summon-s7-ui";
+        internal const string Sprint39S7EffectsPhase = "summon-s7-effects";
+        internal static bool Sprint7Phase(string phase)
+        { return phase == Sprint39S7GhaelePhase || phase == Sprint39S7GhaeleInteriorPhase || phase == Sprint39S7ModelsPhase ||
+            phase == Sprint39S7ModelsInteriorPhase || phase == Sprint39S7UiPhase || phase == Sprint39S7EffectsPhase; }
+        internal static bool Sprint7OutdoorPhase(string phase)
+        { return phase == Sprint39S7GhaelePhase || phase == Sprint39S7ModelsPhase || phase == Sprint39S7UiPhase || phase == Sprint39S7EffectsPhase; }
         // Alphabetical summon menus: save-free census and real popup rows.
         internal const string Sprint39AlphabeticalMenusPhase = "summon-alphabetical-menus";
         // Cleric alignment: save-free census, real menus and native casts.
@@ -183,7 +197,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             phase == Sprint39AlphabeticalMenusPhase ||
             phase == Sprint39ClericAlignmentPhase || phase == Sprint39CotwConversionPhase ||
             phase == Sprint39TrampleAiPhase ||
-            phase == Sprint39MenuOrderSunderPhase; }
+            phase == Sprint39MenuOrderSunderPhase || Sprint7OutdoorPhase(phase); }
         // Repair R3 observer: a capture surface is owned only in the exact
         // native Default scope, without narrative, with no unrelated native
         // modal (desktop DialogMessageBox.IsShown), and on its exact surface.
@@ -198,7 +212,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             phase == Sprint32CantripPhase || phase == Sprint32HoldPhase || phase == Sprint32HoldTurnPhase ||
             phase == Sprint32ControlsPhase || phase == Sprint32ControlsTurnPhase ||
             phase == Sprint32SatyrAtWillPhase ||
-            phase == Sprint32SatyrAtWillTurnPhase || Sprint32NativeDefaultPhase(phase); }
+            phase == Sprint32SatyrAtWillTurnPhase || Sprint32NativeDefaultPhase(phase) || Sprint7Phase(phase); }
         internal const string OutsiderBodyPhase = "outsider-bodies";
         internal const string SourceLifecyclePhase = "source-lifecycle";
         internal const string DefenseConsumersPhase = "defense-consumers";

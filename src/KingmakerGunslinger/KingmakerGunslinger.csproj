@@ -161,6 +161,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR5Spells.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR6Presentation.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR7Models.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.Sprint7Presentation.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonAlphabeticalMenus.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonMenuOrderSunder.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderSummoner.cs" />
