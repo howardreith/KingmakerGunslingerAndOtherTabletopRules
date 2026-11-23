@@ -125,8 +125,12 @@ namespace KingmakerGunslinger.Acquisition
             catch (Exception exception) { Fail(blueprint, known, retired, exception); }
         }
 
-        // On any fault, prefer retention: removing the retired history rows
-        // stops the native blueprint/count decrement for those items.
+        // On a fault, best effort when the history and item identities are
+        // available: removing the retired history rows stops the native
+        // blueprint/count decrement for this product's retired publication.
+        // Not qualified when another publisher adds a positive row for a
+        // protected item (the native diff could then add stock); unsupported
+        // engine builds are excluded by Prepare.
         private static void Fail(BlueprintSharedVendorTable blueprint, Dictionary<BlueprintItem, int> known,
             BlueprintItem[] retired, Exception exception)
         {

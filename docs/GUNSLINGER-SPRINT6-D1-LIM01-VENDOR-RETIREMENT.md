@@ -1,7 +1,8 @@
 # Sprint 6 checkpoint D1 (LIM-01): vendor retirement and ambiguous player-sold copies
 
-Status: **implemented and natively qualified on a development candidate; returned for manual review** (2026-11-23).
-Nothing is merged or released.
+Status: **D1 / LIM-01 accepted by manual review (2026-11-23)** for its demonstrated development scope, at head
+`61f18c908c` (product `634a6efdd3`, package `862027f1…0fdc37`, DLL `65a0b60f…5c43ef`). Section 11 records the decision
+and corrected claims and governs where it differs. Nothing is merged or released.
 
 - Branch `codex/s6-d1-lim01-vendor-retirement`, stacked on the G1-R R1 acceptance-records head `e16b46eb76`
   (`codex/s6-ver02-g1r-lethal-riders`, draft PR #212). The stack is not rebased.
@@ -34,9 +35,9 @@ This policy was selected in this review; it was not accepted earlier.
 | Dire Narlmarches village, `DireNarlmarchesVillageVendorTable` | `f072a8f6889b5f345b7f4e7c74cb3e4c` | Every authored branched spear row (all foundation kinds) and Eastern weapon row (all generic kinds) (v0.0.185) |
 | Pitax, `PitaxTownVendorTable` | `e5ab1fccf37c55f41a20a80c6ba6a460` | Every authored branched spear row (all foundation kinds plus Briar-Crowned Spear) and Eastern row (all generic kinds plus Empty Sleeve, Moonlit Crossing, Unfixed Form) (v0.0.185) |
 
-The protected item set for the two regional tables is every project-owned branched spear and Eastern weapon item: 12
-spear and 30 Eastern, 42 in all. An item that was never published there never appears in that table's history, so
-the effective set is exactly the withdrawn rows.
+The protected item set for the two regional tables is the **current protected spear and Eastern families**: every
+project-owned branched spear and Eastern weapon item, 12 spear and 30 Eastern, 42 in all. (Withdrawn: an earlier
+sentence here claimed that a never-published item cannot appear in a table's history; see section 11.)
 
 **Out of scope:**
 
@@ -84,7 +85,8 @@ the effective set is exactly the withdrawn rows.
   - the native code then makes no decrement for those items, and replaces `KnownItems` with the current rows;
   - **`Prepare` pins** the MVID, the 398-byte `GetTable`, and the field types of `m_Dictionary`, `TableData.Table`,
     `Entries`, `Loot` and `KnownItems`. On any drift the patch is not applied;
-  - **on a fault**, the retired rows are removed from that table's history (retention), and the failure is logged;
+  - **on a fault**, best effort when the history and item identities are available: the retired rows are removed
+    from that table's history, and the failure is logged (section 11 states the limits of this fallback);
   - **diagnostics:** one Info line per protected table per load when rows are lowered.
 - **Why the history update stays correct:**
   - the lowered row only reaches what the native code writes anyway, `KnownItems = current fixed rows`;
@@ -134,9 +136,10 @@ the effective set is exactly the withdrawn rows.
   - every table's counts are compared with a native-diff oracle computed from the loaded data (protected pairs exempt
     in the protected mode);
   - the case rows have exact counts;
-  - the reopened collection must be the same object with identical counts;
+  - the reopened collection must have identical counts (its reference identity is captured);
   - no history row may survive that the publication no longer has;
-  - party inventory, stash and main-character equipment must be identical before and after access.
+  - party controls compared before and after the group of vendor accesses: the selected retired-item counts in
+    inventory and stash, total inventory and stash counts, and the main character's equipped blueprint-name multiset.
 
 ### 6.1 Sessions
 
@@ -149,7 +152,7 @@ the effective set is exactly the withdrawn rows.
 
 | Case | Representation (history; stocked) | Baseline, accepted product | Candidate first access | Candidate fresh reload |
 |---|---|---|---|---|
-| 2 and 4, Oleg cold iron spear (untouched original **or** bought plus one matching sale) | 1; 1 | **1 → 0** (the attributable sold-copy decrement) | 1 → 1 | 1 → 1 |
+| 2 and 4, Oleg cold iron spear (untouched original **or** bought plus one matching sale) | 1; 1 | **1 → 0** (loss of an ambiguous copy whose representation is also consistent with a sold-back copy) | 1 → 1 | 1 → 1 |
 | 3, Oleg masterwork cold iron, bought out | 1; 0 | 0 → 0 | 0 → 0 (not replenished) | 0 → 0 |
 | 5, Pitax branched spear, three stocked (multiple matching) | 1; 3 | 3 → 2 | 3 → 3 | 3 → 3 |
 | 5, Pitax masterwork branched spear, two stocked (mixed) | 1; 2 | 2 → 1 | 2 → 2 | 2 → 2 |
@@ -162,15 +165,18 @@ the effective set is exactly the withdrawn rows.
 | **Control:** a native row at Pitax (`Biography_lies`) lowered by one | 5 (fixed 4); 5 | 5 → 4 | 5 → 4 (native kept) | 4 → 4 |
 | **Control:** the same cold iron spear at an unrelated table (`C2_VendorTableLarge`, `03139ca7…`) | 1; 1 | 1 → 0 | 1 → 0 (native kept; not protected) | 0 → 0 |
 
-**Asserted in every launch:**
+**Asserted in the reconciliation and reload launches** (not the seed launch):
 
 - all four tables uncached before the first access;
 - zero oracle mismatches;
-- the reopen returned the same collection with the same counts;
-- the history afterwards equals the current fixed rows.
+- the reopen returned the same counts (the same collection reference was captured, not gated);
+- the history afterwards holds no key the current fixed rows lack (this gate rejects obsolete keys in non-null
+  history; it does not establish full history equality or matching counts).
 
-**Fresh reload:** every table's loaded counts equal its post-access counts. That means no duplication, no delayed
-subtraction and no reintroduction. The history no longer holds a retired row, and the product reports
+**Fresh reload:** each reload's oracle derives its expectations from that launch's loaded data, and reconciliation
+did not change them (asserted). That the reload's loaded counts equal the previous launch's post-access counts is a
+**captured comparison** of the two launches' recorded outputs (the case table), not an independent automated
+cross-save check. It shows no duplication, delayed subtraction or reintroduction in this run. The history no longer holds a retired row, and the product reports
 `NoRetiredRows`.
 
 **Product diagnostics captured** in `productOutcome`:
@@ -198,8 +204,14 @@ data was constructed, so a separate live fresh-table access was not taken.
 - the Dire Narlmarches and Pitax sets equal every spear (12) and Eastern (30) item;
 - the control table is not protected.
 
-**Party controls:** inventory (cold iron spear 1, Paper Lantern 1, total 9), stash (cold iron spear 1) and the main
-character's equipment were identical before and after every access, and across the save and both reloads.
+**Party controls:**
+
+- **Asserted** within each reconciliation and reload launch, before and after the group of vendor accesses:
+  - the selected item counts (cold iron spear 1 and Paper Lantern 1 in inventory, cold iron spear 1 in stash);
+  - the total inventory (9) and stash (1) counts;
+  - the main character's equipped blueprint-name multiset.
+- **Captured comparison across launches:** the same values were recorded at seed, reconciliation and reload.
+- No complete item-instance or cross-save identity check was made.
 
 ## 7. What provenance is and is not available
 
@@ -236,3 +248,34 @@ and fresh reload.
 
 Retained ambiguous old stock is the disclosed consequence of the policy. The other migration stories (LIM-02,
 LIM-03) were not started.
+
+## 11. Review decision and corrected claims (2026-11-23)
+
+**D1 / LIM-01 is accepted** for its demonstrated development scope under the policy selected in this review. The
+baseline and candidate identities, the verdicts, and the distinction between model tests and native execution are
+unchanged. Corrections (applied in place above):
+
+1. **Cross-save stock equality** is a comparison of captured outputs. Each reload's oracle derives its expectations
+   from that launch's loaded data and does not compare against a previous-launch manifest.
+2. **Reopen.** Count stability is asserted; collection reference identity is captured. The history gate rejects
+   obsolete keys in non-null history; it does not establish full history equality or matching counts.
+3. **First-access and reopen checks** run in the reconciliation and reload launches, not the seed launch.
+4. **Party preservation** assertions cover selected item counts, total inventory and stash counts, and the main
+   character's equipped blueprint-name multiset, compared before and after the group of vendor accesses. There is no
+   complete item-instance or cross-save identity check.
+5. The baseline's Oleg result is the **loss of an ambiguous copy whose representation is also consistent with a
+   sold-back copy**; "attributable sold-copy decrement" is withdrawn.
+6. **The regional 42-item set** is the current protected spear and Eastern families. The synthetic Boughkeeper and
+   Paper Lantern cases exercise the protection on members of those families. They do **not** represent the
+   historically listed named Pitax publication (Briar-Crowned Spear; Empty Sleeve, Moonlit Crossing, Unfixed Form).
+   The claim that never-published items cannot appear in history is withdrawn: other writers, such as the native
+   `AddLoot`, can add history rows.
+7. **Fault retention is best effort**, when the history and item identities are available.
+   - The fallback removes retired rows from history. That is not qualified where another publisher introduces a
+     positive protected publication: removing the row could make the native diff add stock.
+   - The unsupported-engine limitation stands (pin drift → the patch is not applied → native subtraction).
+   - The protection's scope is the product's own publication.
+   - The fault-path comment in `RetiredVendorHistoryPatch.cs` was corrected, comment only. The qualifying binary is
+     still built from `634a6efdd3`.
+
+This is a records-only correction, with no product build or native run.

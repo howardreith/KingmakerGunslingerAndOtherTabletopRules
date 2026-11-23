@@ -387,8 +387,9 @@
   LIM-01, development candidate `634a6efdd3`), the withdrawn rows are no longer
   stocked on fresh tables, and any cold iron spear already in Oleg's saved stock is
   kept rather than subtracted. Some authored stock can therefore remain buyable in an
-  older save. On the accepted product before D1 the engine's update removed such a copy
-  (observed natively with constructed vendor data). Player inventory is never touched.
+  older save. On the accepted product before D1 the engine's update removed such a copy, a
+  copy whose saved representation is also consistent with a sold-back one (observed natively
+  with constructed vendor data). Player inventory is never touched.
 - Inherited summon templates: the removal set is a hand-maintained list (v0.0.186). Twelve creature
   keys are declared as needing an inherited celestial or fiendish template stripped. Measured against
   the installed library across all 281 untemplated Summon Monster placements, that list disagrees in
