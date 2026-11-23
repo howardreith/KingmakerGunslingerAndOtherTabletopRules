@@ -87,7 +87,7 @@ namespace KmgLoaderCompatHarness
 
         internal static void Add(string what, JObject detail)
         {
-            if (Events.Count >= 600) return;
+            if (Events.Count >= 6000) return;
             detail["seq"] = ++sequence;
             detail["what"] = what;
             detail["gameSeconds"] = Game.Instance == null || Game.Instance.TimeController == null ? 0 : Game.Instance.TimeController.GameTime.TotalSeconds;

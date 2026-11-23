@@ -1,0 +1,123 @@
+{
+  "name": "ver02-c3b-crocodile-tyrannosaurus",
+  "description": "S6 checkpoint C3b / VER-02 G3: Dire Crocodile and Tyrannosaurus swallow lifecycle on the accepted C3a product. The product runs alone with the read-only hold lifecycle observer. Each swallow is made by summoning through the product's execution ability, a real eligible bite (a Tyrannosaurus setup whose establishing bite caused Bleeding Critical is discarded for a noncritical one), and promotion by the product's own later-round maintain, asserted to have selected swallow. Launch 1 (lifecycle): both payloads aged through a real round go through a finished native save with paused-state preservation asserted, then the next payload round on the pre-save schedule; then a real native escape of the Dire Crocodile's victim (the victim's Athletics raised so the native break-free check can succeed; disclosed) with the Tyrannosaurus swallow as the ownership control and mouth reuse; then the Tyrannosaurus victim's death with exact release and mouth reuse. Launch 2 (save): both swallows through a finished native save, then the Dire Crocodile's native expiry with its victim swallowed (Tyrannosaurus control). Launch 3 (reload): the fresh process loading that save, checking the accepted reset and quiet rounds. Disclosed setup as in C3a.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "lifecycle",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgSwallow",
+            "label": "lifecycle",
+            "match": "c3bLifecycle",
+            "timeoutSeconds": 560
+          }
+        ]
+      }
+    },
+    {
+      "label": "save",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgSwallow",
+            "label": "save",
+            "match": "c3bSave",
+            "timeoutSeconds": 560
+          }
+        ]
+      }
+    },
+    {
+      "label": "reload",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "$written:ver02c3b",
+        "steps": [
+          {
+            "op": "expectLoadedFrom",
+            "match": "ver02c3b"
+          },
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgSwallow",
+            "label": "reload",
+            "match": "c3bReload",
+            "timeoutSeconds": 560
+          }
+        ]
+      }
+    }
+  ]
+}
