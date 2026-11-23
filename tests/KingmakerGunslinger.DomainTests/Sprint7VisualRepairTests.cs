@@ -312,5 +312,62 @@ namespace KingmakerGunslinger.DomainTests
             }
             catch (ArgumentException) { }
         }
+
+        // VIS-04: the owned impact cue fires for exactly one resolved tail hit
+        // and for nothing else; the later save plays no part in the decision.
+        internal static void Vis04ImpactCueQualification()
+        {
+            int qualifying = 0;
+            for (int mask = 0; mask < 32; mask++)
+            {
+                bool exactOwner = (mask & 1) != 0, exactTail = (mask & 2) != 0, hit = (mask & 4) != 0,
+                    first = (mask & 8) != 0, victim = (mask & 16) != 0;
+                bool cue = Summoning.AnkylosaurusTailImpactPolicy.QualifiesForCue(exactOwner, exactTail, hit, first, victim);
+                if (cue) qualifying++;
+                Assertions.Equal(exactOwner && exactTail && hit && first && victim, cue,
+                    "Only the exact owner's resolved first tail hit on a creature plays the cue (mask " + mask + ").");
+            }
+            Assertions.Equal(1, qualifying, "A miss, a foreign owner or weapon, a repeated observation or no target never plays it.");
+            Assertions.Equal("Sweetener_Low_06_Quake", Summoning.AnkylosaurusTailImpactPolicy.ImpactCue,
+                "The provisional cue is the installed VFX-bank quake sweetener.");
+            Assertions.Equal("VFX", Summoning.SummonPlaytestR6Policy.CueBank, "It plays from the bank the cue helper already loads.");
+        }
+
+        // VIS-05: only the exact owned Dust Mephit's launch of the shared cold
+        // cone is presented as dust; the shared mapping is unchanged.
+        internal static void Vis05DustBreathIdentityIsExact()
+        {
+            string cold = Summoning.MephitBreathPolicy.ColdConeProjectileGuid;
+            string dust = Summoning.MephitBreathPolicy.DustMephitUnitGuid;
+            Assertions.Equal(cold, Summoning.MephitBreathPolicy.ProjectileFor(Summoning.MephitBreathDamageKind.Slashing),
+                "The Dust breath still delivers through the shared cold cone.");
+            Assertions.Equal(cold, Summoning.MephitBreathPolicy.ProjectileFor(Summoning.MephitBreathDamageKind.Cold),
+                "The shared cold-cone mapping for other mephits is unchanged.");
+            Assertions.True(Summoning.MephitBreathPolicy.PresentsDustBreath(dust, cold), "The Dust Mephit's cone is presented as dust.");
+            JObject ledger = JObject.Parse(File.ReadAllText("blueprints/blueprints.json"));
+            Func<string, string> guid = symbol => (string)ledger["entries"].Single(entry => (string)entry["symbol"] == symbol)["guid"];
+            Assertions.Equal(dust, guid("KMG.Summoning.Unit.DustMephit"), "The identity is the ledger's owned Dust Mephit unit.");
+            foreach (string other in new[] { "KMG.Summoning.Unit.AirMephit", "KMG.Summoning.Unit.IceMephit", "KMG.Summoning.Unit.SaltMephit", "KMG.Summoning.Unit.EarthMephit" })
+                Assertions.False(Summoning.MephitBreathPolicy.PresentsDustBreath(guid(other), cold), other + " keeps the native cold cone.");
+            Assertions.False(Summoning.MephitBreathPolicy.PresentsDustBreath(dust, Summoning.MephitBreathPolicy.AcidConeProjectileGuid),
+                "Another projectile from the Dust Mephit is not recoloured.");
+            Assertions.False(Summoning.MephitBreathPolicy.PresentsDustBreath(null, cold), "A launcher without identity is not recoloured.");
+        }
+
+        // VIS-05: the recolour keeps each colour's alpha and brightness and
+        // turns its hue from ice to warm dust.
+        internal static void Vis05DustTintKeepsOpacityAndBrightness()
+        {
+            foreach (float[] ice in new[] { new[] { .55f, .78f, 1f, .5f }, new[] { .9f, .95f, 1f, .2f }, new[] { .1f, .2f, .35f, 1f } })
+            {
+                float[] dust = Summoning.MephitBreathPolicy.DustTint(ice[0], ice[1], ice[2], ice[3]);
+                Func<float[], double> luminance = c => .2126 * c[0] + .7152 * c[1] + .0722 * c[2];
+                Assertions.Equal(ice[3], dust[3], "Alpha is unchanged.");
+                Assertions.True(Math.Abs(luminance(ice) - luminance(dust)) < 1e-4, "Brightness is unchanged.");
+                Assertions.True(dust[0] > dust[1] && dust[1] > dust[2], "The hue is warm dust, red over green over blue.");
+            }
+            float[] invalid = Summoning.MephitBreathPolicy.DustTint(float.NaN, 0, 0, .3f);
+            Assertions.True(invalid.Take(3).All(value => !float.IsNaN(value)) && invalid[3] == .3f, "Non-finite input yields a finite dust tone.");
+        }
     }
 }

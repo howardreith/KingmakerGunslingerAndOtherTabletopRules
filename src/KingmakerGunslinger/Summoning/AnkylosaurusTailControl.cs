@@ -47,6 +47,20 @@ namespace KingmakerGunslinger.Summoning
             // A duplicate wrapper around the same native strike is also stale.
             bool first=Events.TryMark(attack);
             if(first) AnkylosaurusTailImpactVisual.Observe(owner,victim);
+            // VIS-04: one owned cue per resolved strike, before the save.
+            if (AnkylosaurusTailImpactPolicy.QualifiesForCue(exactOwner, exactTail, hit, first, victim != null))
+            {
+                try
+                {
+                    SummonAbilityCastCueRuntime.PlayImpact(AnkylosaurusTailImpactPolicy.ImpactCue, owner,
+                        AnkylosaurusTailImpactPolicy.ImpactCueLabel);
+                }
+                catch (Exception error)
+                {
+                    // A sound never interrupts the strike it decorates.
+                    UnityEngine.Debug.LogException(error);
+                }
+            }
             var control = AnkylosaurusRulesPolicy.Decide(exactOwner, exactTail, hit,
                 available, first, attack.IsCriticalConfirmed, attack.ImmuneToCriticalHit);
             if (control == AnkylosaurusControl.None) return;

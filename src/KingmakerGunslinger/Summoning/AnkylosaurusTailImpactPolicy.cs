@@ -10,6 +10,28 @@ namespace KingmakerGunslinger.Summoning
         // cosmetic skeleton approach bounded by half its 20-foot footprint.
         internal const float MaximumApproachMeters = 3.048f;
 
+        /// <summary>
+        /// VIS-04: the owned impact cue, an installed one-shot in the VFX bank
+        /// the summon cue helper already loads (Wwise ID 4293635115, sources
+        /// Sweetener_Low_06a/b/c_Quake): a low randomized thud layered over the
+        /// native weapon hit to give the club its weight. Provisional until the
+        /// owner listens; the event name is the only thing to change.
+        /// </summary>
+        internal const string ImpactCue = "Sweetener_Low_06_Quake";
+        internal const string ImpactCueLabel = "AnkylosaurusTailImpact";
+
+        /// <summary>
+        /// A qualifying impact is the exact owner's exact tail weapon, a
+        /// resolved native hit, its first observation and a struck creature.
+        /// The later Fortitude save, its result and the target's survival do
+        /// not change whether the club landed.
+        /// </summary>
+        internal static bool QualifiesForCue(bool exactOwner, bool exactTail, bool hit,
+            bool firstObservation, bool victimPresent)
+        {
+            return exactOwner && exactTail && hit && firstObservation && victimPresent;
+        }
+
         internal static float Weight(float elapsed)
         {
             if (float.IsNaN(elapsed) || float.IsInfinity(elapsed) ||
