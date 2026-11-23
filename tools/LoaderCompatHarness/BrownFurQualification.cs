@@ -46,6 +46,9 @@ namespace KmgLoaderCompatHarness
                 case "create": return Create();
                 case "reload": return Reload();
                 case "final": return Final();
+                case "restore-create": return RestoreCreate();
+                case "restore-reload": return RestoreReload(true);
+                case "restore-final": return RestoreReload(false);
                 default:
                     problems.Add("unknown mode " + mode);
                     return Enumerable.Empty<object>();
