@@ -1,6 +1,10 @@
 # Sprint 6 VER-02 checkpoint G1-R: lethal rider release (five selected paths)
 
-Status: **qualified under the reviewed native life-update contract and returned for manual review** (2026-11-23).
+Status: **G1-R R1 accepted by manual review (2026-11-23)** for its demonstrated representative RTWP lethal-terminal
+scope under native life-update timing, at head `cb8ef00a34` (base `13f80c22cd`; product `9e902dfa80`; harness
+`cf5d90c2…8fc8d`; session `20261123T162752Z`). Section 13 records the decision and corrections and governs where it
+differs. Earlier status (as returned): **qualified under the reviewed native life-update contract and returned for
+manual review**.
 Sections 11 and 12 govern; sections 1–10 are the first characterization round, kept with its FAIL verdicts and
 corrected in place where the review withdrew claims. The accepted product is unchanged: no product repair, build or
 candidate. VER-02 stays open. Nothing is merged or released.
@@ -329,7 +333,7 @@ The investigation is accepted as useful characterization. The review selected th
   gone within **10 engine frames and 1.0 s of game time** after the native Dead transition. No activity from the ended
   relationship after native death.
 
-### 12.2 Results (`20261123T162752Z-owner-0.33.0-ver02-g1r-native-lethal`, harness `cf5d90c2…8fc8d`, PASS 5 of 5, 223 s)
+### 12.2 Results (`20261123T162752Z-owner-0.33.0-ver02-g1r-native-lethal`, harness `cf5d90c2…8fc8d`, PASS 5 of 5; launch 223 s, session wall time 3 m 56 s)
 
 | Case | Killing damage (asserted, completed bracket) | B/C survived weapon | Native Dead (asserted) | Synchronous continuation before Dead (captured) | Release → clean (asserted ≤ 10 frames / 1.0 s) |
 |---|---|---|---|---|---|
@@ -389,7 +393,7 @@ The investigation is accepted as useful characterization. The review selected th
 | `20261123T161325Z` | `7b326ff6…5ce1` | 3 m 02 s | FAIL | A1: no decisive maintain within a 30 s wait; about 4.3 s of game time passed (not attributed in that run). B1: no admissible hostile after a Ferocity (half-orc) instance was rejected, with no fallback spawn. Placement spots then exhausted because failed attempts did not retire their units. C, D and E met the native-timing checks but carry fixture problems, so they do not count |
 | `20261123T161901Z` | `b8bc94e4…f7f9` | 3 m 42 s | FAIL | A1: the hold ended about 3.5 s after the health setting, with no maintain (no part-removal trace yet, so not attributed in that run). C1: a light-crossbow hit from `67c5e348` (identified in the next session as `Linzi_Neutral`) disqualified the attempt. B, D and E passed; C passed on retry |
 | `20261123T162428Z` | `b0bf50d3…0c72` | 2 m 39 s | FAIL | Bystander attacks, each traced: Valerie (A), Amiri (B), Harrim (D) and Linzi (E) killed the targets before the decisive round. Native Dead followed, then `UnitGrappleController` removed the initiator part and `SummonHoldComponent.Release` removed the target part. C's three setups were disqualified by Harrim, by Amiri/Harrim/Linzi, and by Valerie |
-| `20261123T162752Z` | `cf5d90c2…8fc8d` | 3 m 56 s | **PASS 5/5** | Area NPC brains cleared for the launch |
+| `20261123T162752Z` | `cf5d90c2…8fc8d` | 3 m 56 s session wall time (launch `01-nativeLethal` 223 s) | **PASS 5/5** | Area NPC brains cleared for the launch |
 
 Correction native time: 13 m 19 s, within the 30-minute ceiling.
 
@@ -435,3 +439,44 @@ universally unnecessary.
   any run.
 - **Next:** after review, the planned next work is checkpoint D's legacy/migration stories, with G5 separately blocked.
   D was not started.
+
+## 13. Review decision and corrections (2026-11-23)
+
+**G1-R R1 is accepted** for its demonstrated representative RTWP lethal-terminal scope under native life-update
+timing. The accepted outcomes are Snake weapon, Snake constrict, Salamander constrict, crocodile death roll and
+Impale. No claim is made that the synchronous release branches were repaired or executed. Every earlier FAIL keeps its
+diagnosis.
+
+G5 stays fixture-blocked and VER-02 stays open. Every retained limitation stays explicit:
+
+- the stale-callback race;
+- successful Dismissal;
+- three or four simultaneous links;
+- turn-based timing;
+- the per-owner and independent-effect limits.
+
+None of these becomes a new mandatory grapple checkpoint.
+
+**Corrections:**
+
+1. **Cleanup deadline scope.**
+   - The timed predicate (10 frames / 1.0 s after native Dead) covers only the native initiator part, the native
+     target part, the hold buff and the held (grappled) buff. It was observed satisfied two frames after death.
+   - The full live-link, occupancy and holder-condition checks (`after` in 12.2) run **after** the cleanup waits,
+     about 0.3 s of game time later. They are asserted, but not against that measured deadline.
+2. **Captured versus enforced.**
+   - **Captured results:** death in exactly the crossing frame, and exactly two frames of cleanup latency.
+   - **Enforced:** the causal ordering (crossing inside a completed bracket, then native Dead, with no recovery and no
+     later damaging round between), finality, and the maximum deadline.
+3. **Two separate scans.**
+   - The **decisive-window scans** cover no recovery, no later damaging round before death, and no pair activity after
+     death. They run over all observer events after the Dead transition, up to the end of the cleanup waits.
+   - The **quiet-interval checks** are specific to the 13 s interval: no holder→target damage, no maintain or
+     constrict for the pair, no live pair (`HeldSingle` false, no target part), and the target still dead at the end.
+4. **Brain-suppression comment.** The harness's class comment said "the main character's IsBrainActive only". It now
+   states the actual scope: the main character and every pre-existing living area NPC with an active brain, restored
+   at teardown. Only the comment changed; the qualifying build `cf5d90c2…` was not rebuilt.
+5. **Durations.** "223 s" is the runner's launch duration for `01-nativeLethal`; "3 m 56 s" is the session's wall time
+   including staging and restoration. Both measurements keep their original identities.
+
+This is a records-only update, with no product build or native rerun.

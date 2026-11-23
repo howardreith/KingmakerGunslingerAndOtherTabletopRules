@@ -37,7 +37,8 @@ namespace KmgLoaderCompatHarness
     /// to have no Ferocity, regeneration, dying allowance, immortality or Cheat Death component. Ordinary RTWP combat
     /// follows naturally. Disclosed: target HP base 100000 then Damage = HP − margin before the decisive round (margin 1
     /// for A/D/E; the establishing weapon's maximum + 1 for B/C, read-only RuleCalculateWeaponStats), target escape stats
-    /// −100, no XP award on death, brains off (the main character's IsBrainActive only, restored at teardown), holder BAB
+    /// −100, no XP award on death, brains off (IsBrainActive only, for the main character and every pre-existing living
+    /// area NPC with an active brain, restored at teardown; disposable targets and holders use the runner helper), holder BAB
     /// 100, summon deadlines 600 s, placement within 10.5 m.
     ///
     /// Cleanup deadline (chosen before the run, from the native sequence: life tick → UnitGrappleController removes the
