@@ -63,6 +63,14 @@ namespace KmgLoaderCompatHarness
             Patch(harmony, holdType.GetMethod("ReleaseLink", Any), null, nameof(ReleaseLinkPostfix), patched);
             Patch(harmony, product.GetType("KingmakerGunslinger.Summoning.SummonGrappleAreaSafeguard", true).GetMethod("ResetLoadedGrapples", Any),
                 nameof(ResetPrefix), null, patched);
+            // C3a: the swallow lifecycle owner and the native swallow parts (read-only).
+            Type lifecycle = product.GetType("KingmakerGunslinger.Summoning.SummonSwallowLifecycleComponent", true);
+            Patch(harmony, lifecycle.GetMethod("OnTurnOff"), nameof(SwallowTurnOffPrefix), null, patched);
+            Patch(harmony, lifecycle.GetMethod("HandleUnitDeath"), nameof(SwallowDeathPrefix), null, patched);
+            Patch(harmony, typeof(UnitPartSwallowWhole).GetMethod("Swallow"), null, nameof(NativeSwallowPostfix), patched);
+            Patch(harmony, typeof(UnitPartSwallowWhole).GetMethod("SpitOut"), nameof(NativeSpitOutPrefix), null, patched);
+            Patch(harmony, typeof(UnitPartSwallowWhole).GetMethod("Free"), nameof(NativeFreePrefix), null, patched);
+            Patch(harmony, typeof(UnitPartSwallowed).GetMethod("OnRemove"), nameof(NativeSwallowedRemovePrefix), null, patched);
             Patch(harmony, typeof(Game).GetMethod("HandleAreaBeginUnloading", Any), nameof(GameUnloadPrefix), null, patched);
             Patch(harmony, typeof(Game).GetMethod("OnAreaLoaded", Any), nameof(GameLoadedPrefix), nameof(GameLoadedPostfix), patched);
             installed = true;
@@ -129,6 +137,33 @@ namespace KmgLoaderCompatHarness
         private static void ReleaseLinkPostfix(UnitEntityData owner, UnitEntityData target)
         { Add("SummonHoldComponent.ReleaseLink", new JObject { ["owner"] = owner?.UniqueId, ["target"] = target?.UniqueId }); }
         private static void ResetPrefix() { Add("ResetLoadedGrapples", new JObject()); }
+
+        private static JArray Swallowed(UnitEntityData owner)
+        {
+            UnitPartSwallowWhole part = owner == null ? null : owner.Get<UnitPartSwallowWhole>();
+            return part == null ? new JArray() : new JArray(part.SwallowedUnits.Select(r => (object)r.Value?.UniqueId).ToArray());
+        }
+
+        private static void SwallowTurnOffPrefix(object __instance)
+        {
+            UnitDescriptor owner = OwnerOf(__instance);
+            Add("swallow.OnTurnOff", new JObject { ["owner"] = owner?.Unit?.UniqueId, ["ownerTurnedOn"] = owner != null && owner.IsTurnedOn,
+                ["instanceAreaUnloading"] = AreaUnloadingOf(__instance), ["swallowed"] = Swallowed(owner?.Unit) });
+        }
+        private static void SwallowDeathPrefix(object __instance, UnitEntityData unit)
+        {
+            UnitDescriptor owner = OwnerOf(__instance);
+            if (unit == null || owner?.Unit == null || !Swallowed(owner.Unit).Any(v => (string)v == unit.UniqueId)) return;
+            Add("swallow.HandleUnitDeath", new JObject { ["owner"] = owner.Unit.UniqueId, ["unit"] = unit.UniqueId, ["swallowed"] = Swallowed(owner.Unit) });
+        }
+        private static void NativeSwallowPostfix(UnitPartSwallowWhole __instance, UnitEntityData unit)
+        { Add("native.Swallow", new JObject { ["owner"] = __instance.Owner?.Unit?.UniqueId, ["unit"] = unit?.UniqueId }); }
+        private static void NativeSpitOutPrefix(UnitPartSwallowWhole __instance, bool all)
+        { Add("native.SpitOut", new JObject { ["owner"] = __instance.Owner?.Unit?.UniqueId, ["all"] = all, ["swallowed"] = Swallowed(__instance.Owner?.Unit) }); }
+        private static void NativeFreePrefix(UnitPartSwallowWhole __instance, UnitReference unitRef)
+        { Add("native.Free", new JObject { ["owner"] = __instance.Owner?.Unit?.UniqueId, ["unit"] = unitRef.Value?.UniqueId }); }
+        private static void NativeSwallowedRemovePrefix(UnitPartSwallowed __instance)
+        { Add("native.UnitPartSwallowed.OnRemove", new JObject { ["unit"] = __instance.Owner?.Unit?.UniqueId, ["swallower"] = __instance.Swallower.Value?.UniqueId }); }
         private static void GameUnloadPrefix() { Add("Game.HandleAreaBeginUnloading", new JObject()); }
         private static void GameLoadedPrefix() { Add("Game.OnAreaLoaded.begin", new JObject()); }
         private static void GameLoadedPostfix() { Add("Game.OnAreaLoaded.end", new JObject()); }

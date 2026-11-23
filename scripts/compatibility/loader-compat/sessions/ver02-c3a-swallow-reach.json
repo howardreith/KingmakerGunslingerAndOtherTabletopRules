@@ -1,0 +1,48 @@
+{
+  "name": "ver02-c3a-swallow-reach",
+  "description": "S6 checkpoint C3a / VER-02 G3 save boundary, ordinary route: the Purple Worm (brain active) grabs an unmodified native hostile humanoid through its own AI, the main character casts native Dominate Person on the held enemy through the ordinary ability command, combat ends through the engine, the worm's own later maintain swallows the dominated victim, native save admission is read and a native save is requested; the continuing session is checked after the save. Disclosed: worm BAB 100, hostile HP 100000 and brain off, Dominate Person granted at caster level 20 and DC 100.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "reach",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgSwallow",
+            "label": "reach",
+            "match": "reach",
+            "timeoutSeconds": 400
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -2187,17 +2187,37 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>
-    /// The swallower's side (Sprint 4), carried by the worm's and the
-    /// flytrap's combat-traits buff. The game's own swallow-whole part spits
-    /// everyone out when the swallower dies or is destroyed; this component
-    /// spits out when the buff turns off for any other reason - the summon
-    /// disposed, the traits dispelled - so no unit is ever left inside a
-    /// creature that is gone.
+    /// The swallower's side (Sprint 4), carried by each swallower's
+    /// combat-traits buff (Purple Worm, Giant Flytrap, Dire Crocodile,
+    /// Tyrannosaurus). The game's own swallow-whole part spits everyone out
+    /// when the swallower dies or is destroyed; this component spits out when
+    /// the buff genuinely ends for any other reason - the summon disposed, the
+    /// traits removed or dispelled - so no unit is ever left inside a creature
+    /// that is gone. The one exception is the engine's temporary save
+    /// suspension (S6 C3a), which keeps an ongoing swallow in the running game;
+    /// a later load still resets it (ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD).
     /// </summary>
     [Serializable]
     public sealed class SummonSwallowLifecycleComponent : BuffLogic,
-        IUnitHandler, IGlobalSubscriber
+        IUnitHandler, IGlobalSubscriber, ISceneHandler
     {
+        // S6 C3a (VER-02 G3): this carrier's own view of an area unload, as on
+        // the C2a hold owners. Set by OnAreaBeginUnloading, which the engine
+        // raises to this turned-on buff before an unload turns units off and
+        // never during a save; cleared on its own OnTurnOn (after every save)
+        // and OnAreaDidLoad. Not serialized; per buff instance.
+        private bool m_AreaUnloading;
+
+        public void OnAreaBeginUnloading() { m_AreaUnloading = true; }
+
+        public void OnAreaDidLoad() { m_AreaUnloading = false; }
+
+        public override void OnTurnOn()
+        {
+            base.OnTurnOn();
+            m_AreaUnloading = false;
+        }
+
         public BlueprintUnit OwningBlueprint;
         public BlueprintBuff OwnedSwallowedBuff;
         public bool ReleaseOnVictimDeath;
@@ -2207,9 +2227,11 @@ namespace KingmakerGunslinger.Summoning
         public void HandleUnitDeath(UnitEntityData unit)
         {
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
-            // Existing worm/flytrap graphs keep their qualified native paths.
-            // Native swallow only watches the source's death, so exact
-            // creature-owned payloads opt in to victim-boundary cleanup.
+            // The native swallow part does not release a unit merely because
+            // that unit dies inside (it frees on the swallower's own death and
+            // on a successful break-free). All four published swallowers (S6
+            // C3a: Purple Worm, Giant Flytrap, Dire Crocodile, Tyrannosaurus)
+            // opt in to this exact, owner-checked victim-boundary cleanup.
             if (!ReleaseOnVictimDeath || owner == null || unit == null ||
                 unit.Descriptor == null || OwningBlueprint == null ||
                 OwnedSwallowedBuff == null ||
@@ -2228,6 +2250,22 @@ namespace KingmakerGunslinger.Summoning
         public override void OnTurnOff()
         {
             base.OnTurnOff();
+            // S6 C3a: the engine's save suspension turns the owner off first
+            // and back on after writing; that does not end the swallow.
+            if (!ExpandedSummoningSpecialProfiles.ShouldReleaseHoldOnTurnOff(
+                    Owner == null || Owner.IsTurnedOn, m_AreaUnloading)) return;
+            SpitOutAll();
+        }
+
+        /// <summary>Genuine removal or disposal of the carrier always frees every swallowed unit (idempotent).</summary>
+        public override void OnFactDeactivate()
+        {
+            base.OnFactDeactivate();
+            SpitOutAll();
+        }
+
+        private void SpitOutAll()
+        {
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
             UnitPartSwallowWhole part = owner == null ? null :
                 owner.Get<UnitPartSwallowWhole>();
