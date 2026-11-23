@@ -179,7 +179,8 @@ namespace KmgLoaderCompatHarness
             Expect(without, with, afterExpiry);
             if (!bebelith.Destroyed) problems.Add("mark: the Bebelith did not expire");
             target.Descriptor.CustomName = MarkedName;
-            created.Remove(target);
+            // The marked character stays owned by cleanup on every path (refusal, exception, success); cleanup runs
+            // after the save has been written, so the saved state keeps it.
             result["saved"] = new JObject { ["id"] = target.UniqueId, ["ruleTargetAC"] = without["ruleTargetAC"] };
             bool allowed = Game.Instance.SaveManager.IsSaveAllowed();
             if (!allowed) { problems.Add("mark: native save admission refused"); yield break; }
@@ -189,7 +190,6 @@ namespace KmgLoaderCompatHarness
             while ((!saved || Game.Instance.SaveManager.CommitInProgress || LoadingProcess.Instance.IsLoadingInProcess) && Time.realtimeSinceStartup < deadline) yield return null;
             result["saveFinished"] = saved && !Game.Instance.SaveManager.CommitInProgress;
             if (!(bool)result["saveFinished"]) problems.Add("mark: the save did not finish");
-            created.Add(target);
         }
 
         private void Expect(params JObject[] rows)

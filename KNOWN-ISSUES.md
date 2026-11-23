@@ -374,15 +374,16 @@
   `planning/races-unleashed-compatibility/STATUS.md`.
 - Bebelith Dismantle Armor (withdrawn in v0.0.182). A "Dismantled Armor" effect already
   on a character in an older save remains as a retired marker that no longer reduces
-  armor class; it has no duration and is not removed from the save. A native diagnostic
+  armor class; it has no scheduled duration and the withdrawal does not remove it. A native diagnostic
   control (Sprint 6 D2: a marker constructed by the current build, real AC calculation,
   save and fresh load) showed no AC change; no pre-fix save has been cold-loaded.
 - Saved Greater/Elder Earth Elementals (v0.0.182). A summon saved before v0.0.182 loses
   its Sunder feat, action, toggle and AI action on load but keeps its former ordinary
   attack AI action, whose targeting favors lightly armored or sundered foes; fresh
-  summons use the ordinary-attack brain. Retained until the summon expires (Sprint 6 D2):
-  it is the old summon's only autonomous action, so removing it would leave the summon
-  idle, and substituting another would replace its brain. Autonomous decisions with the
+  summons use the ordinary-attack brain. Retained until the summon expires (Sprint 6 D2,
+  selected policy): with the unmodified historical brain it is the old summon's only
+  autonomous action, so removing it alone would leave the summon idle; a targeted
+  substitution is unimplemented and unqualified. Autonomous decisions with the
   retained action were not observed, and no actual old save was cold-loaded.
 - Saved Griffons (v0.0.180). A Griffon summoned before v0.0.180 may show two identical
   Charge actions until it expires. Both copies are saved identically, and the engine's own

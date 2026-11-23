@@ -1,6 +1,9 @@
 # Sprint 6 D2 / LIM-02: legacy summon state (Earth Elemental preference, Griffon duplicate Charge, Bebelith marker)
 
-Status: **returned for manual review** (2026-11-23). Nothing is merged or released.
+Status: **D2 accepted by manual review (2026-11-23)** at head `189b68a9fc`, as two explicit until-expiry retention
+dispositions and a current-build native diagnostic for the inert Bebelith marker. Authentic pre-fix-save qualification
+remains **unexecuted**; LIM-02 is not fully natively qualified. Section 8 records the decision and governs where it
+differs. Nothing is merged or released.
 
 | | Identity |
 |---|---|
@@ -16,13 +19,13 @@ Status: **returned for manual review** (2026-11-23). Nothing is merged or releas
 |---|---|---|
 | Greater/Elder Earth Elemental attack preference | **Retained until summon expiry** (explicit retention, no code change) | A KMG Greater or Elder Earth Elemental saved before v0.0.182 still prefers lightly armored or sundered targets until it expires. Its Sunder was already removed on load. Fresh summons use the ordinary-attack brain. |
 | Griffon duplicate Charge | **Retained until summon expiry** (explicit retention, no code change) | A KMG Griffon saved before v0.0.180 may still show two identical Charge actions until it expires. Fresh Griffons show one. |
-| Bebelith `DismantledArmor` marker | **Existing behavior kept** (no code change): identity registered, component deserializable, zero AC | A character marked in an older save keeps a "Dismantled Armor" marker described as a retired legacy effect. It has no duration and is never removed, and it changes no AC. |
+| Bebelith `DismantledArmor` marker | **Existing behavior kept** (no code change): identity registered, component deserializable, zero AC | A character marked in an older save keeps a "Dismantled Armor" marker described as a retired legacy effect. It has no scheduled duration and the withdrawal does not remove it; it changes no AC (current-build diagnostic). |
 
 No attributable in-scope defect was found that a narrow repair could correct within the stated constraints, so no product change was made and no candidate was built.
 
 ## 2. Fixture intake (one bounded search)
 
-**Search.** Every `.zks` under `C:\Dev\KingmakerGunslingerLab` (353 files: game copies, the frozen fixture set, runtime evidence, repository artifacts) was read in place, without extraction. Each was checked for the five LIM-02 GUIDs:
+**Search.** 353 candidate `.zks` paths under `C:\Dev\KingmakerGunslingerLab` (game copies, the frozen fixture set, runtime evidence, repository artifacts) were opened in place, without extraction. 14 are known non-archive stubs (the teleportation save-protection test files) and could not be searched; the remaining **339 archives** were searched for the five LIM-02 GUIDs:
 
 - KMG Greater Earth Elemental unit `17c4fcc106df43af980fcea7a0877e04`;
 - KMG Elder Earth Elemental unit `2bdfdec402384e689351bad9a0d2d8af`;
@@ -30,14 +33,20 @@ No attributable in-scope defect was found that a narrow repair could correct wit
 - KMG Bebelith unit `9d7d36e71ea141258509b8a32557577e`;
 - marker buff `KMG.Summoning.Special.Bebelith.DismantledArmor` `736a349933f24cc2b11bc284b6e559cb`.
 
-**Result:** no save contains any of them. Fourteen files are not zip archives: they are the teleportation save-protection test stubs.
+**Result:** none of the 339 searched archives contains any of them.
 
 The pre-fix packages exist, but nothing was built from them:
 
 - the v0.0.181 release asset `KingmakerGunslinger-0.0.181-cleric-summon-alignment.zip`;
 - several local `0.0.181` development candidates.
 
-Making a fixture from a pre-fix build needs explicit admission under the current isolated workflow. It was not attempted, and no version guard was bypassed. The search is not repeated.
+Producing a historical fixture was **not admitted and not attempted**. That is the fixture-admission boundary of the current isolated workflow, not a new owner-approval requirement:
+
+- No guard was identified that needs owner action. The loader-compat runner hashes the candidate package and refuses pre-existing state (a running game, locks, a pending journal); it has no version gate on the candidate.
+- Untested: whether the current harness probes, which reflect into current product internals, would operate against a historical package.
+- The v0.0.181 packages **cannot** reproduce the Griffon duplicate: the explicit grant was removed before v0.0.180. A v0.0.161–v0.0.179 package would be needed; its local availability was not checked.
+
+No version guard was bypassed. The search is not repeated.
 
 **Precise missing inputs** (any one makes the matching owner qualifiable):
 
@@ -85,8 +94,8 @@ This is source inference. Another mod that changed the native brain's actions be
 **Why it is not repaired.**
 
 - The installed `AiBrainController.SelectAction` chooses only from `unit.Brain.AvailableActions`. It has no fallback attack.
-- After the Sunder withdrawal, the retained action is the old elemental's **only** autonomous action. Removing it would leave the summon idle in combat, which is worse for the player than a target preference.
-- Making the old elemental behave like a fresh one would mean adding the native `AttackAiAction` (or the Dumb Monster Brain's action list) to saved brain state. That is a brain replacement, which the owner excluded.
+- For the **unmodified historical brain** (native `GreaterEarthElementalBrain` = [`SunderArmorAiAction`, `GreaterEarthElementalAttackAiAction`]), the retained action is the old elemental's only autonomous action after the Sunder withdrawal. Removing it alone would leave such a summon idle in combat, which is worse for the player than a target preference. If another mod changed that brain before the unit was created, the saved list may differ.
+- A targeted substitution (replacing that exact action instance with the native `AttackAiAction`) is conceivable. It is **unimplemented and unqualified**; retention is the selected policy, not a categorical prohibition.
 - The preference is bounded: the action still attacks with the elemental's own natural attacks and only weights its target choice (AttackTargetsPriority, LightArmorConsideration, HasBuffSunder). It ends when the summon expires.
 
 **Disposition:** retain until summon expiry, disclosed.
@@ -115,7 +124,7 @@ This is source inference. Another mod that changed the native brain's actions be
 
 ### 3.3 Bebelith marker: already inert; identity kept
 
-**Owner.** The marker's owner is the affected character, not the Bebelith. The marker was applied by v0.0.181 as `AddBuff(DismantledArmor, <Bebelith combat-traits context>, null)`. A null duration is permanent, so it never expires with the summon.
+**Owner.** The marker's owner is the affected character, not the Bebelith. The marker was applied by v0.0.181 as `AddBuff(DismantledArmor, <Bebelith combat-traits context>, null)`. A null duration gives it no scheduled end, so it does not expire with the summon, and the withdrawal does not remove it. Other buff-removal routes were not examined.
 
 **Representation.** `BebelithDismantledArmorComponent` has no serialized fields, at v0.0.181 and now (the same type and namespace). So a marker serialized by the current build has the same component data as a historical one. This is source inference: no historical instance was loaded.
 
@@ -125,7 +134,7 @@ This is source inference. Another mod that changed the native brain's actions be
 - The blueprint, its GUID and its component stay registered.
 - The description reads as a retired legacy effect.
 
-**Disposition:** keep. Don't delete the marker, and don't describe it as expiring.
+**Disposition:** keep. The withdrawal does not delete the marker, and it is not described as expiring.
 
 ## 4. Native diagnostic control: the Bebelith marker
 
@@ -159,19 +168,24 @@ The observer counts the component's `OnEventAboutToTrigger` calls, and the marke
 | mark: with marker | 15 | 15 | 5 | 0 | 1 | 1 |
 | mark: after the Bebelith expired natively | 15 | 15 | 5 | 0 | 1 | 1 |
 | reload: first calculation | 15 | 15 | 5 | 0 | 1 | 1 |
-| reload: repeat after 4 s unpaused | 15 | 15 | 5 | 0 | 1 | 1 |
+| reload: repeat after four wall-clock seconds unpaused | 15 | 15 | 5 | 0 | 1 | 1 |
 
-**Asserted** (the probe's oracle):
+**Asserted in the mark launch** (against the without-marker row):
 
-- equal AC with and without the marker (mark launch);
-- equal repeated AC (reload);
-- zero marker-sourced modifiers;
-- the component ran;
-- armor present and unchanged;
-- exactly one marker;
-- after reload, the marker deserialized exactly once with `KingmakerGunslinger.Summoning.BebelithDismantledArmorComponent`;
+- equal rule AC and stat AC with the marker, and after the Bebelith expired;
+- unchanged armor name and armor-modifier total;
+- exactly one marker, zero marker-sourced modifiers, the component ran;
 - the Bebelith was destroyed by native expiry;
-- the native save finished.
+- the save completed by the enforced predicate: the save callback fired and no save commit was in progress. (The wait loop also waited for loading to end, but that is not part of the asserted predicate.)
+
+**Asserted in the reload launch:**
+
+- the marker deserialized exactly once with `KingmakerGunslinger.Summoning.BebelithDismantledArmorComponent`;
+- equal rule AC between the two repeated calculations;
+- exactly one marker, zero marker-sourced modifiers, the component ran, in each calculation;
+- armor present.
+
+Stronger reload equalities (stat AC, armor-modifier total, armor name, and AC equal to the mark launch) are **captured comparisons** of recorded outputs, not reload assertions.
 
 **Captured:**
 
@@ -180,7 +194,7 @@ The observer counts the component's `OnEventAboutToTrigger` calls, and the marke
   - its end time is the permanent maximum (`10675199.02:48:05`) before and after reload;
   - its GUID `736a3499…` is unchanged across the save.
 - **The reload comparison:**
-  - the reload AC (15) equals the mark-launch AC; this is a comparison of the two launches' recorded outputs;
+  - the reload AC (15), stat AC and armor values equal the mark launch's; this is a comparison of the two launches' recorded outputs;
   - the character was found by its custom name;
   - its `UniqueId` (mark launch `4aba619c…`) was not compared in the reload launch.
 
@@ -224,3 +238,35 @@ The observer counts the component's `OnEventAboutToTrigger` calls, and the marke
 Possible follow-up for the owner, not done here: if a pre-v0.0.182 save becomes available, the Earth Elemental case could be qualified for autonomous targeting. A brain substitution would need an explicit owner decision.
 
 G5 and LIM-03 were not started. REP-05/REP-06 originals were not searched for.
+
+## 8. Review decision and corrections (2026-11-23)
+
+**D2 is accepted** at head `189b68a9fc` as:
+
+- an explicit until-expiry retention disposition for old Earth Elemental targeting;
+- an explicit until-expiry retention disposition for the old Griffon duplicate Charge;
+- a current-build native diagnostic supporting the retained Bebelith marker's inert behavior.
+
+Authentic pre-fix-save qualification remains **unexecuted**. These legacy paths are not marked PASS, and LIM-02 is not
+fully natively qualified. No D2 product migration or historical fixture production is required before D3. The product
+remains the accepted D1 candidate (`634a6efdd3`, package `862027f1…0fdc37`, DLL `65a0b60f…5c43ef`).
+
+Corrections (applied in place above):
+
+1. The sole-action argument is scoped to the unmodified historical brain. A targeted substitution of one exact action
+   is unimplemented and unqualified; it was not categorically prohibited. Retention is the selected policy.
+2. Historical-fixture production was not admitted or attempted. No guard needing owner action was identified. The
+   v0.0.181 packages cannot reproduce the Griffon duplicate.
+3. Scan census: 353 candidate paths, 14 known non-archive stubs, 339 archives searched.
+4. Armor and stat preservation assertions are scoped to the mark launch. The reload enforces repeated rule AC, marker
+   and component presence, no marker-sourced modifier, and armor presence; stronger equalities are captured.
+5. The reload wait is four wall-clock seconds unpaused. Save completion is stated by the enforced predicate.
+6. The marker has no scheduled duration and is not removed by the withdrawal; it is not universally irremovable.
+7. The limits stand: no native positive penalty control, no historical load, and no actor `UniqueId` comparison
+   across the reload.
+
+**Harness cleanup correction (harness only).** `LegacyMarkerProbe.Mark` took the marked character out of its cleanup
+list before saving and only put it back after a successful save, so a save refusal or an exception left it unowned.
+It now stays owned throughout; the save operation is unchanged. The existing PASS stays attached to harness build
+`df6bca90…88de0b4`. The corrected harness was compiled only (build `0970dc9c…53d51d`); D2 was not rerun, and no new native qualification is
+implied.
