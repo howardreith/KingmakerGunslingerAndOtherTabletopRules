@@ -75,6 +75,75 @@ ATLAS_REGION = {
 DETAIL_COUNTS = {}
 
 
+def membrane_shell(name, grid, half_thickness):
+    """`continuous_body.sheet` for a membrane whose chord rows all start at one
+    point. Every Nalfeshnee strip runs from the wing wrist, so the shared
+    helper's first row collapses there: 11 coincident vertices per layer, a
+    zero-width rim and one zero-area triangle per apex quad (VIS-01: 48 at the
+    wing roots, 24 per side). Here such a row is one apex vertex per layer and
+    the apex quads are a triangle fan; the rest of the shell, its vertex order
+    and its fixed fan triangulation and outward orientation are the helper's.
+    The apex sits off the membrane along the mean normal of its first real
+    row, so each layer's fan stays on its own side of the membrane."""
+    bm = bmesh.new()
+    columns, rows = len(grid), len(grid[0])
+    grid = [[Vector(point) for point in column] for column in grid]
+    # mathutils vectors are single precision: the lerped wrist rows differ by
+    # about 1e-7 m, so a micrometre tolerance identifies the shared point.
+    apex = all((grid[i][0] - grid[0][0]).length < 1e-6 for i in range(columns))
+
+    def normal(i, j):
+        span = grid[min(i + 1, columns - 1)][j] - grid[max(i - 1, 0)][j]
+        chord = grid[i][min(j + 1, rows - 1)] - grid[i][max(j - 1, 0)]
+        value = span.cross(chord)
+        return value.normalized() if value.length > 1e-9 else Vector((0, 1, 0))
+
+    apex_normal = Vector((0, 1, 0))
+    if apex:
+        mean = sum((normal(i, 1) for i in range(columns)), Vector())
+        apex_normal = mean.normalized() if mean.length > 1e-9 else apex_normal
+    layers = []
+    for sign in (1.0, -1.0):
+        layer, tip = [], None
+        for i in range(columns):
+            column = []
+            for j in range(rows):
+                if apex and j == 0:
+                    if tip is None:
+                        tip = bm.verts.new(grid[0][0] +
+                                           apex_normal * half_thickness * sign)
+                    column.append(tip)
+                    continue
+                column.append(bm.verts.new(grid[i][j] +
+                                           normal(i, j) * half_thickness * sign))
+            layer.append(column)
+        layers.append(layer)
+    top, bottom = layers
+    for i in range(columns - 1):
+        for j in range(rows - 1):
+            upper = (top[i][j], top[i + 1][j], top[i + 1][j + 1], top[i][j + 1])
+            lower = (bottom[i][j + 1], bottom[i + 1][j + 1], bottom[i + 1][j],
+                     bottom[i][j])
+            if apex and j == 0:
+                # The quad's two apex corners are one vertex: keep the triangle.
+                upper, lower = upper[1:], lower[:3]
+            bm.faces.new(upper)
+            bm.faces.new(lower)
+    # The rim: the two leading/trailing edges and the two end columns. A
+    # collapsed first row has no leading edge; the end columns close the apex.
+    for i in range(columns - 1):
+        for j, flip in ((0, False), (rows - 1, True)):
+            if apex and j == 0:
+                continue
+            quad = (top[i][j], bottom[i][j], bottom[i + 1][j], top[i + 1][j])
+            bm.faces.new(tuple(reversed(quad)) if flip else quad)
+    for i, flip in ((0, False), (columns - 1, True)):
+        for j in range(rows - 1):
+            quad = (top[i][j], top[i][j + 1], bottom[i][j + 1], bottom[i][j])
+            bm.faces.new(tuple(reversed(quad)) if flip else quad)
+    return surface._rigid_object(name, bm)
+
+
 def build_body(bm, weights, uvs, rig, kind):
     at = lambda name: common.shared.head(rig, name)
 
@@ -215,7 +284,7 @@ def build_body(bm, weights, uvs, rig, kind):
                                              math.sin(math.pi * s))
                     column.append(point)
                 grid.append(column)
-            panel, _ = surface.sheet('NalfeshneeWing', grid, .005)
+            panel = membrane_shell('NalfeshneeWing', grid, .005)
             new = [bm.verts.new(v.co) for v in panel.data.vertices]
             for v in new:
                 weights[v] = [('Torso_Upper', 1)]

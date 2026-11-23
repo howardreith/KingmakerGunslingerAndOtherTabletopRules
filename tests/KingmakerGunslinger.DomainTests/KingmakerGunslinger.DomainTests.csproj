@@ -313,6 +313,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonCastCueLifecycle.cs"><Link>Summoning\SummonCastCueLifecycle.cs</Link></Compile>
     <Compile Include="SummonPlaytestR6Tests.cs" />
     <Compile Include="SummonPlaytestR7Tests.cs" />
+    <Compile Include="Sprint7VisualRepairTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SalamanderTailGait.cs"><Link>Summoning\SalamanderTailGait.cs</Link></Compile>
     <Compile Include="SalamanderTailGaitTests.cs" />
     <Compile Include="RepairedBodyTests.cs" />
