@@ -1,0 +1,161 @@
+{
+  "name": "ver02-g1g2-barbed-crab",
+  "description": "S6 VER-02 G1/G2: Barbed Devil Impale (feature-carried grab, exclusive maintain rider, deferred exact-owner cleanup) and Giant Crab two-pincer multi-hold with per-link constrict, on the accepted C3a product (unchanged). Holds come only from real attacks with the exact grab limb; maintains, riders, releases and the deferred cleanup run from the game's own round ticks and before-tick scheduler. Launch 1 (barbed): a later successful maintain with Impale; a real failed maintain under a disclosed temporary high target CMD (natural d20 kept, restored immediately), the deferred owner cleanup, a real-claw reacquisition held through later frames, then native Dismissal through the ordinary command path (fallback: native expiry), with two fresh Barbed controls per terminal. Launch 2 (crab): two targets on the two pincers, per-link maintain/constrict, one link ended by target death while the sibling keeps its own maintain/constrict, the freed pincer reused on a replacement target, then holder-wide native expiry with both links active, with two fresh Crab controls per terminal. Launch 3 (save): one native save with an active Barbed hold (after an Impale round) and a two-link Crab, compared before/after, then one continuation round. Launch 4 (reload): a fresh process loads that save. Disclosed: holder BAB 100; target HP 100000 and escape stats -100; summon deadlines extended to 600 s (native deadline) except a terminal expiry (moved to now); appear buffs removed; brains off; units woken; navmesh placement; pauses; for Dismissal, the fact granted to the main character if absent, CL 40 / spell level 4 cast parameters and the Barbed Devil's Will base -100 (natural d20 kept).",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "barbed",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgBarbedCrab",
+            "label": "barbed",
+            "match": "barbed",
+            "timeoutSeconds": 600
+          }
+        ]
+      }
+    },
+    {
+      "label": "crab",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgBarbedCrab",
+            "label": "crab",
+            "match": "crab",
+            "timeoutSeconds": 600
+          }
+        ]
+      }
+    },
+    {
+      "label": "save",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgBarbedCrab",
+            "label": "save",
+            "match": "save",
+            "timeoutSeconds": 600
+          }
+        ]
+      }
+    },
+    {
+      "label": "reload",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "conditions": {
+        "observeHoldLifecycle": "true"
+      },
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "$written:ver02g12",
+        "steps": [
+          {
+            "op": "expectLoadedFrom",
+            "match": "ver02g12"
+          },
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgBarbedCrab",
+            "label": "reload",
+            "match": "reload",
+            "timeoutSeconds": 600
+          }
+        ]
+      }
+    }
+  ]
+}
