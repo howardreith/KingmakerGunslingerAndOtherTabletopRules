@@ -320,24 +320,62 @@ namespace KmgLoaderCompatHarness
             created.Remove(pair.Target);
             var row = new JObject { ["before"] = State(pair), ["targetInParty"] = Game.Instance.Player.Party.Contains(pair.Target) };
             result["transition"] = row;
-            // The party uses the exit: the engine raises IPartyLeaveAreaHandler and then starts LoadArea.
+            // The relationship being qualified must be a party-held one before the exit is used.
+            if (!IsHeld(pair) || !(bool)row["targetInParty"]) { problems.Add("transition: the party companion is not held before the exit"); yield break; }
+            Plan = new TransitionPlan
+            {
+                Origin = Game.Instance.CurrentlyLoadedArea.name, Destination = exit.AreaEnterPoint.Area.name,
+                EnterPoint = exit.AreaEnterPoint.name, HolderId = pair.Holder.UniqueId, TargetId = pair.Target.UniqueId
+            };
+            result["plan"] = Plan.ToJson();
+            // The party uses the exit: the engine raises IPartyLeaveAreaHandler and then starts LoadArea. The leave
+            // boundary is read synchronously here, before any arrival-time ResetLoadedGrapples can run.
             AreaTransitionGroupCommand.ExecuteTransition(exit);
             row["afterLeaveEvent"] = State(pair);
             row["loadingStarted"] = LoadingProcess.Instance.IsLoadingInProcess;
+            row["areaAtLeaveBoundary"] = Game.Instance.CurrentlyLoadedArea == null ? null : Game.Instance.CurrentlyLoadedArea.name;
             ExpectFree(pair, "transition.afterLeaveEvent");
+            // Holder-side residue at the leave boundary is captured, not assumed cleared (source ordering is a hypothesis).
+            JObject leave = (JObject)row["afterLeaveEvent"];
+            row["leaveBoundaryHolderResidue"] = new JObject
+            {
+                ["initiatorPart"] = leave["live.holderInitiatorPart"], ["holdBuff"] = leave["live.holderHoldBuff"],
+                ["rawLinksNamingTarget"] = leave["rawLinksNamingTarget"], ["cantAct"] = leave["live.holderCantAct"], ["cantMove"] = leave["live.holderCantMove"]
+            };
             if (!(bool)row["loadingStarted"]) problems.Add("transition: the engine did not start loading the next area");
         }
 
+        /// <summary>Carried from the leave phase to the arrival phase within one process.</summary>
+        private sealed class TransitionPlan
+        {
+            internal string Origin, Destination, EnterPoint, HolderId, TargetId;
+            internal JObject ToJson()
+            {
+                return new JObject { ["origin"] = Origin, ["destination"] = Destination, ["enterPoint"] = EnterPoint, ["holder"] = HolderId, ["target"] = TargetId };
+            }
+        }
+
+        private static TransitionPlan Plan;
+
         private IEnumerable<object> AfterTransition()
         {
+            TransitionPlan plan = Plan;
+            if (plan == null) { problems.Add("afterTransition: no leave-phase plan in this process"); yield break; }
+            result["plan"] = plan.ToJson();
             float until = Time.realtimeSinceStartup + 150f;
             while ((LoadingProcess.Instance.IsLoadingInProcess || Game.Instance.CurrentlyLoadedArea == null) && Time.realtimeSinceStartup < until)
                 yield return null;
+            if (LoadingProcess.Instance.IsLoadingInProcess) { problems.Add("afterTransition: the loading deadline expired with loading still in progress"); yield break; }
+            if (Game.Instance.CurrentlyLoadedArea == null) { problems.Add("afterTransition: no area is loaded at the deadline"); yield break; }
             for (int frame = 0; frame < 30; frame++) yield return null;
-            result["area"] = Game.Instance.CurrentlyLoadedArea == null ? null : Game.Instance.CurrentlyLoadedArea.name;
-            UnitEntityData target = Game.Instance.Player.Party.FirstOrDefault(u => u.Descriptor.CustomName == TransitionTargetName);
-            UnitEntityData holder = Game.Instance.State.Units.FirstOrDefault(u => u.Descriptor.CustomName == TransitionHolderName);
+            result["area"] = Game.Instance.CurrentlyLoadedArea.name;
+            if (Game.Instance.CurrentlyLoadedArea.name != plan.Destination)
+            { problems.Add("afterTransition: the loaded area " + Game.Instance.CurrentlyLoadedArea.name + " is not the intended destination " + plan.Destination); yield break; }
+            UnitEntityData target = Game.Instance.Player.Party.FirstOrDefault(u => u.UniqueId == plan.TargetId);
+            UnitEntityData holder = Game.Instance.State.Units.FirstOrDefault(u => u.UniqueId == plan.HolderId);
             result["holderInLoadedArea"] = holder != null;
+            result["holderDisposition"] = holder != null ? "loaded in the destination" :
+                Game.Instance.State.Units.All.Any(u => u.UniqueId == plan.HolderId) ? "known but not loaded" : "not among loaded units (left in the origin area state or destroyed)";
             if (target == null) { problems.Add("afterTransition: the party companion target is missing"); yield break; }
             var pair = new Pair { Holder = holder, Target = target, HoldBuff = BuffNamed(HoldBuffName), GrappledBuff = BuffNamed(GrappledBuffName) };
             var row = new JObject { ["atArrival"] = State(pair), ["targetPosition"] = target.Position.ToString() };
