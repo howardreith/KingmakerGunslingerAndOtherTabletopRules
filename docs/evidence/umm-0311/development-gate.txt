@@ -1,13 +1,13 @@
 === production compilation ===
-Building Kingmaker Gunslinger (Release) with <temp>\kmg-development-gate-c438f19cc13b4e919498844f66b638b7\scripts\msbuild-fixture.ps1
+Building Kingmaker Gunslinger (Release) with <temp>\kmg-development-gate-8887cedbe7174351a48ae282a631a799\scripts\msbuild-fixture.ps1
 Development production compilation passed; package/release checks deferred.
 === domain-tests (focused) ===
 Repository validation skipped: the caller runs it, or this is a focused run.
-Building dependency-free domain/reflection tests (Release) with <temp>\kmg-development-gate-c438f19cc13b4e919498844f66b638b7\scripts\msbuild-fixture.ps1
-Running dependency-free domain/reflection tests: <temp>\kmg-development-gate-c438f19cc13b4e919498844f66b638b7\artifacts\tests\Release\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe
+Building dependency-free domain/reflection tests (Release) with <temp>\kmg-development-gate-8887cedbe7174351a48ae282a631a799\scripts\msbuild-fixture.ps1
+Running dependency-free domain/reflection tests: <temp>\kmg-development-gate-8887cedbe7174351a48ae282a631a799\artifacts\tests\Release\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe
 Dependency-free domain/reflection tests passed.
 
-Gate level: Focused  (commit 23000becee78bf61af2578c7e51cd0be3811d330)
+Gate level: Focused  (commit 565502a0246b53da5bcb1c91f86a49edeff4e622)
 Ran:
   production compilation  0.1s
   domain-tests (focused)  0.1s
@@ -16,24 +16,24 @@ Deferred by policy:
   complete domain suite  - Focused level; runs at the sprint candidate boundary
   exact-reference frozen Release candidate  - Focused compiled production; immutable packaging is an explicit candidate boundary
   package assembly and strict validation  - Focused level; runs at the sprint candidate boundary
-Timings appended to <temp>\kmg-development-gate-c438f19cc13b4e919498844f66b638b7\artifacts\gate-timings.jsonl
+Timings appended to <temp>\kmg-development-gate-8887cedbe7174351a48ae282a631a799\artifacts\gate-timings.jsonl
 FOCUSED DEVELOPMENT CHECKPOINT. Production compiled; filter 'selected-behavior' selected related tests. Full/native/release qualification deferred.
 === production compilation ===
-Building Kingmaker Gunslinger (Release) with <temp>\kmg-development-gate-c438f19cc13b4e919498844f66b638b7\scripts\msbuild-fixture.ps1
+Building Kingmaker Gunslinger (Release) with <temp>\kmg-development-gate-8887cedbe7174351a48ae282a631a799\scripts\msbuild-fixture.ps1
 Development production compilation passed; package/release checks deferred.
 === domain-tests (focused) ===
 Repository validation skipped: the caller runs it, or this is a focused run.
-Building dependency-free domain/reflection tests (Release) with <temp>\kmg-development-gate-c438f19cc13b4e919498844f66b638b7\scripts\msbuild-fixture.ps1
-Running dependency-free domain/reflection tests: <temp>\kmg-development-gate-c438f19cc13b4e919498844f66b638b7\artifacts\tests\Release\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe
+Building dependency-free domain/reflection tests (Release) with <temp>\kmg-development-gate-8887cedbe7174351a48ae282a631a799\scripts\msbuild-fixture.ps1
+Running dependency-free domain/reflection tests: <temp>\kmg-development-gate-8887cedbe7174351a48ae282a631a799\artifacts\tests\Release\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe
+Building Kingmaker Gunslinger (Release) with <temp>\kmg-development-gate-8887cedbe7174351a48ae282a631a799\scripts\msbuild-fixture.ps1
 Repository validation skipped: the caller runs it, or this is a focused run.
-Building dependency-free domain/reflection tests (Release) with <temp>\kmg-development-gate-c438f19cc13b4e919498844f66b638b7\scripts\msbuild-fixture.ps1
-Running dependency-free domain/reflection tests: <temp>\kmg-development-gate-c438f19cc13b4e919498844f66b638b7\artifacts\tests\Release\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe
+Building dependency-free domain/reflection tests (Release) with <temp>\kmg-development-gate-8887cedbe7174351a48ae282a631a799\scripts\msbuild-fixture.ps1
+Running dependency-free domain/reflection tests: <temp>\kmg-development-gate-8887cedbe7174351a48ae282a631a799\artifacts\tests\Release\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe
 Dependency-free domain/reflection tests passed.
-Building Kingmaker Gunslinger (Release) with <temp>\kmg-development-gate-c438f19cc13b4e919498844f66b638b7\scripts\msbuild-fixture.ps1
 === repository wrapper, complete suite, exact build, package and strict validation ===
 === repository wrapper, complete suite, exact build, package and strict validation ===
 
-Gate level: Sprint  (commit 23000becee78bf61af2578c7e51cd0be3811d330)
+Gate level: Sprint  (commit 565502a0246b53da5bcb1c91f86a49edeff4e622)
 Ran:
   repository wrapper, complete suite, exact build, package and strict validation  0s
 Deferred by policy:
@@ -41,6 +41,6 @@ Deferred by policy:
   five-profile compatibility matrix  - Sprint level; standalone plus the touched seam only
   whole-roster persistence and module-disabled matrix  - Sprint level; targeted persistence only, and only for new serialized state
   runtime scenarios  - Driven by their own guarded orchestrators against the candidate this gate produced
-Timings appended to <temp>\kmg-development-gate-c438f19cc13b4e919498844f66b638b7\artifacts\gate-timings.jsonl
+Timings appended to <temp>\kmg-development-gate-8887cedbe7174351a48ae282a631a799\artifacts\gate-timings.jsonl
 === repository wrapper, complete suite, exact build, package and strict validation ===
 Development gate: PASS=13 FAIL=0; observed production/test children, publisher reuse/filter isolation, default names and package output guards. Offline orchestration only.

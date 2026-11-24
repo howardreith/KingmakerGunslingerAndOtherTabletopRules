@@ -1,7 +1,7 @@
 {
     "name":  "KingmakerGunslinger",
-    "sha256":  "4cbc662565de3c5608c6cb18dfc075b13fd6f574d98af0058ced2e02395ea446",
-    "mvid":  "bd268aa9-7524-4559-b580-9918f1fded45",
+    "sha256":  "1ef167cca4135ef8f561ac437c55984ed59777c3962012bf90d738cdc4d1c0e9",
+    "mvid":  "7c7a1479-98af-4eea-af25-e88ea9986839",
     "references":  [
                        "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
                        "UnityModManager, Version=0.31.1.0, Culture=neutral, PublicKeyToken=null",
@@ -20,5 +20,6 @@
                        "UnityEngine.ClothModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                        "UniRx, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                        "UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
-                   ]
+                   ],
+    "gitCommit":  "91139e4368ed5b2b56ff767203431e4dbde27edd"
 }

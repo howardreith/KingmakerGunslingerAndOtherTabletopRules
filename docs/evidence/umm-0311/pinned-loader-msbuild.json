@@ -1,14 +1,14 @@
 {
     "schema":  "kmg.pinned-loader-msbuild-tests.v1",
-    "commit":  "45b9b77097976c9b2c90594b2c5bcaa0928781ed",
+    "commit":  "92539bb24a8902eafbb8064edd993ee4e59aece6",
     "baseline_commit":  "35763430acc9eefc306b861045526a444690bc77",
     "installed_loader_measured":  {
                                       "unityModManager":  "0.33.0.0",
                                       "sha256":  "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
                                   },
-    "product_dll_sha256":  "40acc06fe131acfe108dff1c5493b4fa5f1491ae091fe4f372d5bbcb5029ec9e",
-    "passed":  9,
-    "total":  9,
+    "product_dll_sha256":  "778f58b9bab84a060e6dc7b9882f88694ca26031fe71be79ba210a04d09ab7be",
+    "passed":  12,
+    "total":  12,
     "cases":  [
                   {
                       "name":  "before-change-defaults-compile-against-installed-loader",
@@ -26,9 +26,24 @@
                       "detail":  "exit 0"
                   },
                   {
-                      "name":  "direct-msbuild-installed-loader-refused",
+                      "name":  "direct-msbuild-controlled-exact-set",
                       "passed":  true,
-                      "detail":  "KMGPIN: Pinned loader reference differs from its pin: UnityModManager/UnityModManager.dll"
+                      "detail":  "expected accepted; exit 0"
+                  },
+                  {
+                      "name":  "direct-msbuild-controlled-umm-only-mismatch-set",
+                      "passed":  true,
+                      "detail":  "expected UnityModManager/UnityModManager.dll; exit 1"
+                  },
+                  {
+                      "name":  "direct-msbuild-controlled-harmony-only-mismatch-set",
+                      "passed":  true,
+                      "detail":  "expected UnityModManager/0Harmony12.dll; exit 1"
+                  },
+                  {
+                      "name":  "direct-msbuild-installed-loader-judged-by-bytes",
+                      "passed":  true,
+                      "detail":  "expected UnityModManager/UnityModManager.dll; exit 1"
                   },
                   {
                       "name":  "direct-msbuild-altered-pinned-copy-refused",
@@ -53,7 +68,7 @@
                   {
                       "name":  "stray-hintpath-to-unitymodmanager-copy-refused",
                       "passed":  true,
-                      "detail":  "Loader compiler references must be the verified pinned files in <temp>\\kmg-pinned-loader-f6499c63e4614d5dbe39a061a6f41a6a\\clone with space\\artifacts\\references\\loader\\UnityModManager\\; resolved: <temp>\\kmg-"
+                      "detail":  "Loader compiler references must be the verified pinned files in <temp>\\kmg-pinned-loader-a90aee0b92d948a98a6a6d08fdcd0572\\clone with space\\artifacts\\references\\loader\\UnityModManager\\; resolved: <temp>\\kmg-"
                   }
               ]
 }
