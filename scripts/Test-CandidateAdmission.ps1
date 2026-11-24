@@ -43,7 +43,10 @@ function New-ZipVariant([string]$From, [string]$To, [hashtable]$Replace = @{}, [
     } finally { $out.Dispose(); $in.Dispose() }
 }
 
-$temp = Join-Path ([IO.Path]::GetTempPath()) ('kmg-candidate-admission-' + [Guid]::NewGuid().ToString('N'))
+# Build-Local's repository validation requires a checkout inside the lab, so the disposable clone lives under the lab's
+# worktrees folder (and is removed afterwards).
+$lab = Split-Path -Parent (Split-Path -Parent $source)
+$temp = Join-Path $lab ('worktrees\candidate-admission-' + [Guid]::NewGuid().ToString('N'))
 $clone = Join-Path $temp 'clone with space'
 try {
     & git clone -q --no-hardlinks $source $clone
