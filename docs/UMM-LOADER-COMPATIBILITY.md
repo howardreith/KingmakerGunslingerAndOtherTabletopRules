@@ -18,14 +18,14 @@ This candidate checks the pinned-loader build change (PR #220). It is a developm
 
 | Item | Value |
 |---|---|
-| Producing commit | `4f196b26d1` (round 4) |
-| Command | `scripts\Build-Local.ps1 -DevelopmentPurpose umm-0311-baseline -DevelopmentTestFilter model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged -ReferenceBundleDir <private bundle>`, 469 seconds (receipt 17:41:47 UTC), 1 of 3189 registered domain tests selected and passed; then `loader.production-dll-references-pinned-loader` on the exact compiler output, bound by its compile-time digest (passed). The package's strict validation ran once, inside `package.ps1`, and both receipts were written from the measurements compared: the receipt records the exact compiler output, which equals the packaged DLL (`compilerDllSha256` = `packagedDllSha256` = `dllSha256`), with the embedded source stamp `4f196b26d1` |
+| Producing commit | `49be3fd0e2` (round 5) |
+| Command | `scripts\Build-Local.ps1 -DevelopmentPurpose umm-0311-baseline -DevelopmentCompleteSuite -ReferenceBundleDir <private bundle>`, 502 seconds (receipt 19:48:52 UTC), the complete suite: 3189 of 3189 registered domain tests selected, 0 failures, `loader.production-dll-references-pinned-loader` reported NOT APPLICABLE there (deferred, never counted as a pass); then that case on the exact compiler output, bound by its compile-time digest (passed). The console is `docs/evidence/umm-0311/development-build-console.txt`. The package's strict validation ran once, inside `package.ps1`, and both receipts were written from the measurements compared: the receipt records the exact compiler output, which equals the packaged DLL (`compilerDllSha256` = `packagedDllSha256` = `dllSha256`), with the embedded source stamp `49be3fd0e2`. Its `sourceStateSha256` (`ed06a2da…71bc`) is the fingerprint of an exactly clean checkout of that commit |
 | Compiler loader references | `UnityModManager.dll` 0.31.1.0 `2e038ff2…c2c4` and `0Harmony12.dll` 1.2.0.1 `aa1cd483…1292` from `artifacts\references\loader` (pins file `b13bed40…`) |
-| Package | `KingmakerGunslinger-0.0.195-development-umm-0311-baseline-4f196b26d112.zip`, SHA-256 `928a318845a85ddf3444b8b0dbfb16bb7cd829764fb5adcc9bfb2a6a5f97ad32` |
-| Packaged DLL | SHA-256 `b1e07c2a3e0f28e6a19534e0a10c2cbc9e61c57f35d1ad08d79321c725a5e255`, MVID `0cfcbddc-e648-4e89-b4d5-9d1c238ca0a5` |
+| Package | `KingmakerGunslinger-0.0.195-development-umm-0311-baseline-49be3fd0e28c.zip`, SHA-256 `71347c1273b1a212f3af38d43231010fa7c40acc7794880c1a80cbfc104aa84b` |
+| Packaged DLL | SHA-256 `3507c7554dc3a82bff7684616ab02ac8b0681c1ced4fdcdb7dda54319b5570d1`, MVID `ac6e8b46-3e64-4251-bf96-14cd3e784869` |
 | DLL loader references (AssemblyRef table) | `UnityModManager, Version=0.31.1.0, Culture=neutral, PublicKeyToken=null`, `0Harmony12, Version=1.2.0.1, Culture=neutral, PublicKeyToken=null` |
 | Standalone validation | `scripts\validate-package.ps1 -PassThru`: passed (one binary, complete archive entry set, packaged DLL references equal the pins) |
-| Candidate admission | `scripts\Test-CandidateAdmission.ps1`: 46/46 on a development candidate that Build-Local built in a temporary clone of `4f196b26d1` (round 4; the round-3 run was 29/29 at `91139e4368`). Added in round 4: a receipt naming another packaged-DLL digest or source stamp; an unstamped MSBuild-route compile under an earlier-format receipt (refused for staging); a shipped document under `docs/` changed, committed or not; an uncommitted edit of the historical release record; the deployment decisions (the under-lease admission must be the first candidate; historical and development expectations and record fields); the checked extractor's directory records; the loader admission's carried identity and verified staging tree, and its private copy removed when the session stops before staging. The matching candidate is admitted. Refused before staging: a newer-compiled DLL (v0.0.187, UnityModManager 0.33.0.0); an extra runtime DLL at the archive root or in the mod tree; a noncanonical entry landing beside the mod directory; an array-valued minimum; a receipt naming another build's MVID or DLL hash; another baseline-compatible build (the v0.0.195 DLL, stamped `ef0e1fe15d`) supplying both the loose and packaged DLL under a receipt naming this producer; a candidate after a project, reference-helper, shipped README or packaging-helper change. A change confined to `docs/` keeps the candidate admitted. A relative package path after a location change is accepted. Historical control: the recorded v0.0.188 release is admitted, while a changed archive, a same-version development package and conflicting mode arguments are refused. Staging refuses a package replaced before the private copy and stages only the admitted bytes after the supplied path changes (Deploy-Local and loader harness). A purpose containing an apostrophe gets the purpose-validation error before any child process. |
+| Candidate admission | `scripts\Test-CandidateAdmission.ps1`: 59/59 on a development candidate that Build-Local built in a temporary detached clone of `49be3fd0e2` (round 5; round 4 was 46/46 at `4f196b26d1`, round 3 29/29 at `91139e4368`). Added in round 5: a receipt with only an inconsistent compiler MVID (refused) and an earlier-format receipt (admitted); a receipt with an inconsistent producer fingerprint and a package produced from a modified, then restored, shipped input (both refused) beside the clean detached producer (admitted); a detached receipt through deployment expectations and record construction, with the named-branch control; a directory record below a file (extractor and validator refuse) and an ordinary directory record (validator accepts); loader staging with a changed non-DLL file or a removed `Info.json` after admission (refused, previous `Mods` and the ZIP intact) and the genuine tree (staged completely); the admission mode for each route and its `-Report` projection; the package measurement return. Added in round 4: a receipt naming another packaged-DLL digest or source stamp; an unstamped MSBuild-route compile under an earlier-format receipt (refused for staging); a shipped document under `docs/` changed, committed or not; an uncommitted edit of the historical release record; the deployment decisions (the under-lease admission must be the first candidate; historical and development expectations and record fields); the checked extractor's directory records; the loader admission's carried identity and verified staging tree, and its private copy removed when the session stops before staging. The matching candidate is admitted. Refused before staging: a newer-compiled DLL (v0.0.187, UnityModManager 0.33.0.0); an extra runtime DLL at the archive root or in the mod tree; a noncanonical entry landing beside the mod directory; an array-valued minimum; a receipt naming another build's MVID or DLL hash; another baseline-compatible build (the v0.0.195 DLL, stamped `ef0e1fe15d`) supplying both the loose and packaged DLL under a receipt naming this producer; a candidate after a project, reference-helper, shipped README or packaging-helper change. A change confined to unshipped documentation (a review note under `docs/`, not listed in `scripts/package-documents.json`) keeps the candidate admitted; a shipped document is a material input wherever it lives. A relative package path after a location change is accepted. Historical control: the recorded v0.0.188 release is admitted, while a changed archive, a same-version development package and conflicting mode arguments are refused. Staging refuses a package replaced before the private copy and stages only the admitted bytes after the supplied path changes (Deploy-Local and loader harness). A purpose containing an apostrophe gets the purpose-validation error before any child process. |
 
 **Static loader audit of this DLL.** The frozen packaged DLL was checked against four deduplicated targets. Each target is
 a UnityModManager build plus the Harmony 2 it references and 0Harmony12 1.2.0.1:
@@ -146,10 +146,16 @@ No compatibility adapter was needed and none was added.
     embedded source stamp (`AssemblyMetadata` `GitCommit`). Both receipts are written from the measurements that were
     compared (round 4): the compiler-output identity, the package digest measured around the one strict validation
     `package.ps1` runs (Build-Local reuses its measured DLL identity instead of validating the ZIP again), and the firearm
-    audio digests captured once.
+    audio digests captured once. Since round 5 `package.ps1 -PassThruMeasurement` returns that measurement as one object
+    (path, package digest, measured DLL identity); without the switch its output is still the package path, and it
+    writes no other file, so no measurement destination can collide with the package.
   - Candidate admission (`Deploy-Local.ps1`, the loader harness preflight) requires the packaged DLL's SHA-256 and MVID to
     equal the receipt's, and its embedded source stamp to be the receipt's producing commit. Every other identity the
-    receipt records (`packagedDllSha256`, `embeddedGitCommit`) must agree with the measured DLL too (round 4). Every file
+    receipt records (`packagedDllSha256`, `embeddedGitCommit`, and each of `compilerDllSha256` and `compilerDllMvid` on
+    its own) must agree with the measured DLL too (rounds 4 and 5). Staging admission also verifies the producer claim:
+    the DLL's source stamp must be the receipt's commit, and the receipt's source-state fingerprint must be the
+    fingerprint of an exactly clean checkout of that commit (round 5), so a package built from modified inputs, even
+    inputs restored afterwards, is refused. Every file
     outside `docs/` must be unchanged since that commit: product sources, shipped files, assets and every build,
     packaging and validation helper. The documents `package.ps1` ships are material wherever they live, `docs/`
     included: their list is `scripts/package-documents.json`, which `package.ps1` reads and the freshness check uses
@@ -158,20 +164,26 @@ No compatibility adapter was needed and none was added.
     checked entries and requires the extracted DLL to be the admitted DLL before any target is replaced, so bytes that
     replace the supplied path after admission are never staged. The checked extractor also validates directory records
     (round 4): a directory record carries no data, appears once, and never shares a destination with a file; no file is
-    the parent of another entry.
+    the parent of another entry, file or directory record (round 5).
   - `Deploy-Local.ps1` admits again under the runtime lease; that admission must be the first one (package and DLL
     digests, MVID, producing commit, version and mode), or nothing is deployed. A historical release has no build
-    receipt, so its expected firearm audio is the audio inside its digest-bound release package, and its deployment
-    record names the release tag (`branch` `tag:<tag>`, `sourceStateSha256` `historical-release <tag>`, `candidateKind`
-    `historical-release`). Every record field is established before the target is replaced (round 4).
+    receipt, so its expected firearm audio is the audio inside its digest-bound release package. Its deployment record
+    has no branch or source-state fingerprint (`branch` and `sourceStateSha256` null, `sourceStateAvailable` false) and
+    names the release in `releaseTag`, with `candidateKind` `historical-release` (round 5). A Build-Local record keeps its
+    receipt's branch, which is empty for a detached checkout; an absent field is refused. Every record field is
+    established before the target is replaced.
   - The loader harness admits in its own process, with every value passed as a bound parameter. A development purpose is
     validated before that process starts, and the harness files are checked first. Since round 4 that process also
     extracts the admitted copy with the checked extractor and verifies the extracted DLL, and reports the admitted
     identity (mode, version, producing commit, release tag, package and DLL digests, MVID). The session records that
-    identity in its summary and expects the admitted DLL digest at launch. Staging checks the owner set first, verifies
-    the private tree again before `Mods` is replaced, and compares the staged DLL with the admitted digest. The private
-    copy belongs to the session: it is removed when staging consumes it, when the session stops before staging
-    (preflight or lease refusal), and by the session's final cleanup.
+    identity in its summary (the mode is `build-local`, `development` or `historical-release`; `-Report` shows it, and an
+    older summary reports it as not recorded) and expects the admitted DLL digest at launch. Staging checks the owner set
+    first. Since round 5 the complete replacement is prepared beside `Mods`: the extracted product tree must equal the
+    admitted archive file for file (path and SHA-256, `Info.json` and every non-DLL file included), the owner set, the
+    product and the harness are assembled and the product tree verified again, and only then is the prepared folder
+    swapped in. Any failure before the swap leaves the previous `Mods` untouched; a failed swap restores it. The private
+    copy belongs to the session: it is removed when staging ends, when the session stops before staging (preflight or
+    lease refusal), and by the session's final cleanup.
   - A released package is admitted only as an explicit historical release control: `-HistoricalReleaseControl` with
     `-HistoricalReleaseVersion`, exclusive of `-DevelopmentPurpose`. It is checked against the committed release record
     `scripts/historical-release-records.json`: package digest, release tag resolving to the recorded commit, and
@@ -196,7 +208,7 @@ No compatibility adapter was needed and none was added.
     advice from the actual entry points: an external mismatched folder (left untouched; build against the verified cache
     after `build.ps1 -CompileOnly`), a mismatched cache file (inspect and remove that file, then `-CompileOnly`), and an
     absent cache (the first direct-MSBuild error is the missing loader reference with the bootstrap).
-  - `scripts/Test-CandidateAdmission.ps1` (46 checks) runs on a real Build-Local development candidate in a temporary
+  - `scripts/Test-CandidateAdmission.ps1` (59 checks) runs on a real Build-Local development candidate in a temporary
     clone (see the current development candidate above). It covers package entries, receipt binding including another
     baseline-compatible build's source stamp, material inputs, historical release controls, staging from the admitted copy
     and the purpose passed as data.
@@ -207,8 +219,16 @@ No compatibility adapter was needed and none was added.
     digest, so bytes replacing the shared output meanwhile are refused, never inspected. Build-Local no longer compiles
     production with MSBuild for its domain-test run: that run defers the case, and Build-Local then runs it on its exact
     compiler output with that output's digest (one production compile per candidate). A runner started without a
-    binding (the portable .NET 8 runner, a direct runner call) has no artifact to inspect, so the case does not apply
-    there, unless it is selected by name, which still refuses without a binding.
+    binding (the portable .NET 8 runner, a direct runner call) has no artifact to inspect. Since round 5 the runner has
+    a NOT APPLICABLE outcome, which is never reported or counted as PASS: an unfiltered unbound run and a Build-Local
+    deferral report the case NOT APPLICABLE, and any focused selection (a `KMG_TEST_FILTER` substring or `--test-prefix`)
+    without a bound DLL fails. `test-domain.ps1` refuses a selected, non-deferred run whose production DLL is missing, and
+    its binding changes, private copy, digest check and runner share one cleanup scope that restores the caller's
+    variables. Selected-test evidence accepts NOT APPLICABLE only for this deferred case.
+  - `scripts/Test-LoaderCaseSelection.ps1` (7 checks, this checkout) exercises those selection semantics: the bound
+    wrapper run passes; substring and `--test-prefix` selections without a DLL fail; the unfiltered and deferred runs
+    report NOT APPLICABLE; a DLL removed during preparation is refused; a digest refusal restores the caller's bindings
+    and leaves no private copy.
   - `Test-DevelopmentCandidate.ps1` proves that the compiler receives the pinned directory and that a tampered loader is
     refused before any child step.
 
