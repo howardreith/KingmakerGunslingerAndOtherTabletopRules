@@ -1,7 +1,24 @@
 # Sprint 7 record: presentation and audio remediation (S7 T1–T7)
 
-Status: **IN REVIEW (round 7 of 7, 2026-11-24, under owner amendment 3). Nothing is merged or released, and no visual or
-listening choice has been accepted.**
+Status: **BLOCKED (2026-11-24): review round 7 of 7 on `3e2baea4b4` returned changes_required and the controller stopped
+the enrollment at the review cap ("review-round cap reached for final (7/7)"). Owner amendment 3 makes this a mandatory
+stop: it authorizes no further review, candidate or resumption. Nothing is merged or released, and no visual or listening
+choice has been accepted.**
+
+Round-7 review outcome:
+- verified: R5-F3, R6-F1, R6-F2, R6-F3 and R6-F4 (the final collector was executed natively in `…224949Z`);
+- still open: R4-F1 (the abandonment drivers' recovery decisions check selected fields, not the complete child outcome,
+  so an additional cleanup failure beside the injected one could pass), R5-F1 (a late unit that survives its destruction
+  wait, or a further correlated unit, reaches only the probe's problems, not the cleanup outcome ProbeSlot reads) and
+  R6-F5 (this record's round-7 tally and harness suffix, corrected below);
+- raised: R7-F1 (the evaluator's null test misreads String-typed nulls in memory and accepts an omitted endUtc), R7-F2
+  (ordinary Dust commands can be interrupted before their process is retained; one release wraps all command
+  interruptions), R7-F3 (a hook or trace constructor whose rollback fails leaves no instance, so its residual never
+  reaches the isolation), R7-F4 (a direct cue-source retirement that throws is marked retired and its failure is lost),
+  R7-F5 (the Dust driver does not repair its injected leftover if it is itself disposed during recovery) and R7-F6 (the
+  settled evaluator does not correlate the selected and terminal cue IDs or consume the emitted stop count).
+All are verification-code or record findings; no product presentation or mechanics finding was raised. Correcting the
+RuntimeTesting findings would need a fourth candidate and further review, which need a new owner decision.
 
 **Owner amendment 3** (revision 3, sha256 `3321dd31…44e0`; message sha256 `70e46f79…45cf4`; stored outside the worktree at
 `<lab>/owner-guidance/S7-OWNER-AMENDMENT-3-2026-11-24.md`) authorized one resumption after the round-6 no-progress stop
@@ -12,7 +29,7 @@ The applicable owner amendments are 1 (revision 1, `59be8e3f…31e0`), 2 (revisi
 **Round 7** addresses the eight findings open after round 6 (matrix in §7): R4-F1, R5-F1, R5-F3 and R6-F1 to R6-F5. All
 are verification code or records; no product presentation or mechanics changed. One cumulative cleanup result now governs
 the effects phase (cell admission and final restoration) and the probe slot. The third and final candidate
-**`9c39b1ff7f`** (package `49f8b88c…6413`, DLL `5969f596…e2c3`, harness `ee7742a4…a395`) ran:
+**`9c39b1ff7f`** (package `49f8b88c…6413`, DLL `5969f596…e2c3`, harness `ee7742a4…a373`) ran:
 - `…223809Z` effects: 35 of 36 structured checks (r6 16/16). Every new isolation path passed (callback-hook abandonment,
   Dust abandonment with the exact execution observed settled, phase restoration). The callback-loss characterization
   found no overlap in its declared 16 s ("not-both-playing", retained FAIL);
@@ -24,8 +41,9 @@ the effects phase (cell admission and final restoration) and the probe slot. The
   bytes after the third candidate, which amendment 3 does not allow; it is the remaining blocker for an in-game PASS of
   that predicate.
 
-Validation spent: 65 min 2 s of the 75-minute ceiling (39 min 4 s in round 6, 25 min 58 s in round 7), before the round-7
-controller gates.
+Validation spent: 65 min 42 s of the 75-minute ceiling: 39 min 4 s in round 6, 25 min 58 s of round-7 commands, and the
+eleven round-7 controller gates (40.1 s wrapper wall time; their receipts record 19.1 s inside the gates). 9 min 18 s of
+the ceiling remain unused.
 
 Round-6 stop (historical): after review round 6 on `b37faaf883` the controller stopped the enrollment under its mandatory
 no-progress rule ("no progress: R4-F1 open for 3 consecutive reviews"). Owner amendment 3 authorized the resumption.
@@ -80,7 +98,7 @@ Spent in round 7 (wall clock, failed attempts included):
 | 1 | Harness build (uncommitted round-7 source) | PASS | 1.2 s |
 | 2 | Controller `verify` (uncommitted) | Refused: gates run on a committed candidate | 1.7 s |
 | 3 | Focused gate `sprint7-visual` (local) | PASS, 22 tests | 20.8 s |
-| 4 | Harness build (`9c39b1ff7f` source) | PASS, `ee7742a4…a395` | 1.3 s |
+| 4 | Harness build (`9c39b1ff7f` source) | PASS, `ee7742a4…a373` | 1.3 s |
 | 5 | Focused gate `sprint7-visual` (local) | PASS | 1.7 s |
 | 6 | Build-Local candidate 3 (`9c39b1ff7f`) | PASS | 7 min 2 s |
 | 7 | Session `20261124T223809Z-…-s7-fx` | FAIL, retained (no cue overlap in the declared search) | 8 min 0 s |
@@ -88,7 +106,9 @@ Spent in round 7 (wall clock, failed attempts included):
 | 9 | Session `20261124T224949Z-…-s7-fx` (rerun, same package) | FAIL, retained (evaluator null typing) | 8 min 9 s |
 | 10 | Focused gate `sprint7-visual` (local, test-only addition) | PASS | 5.5 s |
 
-Round 7 total before the controller's required gates: 25 min 58 s; cumulative 65 min 2 s of 75. The game window
+| 11 | Eleven required controller gates on `3e2baea4b4` (118 selected-test executions: 22 `sprint7-visual`, 96 neighbour) | PASS | 40.1 s wall (receipts 19.1 s) |
+
+Round 7 total: 25 min 58 s before the controller's required gates, 26 min 38 s with them; cumulative 65 min 42 s of 75. The game window
 (22:30Z–22:58Z) was agreed with the other Kingmaker session on this machine and handed back; every session completed its
 transaction and verified the owner files.
 
@@ -794,7 +814,8 @@ Neighbour selections: `summon-playtest-r3`, `-r4`, `-r6`, `-r7`, `sprint22-`, `s
 `native-admission`, `native-profile` and `loader-compat-probe`. Counts by gate run: round 5 ran 111 tests locally; the
 round-6 controller receipts on `b37faaf883` report 116 selected-test executions (20 in `sprint7-visual`, 96 in the
 neighbour filters), all passing. Round 7's local focused runs selected 22 `sprint7-visual` tests; the round-7 controller
-receipts are on the reviewed head. The controller
+receipts on `3e2baea4b4` report 118 selected-test executions (22 in `sprint7-visual`, 96 in the neighbour filters), all
+passing. The controller
 records the required gate receipts on the reviewed head.
 
 ## 6. Owner decisions pending and open scopes
