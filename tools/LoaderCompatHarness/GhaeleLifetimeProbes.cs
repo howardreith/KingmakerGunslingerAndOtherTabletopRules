@@ -790,7 +790,7 @@ namespace KmgLoaderCompatHarness
             var units = (UnitEntityData[])runner.GetMethods(Any).Single(m => m.Name == "CastExpandedSummoningVariant" && m.GetParameters().Length == 5)
                 .Invoke(null, new object[] { library.GetAllBlueprints().ToArray(), main, variant, null, evidence });
             UnitEntityData unit = units != null && units.Length == 1 ? units[0] : null;
-            if (unit != null) units.Add(unit);
+            if (unit != null) this.units.Add(unit);
             return unit;
         }
 

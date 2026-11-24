@@ -247,7 +247,7 @@ namespace KmgLoaderCompatHarness
                 .Invoke(null, new object[] { library.GetAllBlueprints().ToArray(), main, variant, null, evidence });
             UnitEntityData unit = units.Length == 1 ? units[0] : null;
             if (unit == null) return null;
-            units.Add(unit);
+            this.units.Add(unit);
             runner.GetMethod("RemoveExpandedSummoningAppearanceBuffs", Any).Invoke(null, new object[] { unit });
             runner.GetMethod("SetExpandedSummoningBrainActive", Any).Invoke(null, new object[] { unit, false });
             Wake(unit);
