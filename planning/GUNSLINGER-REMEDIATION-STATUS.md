@@ -235,6 +235,23 @@ DEF-06 is worked on `codex/def06-controller-launcher-consolidation`, stacked on 
 identities. The inherited complete-suite result stays 3,147 of 3,148 (the pre-existing `model-d` firearm-source pin
 from RISK-01).
 
+## Sprint 7 (started 2026-11-23; agent-review controller, foreground)
+
+**Current state (2026-11-24): development candidate for review on draft PR #219** (record
+`docs/GUNSLINGER-SPRINT7-RECORD.md`; enrollment `kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1`; base
+post-release master `35763430ac`, v0.0.195). Nothing is merged or released. Every visual and listening judgment is the
+owner's.
+
+| Story / record | Category | Result | Evidence | Delivery state | Owner decision |
+|---|---|---|---|---|---|
+| S7 T1 / REP-04 | historical incident | Attributed, no product change: a native looping non-cutout dissolve (also on an unsummoned donor) and an old review path that did not tick movement | `c0870c24de` `gh`/`ghd` PASS | Disposition, draft PR | Accept attribution |
+| S7 T2 / VIS-01 | asset defect | Generator repair: 48 zero-area triangles and inside-out welded membranes removed | `ed88ad994e`; native before/after PASS | Implemented, draft PR | Visual acceptance |
+| S7 T3 / VIS-02 | asset defect | Exact-source repair: 16 opposing normal corners to 0 | `d864e7b01f`; native before/after PASS | Implemented, draft PR | Visual acceptance |
+| S7 T4 / VIS-03 | presentation | Scoped override: "within twice this creature's speed", no school | `2614ea3bd6`; windows with controls PASS | Implemented, draft PR | Wording; controller mode not rendered |
+| S7 T5 / VIS-04 | audio | One owned cue per resolved tail hit (`Sweetener_Low_06_Quake`, provisional) | `d136e7b560` `fx` PASS | Implemented, draft PR | Listening choice |
+| S7 T6 / VIS-05 | presentation | Owned per-instance dust recolour of the Dust Mephit's own cone | `d136e7b560` `fx` PASS | Implemented, draft PR | Visual acceptance |
+| S7 T7 / VIS-06 | audio decision | Proposed: keep `InspireCourage`; six alternatives sampled | baseline and candidate `r6` PASS | Disposition, draft PR | Listening decision |
+
 ## Sprint 6 (started 2026-11-22; manual review workflow)
 
 **Current state (2026-11-23): Sprint 6 disposition accepted; merged and released in v0.0.195** (`docs/GUNSLINGER-SPRINT6-DISPOSITION.md`).

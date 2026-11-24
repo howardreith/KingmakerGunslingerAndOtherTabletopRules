@@ -1,5 +1,16 @@
 # Known issues and conservative adaptations
 
+- Sprint 7 presentation and audio (development candidate on draft PR #219; not released; record
+  `docs/GUNSLINGER-SPRINT7-RECORD.md`).
+  - The Ghaele's body shows a native coloured dissolve band that loops about every 5 seconds. It is native to the
+    azata body (also on an unsummoned native Ghaele), removes no surface and does not shorten the summon; the earlier
+    "progressive dissolve" report measured this loop. No change.
+  - The owned Trample/Overrun target row now reads "within twice this creature's speed" in the description and HUD
+    windows; the controller (gamepad) window shares the same text code but was not rendered.
+  - The Ankylosaurus impact cue and the Trumpet Archon blast cue are provisional choices pending listening.
+  - The Dust Mephit's breath is a recoloured native cold cone, not a separately authored dust effect. The game only
+    spawns that cone effect when the breath's launch point differs from the previous one, so repeated breaths from
+    exactly one spot can show no cone; this native behavior applies to every cone breath and was not changed.
 - A creature that died inside a summoned Purple Worm or Giant Flytrap stayed "swallowed" and kept that mouth shut
   (S6 VER-02 G3, D1; the repair is accepted for the demonstrated Purple Worm/Giant Flytrap scope on branch
   `codex/s6-ver02-c3a-swallow-engulf`; released in v0.0.195).
