@@ -1,12 +1,12 @@
 {
- "schema": "kmg.sprint7.audio-context-r4.v1",
+ "schema": "kmg.sprint7.audio-context-r4.v2",
  "packet": {
-  "location": "<lab>/private/s7-listening-packet-r4/ (index.html, playlist.m3u8, MANIFEST.json, README.txt, clips/) and <lab>/private/s7-listening-packet-r4.zip",
-  "zipSha256": "b2fddccddbabaa048d4eef124f30545b0bf78acd70af06f6836c5d4f12f217d0",
-  "indexSha256": "72386a5b6c00912ac43674201cb267df316f1848d89b4ae71dbd5ab90724e4f2",
-  "manifestSha256": "7cbc734fa35026e898eca815abb4a443e7682be35417ae7bb9e14c9db54fcd3c",
+  "location": "<lab>/private/s7-listening-packet-r5/ (index.html, playlist.m3u8, MANIFEST.json, README.txt, clips/) and <lab>/private/s7-listening-packet-r5.zip",
+  "zipSha256": "2b5f461050807c6593de62a397e0ac16606f6d952729d999e425c88ddfed2565",
+  "indexSha256": "ab050bf65a92f452920150623cac05f31750a2c824cd1495cb2adffb8c119048",
+  "manifestSha256": "6bd8b2bcf7104f7a316b0ffb9de82f2f5ead22bf992690e47d1f466445743070",
   "playlistSha256": "a0c41a40f7d4036f6d6e5b0dc3c5cb7041548183d1ec5ac3577fb3281ae8792a",
-  "verification": "every clip copied with a matching SHA-256; each decodes as 16-bit PCM WAV (Python wave) and loads in the Windows WAV decoder (System.Media.SoundPlayer.Load, no playback); every index and playlist link resolves; the zip passes testzip and holds every clip. Browser playback was not exercised.",
+  "verification": "every clip copied with a matching SHA-256 (same excerpts as round 4); each decodes as 16-bit PCM WAV (Python wave) and loads in the Windows WAV decoder (System.Media.SoundPlayer.Load, no playback); every relative index and playlist link resolves inside the packet folder; the zip passes testzip and holds every clip. Browser playback was not exercised.",
   "privacy": "game audio from the owner installation; lab only, not committed, not published, not attached."
  },
  "recording": {
@@ -30,7 +30,7 @@
  ],
  "notes": [
   "Recording: WASAPI loopback of the default output device (whole device mix, not an isolated process), 48 kHz stereo 32-bit float, lab file runtime-evidence/s7/audio-r4/r4e-fx-device-audio.wav (SHA-256 f67b1d4f9294461f46f721cbc89b37c975ed94be650b312845fc25ae4b6ae37f), started 2026-11-24T17:07:17.5817796Z; excerpts are 16-bit PCM copies cut by UTC.",
-  "Listener: the Wwise listener follows the game camera; distances are camera to emitter. In-play distances were measured in the event frame; sample distances at the observer post.",
+  "Listener: the Wwise listener follows the game camera; distances are camera to emitter. The two tail hits were measured in the resolving frame, the frame their cues posted. The Trumpet and Vrock in-play distances were observed one frame after posting (exact posting distance not available). Isolated sample distances were taken at the observer post.",
   "Earlier excerpts (round 3, session 20261124T061437Z) remain in the lab at runtime-evidence/s7/review-r3/. Their tail-hit distance (37.45 m) was sampled after both strikes and a further 4 s wait, not at posting; the R6 Trumpet distance was not measured. They are not part of this packet.",
   "Private: game audio from the owner installation. Do not commit, publish or attach it anywhere public."
  ],
@@ -50,7 +50,7 @@
    "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
    "listener": {
     "atEventMetres": 37.45,
-    "measured": "game camera (Wwise listener) to emitter in the resolving frame, the frame the cue posted"
+    "measured": "game camera (Wwise listener) to emitter in the resolving frame, the same frame the cue posted"
    },
    "levels": {
     "peakDbfs": -2.4,
@@ -82,7 +82,7 @@
    "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
    "listener": {
     "atEventMetres": 37.45,
-    "measured": "in the resolving frame"
+    "measured": "in the resolving frame, the same frame the cue posted"
    },
    "levels": {
     "peakDbfs": -2.7,
@@ -138,7 +138,7 @@
    "intervalStartUtc": "2026-11-24T17:11:35.790Z",
    "seconds": 4.5,
    "event": "Sweetener_Low_06_Quake",
-   "playingId": null,
+   "playingId": 2091,
    "emitter": "fixture caster (KMG_Runtime_Sprint32_Caster)",
    "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
    "listener": {
@@ -170,7 +170,7 @@
    "intervalStartUtc": "2026-11-24T17:11:40.400Z",
    "seconds": 4.5,
    "event": "Physical_Hit_03_Punch",
-   "playingId": null,
+   "playingId": 2143,
    "emitter": "fixture caster (KMG_Runtime_Sprint32_Caster)",
    "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
    "listener": {
@@ -202,7 +202,7 @@
    "intervalStartUtc": "2026-11-24T17:11:45.000Z",
    "seconds": 4.5,
    "event": "Earthblast_Hit",
-   "playingId": null,
+   "playingId": 2196,
    "emitter": "fixture caster (KMG_Runtime_Sprint32_Caster)",
    "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
    "listener": {
@@ -234,7 +234,7 @@
    "intervalStartUtc": "2026-11-24T17:11:49.600Z",
    "seconds": 4.5,
    "event": "DustCritHeavy",
-   "playingId": null,
+   "playingId": 2241,
    "emitter": "fixture caster (KMG_Runtime_Sprint32_Caster)",
    "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
    "listener": {
@@ -266,7 +266,7 @@
    "intervalStartUtc": "2026-11-24T17:11:54.200Z",
    "seconds": 4.5,
    "event": "MediumBluntNatural_Flesh",
-   "playingId": null,
+   "playingId": 2327,
    "emitter": "fixture caster (KMG_Runtime_Sprint32_Caster)",
    "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
    "listener": {
@@ -302,8 +302,12 @@
    "emitter": "Trumpet Archon (KMG_Summoning_Unit_TrumpetArchon)",
    "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
    "listener": {
-    "atEventMetres": 37.09,
-    "measured": "game camera to emitter in the frame the cue record appeared (cue frame 4975, observed 4976)"
+    "atPostingMetres": null,
+    "atPosting": "not available",
+    "observedFrameMetres": 37.09,
+    "postingFrame": 4975,
+    "observedFrame": 4976,
+    "measured": "game camera to emitter in frame 4976, one frame after the cue posted in frame 4975"
    },
    "levels": {
     "peakDbfs": -5.5,
@@ -334,8 +338,12 @@
    "emitter": "Vrock (KMG_Summoning_Unit_Vrock)",
    "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
    "listener": {
-    "atEventMetres": 40.05,
-    "measured": "in the frame the cue record appeared"
+    "atPostingMetres": null,
+    "atPosting": "not available",
+    "observedFrameMetres": 40.05,
+    "postingFrame": 4638,
+    "observedFrame": 4639,
+    "measured": "game camera to emitter in frame 4639, one frame after the cue posted in frame 4638"
    },
    "levels": {
     "peakDbfs": -3.5,
@@ -391,7 +399,7 @@
    "intervalStartUtc": "2026-11-24T17:11:58.800Z",
    "seconds": 4.5,
    "event": "InspireCourage",
-   "playingId": null,
+   "playingId": 2378,
    "emitter": "Trumpet Archon (KMG_Summoning_Unit_TrumpetArchon)",
    "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
    "listener": {
@@ -423,7 +431,7 @@
    "intervalStartUtc": "2026-11-24T17:12:03.400Z",
    "seconds": 4.5,
    "event": "InspireGreatness",
-   "playingId": null,
+   "playingId": 2442,
    "emitter": "Trumpet Archon (KMG_Summoning_Unit_TrumpetArchon)",
    "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
    "listener": {
@@ -455,7 +463,7 @@
    "intervalStartUtc": "2026-11-24T17:12:08.000Z",
    "seconds": 4.5,
    "event": "CacophonousCall",
-   "playingId": null,
+   "playingId": 2492,
    "emitter": "Trumpet Archon (KMG_Summoning_Unit_TrumpetArchon)",
    "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
    "listener": {
@@ -487,7 +495,7 @@
    "intervalStartUtc": "2026-11-24T17:12:12.600Z",
    "seconds": 4.5,
    "event": "AoE_Sonic_Large",
-   "playingId": null,
+   "playingId": 2562,
    "emitter": "Trumpet Archon (KMG_Summoning_Unit_TrumpetArchon)",
    "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
    "listener": {
@@ -519,7 +527,7 @@
    "intervalStartUtc": "2026-11-24T17:12:17.200Z",
    "seconds": 4.5,
    "event": "Sweetener_High_04_Celestial",
-   "playingId": null,
+   "playingId": 2611,
    "emitter": "Trumpet Archon (KMG_Summoning_Unit_TrumpetArchon)",
    "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
    "listener": {
@@ -551,7 +559,7 @@
    "intervalStartUtc": "2026-11-24T17:12:21.800Z",
    "seconds": 4.5,
    "event": "HolyBomb",
-   "playingId": null,
+   "playingId": 2651,
    "emitter": "Trumpet Archon (KMG_Summoning_Unit_TrumpetArchon)",
    "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
    "listener": {
@@ -583,7 +591,7 @@
    "intervalStartUtc": "2026-11-24T17:12:26.440Z",
    "seconds": 4.5,
    "event": "Heroism",
-   "playingId": null,
+   "playingId": 2697,
    "emitter": "Trumpet Archon (KMG_Summoning_Unit_TrumpetArchon)",
    "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
    "listener": {
@@ -605,5 +613,6 @@
     "seconds": 4.5
    }
   }
- ]
+ ],
+ "revision": "Round 5 (review R1-F1): packet rebuilt as s7-listening-packet-r5 with the isolated samples' playing IDs filled from the native rows and the R6 Trumpet/Vrock distances labelled as observed one frame after posting (exact posting distance not available). The round-4 packet s7-listening-packet-r4 is superseded and kept in the lab."
 }

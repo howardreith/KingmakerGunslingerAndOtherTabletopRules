@@ -237,12 +237,12 @@ from RISK-01).
 
 ## Sprint 7 (started 2026-11-23; agent-review controller, foreground)
 
-**Current state (2026-11-24): IN REVIEW, round 4 of 5.** The owner resumed the round-3 BLOCKED enrollment through owner
+**Current state (2026-11-24): IN REVIEW, round 5 of 5 (round 4 verified 7 findings; the 12 then pending are corrected).** The owner resumed the round-3 BLOCKED enrollment through owner
 amendment 1 (revision 1, sha256 `59be8e3f…31e0`). The round-3 no-progress stop on `511160dc6e` and every earlier failure
 remain recorded. Draft PR #219; record `docs/GUNSLINGER-SPRINT7-RECORD.md`; enrollment
 `kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1`; base post-release master `35763430ac` (v0.0.195). Nothing is
 merged or released. Every visual and listening judgment is the owner's. The private listening packet is at
-`<lab>/private/s7-listening-packet-r4/`.
+`<lab>/private/s7-listening-packet-r5/`.
 
 | Story / record | Category | Result | Evidence | Delivery state | Owner decision |
 |---|---|---|---|---|---|
@@ -250,7 +250,7 @@ merged or released. Every visual and listening judgment is the owner's. The priv
 | S7 T2 / VIS-01 | asset defect | Generator repair: 48 zero-area triangles and inside-out welded membranes removed | `ed88ad994e`; models `…162110Z` (body-bound party views) | Implemented, draft PR | Visual acceptance |
 | S7 T3 / VIS-02 | asset defect | Exact-source repair: 16 opposing normal corners to 0 | `d864e7b01f`; models `…162110Z` | Implemented, draft PR | Visual acceptance |
 | S7 T4 / VIS-03 | presentation | Scoped override: "within twice this creature's speed" (owner-approved wording), no school | `2614ea3bd6`; round-3 `ui` PASS | Implemented, draft PR; controller mode unexecuted (no admitted route creates or selects a summon in the console UI) | None pending for wording |
-| S7 T5 / VIS-04 | audio | One owned cue per resolved tail hit on the roll's own in-game target (`Sweetener_Low_06_Quake`, provisional) | `bc67438f3b` fx `…170720Z` PASS; private packet | Implemented, draft PR; one lost native end callback retained (cause unknown) | Listening and choice |
+| S7 T5 / VIS-04 | audio | One owned cue per resolved tail hit on the roll's own in-game target (`Sweetener_Low_06_Quake`, provisional) | fx `…180635Z` and `…170720Z` PASS; private packet | Implemented, draft PR; unresolved technical requirement: one run lost a surviving cue's native end callback (cause unknown, not reproduced with the native playback readback) | Listening and choice |
 | S7 T6 / VIS-05 | presentation | Owned per-instance dust recolour bound to CreateView's own cast-effect call; released Sickened mechanics kept | `9733a0c9b7`; fx `…170720Z` PASS | Implemented, draft PR | Visual acceptance |
 | S7 T7 / VIS-06 | audio decision | `InspireCourage` kept provisionally; six alternatives sampled | r6 and Trumpet reload `…162605Z` PASS; private packet | Disposition, draft PR | Listening and choice |
 

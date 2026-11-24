@@ -1,11 +1,13 @@
 # Sprint 7 record: presentation and audio remediation (S7 T1–T7)
 
-Status: **IN REVIEW (round 4 of 5, 2026-11-24).** The owner resumed the stopped enrollment through owner amendment 1
-(`resume --amend-mission`; amendment revision 1, sha256 `59be8e3f…31e0`; message sha256 `f4d26be0…a7dd`, stored outside
-the worktree at `<lab>/owner-guidance/S7-OWNER-AMENDMENT-1-2026-11-24.md`). The round-3 BLOCKED stop (no progress on R1-F1,
-R1-F3, R1-F5, R1-F9) and every earlier failure remain recorded. **Nothing is merged or released, and no visual or listening
-choice has been accepted.** Twelve findings were pending after round 3. Each now has a correction or a precise disposition
-for independent review (§7).
+Status: **IN REVIEW (round 5 of 5, 2026-11-24).** The owner resumed the round-3 BLOCKED enrollment through owner
+amendment 1 (`resume --amend-mission`; amendment revision 1, sha256 `59be8e3f…31e0`; message sha256 `f4d26be0…a7dd`, stored
+outside the worktree at `<lab>/owner-guidance/S7-OWNER-AMENDMENT-1-2026-11-24.md`). The round-3 no-progress stop and every
+earlier failure remain recorded.
+- Round 4 (head `6095fa4a75`) verified R1-F3, R1-F9, R2-F4, R3-F1, R3-F2, R3-F3 and R3-F4, and raised R4-F1 to R4-F7.
+  R1-F1, R1-F5, R2-F2, R3-F5 and R3-F6 stayed open.
+- Round 5 addresses those twelve (§7).
+- **Nothing is merged or released, and no visual or listening choice has been accepted.**
 - Draft PR #219; one agent-review enrollment (`kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1`, foreground,
   single plan); branch `codex/s7-visual-audio-remediation`.
 - Mission: `docs/missions/sprint7/SPRINT7-AUTONOMOUS-MISSION.md` (verbatim, sha256 `c232f135…f56f0`), plus owner amendment 1.
@@ -21,7 +23,8 @@ for independent review (§7).
 - Review history:
   - round 1 (head `0910995241`): 14 findings;
   - round 2 (head `0d976f4fd1`): 4 verified, 10 open plus 4 new;
-  - round 3 (head `511160dc6e`): 8 resolved, 6 open plus 6 new, then the controller's no-progress stop.
+  - round 3 (head `511160dc6e`): 8 resolved, 6 open plus 6 new, then the controller's no-progress stop;
+  - round 4 (head `6095fa4a75`, under owner amendment 1): 7 verified, 5 open plus 7 new.
 
 ## 1. Starting point
 
@@ -42,15 +45,31 @@ for independent review (§7).
 
 | Story / record | Original problem | Result | Evidence | Technical status | Retained limitation / owner decision |
 |---|---|---|---|---|---|
-| S7 T1 / REP-04 | October review: "increasing" Ghaele dissolve; a scripted move that did not start | **No product change.** On released v0.0.195 and on the candidate, an ordinary Ghaele keeps its body (cutout 0.00) to its native 120 s expiry, moves, and fights. Its raw `_Dissolve` is the native looping non-cutout animation the unsummoned donor also runs: 11/11 positive samples per package, with driven body-material identity recorded. | Harness `…162819Z` (released) and `…163235Z` (candidate); product `…050957Z` `gh`/`ghd` (round 3) | Current-build disposition, bounded to the observed packages and conditions | Released baseline observed only in the admitted fixture's interior throne room. The outdoor/bright released case has no admitted route (§4.1). **October incident unattributed.** Owner: accept the bounded disposition. |
+| S7 T1 / REP-04 | October review: "increasing" Ghaele dissolve; a scripted move that did not start | **No product change.** On released v0.0.195 and on the candidate, an ordinary Ghaele keeps its body (cutout 0.00) to its native 120 s expiry, moves, and fights. Its raw `_Dissolve` is the native looping non-cutout animation the unsummoned donor also runs: 11/11 positive samples per package, with driven body-material identity recorded. | Harness `…182757Z` (released) and `…183206Z` (candidate) in round 5; `…162819Z`/`…163235Z` in round 4; product `…050957Z` `gh`/`ghd` (round 3) | Current-build disposition, bounded to the observed packages and conditions | Released baseline observed only in the admitted fixture's interior throne room. The outdoor/bright released case has no admitted route (§4.1). **October incident unattributed.** Owner: accept the bounded disposition. |
 | S7 T2 / VIS-01 | 48 zero-area wing-root triangles (and inside-out welded membranes) | **Repaired at the generator.** 0 zero-area triangles, 0 repeated edges, all parts outward | `ed88ad994e`; export receipt; models `…162110Z` (round 4, party views bound to the body) and `…050957Z` | Implemented and verified | Owner visual acceptance |
 | S7 T3 / VIS-02 | 19/12,924 normal corners at a waist pleat and the left-hand fingers | **Repaired from the exact private input.** 16 → 0 opposing corners | `d864e7b01f`; export receipt; `…162110Z`, `…050957Z` | Implemented and verified | Owner visual acceptance |
 | S7 T4 / VIS-03 | Owned Trample/Overrun windows: "Target point within 0 ft. feet." and school "None" | **Scoped presentation override:** "Target point within twice this creature's speed." (owner-approved wording), no school | `2614ea3bd6`; `…050957Z` `ui` | Implemented and verified for desktop fact and HUD | **Controller mode unexecuted** (§4.4): no admitted route creates or selects a summon in the console UI. Not a controller PASS. |
-| S7 T5 / VIS-04 | No added impact sound on the Ankylosaurus tail strike | **One owned cue per resolved tail roll on the roll's own in-game target** (`Sweetener_Low_06_Quake`, provisional) | `90bc2ae7eb`; fx `…170720Z` (round 4) and `…061437Z` | Cue ownership, timing and retirement verified; private packet delivered | A survivor cue's native end callback was missing in one run (`…164749Z`; cause unknown, retained). **Listening and choice pending (owner).** |
-| S7 T6 / VIS-05 | The Dust Mephit breath shows the ice cone | **Owned per-instance dust recolour** of the one cone CreateView spawns for the executing owned Dust breath, now bound to that native spawn call; restored on release; released mechanics (Sickened, damage, save, enemies only, action) unchanged | `9733a0c9b7`; fx `…170720Z` | Implemented and verified | Owner visual acceptance. Allies' harmless saves stay documented. |
-| S7 T7 / VIS-06 | Provisional `InspireCourage` cue on the Trumpet Blast | **Kept provisionally** (no code change); six alternatives sampled; cue verified across an in-process save and load, with blast-owned seeding | `r6` in `…170720Z`; Trumpet reload `…162605Z` | Cue technically verified; private packet delivered | **Listening and choice pending (owner).** |
+| S7 T5 / VIS-04 | No added impact sound on the Ankylosaurus tail strike | **One owned cue per resolved tail roll on the roll's own in-game target** (`Sweetener_Low_06_Quake`, provisional) | `90bc2ae7eb`; fx `…180635Z` (round 5), `…170720Z` and `…061437Z` | Cue ownership, timing and retirement verified in five of six round-4/5 runs; private packet delivered | **Unresolved technical requirement:** in `…164749Z` a surviving cue's native end callback never arrived (cause unknown, §4.5). **Listening and choice pending (owner).** |
+| S7 T6 / VIS-05 | The Dust Mephit breath shows the ice cone | **Owned per-instance dust recolour** of the one cone CreateView spawns for the executing owned Dust breath, now bound to that native spawn call; restored on release; released mechanics (Sickened, damage, save, enemies only, action) unchanged | `9733a0c9b7`; fx `…180635Z` and `…170720Z` | Implemented and verified | Owner visual acceptance. Allies' harmless saves stay documented. |
+| S7 T7 / VIS-06 | Provisional `InspireCourage` cue on the Trumpet Blast | **Kept provisionally** (no code change); six alternatives sampled; cue verified across an in-process save and load, with blast-owned seeding | `r6` in `…180635Z` and `…170720Z`; Trumpet reload `…182558Z` (round 5) and `…162605Z` | Cue technically verified; private packet delivered | **Listening and choice pending (owner).** |
 
 ## 3. Candidates, sessions and identities
+
+**Round 5.** No product change: only `RuntimeTesting/` (`ac96bab4c2`), the harness (`ac96bab4c2`, `c151cdfdc5`), the
+tests and the sessions changed. Product code outside `RuntimeTesting/` is identical from `1ac4324617` to the round-5
+head.
+
+| Candidate | Package / DLL SHA-256 | Harness | Session | Result |
+|---|---|---|---|---|
+| **`ac96bab4c2`** | `1bca116c5c0a0a47cc3a29ae88fb87b2b564d8b5f7c9af03c165a74faf1e851d` / `f8fd7251925fe3a5ad5c90ac2de37373e6b74d6f67f5090cba9f88d962423545` | n/a | **`20261124T180635Z-…-s7-fx`** (fx, r6) | **PASS 2/2** (fx 34/34, r6 16/16), 7 min 58 s |
+| `ac96bab4c2` | as above | `5d39a60b…` | `20261124T181432Z-…-s7-trumpet-reload` | FAIL, retained (observer): the probe's own nested foreign save inherited the blast's rule context and was treated as owned, which also shifted the following draw. 1 min 37 s |
+| released v0.0.195 / `ac96bab4c2` | `456d504d…` / `1bca116c…` | `5d39a60b…` | `20261124T181609Z`, `20261124T182018Z` `-s7-ghaele` | FAIL, retained (observer): everything held, but the target's destruction was read in the same call as `Destroy()`. 4 min 9 s each |
+| `ac96bab4c2` | as above | **`5d2350f83f965bfba45c87f64c06a64f70631a63ce72c1507f8166a6d6bba545`** | **`20261124T182558Z-…-s7-trumpet-reload`** | **PASS**, 1 min 59 s |
+| released v0.0.195 | `456d504d…9444` / `3ef052ea…6a6b` | `5d2350f8…` | **`20261124T182757Z-…-s7-ghaele`** | **PASS**, 4 min 8 s |
+| `ac96bab4c2` | as above | `5d2350f8…` | **`20261124T183206Z-…-s7-ghaele`** | **PASS**, 4 min 10 s |
+
+Round-5 extracts: `docs/evidence/sprint7/r5/`. Models are not rerun: `R6Cell`'s ordinary path is unchanged, so the
+`…162110Z` models evidence (`a07716e3ab`) stands.
 
 **Round 4.** Product code changed only in `9733a0c9b7` (Dust call-site binding). Every later commit changes only
 `RuntimeTesting/`, the harness, the tests and the sessions; product code outside `RuntimeTesting/` is identical from
@@ -99,6 +118,7 @@ cost was higher because four observer defects needed new candidates; every faile
 | 2 | 4 | 6 | 68 min 9 s |
 | 3 | 4, plus 1 refused at the clean-commit check | 8 | 51 min 57 s |
 | 4 | 4 candidates and 2 harnesses | 12, plus 5 refused before acquisition | 58 min 16 s |
+| 5 | 1 candidate and 2 harnesses (proposed: 1 and 1) | 7 (proposed: 4) | 28 min 10 s (proposed: about 21 min) |
 
 Reviewable evidence (committed):
 - `evidence/sprint7-review/`: 94 curated stills, including the 12 added in round 4 (party views bound to the body, and the
@@ -150,6 +170,25 @@ candidate (`…163235Z`), in the admitted fixture save KMCS_AFTER_NORMAL_012_MOD
 - The game camera's party view, bound to the enabled body renderer, was in frame, lit, with no fade:
   - released: luma 36.0 idle, 41.9 in combat;
   - candidate: luma 35.9 idle, 45.5 in combat.
+
+**Round 5 (`…182757Z` released, `…183206Z` candidate; R3-F5, R4-F2, R4-F3, R4-F6, R3-F6).**
+- **Summon identity.** The cast's Ghaele is the unit that the native `RuleSummonUnit` of its own command's execution
+  produced. Registration and pre-registration cleanup use exactly that unit.
+- **Foreign Ghaele.** Both abandonment cases add a foreign same-caster Ghaele from another execution (the product's
+  summon path). In each, only the owned summon was destroyed (1, or none while pending), and the foreign one survived.
+- **Loan verdict.** The timeline's verdict compares the exact handle: the same borrowed instance with the same parameter
+  object, or removal of the exact grant (a distinct replacement is allowed). It held for a borrowed CL 20 override and a
+  borrowed CL 7 override, and refused an injected incorrect restoration and a vanished borrowed ability.
+- **Combat teardown.** Only the probe's own attacks are interrupted and its own target destroyed. Combat is left only for
+  units that were not fighting at intake; an incompatible intake would be refused. An independent move command on the
+  main character was still held after the teardown.
+- **Lighting.** Each row is judged on its readbacks: body readable, cutout ≤ 0.02, light probe read, and a capture image
+  in frame, lit, with the body's own mesh. The capture helper's `intact` flag reads the raw `_Dissolve`, which on the
+  Ghaele is the native loop, so it is recorded but not used. Idle and combat were valid on both packages.
+- **Attribution.** Current snapshots with an unreadable body are inconclusive. Qualifying donor loops are those the donor
+  was observed running with a matching readable value. 11/11 positive with body identity on both packages.
+- **Re-evaluation.** The retained round-3 and round-4 rows still attribute: 11/11 each, body identity not recorded in
+  round 3. The round-4 lighting rows qualify.
 
 **Attribution (R3-F6).** Only positive samples count. A sample is positive when an active, looping, non-cutout animation
 that the donor also runs drives a readable body material to its own current value. Empty, inactive, delayed-only or
@@ -277,6 +316,23 @@ The next operation, selecting that summon as the console action-bar unit, is ref
 - natively, by `UnitSelectionManager.SelectUnit`'s controllability check. It is inferred, not checked per blueprint,
   that this product's summon spawns keep the native `false` flag; no repository code sets it.
 
+**Console Inspect (InspectVm), traced in round 5 (R1-F5).** This is a separate path from the slot description.
+- **Activation.** In `InGameInputLayerView`, button 7 on the "InGameMainInputContext" layer calls
+  `InGameUiContext.OnActivateInspect`, which calls `InGameUiStaticPartContext.OnActivateInspect`. That asks
+  `ActionBarVM.GetInspectUnit()`, which returns `ActionBarVM.InspectVm.Unit.Value`; if it is null, nothing opens.
+- **Unit source.** The only writer of that unit is `ActionBarInspectVm.HandleHoverChange`, which sets it only for a
+  hovered unit that is not directly controllable and is the player's enemy:
+  `isHover && !IsDirectlyControllable && IsPlayersEnemy`. This was verified in the decompiled source.
+- **What it opens.** `InspectVm` lists that unit and the visible enemies in combat as a `TooltipType.UnitInspect`
+  sheet, which is not an ability description window.
+- **Why the summon is refused.** An allied summon is not the player's enemy, so Inspect never accepts it.
+- **Route coverage.** Neither cleanup2 console route hovers a unit, creates a hostile, or presses button 7; no repository
+  file references `OnActivateInspect`, `InspectVm` or `GetInspectUnit`.
+
+So the slot description, which requires the summon to be the selected unit, is the only native path to an owned
+summon action's description. The first unsupported operation remains creating the summon in either route. The next blocks
+differ by path: the selection guard on the slot path, and the hover filter on the Inspect path.
+
 The owned Trample and Overrun belong to the summon blueprints (`ExpandedSummoningSpecialBuilder.cs:925-935`), so no
 caster's bar can legitimately hold them. Native Overrun is also absent from the console casters.
 
@@ -302,18 +358,39 @@ Native, round 4 (`…170720Z`, `bc67438f3b`):
   survivor 449 ended naturally after 2.28 s.
 - **End-of-phase dump.** All 8 cue records of the phase have their native end.
 
-Retained, cause unknown: in `…164749Z` (same product code) the surviving cue 497 had no native end callback within 10 s
-of the retirement. It joins round 2's lost callbacks. It did not recur in `…154136Z`, `…161344Z` or `…170720Z`.
+**Lost survivor callback (R4-F5), established from the failed session first (`…164749Z`):**
+- Survivor 497 (first Ankylosaurus) and retired 499 (second Ankylosaurus) both posted in frame 5329, each on its own
+  source's view.
+- Retiring the second source requested a stop only for 499 (stop-requested, native end 0.04 s later). The product never
+  requested a stop for 497, and 497's end-of-event callback had not arrived 10 s later.
+- In the product, a record leaves its source's tracking only on its end callback. An uncallbacked record therefore stays
+  tracked until its own source retires, and that retirement then stops it by playing ID.
+- What the failed session cannot establish is whether Wwise was still playing 497 (no playback query was recorded) or
+  why its callback did not come.
+
+**Narrowed observation, round 5 (`…180635Z`).** The retirement now records each playing ID's native event
+(`AkSoundEngine.GetEventIDFromPlayingID`) and the survivor's tracking before, right after, 3 s after and at the end of the
+wait. In this run both cues were playing at retirement (event 4293635115), and both had ended natively with tracking
+released by the end; the failure did not reproduce. It also did not recur in `…154136Z`, `…161344Z` or `…170720Z`; round 2
+retained a separate run that lost both end callbacks.
+
+This concurrent outcome is **carried as an unresolved technical requirement** in the outcome table. Both existing verdicts
+are kept.
 
 **Private listening packet (R1-F1, owner amendment 1).**
-- **Location:** `C:\Dev\KingmakerGunslingerLab\private\s7-listening-packet-r4\` and
-  `C:\Dev\KingmakerGunslingerLab\private\s7-listening-packet-r4.zip` (sha256 `b2fddccd…17d0`).
+- **Location (round 5):** `C:\Dev\KingmakerGunslingerLab\private\s7-listening-packet-r5\` and
+  `C:\Dev\KingmakerGunslingerLab\private\s7-listening-packet-r5.zip` (sha256 `2b5f4610…2565`).
+  - The round-4 packet (`…-r4`) is superseded and kept.
+  - Round 5 fills the twelve isolated samples' playing IDs from the native rows (2091–2697).
+  - It labels the Trumpet (37.09 m) and Vrock (40.05 m) distances as observed one frame after posting (frames 4975→4976
+    and 4638→4639); the exact posting distance is not available.
+  - The two tail-hit distances stand, measured in the frame the cue posted.
 - **Contents:** `index.html` (players per clip, grouped and labelled), `playlist.m3u8`, `MANIFEST.json`, `README.txt` and
   `clips/`.
 - **Clips:** 18 excerpts from the `…170720Z` loopback recording (`f67b1d4f…e37f`):
   - the two in-play Ankylosaurus hits (actual);
-  - the in-play Trumpet Blast (actual, ID 397, 37.09 m at its post);
-  - the Vrock neighbour (40.05 m);
+  - the in-play Trumpet Blast (actual, ID 397, 37.09 m one frame after posting);
+  - the Vrock neighbour (40.05 m, likewise);
   - two quiet baselines;
   - isolated observer samples: the two current cues and eleven alternatives.
 - **Per clip:** hash, session, package, UTC interval, event, playing ID, emitter, game volumes (all 100) and listener
@@ -377,6 +454,20 @@ Native, round 4 (`…170720Z`):
 - Early exit: a fresh Dust Mephit's cast, owning its own ledger, was abandoned the moment its Sickened was applied, with
   the command still running. Its one instance was removed, its command interrupted, and the foreign control kept.
 
+**Round 5 (`…180635Z`; R4-F1, R4-F4)**
+- **Ledger ownership.** The ledger now owns only executions of commands the cell issued: every Dust cast and every Ice
+  control, registered before it runs (12 executions).
+- **Separate execution.** A separate same-caster Dust execution the cell did not issue (cast at the enemy outside the
+  cone) applied Sickened that the ledger did not own, and it was still present after cleanup.
+- **Runner disposal.** `R6Cell` now disposes its cell on every exit, and the early-cast enumerator is disposed in a
+  `finally`. The restoration verdict (`S7DustRestored`) fails any acquired trace or ledger without a clean cleanup result.
+- **Abandon case `s7-dust-abandoned`.** The enclosing runner was disposed while the cell was yielded right after its owned
+  cast applied Sickened, with the command still running and a CreateView unpatch failure injected. Results:
+  - owned command interrupted by reference (1 ended, 0 left);
+  - Sickened removed (1); foreign control kept; ledger subscription closed;
+  - the injected failure reached the restoration verdict (false);
+  - a later disposal took the remaining hooks from 2 to 0.
+
 **Trace release (R3-F4)**
 - Normal disposal feeds `Sprint7ObserverPolicy.Released` into the cell check and the outer restoration check.
 - Final run: 4 hooks → 0, no failure.
@@ -400,7 +491,17 @@ R6 (`…170720Z`):
 Reload (`…162605Z`, R2-F2, R3-F2):
 - **Reload.** The saved cue (ID 159) ended natively and naturally. Nothing was posted after the load, and the fresh blast
   posted one new cue (ID 323).
-- **Blast-owned seeding.**
+- **Round 5 (R2-F2; `…182558Z`).** The shared generator is no longer touched.
+  - A blast save is a top-level save (no other saving throw below it on the rule stack) whose reason context is the
+    observed blast's execution and whose saver is not the Trumpet.
+  - Its own d20 rule (the d20 whose previous event on the rule stack is that save) is pre-rolled to 20 through the native
+    `m_PreRolledResult` (`OwnedD20Claim`), once.
+  - Inside the first owned save's callbacks, a foreign draw (equal to control) and a foreign Will save (d20 11 = control 11,
+    no claim) were dispatched; the first draw after the owned save ended equalled the control's next value.
+  - 25 owned saves got 20. The pending-command interleave (d20 8 = 8), the reload (159 natural, no replay, fresh 327) and
+    the abandonment check held.
+  - Retained: `…181432Z`, whose own nested save inherited the blast context before the top-level rule existed.
+- **Blast-owned seeding (round 4, superseded).**
   - A saving throw is seeded only when its rule's context is the observed blast's own execution and its saver is not the
     Trumpet. The generator is saved at that rule's start and put back at that rule's end (`OwnedRollScope`).
   - 25 Fortitude saves of the first blast were seeded.
@@ -421,7 +522,8 @@ Reload (`…162605Z`, R2-F2, R3-F2):
 
 ## 5. Validation
 
-Focused domain tests, `sprint7-visual.*` (16 cases):
+Focused domain tests, `sprint7-visual.*` (18 cases; round 5 adds `ghaele-lighting-and-loan` and
+`probe-final-releases-per-item`, and replaces `trumpet-owned-roll` with `trumpet-owned-d20`):
 - VIS-01/VIS-02 decoded exports;
 - VIS-03 identities and text;
 - VIS-04 qualification;
@@ -447,6 +549,23 @@ records the required gate receipts on the reviewed head.
 5. Merge and release remain the owner's; this sprint authorizes neither.
 
 ## 7. Review findings and corrections
+
+Round-5 correction matrix (the twelve findings pending after round 4):
+
+| Finding | Exact trigger | Owning code | Change or disposition | Decisive check | Evidence | Remaining limit |
+|---|---|---|---|---|---|---|
+| R4-F1 runner disposal | Request disposed while `R6Cell` yields a step of S7Dust | `R6Cell`, `S7Dust`, `S7DustRestored`, `S7DustAbandoned` | Cell disposed on every exit; early cast disposed in a finally; acquired resources must report cleanup | `s7-dust-abandoned-unwound` | `…180635Z` | — |
+| R3-F5 summon identity | Another execution summons a same-caster Ghaele before registration | `GhaeleLifetimeProbes.cs` (`RuleSummonUnit`, `CastOwned`) | Owned summon from its own execution's native summon rule | Lifecycle pending and after-spawn with a foreign Ghaele | `…182757Z`, `…183206Z` | — |
+| R4-F2 combat teardown | Teardown interrupting the main character's unrelated work | `Observe` combat block | Only owned attacks, own target, combat state introduced at intake; incompatible intake refused | Independent main command held after teardown | same | — |
+| R4-F5 lost callback | Survivor cue without native end after the other source retires | product cue tracking; Ankylosaurus observer | Analysed from the failed session; native playback readback added (not reproduced) | Retirement trace | `…164749Z`, `…180635Z` | **Carried as an unresolved technical requirement** |
+| R1-F1 packet labels | R6 distances and sample IDs traced to the cue records | lab packet; `audio-context-r4.json` | Posting/observation frames labelled; posting distance marked unavailable; sample IDs filled; packet rebuilt | Packet verification and Windows decoder load | `<lab>/private/s7-listening-packet-r5` | Owner listening pending; browser playback not exercised |
+| R1-F5 Inspect | Inspect dispatch omitted from the trace | native console UI; cleanup2 routes | InspectVm source and dispatch traced; hover filter named | Decompiled references (§4.4) | this record | Unexecuted; not a controller PASS |
+| R2-F2 nested draws | A foreign draw or save inside the owned save's callbacks | `TrumpetCueProbes.cs`, `OwnedD20Claim` | No generator intervention; owned d20 pre-rolled through the rule contract; top-level saves only | Nested foreign draw and save plus following draw equal to control | `…182558Z`; domain `trumpet-owned-d20` | — |
+| R3-F6 attribution | Unreadable current body; donor loop never running | `GhaeleAttribution.cs` | Explicit null body inconclusive; qualifying donor loops observed running | Domain negatives; native 11/11; retained re-evaluation | `…182757Z`, `…183206Z`; domain | Round-3 rows lack body identity (labelled) |
+| R4-F3 loan verdict | Borrowed CL 20 override, replacement, wrong or missing restore | `GhaeleLoan`, `LoanVerdict` | Exact handle comparison in the timeline and lifecycle | Native CL 20 and CL 7 borrowed, injected wrong restore, vanished borrow; domain | same | — |
+| R4-F4 ledger acquisition | A same-caster execution the cell did not issue | `S7DustConditions` (`Own`), `R6RunPassive` | Ledger owns only commands the cell issued | Separate execution's Sickened kept through cleanup | `…180635Z` | — |
+| R4-F6 lighting | Lighting row with no body or an empty capture | `GhaeleLighting` | Each row judged on its readbacks | Domain negatives; native rows valid; retained round-4 rows qualify | same | — |
+| R4-F7 per-item release | One item failing in a grouped final release | `ProbeReleases.PerItem` (both probes) | One release per item | Domain `probe-final-releases-per-item` through `ProbeSlot` | domain | — |
 
 Round-4 correction matrix (the twelve findings pending after round 3):
 
