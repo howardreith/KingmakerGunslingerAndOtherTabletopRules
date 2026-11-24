@@ -219,11 +219,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["availableBefore"] = data.IsAvailable; row["canTarget"] = data.CanTarget(target);
             if (!data.IsAvailable || !data.CanTarget(target)) throw new InvalidOperationException("Native ability unavailable: " + data.Blueprint.name);
             var command = new UnitUseAbility(data, target);
+            int cuesSeen = SummonAbilityCastCueRuntime.Snapshot().Length;
+            var cuePosts = new JArray(); row["cuePostsListener"] = cuePosts;
             owner.Commands.Run(command);
             DateTime deadline = DateTime.UtcNow.AddSeconds(30);
             int actedAt = -1, shots = 0;
             while (DateTime.UtcNow < deadline)
             {
+                // Sprint 7 R1-F1: the game camera (Wwise listener) to emitter
+                // distance in the frame a new cue record appears.
+                SummonCastCueRecord[] cues = SummonAbilityCastCueRuntime.Snapshot();
+                for (int index = cuesSeen; index < cues.Length; index++)
+                    cuePosts.Add(new JObject { ["playingId"] = cues[index].PlayingId, ["cueFrame"] = cues[index].Frame, ["observedFrame"] = Time.frameCount,
+                        ["listenerDistance"] = S7ListenerDistance(owner), ["emitter"] = owner.Blueprint.name });
+                cuesSeen = cues.Length;
                 if (actedAt < 0 && command.IsActed) actedAt = shots;
                 if (clip != null) clip.Shot(R6AnimationState(owner, command));
                 shots++;
