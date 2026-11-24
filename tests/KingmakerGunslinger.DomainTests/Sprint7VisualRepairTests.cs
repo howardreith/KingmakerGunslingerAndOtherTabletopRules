@@ -856,7 +856,7 @@ namespace KingmakerGunslinger.DomainTests
             for (int cast = 0; cast < 5; cast++) { var later = new object(); owned.Add(later); present.Add(later); }
             var removed = new List<object>();
             List<string> failures = ledger.Release(present, fromCellBreath, value => { removed.Add(value); present.Remove(value); });
-            Assertions.True(failures.Count == 0 && removed.Count == 8, "Cleanup acquires and removes every instance the cell's executions introduced, observed or not.");
+            Assertions.True(failures.Count == 0 && removed.Count == 8 && ledger.LastRemoved == 8, "Cleanup acquires and removes every instance the cell's executions introduced, observed or not.");
             Assertions.True(present.Contains(foreign) && present.Contains(preexisting), "The foreign control and an instance present before the cell survive.");
             Assertions.Equal(0, ledger.Remaining(present, fromCellBreath), "No cell-owned condition remains.");
 

@@ -36,7 +36,8 @@
             "op": "kmgGhaeleLifetime",
             "label": "lifecycle",
             "match": "lifecycle",
-            "timeoutSeconds": 240
+            "timeoutSeconds": 240,
+            "continueOnFailure": true
           },
           {
             "op": "kmgGhaeleLifetime",

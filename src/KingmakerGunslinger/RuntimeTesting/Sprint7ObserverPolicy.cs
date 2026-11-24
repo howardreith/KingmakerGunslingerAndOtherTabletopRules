@@ -117,6 +117,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<T> _preexisting;
         internal readonly List<T> Acquired = new List<T>();
 
+        /// <summary>How many acquired instances the last release removed.</summary>
+        internal int LastRemoved { get; private set; }
+
         internal AcquisitionLedger(IEnumerable<T> present)
         {
             _preexisting = new List<T>(present ?? Enumerable.Empty<T>());
@@ -139,9 +142,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             List<T> now = (present ?? Enumerable.Empty<T>()).ToList();
             Observe(now, ownedOrigin);
             var failures = new List<string>();
+            LastRemoved = 0;
             foreach (T value in now.Where(item => item != null && Contains(Acquired, item)))
             {
-                try { remove(value); }
+                try { remove(value); LastRemoved++; }
                 catch (Exception error) { failures.Add(error.GetType().Name + ": " + error.Message); }
             }
             return failures;

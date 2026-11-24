@@ -499,8 +499,11 @@ namespace KmgLoaderCompatHarness
         {
             var cases = new JObject(); result["cases"] = cases;
             Func<int> ghaeles = () => Game.Instance.State.Units.Count(unit => !unit.Destroyed && IsKmgGhaele(unit) && SummonedBy(unit, main));
-            Func<UnitCommandProbe, bool> survived = probe => probe.Unit.Commands.Contains(probe.Command) ||
-                (probe.Command.IsFinished && probe.Command.Result == Kingmaker.UnitLogic.Commands.Base.UnitCommand.ResultType.Success);
+            // The unrelated command is started right before each abandonment and read right after it: still held by
+            // its unit and not ended as interrupted.
+            Func<UnitCommandProbe, JObject> commandState = probe => new JObject { ["held"] = probe.Unit.Commands.Contains(probe.Command),
+                ["finished"] = probe.Command.IsFinished, ["result"] = probe.Command.IsFinished ? probe.Command.Result.ToString() : null };
+            Func<JObject, bool> survived = state => (bool)state["held"] || ((bool)state["finished"] && (string)state["result"] != "Interrupt");
             if (main.Descriptor.Abilities.GetAbility(ability) != null) { life.Problems.Add("lifecycle: the main character already holds the summon; the cases need it absent"); yield break; }
 
             // An unrelated unit whose own command no release may touch.
@@ -546,21 +549,23 @@ namespace KmgLoaderCompatHarness
 
             // 3. Abandoned with the command pending.
             var pending = new JObject(); cases["abandonedPending"] = pending;
-            var bystanderMove = new UnitMoveTo(ObstacleAnalyzer.TraceAlongNavmesh(bystander.Position, bystander.Position + back * 12f), .3f);
-            bystander.Commands.Run(bystanderMove);
-            var unrelated = new UnitCommandProbe { Unit = bystander, Command = bystanderMove };
             var pendingHandle = new CastHandle();
             int ghaelesBefore = ghaeles();
             IEnumerator<object> pendingRun = CastOwned(main, ability, "pending", pending, pendingHandle, null, unit => created.Add(unit)).GetEnumerator();
             pendingRun.MoveNext();
             pending["actedBeforeAbandon"] = pendingHandle.Command != null && pendingHandle.Command.IsActed;
             pending["executionBeforeAbandon"] = pendingHandle.Command != null && pendingHandle.Command.ExecutionProcess != null;
+            var pendingMove = new UnitMoveTo(ObstacleAnalyzer.TraceAlongNavmesh(bystander.Position, bystander.Position + back * 12f), .3f);
+            bystander.Commands.Run(pendingMove);
+            var unrelated = new UnitCommandProbe { Unit = bystander, Command = pendingMove };
+            pending["bystanderBeforeAbandon"] = commandState(unrelated);
             pendingRun.Dispose();
+            pending["bystanderAfterAbandon"] = commandState(unrelated);
             foreach (object step in Seconds(6f)) yield return step;
             pending["ownedCommandRemains"] = pendingHandle.Command != null && main.Commands.Contains(pendingHandle.Command) && !pendingHandle.Command.IsFinished;
             pending["lateSummons"] = ghaeles() - ghaelesBefore;
             pending["abilityGrantRemains"] = main.Descriptor.Abilities.GetAbility(ability) != null;
-            pending["bystanderCommandSurvived"] = survived(unrelated);
+            pending["bystanderCommandSurvived"] = (bool)pending["bystanderBeforeAbandon"]["held"] && survived((JObject)pending["bystanderAfterAbandon"]);
             if ((bool)pending["executionBeforeAbandon"] || (bool)pending["ownedCommandRemains"] || (int)pending["lateSummons"] != 0 || (bool)pending["abilityGrantRemains"] ||
                 !(bool)pending["bystanderCommandSurvived"] || !(bool)pending["commandReleased"] || !(bool)pending["loanReleased"])
                 life.Problems.Add("lifecycle.pending: the abandoned pending command was not settled exactly");
@@ -579,13 +584,19 @@ namespace KmgLoaderCompatHarness
                 yield return null;
             }
             spawned["spawnSeenBeforeRegistration"] = early != null && spawnHandle.Registered == null;
+            bystander.Commands.InterruptAll(value => true); bystander.Commands.RemoveFinishedAndUpdateQueue();
+            var spawnMove = new UnitMoveTo(ObstacleAnalyzer.TraceAlongNavmesh(bystander.Position, bystander.Position - back * 12f), .3f);
+            bystander.Commands.Run(spawnMove);
+            var unrelatedSpawn = new UnitCommandProbe { Unit = bystander, Command = spawnMove };
+            spawned["bystanderBeforeAbandon"] = commandState(unrelatedSpawn);
             spawnRun.Dispose();
+            spawned["bystanderAfterAbandon"] = commandState(unrelatedSpawn);
             foreach (object step in Seconds(4f)) yield return step;
             spawned["earlySummonDestroyed"] = early != null && (early.Destroyed || !Game.Instance.State.Units.Contains(early));
             spawned["lateSummons"] = ghaeles() - ghaelesBefore;
             spawned["ownedCommandRemains"] = spawnHandle.Command != null && main.Commands.Contains(spawnHandle.Command) && !spawnHandle.Command.IsFinished;
             spawned["abilityGrantRemains"] = main.Descriptor.Abilities.GetAbility(ability) != null;
-            spawned["bystanderCommandSurvived"] = survived(unrelated);
+            spawned["bystanderCommandSurvived"] = (bool)spawned["bystanderBeforeAbandon"]["held"] && survived((JObject)spawned["bystanderAfterAbandon"]);
             if (!(bool)spawned["spawnSeenBeforeRegistration"] || !(bool)spawned["earlySummonDestroyed"] || (int)spawned["lateSummons"] > 0 ||
                 (bool)spawned["ownedCommandRemains"] || (bool)spawned["abilityGrantRemains"] || (int)spawned["lateSummonsDestroyed"] < 1 || !(bool)spawned["bystanderCommandSurvived"])
                 life.Problems.Add("lifecycle.spawned: the summon produced before registration outlived the abandoned cast");
