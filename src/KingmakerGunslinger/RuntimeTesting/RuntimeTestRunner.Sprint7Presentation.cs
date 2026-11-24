@@ -1279,16 +1279,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 withhold = new S7CallbackWithhold();
-                keeper.Commands.Run(new UnitAttack(hostile));
-                other.Commands.Run(new UnitAttack(hostile));
+                // Both sources keep attacking; each frame the latest cue of each source that the native query confirms
+                // playing is selected afresh (round 6: a cue seen earlier may already have ended). The callback is
+                // withheld only once both are confirmed playing at the same time.
                 DateTime overlap = DateTime.UtcNow.AddSeconds(OverlapSeconds);
                 while (DateTime.UtcNow < overlap)
                 {
-                    if (kept == null) { kept = S7ImpactCues(keeper).Skip(keeperFrom).FirstOrDefault(value => !value.EndUtc.HasValue); if (kept != null) withhold.Target = kept; }
-                    if (retired == null) retired = S7ImpactCues(other).Skip(otherFrom).FirstOrDefault(value => !value.EndUtc.HasValue);
-                    if (kept != null && retired != null) break;
+                    foreach (UnitEntityData attacker in new[] { keeper, other })
+                        if (!attacker.Commands.HasUnfinished()) { hostile.Descriptor.Damage = 0; attacker.Commands.Run(new UnitAttack(hostile)); }
+                    SummonCastCueRecord keptLive = S7ImpactCues(keeper).Skip(keeperFrom).LastOrDefault(value => S7Playback(value) == Sprint7ObserverPolicy.PlaybackPlaying);
+                    SummonCastCueRecord otherLive = S7ImpactCues(other).Skip(otherFrom).LastOrDefault(value => S7Playback(value) == Sprint7ObserverPolicy.PlaybackPlaying);
+                    if (keptLive != null && otherLive != null) { kept = keptLive; retired = otherLive; withhold.Target = kept; break; }
                     yield return 0;
                 }
+                foreach (UnitEntityData attacker in new[] { keeper, other })
+                { attacker.Commands.InterruptAll(command => true); attacker.Commands.RemoveFinishedAndUpdateQueue(); }
+                row["cuesBeforeSelection"] = new JObject { ["survivorSource"] = new JArray(S7ImpactCues(keeper).Skip(keeperFrom).Select(S7Cue)),
+                    ["otherSource"] = new JArray(S7ImpactCues(other).Skip(otherFrom).Select(S7Cue)) };
                 keptBefore = S7Playback(kept); otherBefore = S7Playback(retired);
                 row["before"] = new JObject { ["survivor"] = kept == null ? null : S7Cue(kept), ["survivorPlayback"] = keptBefore,
                     ["other"] = retired == null ? null : S7Cue(retired), ["otherPlayback"] = otherBefore, ["frame"] = Time.frameCount };
