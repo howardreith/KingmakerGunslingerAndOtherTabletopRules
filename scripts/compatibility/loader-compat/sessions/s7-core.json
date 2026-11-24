@@ -1,0 +1,73 @@
+{
+  "name": "s7-core",
+  "description": "Sprint 7 candidate, presentation phases only (the effects and R6 phases run in s7-candidate-effects with loopback audio): ui renders the owned Trample/Overrun windows with native controls (VIS-03); models and models-dim show the repaired Nalfeshnee and Salamander beside their pinned pre-Sprint-7 exports after a natural appearance, plus the observer rollback checks (bright); Ghaele bright and dim follow ordinary Ghaele summons, a Bralani sibling and the native donor through their native lifetime (REP-04). No other mods.",
+  "ownerMods": [],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "ui",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-expanded-summoning-sprint32-native-review",
+        "parameters": {
+          "reviewPhase": "summon-s7-ui"
+        },
+        "timeoutSeconds": 1200
+      }
+    },
+    {
+      "label": "mod",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-expanded-summoning-sprint32-native-review",
+        "parameters": {
+          "reviewPhase": "summon-s7-models"
+        },
+        "timeoutSeconds": 1500
+      }
+    },
+    {
+      "label": "modd",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-expanded-summoning-sprint32-native-review",
+        "parameters": {
+          "reviewPhase": "summon-s7-models-interior"
+        },
+        "timeoutSeconds": 1500
+      }
+    },
+    {
+      "label": "gh",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-expanded-summoning-sprint32-native-review",
+        "parameters": {
+          "reviewPhase": "summon-s7-ghaele"
+        },
+        "timeoutSeconds": 1500
+      }
+    },
+    {
+      "label": "ghd",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-expanded-summoning-sprint32-native-review",
+        "parameters": {
+          "reviewPhase": "summon-s7-ghaele-interior"
+        },
+        "timeoutSeconds": 1500
+      }
+    }
+  ]
+}

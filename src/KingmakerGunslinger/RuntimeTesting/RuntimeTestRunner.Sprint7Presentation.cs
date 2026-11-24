@@ -1232,7 +1232,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var crafted = new JObject(); row["craftedControls"] = crafted;
                 Func<UnitEntityData, Kingmaker.Items.ItemEntityWeapon, RuleAttackRoll> freshRoll = (rollTarget, weapon) =>
                 {
-                    var roll = new RuleAttackRoll(first, rollTarget, weapon, 0);
+                    var owner = new RuleAttackWithWeapon(first, rollTarget, weapon, 0);
+                    var roll = new RuleAttackRoll(first, rollTarget, owner.WeaponStats, 0);
                     typeof(RuleAttackRoll).GetProperty("Result").GetSetMethod(true).Invoke(roll, new object[] { AttackResult.Hit });
                     return roll;
                 };
@@ -1821,15 +1822,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 mark("dust-concurrent-start");
                 var dustCast = new JObject(); var iceCast = new JObject();
                 IEnumerator<int> dustRun = R6RunPassive(dust, abilityData(dust, breath), new TargetWrapper(hostile), dustCast, null).GetEnumerator();
-                IEnumerator<int> iceRun = R6RunPassive(ice, abilityData(ice, iceBreath), new TargetWrapper(hostile), iceCast, null).GetEnumerator();
+                IEnumerator<int> iceRun = null;
+                int tintsAtStart = DustMephitBreathTint.Applied, iceDelay = -1;
                 bool dustMore = true, iceMore = true;
                 int overlapFrames = 0, restoredAt = DustMephitBreathTint.Restored, sampleFrame = 0;
                 var donorTimeline = new JArray();
                 DateTime concurrentDeadline = DateTime.UtcNow.AddSeconds(40);
-                while ((dustMore || iceMore || DustMephitBreathTint.Live > 0) && DateTime.UtcNow < concurrentDeadline)
+                while ((dustMore || iceRun == null || iceMore || DustMephitBreathTint.Live > 0) && DateTime.UtcNow < concurrentDeadline)
                 {
                     if (dustMore) dustMore = dustRun.MoveNext();
-                    if (iceMore) iceMore = iceRun.MoveNext();
+                    // The Ice breath starts about two seconds after the Dust cone appears, so the Ice
+                    // instance is live through the moment the Dust instance is released and restored.
+                    if (iceRun == null && DustMephitBreathTint.Applied > tintsAtStart && ++iceDelay >= 60)
+                        iceRun = R6RunPassive(ice, abilityData(ice, iceBreath), new TargetWrapper(hostile), iceCast, null).GetEnumerator();
+                    if (iceRun != null && iceMore) iceMore = iceRun.MoveNext();
                     var live = trace.Creations.Skip(concurrentFrom).OfType<JObject>().SelectMany(value => ((JArray)value["effects"]).OfType<JObject>()).ToList();
                     JObject donor = live.FirstOrDefault(effect => (string)effect["launcher"] == ice.UniqueId && trace.Live(effect));
                     bool dustLive = live.Any(effect => (string)effect["launcher"] == dust.UniqueId && trace.Live(effect));
