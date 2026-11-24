@@ -57,7 +57,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestPresentationPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestModelsPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint32PerformancePhase ||
-                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32FascinatePhase)
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32FascinatePhase ||
+                    ExpandedSummoningNativeProfilePolicy.Sprint7OutdoorPhase(phase))
                 {
                     // One exact disposable anchor owns the grouped cells. Do
                     // not re-enable its AI between a restored cell and the next

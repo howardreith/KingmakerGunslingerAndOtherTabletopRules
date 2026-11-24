@@ -354,6 +354,37 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string MaxDissolveAt;
             internal readonly JArray Samples = new JArray();
             internal int[] MaterialIds = new int[0];
+            // The body is the enabled skinned renderer with the most vertices;
+            // "first skinned" is what the October observer read.
+            internal string BodyRenderer, FirstSkinned;
+            internal float MaxBodyDissolveSettled = -1f;
+            internal string MaxBodyDissolveAt;
+            internal JArray RendererCensus;
+            internal readonly JArray Controllers = new JArray();
+            internal int SampleCount;
+        }
+
+        private static string S7RendererName(Renderer renderer)
+        {
+            return renderer.GetType().Name + ":" + renderer.name + ":" +
+                (renderer is SkinnedMeshRenderer && ((SkinnedMeshRenderer)renderer).sharedMesh != null
+                    ? ((SkinnedMeshRenderer)renderer).sharedMesh.name : "");
+        }
+
+        private static float S7RendererDissolve(Renderer renderer)
+        {
+            float max = -1f;
+            foreach (Material material in renderer.sharedMaterials)
+                if (material != null && material.HasProperty("_Dissolve"))
+                    max = Math.Max(max, material.GetFloat("_Dissolve"));
+            return max;
+        }
+
+        private static SkinnedMeshRenderer S7Body(UnitEntityData unit)
+        {
+            return unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .Where(value => value != null && value.enabled && value.sharedMesh != null)
+                .OrderByDescending(value => value.sharedMesh.vertexCount).FirstOrDefault();
         }
 
         private static Buff S7Buff(UnitEntityData unit, BlueprintBuff blueprint)
@@ -391,10 +422,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                 subject.MaxDissolveAt = stage + "@" + (clock - subject.Spawned).TotalSeconds.ToString("0.0");
             }
             if (!alive && !subject.Ended.HasValue) subject.Ended = clock;
+            float body = -1f, first = -1f;
+            JObject renderers = null;
+            if (alive)
+            {
+                SkinnedMeshRenderer bodyRenderer = S7Body(unit);
+                SkinnedMeshRenderer firstRenderer = unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).FirstOrDefault();
+                if (bodyRenderer != null) { body = S7RendererDissolve(bodyRenderer); subject.BodyRenderer = S7RendererName(bodyRenderer); }
+                if (firstRenderer != null) { first = S7RendererDissolve(firstRenderer); subject.FirstSkinned = S7RendererName(firstRenderer); }
+                if (subject.RendererCensus == null)
+                    subject.RendererCensus = new JArray(unit.View.GetComponentsInChildren<Renderer>(true).Where(value => value != null)
+                        .Select(value => new JObject { ["renderer"] = S7RendererName(value), ["enabled"] = value.enabled,
+                            ["materials"] = new JArray(value.sharedMaterials.Where(material => material != null).Select(material =>
+                                material.name + "|" + (material.shader == null ? "" : material.shader.name) +
+                                "|dissolveKeyword=" + material.IsKeywordEnabled("DISSOLVE_ON"))) }));
+                if (subject.SampleCount % 4 == 0)
+                {
+                    renderers = new JObject();
+                    foreach (Renderer value in unit.View.GetComponentsInChildren<Renderer>(true))
+                    {
+                        if (value == null) continue;
+                        float level = S7RendererDissolve(value);
+                        if (level >= 0f) renderers[S7RendererName(value)] = Math.Round(level, 3);
+                    }
+                }
+                if (inLife && body > subject.MaxBodyDissolveSettled)
+                {
+                    subject.MaxBodyDissolveSettled = body;
+                    subject.MaxBodyDissolveAt = stage + "@" + (clock - subject.Spawned).TotalSeconds.ToString("0.0");
+                }
+            }
+            subject.SampleCount++;
             subject.Samples.Add(new JObject { ["t"] = Math.Round((clock - subject.Spawned).TotalSeconds, 2), ["stage"] = stage,
-                ["alive"] = alive, ["dissolve"] = dissolve, ["appear"] = appear != null,
+                ["alive"] = alive, ["dissolve"] = dissolve, ["body"] = body, ["firstSkinned"] = first, ["appear"] = appear != null,
                 ["remaining"] = summoned == null ? (double?)null : Math.Round((summoned.EndTime - clock).TotalSeconds, 2),
-                ["position"] = alive ? SurveyVector(unit.Position) : null });
+                ["position"] = alive ? SurveyVector(unit.Position) : null, ["renderers"] = renderers });
         }
 
         private UnitEntityData S7OrdinarySummon(ExpandedSummoningCorrectionFixture fixture, string key)
@@ -439,14 +501,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 row["donorSpawned"] = donor != null;
                 Func<Bounds> frame = () => R6RenderBounds(first);
-                Vector3 bearing = Quaternion.Euler(0f, 30f, 0f) * Vector3.forward;
                 S7LifeSubject second = null;
                 bool moved = false, attacked = false, secondSpawned = false;
                 Vector3 moveFrom = Vector3.zero;
                 var moveRow = new JObject(); var attackRow = new JObject();
                 row["move"] = moveRow; row["attack"] = attackRow;
                 double lastShot = -10, lastSample = -10;
-                using (var clip = new R6Clip(_request.EvidenceDirectory, "s7-ghaele-" + scene + "-lifetime", frame, bearing))
+                using (var clip = new R6Clip(_request.EvidenceDirectory, "s7-ghaele-" + scene + "-lifetime", frame, null))
                 {
                     var deadline = DateTime.UtcNow.AddMinutes(7);
                     while (DateTime.UtcNow < deadline)
@@ -458,13 +519,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                             foreach (S7LifeSubject subject in subjects) S7Sample(subject, "life");
                         }
                         bool firstAlive = !first.Destroyed && first.View != null;
-                        if (firstAlive && t - lastShot >= 4)
+                        if (firstAlive && t - lastShot >= 2)
                         {
                             lastShot = t;
                             var state = R6AnimationState(first);
+                            SkinnedMeshRenderer shotBody = S7Body(first);
                             state["t"] = Math.Round(t, 2); state["dissolve"] = S7MaxDissolve(first);
+                            state["body"] = shotBody == null ? -1f : S7RendererDissolve(shotBody);
                             clip.Shot(state);
                         }
+                        // The native dissolve-animation controllers, every ten seconds.
+                        if (Math.Floor(t / 10) > Math.Floor((t - Time.deltaTime) / 10))
+                            foreach (S7LifeSubject subject in subjects.Where(value => value.Unit != null && !value.Unit.Destroyed && value.Unit.View != null))
+                                subject.Controllers.Add(new JObject { ["t"] = Math.Round(t, 1), ["state"] = Cleanup2GiantAppearanceState(subject.Unit) });
                         // Ordinary movement after the appearance settles.
                         if (!moved && firstAlive && subjects[0].AppearEnded.HasValue && t > 8)
                         {
@@ -515,24 +582,51 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["lifetimeSeconds"] = subject.LifetimeEnd.HasValue ? Math.Round((subject.LifetimeEnd.Value - subject.Spawned).TotalSeconds, 2) : (double?)null,
                         ["endedAt"] = subject.Ended.HasValue ? Math.Round((subject.Ended.Value - subject.Spawned).TotalSeconds, 2) : (double?)null,
                         ["maxDissolveInLife"] = subject.MaxDissolveSettled, ["maxDissolveAt"] = subject.MaxDissolveAt,
+                        ["bodyRenderer"] = subject.BodyRenderer, ["firstSkinned"] = subject.FirstSkinned,
+                        ["maxBodyDissolveInLife"] = subject.MaxBodyDissolveSettled, ["maxBodyDissolveAt"] = subject.MaxBodyDissolveAt,
+                        ["rendererCensus"] = subject.RendererCensus, ["controllers"] = subject.Controllers,
                         ["samples"] = subject.Samples });
                 row["subjects"] = rows;
                 row["paused"] = Game.Instance.IsPaused;
                 S7LifeSubject a = subjects[0];
-                bool visible = a.AppearEnded.HasValue && a.MaxDissolveSettled >= 0f && a.MaxDissolveSettled <= .02f;
+                bool visible = a.AppearEnded.HasValue && a.MaxBodyDissolveSettled >= 0f && a.MaxBodyDissolveSettled <= .02f;
                 bool expired = a.Ended.HasValue && a.LifetimeEnd.HasValue &&
                     a.Ended.Value >= a.LifetimeEnd.Value - TimeSpan.FromSeconds(1) && a.Ended.Value <= a.LifetimeEnd.Value + TimeSpan.FromSeconds(15);
                 bool walked = moveRow["travel"] != null && (float)moveRow["travel"] > 2f;
                 Sprint25Check("s7-ghaele-" + scene + "-visible-lifetime", visible && expired && walked, new JObject { ["a"] = rows[0].DeepClone(), ["move"] = moveRow.DeepClone(), ["attack"] = attackRow.DeepClone() },
-                    "An ordinarily summoned Ghaele's body stays undissolved (every material _Dissolve at most 0.02) from appearance completion until its native lifetime ends, an ordinary move travels more than 2 m, and the summon is removed at its genuine expiry.");
-                bool secondVisible = second != null && second.AppearEnded.HasValue && second.MaxDissolveSettled >= 0f && second.MaxDissolveSettled <= .02f;
+                    "An ordinarily summoned Ghaele's body renderer (the enabled skinned renderer with the most vertices) stays undissolved (_Dissolve at most 0.02) from appearance completion until its native lifetime ends, an ordinary move travels more than 2 m, and the summon is removed at its genuine expiry.");
+                // Attribution: any other renderer whose dissolve rises in life,
+                // compared with the same renderer on the native donor that was
+                // spawned, never summoned, at the same game times.
+                S7LifeSubject nativeDonor = subjects.FirstOrDefault(value => value.Label == "native-donor");
+                var shared = new JArray(); int compared = 0, matched = 0;
+                if (nativeDonor != null)
+                    foreach (JObject sample in a.Samples.OfType<JObject>().Where(value => value["renderers"] != null && value["renderers"].Type == JTokenType.Object))
+                    {
+                        double at = (double)sample["t"] + (a.Spawned - nativeDonor.Spawned).TotalSeconds;
+                        JObject donorSample = nativeDonor.Samples.OfType<JObject>().Where(value => value["renderers"] != null && value["renderers"].Type == JTokenType.Object)
+                            .OrderBy(value => Math.Abs((double)value["t"] - at)).FirstOrDefault();
+                        if (donorSample == null || Math.Abs((double)donorSample["t"] - at) > .6) continue;
+                        foreach (JProperty level in ((JObject)sample["renderers"]).Properties().Where(value => (double)value.Value > .02))
+                        {
+                            JToken donorLevel = donorSample["renderers"][level.Name];
+                            compared++;
+                            if (donorLevel != null && Math.Abs((double)donorLevel - (double)level.Value) <= .1) matched++;
+                            if (shared.Count < 12) shared.Add(new JObject { ["t"] = sample["t"], ["renderer"] = level.Name, ["summon"] = level.Value, ["donor"] = donorLevel });
+                        }
+                    }
+                row["loopAttribution"] = new JObject { ["compared"] = compared, ["matchedDonor"] = matched, ["examples"] = shared };
+                Sprint25Check("s7-ghaele-" + scene + "-dissolve-attribution", nativeDonor != null && compared > 0 && matched >= compared * 9 / 10,
+                    (JObject)row["loopAttribution"].DeepClone(),
+                    "Every non-body renderer whose _Dissolve rises during the summon's life carries the same value at the same moment on the native donor, which was spawned and never summoned: a native looping material, not the summon's appearance or lifetime.");
+                bool secondVisible = second != null && second.AppearEnded.HasValue && second.MaxBodyDissolveSettled >= 0f && second.MaxBodyDissolveSettled <= .02f;
                 bool isolated = row["materialsDistinct"] != null && (bool)row["materialsDistinct"] && (bool)row["donorMaterialsDistinct"];
                 S7LifeSubject donorSubject = subjects.FirstOrDefault(value => value.Label == "native-donor");
-                bool donorClean = donorSubject == null || donorSubject.Samples.All(value => (float)value["dissolve"] <= .02f || !(bool)value["alive"]);
+                bool donorClean = donorSubject == null || donorSubject.Samples.All(value => (float)value["body"] <= .02f || !(bool)value["alive"]);
                 Sprint25Check("s7-ghaele-" + scene + "-isolation", secondVisible && isolated && donorClean,
                     new JObject { ["second"] = second == null ? null : rows[rows.Count - 1].DeepClone(), ["materialsDistinct"] = row["materialsDistinct"],
                         ["donorMaterialsDistinct"] = row["donorMaterialsDistinct"], ["donorClean"] = donorClean },
-                    "A second Ghaele summoned during the first's life stays undissolved through its own life; the two summons and the native donor hold distinct material instances, and the donor stays undissolved.");
+                    "A second Ghaele summoned during the first's life keeps an undissolved body through its own life; the two summons and the native donor hold distinct material instances, and the donor's body stays undissolved.");
             }
             finally
             {
@@ -669,7 +763,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // (same DoubleMove point template, not owned) and an unrelated
                 // native spell, granted for the observation only.
                 var nativeOverrun = ResourcesLibrary.TryGetBlueprint<BlueprintAbility>("1a3b471ecea51f7439a946b23577fd70");
-                var magicMissile = ResourcesLibrary.TryGetBlueprint<BlueprintAbility>("4ac00a4d64ed4e1408d6e3283c6a4d93");
+                var magicMissile = ResourcesLibrary.TryGetBlueprint<BlueprintAbility>("4ac47ddb9fa1eaf43a1b6809980cfbd2");
                 Ability nativeFact = null, spellFact = null;
                 if (nativeOverrun != null) { nativeFact = brachiosaurus.Descriptor.AddFact(nativeOverrun) as Ability; granted.Add(new KeyValuePair<UnitEntityData, BlueprintAbility>(brachiosaurus, nativeOverrun)); }
                 if (magicMissile != null) { spellFact = fixture.Caster.Descriptor.AddFact(magicMissile) as Ability; granted.Add(new KeyValuePair<UnitEntityData, BlueprintAbility>(fixture.Caster, magicMissile)); }
