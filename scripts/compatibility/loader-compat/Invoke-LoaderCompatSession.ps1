@@ -56,7 +56,9 @@ param(
     # With -Report: print that launch's records (label prefix, e.g. 02) instead of the session summary.
     [string]$ReportLaunch,
     # Runs the offline session-guard checks (Test-LoaderCompatSafety.ps1) and exits.
-    [switch]$SafetyTests
+    [switch]$SafetyTests,
+    # With -HistoricalReleaseControl: the recorded release version (scripts/historical-release-records.json).
+    [string]$HistoricalReleaseVersion
 )
 
 . (Join-Path $PSScriptRoot 'LoaderCompat.Common.ps1')
@@ -166,9 +168,9 @@ $evidence = Join-Path $script:LcEvidenceRoot $sessionId
 $profileDir = Join-Path $evidence 'profile'
 
 # Everything checkable is checked before anything is acquired.
-$candidateSha = Assert-LcSessionInputs $CandidateZip $HarnessDir $CandidateDevelopmentPurpose -HistoricalReleaseControl:$HistoricalReleaseControl
+$admitted = Assert-LcSessionInputs $CandidateZip $HarnessDir $CandidateDevelopmentPurpose -HistoricalReleaseControl:$HistoricalReleaseControl -HistoricalReleaseVersion $HistoricalReleaseVersion
 $summary = [ordered]@{ sessionId = $sessionId; session = $session.name; loaderProfile = $LoaderProfile
-    candidateZip = $CandidateZip; candidateZipSha256 = $candidateSha; gameCopy = $copyRoot
+    candidateZip = $CandidateZip; candidateZipSha256 = [string]$admitted.packageSha256; candidateDllSha256 = [string]$admitted.dllSha256; gameCopy = $copyRoot
     git = (& git -C (Split-Path (Split-Path (Split-Path $PSScriptRoot))) rev-parse HEAD); launches = @(); status = 'started' }
 Assert-LcPreflight
 # One journaled transaction for the whole session: the shared runtime lease (compatibility.lock) and the private
@@ -191,7 +193,7 @@ try {
 
     Initialize-LcGameCopy $paths
     $summary.loaderInstall = Install-LcLoaderProfile $paths $LoaderProfile
-    $summary.stagedMods = Set-LcGameCopyMods $paths @($session.ownerMods) $CandidateZip $HarnessDir
+    $summary.stagedMods = Set-LcGameCopyMods $paths @($session.ownerMods) $admitted $HarnessDir
     # The product's guarded request must name the staged candidate's own version.
     $candidateVersion = [string](Get-Content -LiteralPath (Join-Path $paths.ModsDir 'KingmakerGunslinger\Info.json') -Raw | ConvertFrom-Json).Version
     $summary.candidateVersion = $candidateVersion

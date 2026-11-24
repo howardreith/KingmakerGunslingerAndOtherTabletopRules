@@ -12,11 +12,16 @@ param(
     [string]$DevelopmentPurpose,
     # An explicitly identified historical release control: admitted by its own package identity without requiring the
     # current material inputs (every other candidate must be current).
-    [switch]$HistoricalReleaseControl
+    [switch]$HistoricalReleaseControl,
+    # The recorded release version of a historical control (scripts/historical-release-records.json).
+    [string]$HistoricalReleaseVersion
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+# Admission modes are mutually exclusive, decided before anything else is read.
+if ($HistoricalReleaseControl -and -not [string]::IsNullOrEmpty($DevelopmentPurpose)) { throw '-HistoricalReleaseControl and -DevelopmentPurpose are mutually exclusive admission modes.' }
+if ([bool]$HistoricalReleaseControl -ne (-not [string]::IsNullOrEmpty($HistoricalReleaseVersion))) { throw '-HistoricalReleaseControl requires -HistoricalReleaseVersion, and the version is valid only with it.' }
 $deploymentWhatIfRequested = [bool]$WhatIfPreference
 $WhatIfPreference = $false
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
@@ -26,9 +31,12 @@ $requiredEvidenceRoot = [IO.Path]::GetFullPath('C:\Dev\KingmakerGunslingerLab\ru
 if (-not [IO.Path]::GetFullPath($EvidenceRoot).TrimEnd('\').Equals($requiredEvidenceRoot, [StringComparison]::OrdinalIgnoreCase)) {
     throw "Evidence root must be exactly: $requiredEvidenceRoot"
 }
-$manifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root `
-    -DevelopmentPurpose $DevelopmentPurpose -RequireCurrentMaterialInputs:(-not $HistoricalReleaseControl)
-if ($HistoricalReleaseControl) { Write-Host "Historical release control (material inputs not required to be current): $($manifest.packagePath) $($manifest.packageSha256)" }
+function Read-DeployAdmission {
+    if ($HistoricalReleaseControl) { return Read-KmgHistoricalReleasePackage -PackagePath $PackagePath -RepositoryRoot $root -Version $HistoricalReleaseVersion }
+    return Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root -DevelopmentPurpose $DevelopmentPurpose -RequireCurrentMaterialInputs
+}
+$manifest = Read-DeployAdmission
+if ($HistoricalReleaseControl) { Write-Host "Historical release control $($manifest.releaseTag) ($($manifest.commit)): $($manifest.packagePath) $($manifest.packageSha256)" }
 $developmentDeployment = -not [string]::IsNullOrEmpty($DevelopmentPurpose)
 $candidateLabel = if ($developmentDeployment) {
     "development candidate '$DevelopmentPurpose' (never a release)"
@@ -59,8 +67,11 @@ $WhatIfPreference = $false
 $runtimeScope = Enter-KmgRuntimeLease -ParentLease $RuntimeLease -Purpose 'deploy local candidate'
 try {
 Assert-KmgNotRunning
-$manifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root `
-    -DevelopmentPurpose $DevelopmentPurpose -RequireCurrentMaterialInputs:(-not $HistoricalReleaseControl)
+$manifest = Read-DeployAdmission
+# Staging uses a private copy with the admitted digest; the extracted DLL must be the admitted DLL.
+$admittedRoot = Join-Path $root 'artifacts\deploy-admitted'
+if (Test-Path -LiteralPath $admittedRoot) { Remove-Item -LiteralPath (Assert-KmgPathWithin -Path $admittedRoot -Root (Join-Path $root 'artifacts')) -Recurse -Force }
+$admittedCopy = New-KmgAdmittedPackageCopy -Admission $manifest -Destination $admittedRoot
 $backup = & (Join-Path $PSScriptRoot 'Backup-Live-Mod.ps1') `
     -LiveModDirectory $live -BackupRoot $BackupRoot `
     -AllowEmptySource:$AllowEmptyFirstInstall -Confirm:$false
@@ -75,7 +86,7 @@ if (Test-Path -LiteralPath $stagingRoot) {
     Remove-Item -LiteralPath $resolved -Recurse -Force
 }
 New-Item -ItemType Directory -Path $stagingRoot | Out-Null
-Expand-Archive -LiteralPath $manifest.packagePath -DestinationPath $stagingRoot
+[void](Expand-KmgAdmittedPackage -Admission $manifest -AdmittedCopy $admittedCopy -Destination $stagingRoot)
 $source = Join-Path $stagingRoot 'KingmakerGunslinger'
 if (-not (Test-Path -LiteralPath (Join-Path $source 'Info.json') -PathType Leaf)) {
     throw 'Validated package did not extract to the expected single mod root.'

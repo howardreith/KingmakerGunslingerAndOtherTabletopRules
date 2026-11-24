@@ -32,9 +32,6 @@ if ($CompileOnly -and ($Package -or $IncludeSymbols)) {
 }
 if (-not $CompileOnly) {
     & (Join-Path $PSScriptRoot 'validate-repository.ps1')
-    if (-not $SkipDomainTests) {
-        & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration $Configuration -MSBuildPath $MSBuildPath -SkipRepositoryValidation
-    }
 }
 
 if (-not $KingmakerInstallDir -and -not (Test-Path -LiteralPath $localPropsPath -PathType Leaf)) {
@@ -81,6 +78,12 @@ if ($LASTEXITCODE -ne 0) {
 if ($CompileOnly) {
     Write-Host 'Development production compilation passed; package/release checks deferred.'
     return
+}
+
+# The domain tests run after the production compilation, so the loader-reference case inspects this compiler output.
+if (-not $SkipDomainTests) {
+    $productionDll = Join-Path $repositoryRoot "artifacts\bin\$Configuration\KingmakerGunslinger\KingmakerGunslinger.dll"
+    & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration $Configuration -MSBuildPath $MSBuildPath -SkipRepositoryValidation -ProductionDll $productionDll
 }
 
 if ($Package) {

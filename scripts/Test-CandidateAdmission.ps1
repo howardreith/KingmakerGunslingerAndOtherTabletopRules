@@ -4,6 +4,10 @@ param(
     [string]$ReferenceBundleDir = 'C:\Dev\KingmakerGunslingerLab\private\extracted-references\KingmakerGunslinger-private-build-references',
     # A released TRE DLL compiled against a newer loader (v0.0.187 references UnityModManager 0.33.0.0), read only.
     [Parameter(Mandatory = $true)][string]$NewerCompiledDll,
+    # The published v0.0.188 release ZIP (an identified older release with a committed release record), read only.
+    [Parameter(Mandatory = $true)][string]$HistoricalReleaseZip,
+    # Another baseline-compatible build's DLL (the released v0.0.195 DLL: UnityModManager 0.31.1.0, another source stamp).
+    [Parameter(Mandatory = $true)][string]$OtherBuildDll,
     [string]$ReportPath
 )
 
@@ -75,7 +79,9 @@ try {
     $v = Invoke-PS @('-File', $validator, '-PackagePath', $package)
     Add-Case 'validator-genuine-baseline-zip-accepted' ($v.ExitCode -eq 0) "exit $($v.ExitCode)"
     $variants = Join-Path $temp 'variants'; New-Item -ItemType Directory -Path $variants | Out-Null
-    $dllEntry = @([IO.Compression.ZipFile]::OpenRead($package).Entries | Where-Object { $_.FullName.Replace('\', '/') -ceq 'KingmakerGunslinger/KingmakerGunslinger.dll' })[0].FullName
+    $packageArchive = [IO.Compression.ZipFile]::OpenRead($package)
+    try { $dllEntry = @($packageArchive.Entries | Where-Object { $_.FullName.Replace('\', '/') -ceq 'KingmakerGunslinger/KingmakerGunslinger.dll' })[0].FullName }
+    finally { $packageArchive.Dispose() }
     $newer = Join-Path $variants 'newer-compiled-dll.zip'
     New-ZipVariant $package $newer @{ $dllEntry = [IO.File]::ReadAllBytes($NewerCompiledDll) }
     $v = Invoke-PS @('-File', $validator, '-PackagePath', $newer)
@@ -117,17 +123,155 @@ try {
     $harnessDir = Join-Path $temp 'harness'; New-Item -ItemType Directory -Path $harnessDir | Out-Null
     foreach ($name in @('KmgLoaderCompatHarness.dll', 'Info.json')) { Set-Content -LiteralPath (Join-Path $harnessDir $name) -Value 'fixture' }
     $lc = Join-Path $clone 'scripts\compatibility\loader-compat'
-    $preflight = { param([string]$zip) Invoke-PS @('-Command', ". '$((Join-Path $lc 'LoaderCompat.Common.ps1').Replace("'", "''"))'; . '$((Join-Path $lc 'LoaderCompat.Transaction.ps1').Replace("'", "''"))'; 'PREFLIGHT ' + (Assert-LcSessionInputs '$($zip.Replace("'", "''"))' '$($harnessDir.Replace("'", "''"))' '$purpose')") }
+    $preflight = { param([string]$zip) Invoke-PS @('-Command', ". '$((Join-Path $lc 'LoaderCompat.Common.ps1').Replace("'", "''"))'; . '$((Join-Path $lc 'LoaderCompat.Transaction.ps1').Replace("'", "''"))'; 'PREFLIGHT ' + (Assert-LcSessionInputs '$($zip.Replace("'", "''"))' '$($harnessDir.Replace("'", "''"))' '$purpose').packageSha256") }
     $pf = & $preflight $package
     Add-Case 'loader-preflight-admits-matching-candidate' ($pf.ExitCode -eq 0 -and $pf.Output -match 'PREFLIGHT [0-9a-f]{64}') "exit $($pf.ExitCode)"
     $pf = & $preflight $newer
     Add-Case 'loader-preflight-refuses-mismatched-zip' ($pf.ExitCode -ne 0 -and $pf.Output -match 'Candidate admission refused') (Get-Reason $pf.Output)
 
+    # --- Package entries: one resolved path; a relative path after a PowerShell location change; a noncanonical entry
+    #     whose destination falls beside the mod directory; a non-string packaged minimum.
+    $relative = Invoke-PS @('-Command', "Set-Location -LiteralPath '$((Split-Path -Parent $package).Replace("'", "''"))'; & '$($validator.Replace("'", "''"))' -PackagePath '.\$((Split-Path -Leaf $package).Replace("'", "''"))'")
+    Add-Case 'validator-relative-path-after-location-change-accepted' ($relative.ExitCode -eq 0 -and $relative.Output -match 'Strict standalone UMM package validation passed') "exit $($relative.ExitCode)"
+    $beside = Join-Path $variants 'noncanonical-entry.zip'
+    New-ZipVariant $package $beside @{} @{ 'KingmakerGunslinger/../KingmakerGunslinger-notes.md' = [Text.Encoding]::ASCII.GetBytes('notes') }
+    $v = Invoke-PS @('-File', $validator, '-PackagePath', $beside)
+    Add-Case 'validator-noncanonical-entry-beside-mod-directory-refused' ($v.ExitCode -ne 0 -and $v.Output -match 'outside the .KingmakerGunslinger. mod root: KingmakerGunslinger/\.\./KingmakerGunslinger-notes\.md') (Get-Reason $v.Output)
+    $infoEntry = 'KingmakerGunslinger/Info.json'
+    $infoArchive = [IO.Compression.ZipFile]::OpenRead($package)
+    try { $infoReader = [IO.StreamReader]::new($infoArchive.GetEntry($infoEntry).Open()); try { $infoText = $infoReader.ReadToEnd() } finally { $infoReader.Dispose() } }
+    finally { $infoArchive.Dispose() }
+    $arrayInfo = $infoText.TrimStart([char]0xFEFF) | ConvertFrom-Json; $arrayInfo.ManagerVersion = @([string]$arrayInfo.ManagerVersion)
+    $arrayZip = Join-Path $variants 'array-minimum.zip'
+    New-ZipVariant $package $arrayZip @{ $infoEntry = [Text.Encoding]::UTF8.GetBytes(($arrayInfo | ConvertTo-Json -Depth 6)) }
+    $v = Invoke-PS @('-File', $validator, '-PackagePath', $arrayZip)
+    Add-Case 'validator-array-valued-packaged-minimum-refused' ($v.ExitCode -ne 0 -and $v.Output -match 'Packaged ManagerVersion must equal the pinned loader floor') (Get-Reason $v.Output)
+
+    # --- The receipt records the exact compiler output, which equals the DLL inside the ZIP and carries the producer's
+    #     stamp; another baseline-compatible build supplying both the loose and the packaged DLL is refused while the
+    #     receipt names the original producer.
+    $receiptNow = Get-Content -LiteralPath $receiptPath -Raw | ConvertFrom-Json
+    $measuredGenuine = Invoke-PS @('-Command', "`$m = & '$($validator.Replace("'", "''"))' -PackagePath '$($package.Replace("'", "''"))' -PassThru | Select-Object -Last 1; 'MEASURED ' + `$m.sha256 + ' ' + `$m.mvid + ' ' + `$m.gitCommit")
+    $mm = [regex]::Match($measuredGenuine.Output, 'MEASURED ([0-9a-f]{64}) ([0-9a-f-]{36}) ([0-9a-f]{40})')
+    Add-Case 'receipt-records-matching-compiler-and-packaged-identities' ($mm.Success -and $receiptNow.compilerDllSha256 -ceq $mm.Groups[1].Value -and $receiptNow.dllSha256 -ceq $mm.Groups[1].Value -and
+        $receiptNow.compilerDllMvid -ceq $mm.Groups[2].Value -and $receiptNow.embeddedGitCommit -ceq $commit -and $mm.Groups[3].Value -ceq $commit) "compiler $($receiptNow.compilerDllSha256) / packaged $($mm.Groups[1].Value) / stamp $($mm.Groups[3].Value)"
+    $otherMvid = (Invoke-PS @('-Command', "[Reflection.Assembly]::ReflectionOnlyLoad([IO.File]::ReadAllBytes('$($OtherBuildDll.Replace("'", "''"))')).ManifestModule.ModuleVersionId.ToString()")).Output.Trim()
+    $otherSha = Get-Sha $OtherBuildDll
+    $packageBytes = [IO.File]::ReadAllBytes($package)
+    $sidecar = "$package.sha256"; $sidecarText = if (Test-Path -LiteralPath $sidecar) { [IO.File]::ReadAllText($sidecar) } else { $null }
+    $loose = Join-Path $clone 'artifacts\bin\Release\KingmakerGunslinger\KingmakerGunslinger.dll'; $looseBytes = if (Test-Path -LiteralPath $loose) { [IO.File]::ReadAllBytes($loose) } else { $null }
+    $otherZip = Join-Path $variants 'other-build.zip'
+    New-ZipVariant $package $otherZip @{ $dllEntry = [IO.File]::ReadAllBytes($OtherBuildDll) }
+    try {
+        [IO.File]::Copy($otherZip, $package, $true)
+        if ($null -ne $looseBytes) { [IO.File]::WriteAllBytes($loose, [IO.File]::ReadAllBytes($OtherBuildDll)) }
+        $forged = $receiptOriginal | ConvertFrom-Json
+        $forged.packageSha256 = Get-Sha $package; $forged.dllSha256 = $otherSha; $forged.dllMvid = $otherMvid
+        $forged.compilerDllSha256 = $otherSha; $forged.compilerDllMvid = $otherMvid
+        [IO.File]::WriteAllText($receiptPath, ($forged | ConvertTo-Json -Depth 12))
+        if ($null -ne $sidecarText) { [IO.File]::WriteAllText($sidecar, $sidecarText.Replace($forged.packageSha256, $forged.packageSha256).Replace(([regex]::Match($sidecarText, '[0-9a-fA-F]{64}').Value), $forged.packageSha256)) }
+        $r = & $admit $package
+        Add-Case 'other-baseline-build-with-original-producer-receipt-refused' ($r.ExitCode -ne 0 -and $r.Output -match "was built from ef0e1fe15d59fc6f04ef4956337690f14de3c528, not the receipt's producing commit") (Get-Reason $r.Output)
+    }
+    finally {
+        [IO.File]::WriteAllBytes($package, $packageBytes); [IO.File]::WriteAllText($receiptPath, $receiptOriginal)
+        if ($null -ne $sidecarText) { [IO.File]::WriteAllText($sidecar, $sidecarText) }
+        if ($null -ne $looseBytes) { [IO.File]::WriteAllBytes($loose, $looseBytes) }
+    }
+
+    # --- Stale candidates: shipped inputs and packaging helpers outside the earlier path list; documentation under docs/
+    #     only keeps the candidate admissible.
+    foreach ($material in @(@('shipped-readme', 'README.md', '<!-- shipped change -->'), @('packaging-helper', 'scripts/common.ps1', '# packaging helper change'))) {
+        $path = Join-Path $clone $material[1]
+        $original = [IO.File]::ReadAllText($path)
+        [IO.File]::WriteAllText($path, $original + "`r`n" + $material[2] + "`r`n")
+        & $git @('commit', '-q', '-am', "test: $($material[0]) change") | Out-Null
+        $r = & $admit $package
+        Add-Case "candidate-after-$($material[0])-change-refused" ($r.ExitCode -ne 0 -and $r.Output -match 'candidate is stale: material inputs changed.*' + [regex]::Escape($material[1])) (Get-Reason $r.Output)
+        [IO.File]::WriteAllText($path, $original)
+        & $git @('commit', '-q', '-am', "test: revert $($material[0]) change") | Out-Null
+    }
+    $reviewNote = Join-Path $clone 'docs\agent-reviews\candidate-admission-note.md'
+    [void][IO.Directory]::CreateDirectory((Split-Path -Parent $reviewNote)); [IO.File]::WriteAllText($reviewNote, "review documentation only`r`n")
+    & $git @('add', 'docs/agent-reviews/candidate-admission-note.md') | Out-Null; & $git @('commit', '-q', '-m', 'test: review documentation only') | Out-Null
+    $r = & $admit $package
+    Add-Case 'candidate-after-review-documentation-change-admitted' ($r.ExitCode -eq 0 -and $r.Output -match 'ADMITTED [0-9a-f]{64}') "exit $($r.ExitCode)"
+
+    # --- Historical release control: admitted only by the committed release record (an identified older release);
+    #     a changed archive and a same-version development package are refused; conflicting modes are refused first.
+    $historical = { param([string]$zip, [string]$version) Invoke-PS @('-Command', ". '$($harness.Replace("'", "''"))'; `$h = Read-KmgHistoricalReleasePackage -PackagePath '$($zip.Replace("'", "''"))' -RepositoryRoot '$($clone.Replace("'", "''"))' -Version '$version'; 'HISTORICAL ' + `$h.releaseTag + ' ' + `$h.commit + ' ' + `$h.packageSha256") }
+    $h = & $historical $HistoricalReleaseZip '0.0.188'
+    Add-Case 'historical-identified-older-release-admitted' ($h.ExitCode -eq 0 -and $h.Output -match 'HISTORICAL v0\.0\.188 097e522f9fa0a8fdc8a773fb51fc3cfbf91d115c 64d83955') "exit $($h.ExitCode)"
+    $changedRelease = Join-Path $variants 'changed-release.zip'
+    New-ZipVariant $HistoricalReleaseZip $changedRelease @{} @{ 'KingmakerGunslinger/NOTES.txt' = [Text.Encoding]::ASCII.GetBytes('changed') }
+    $h = & $historical $changedRelease '0.0.188'
+    Add-Case 'historical-changed-archive-refused' ($h.ExitCode -ne 0 -and $h.Output -match 'is not the recorded v0\.0\.188 release package') (Get-Reason $h.Output)
+    $h = & $historical $package '0.0.195'
+    Add-Case 'historical-same-version-development-package-refused' ($h.ExitCode -ne 0 -and $h.Output -match 'is not the recorded v0\.0\.195 release package') (Get-Reason $h.Output)
+    $deploy = Join-Path $clone 'scripts\Deploy-Local.ps1'
+    $fixtureLive = Join-Path $temp 'not-the-live-mod'
+    $d1 = Invoke-PS @('-File', $deploy, '-PackagePath', $package, '-LiveModDirectory', $fixtureLive, '-HistoricalReleaseControl', '-HistoricalReleaseVersion', '0.0.188', '-DevelopmentPurpose', $purpose, '-WhatIf')
+    $d2 = Invoke-PS @('-File', $deploy, '-PackagePath', $package, '-LiveModDirectory', $fixtureLive, '-HistoricalReleaseControl', '-WhatIf')
+    $pfConflict = Invoke-PS @('-Command', ". '$((Join-Path $lc 'LoaderCompat.Common.ps1').Replace("'", "''"))'; Assert-LcSessionInputs '$($package.Replace("'", "''"))' '$($harnessDir.Replace("'", "''"))' '$purpose' -HistoricalReleaseControl -HistoricalReleaseVersion 0.0.188")
+    Add-Case 'historical-conflicting-mode-arguments-refused' ($d1.ExitCode -ne 0 -and $d1.Output -match 'mutually exclusive admission modes' -and $d2.ExitCode -ne 0 -and $d2.Output -match 'requires -HistoricalReleaseVersion' -and
+        $pfConflict.ExitCode -ne 0 -and $pfConflict.Output -match 'mutually exclusive') "Deploy-Local: $(Get-Reason $d1.Output) | $(Get-Reason $d2.Output); preflight: $(Get-Reason $pfConflict.Output)"
+    $pfHistorical = Invoke-PS @('-Command', ". '$((Join-Path $lc 'LoaderCompat.Common.ps1').Replace("'", "''"))'; `$a = Assert-LcSessionInputs '$($HistoricalReleaseZip.Replace("'", "''"))' '$($harnessDir.Replace("'", "''"))' '' -HistoricalReleaseControl -HistoricalReleaseVersion 0.0.188; 'PREFLIGHT ' + `$a.packageSha256 + ' ' + `$a.dllSha256; Remove-Item -LiteralPath (Split-Path -Parent `$a.privateCopy) -Recurse -Force")
+    Add-Case 'loader-preflight-admits-recorded-historical-release' ($pfHistorical.ExitCode -eq 0 -and $pfHistorical.Output -match 'PREFLIGHT 64d83955[0-9a-f]{56} 0eb2f002') "exit $($pfHistorical.ExitCode)"
+
+    # --- Staging carries the admitted identity: bytes replacing the supplied path after admission are never staged
+    #     (refused before the private copy, or the original bytes staged from the copy).
+    $stagingProbe = Join-Path $temp 'staging-probe.ps1'
+    [IO.File]::WriteAllText($stagingProbe, @'
+param([string]$Harness, [string]$Clone, [string]$Package, [string]$Purpose, [string]$Replacement, [string]$Work, [string]$Lc, [string]$HarnessDir)
+$ErrorActionPreference = 'Stop'
+. $Harness
+$original = [IO.File]::ReadAllBytes($Package)
+try {
+    $m = Read-KmgBuildLocalManifest -PackagePath $Package -RepositoryRoot $Clone -DevelopmentPurpose $Purpose -RequireCurrentMaterialInputs
+    [IO.File]::Copy($Replacement, $Package, $true)
+    try { New-KmgAdmittedPackageCopy -Admission $m -Destination (Join-Path $Work 'copy-after-change') | Out-Null; 'BEFORE-COPY STAGED' } catch { 'BEFORE-COPY REFUSED ' + $_.Exception.Message }
+    [IO.File]::WriteAllBytes($Package, $original)
+    $m = Read-KmgBuildLocalManifest -PackagePath $Package -RepositoryRoot $Clone -DevelopmentPurpose $Purpose -RequireCurrentMaterialInputs
+    $copy = New-KmgAdmittedPackageCopy -Admission $m -Destination (Join-Path $Work 'copy')
+    [IO.File]::Copy($Replacement, $Package, $true)
+    $staging = Join-Path $Work 'staging'; [void][IO.Directory]::CreateDirectory($staging)
+    $mod = Expand-KmgAdmittedPackage -Admission $m -AdmittedCopy $copy -Destination $staging
+    'AFTER-COPY STAGED ' + (Get-KmgSha256 -Path (Join-Path $mod 'KingmakerGunslinger.dll')) + ' ADMITTED ' + $m.dllSha256
+    # The loader harness: the admitted private copy stages even though the supplied path now holds other bytes.
+    [IO.File]::WriteAllBytes($Package, $original)
+    . (Join-Path $Lc 'LoaderCompat.Common.ps1')
+    $admitted = Assert-LcSessionInputs $Package $HarnessDir $Purpose
+    [IO.File]::Copy($Replacement, $Package, $true)
+    $paths = [pscustomobject]@{ ModsDir = (Join-Path $Work 'lc-mods'); Pristine = (Join-Path $Work 'lc-pristine') }
+    [void][IO.Directory]::CreateDirectory((Join-Path $paths.Pristine 'Mods'))
+    $staged = Set-LcGameCopyMods $paths @() $admitted $HarnessDir
+    'LOADER STAGED ' + $staged['KingmakerGunslinger'].dllSha256 + ' ADMITTED ' + $admitted.dllSha256
+}
+finally { [IO.File]::WriteAllBytes($Package, $original) }
+'@)
+    $sp = Invoke-PS @('-File', $stagingProbe, '-Harness', $harness, '-Clone', $clone, '-Package', $package, '-Purpose', $purpose, '-Replacement', $newer, '-Work', (Join-Path $temp 'staging-work'), '-Lc', $lc, '-HarnessDir', $harnessDir)
+    $after = [regex]::Match($sp.Output, 'AFTER-COPY STAGED ([0-9a-f]{64}) ADMITTED ([0-9a-f]{64})')
+    $loaderStaged = [regex]::Match($sp.Output, 'LOADER STAGED ([0-9a-f]{64}) ADMITTED ([0-9a-f]{64})')
+    Add-Case 'staging-refuses-a-package-replaced-before-the-private-copy' ($sp.Output -match 'BEFORE-COPY REFUSED The package changed after admission') (Get-Reason $sp.Output)
+    Add-Case 'staging-uses-only-the-admitted-bytes-after-the-supplied-path-changes' ($after.Success -and $after.Groups[1].Value -ceq $after.Groups[2].Value -and $loaderStaged.Success -and $loaderStaged.Groups[1].Value -ceq $loaderStaged.Groups[2].Value -and (Get-Sha $package) -ceq (Get-Sha $package)) "deploy staging $($after.Groups[1].Value); loader staging $($loaderStaged.Groups[1].Value)"
+
+    # --- The development purpose is data: an apostrophe gets the ordinary purpose-validation error before any child runs.
+    $badPurpose = "umm-0311-admission'"
+    $pfBad = Invoke-PS @('-Command', ". '$((Join-Path $lc 'LoaderCompat.Common.ps1').Replace("'", "''"))'; Assert-LcSessionInputs '$($package.Replace("'", "''"))' '$($harnessDir.Replace("'", "''"))' '$($badPurpose.Replace("'", "''"))'")
+    Add-Case 'loader-preflight-purpose-with-apostrophe-refused-by-purpose-validation' ($pfBad.ExitCode -ne 0 -and $pfBad.Output -match 'Development purpose must be a lower-case hyphenated name' -and $pfBad.Output -notmatch 'Candidate admission refused') (Get-Reason $pfBad.Output)
+
     $failed = @($cases | Where-Object { -not $_.passed })
     $summary = [ordered]@{ schema = 'kmg.candidate-admission-tests.v1'; commit = $commit; purpose = $purpose; package_sha256 = Get-Sha $package
-        newer_compiled_dll_sha256 = Get-Sha $NewerCompiledDll; passed = $cases.Count - $failed.Count; total = $cases.Count; cases = @($cases) }
+        newer_compiled_dll_sha256 = Get-Sha $NewerCompiledDll; historical_release_zip_sha256 = Get-Sha $HistoricalReleaseZip; other_build_dll_sha256 = Get-Sha $OtherBuildDll; passed = $cases.Count - $failed.Count; total = $cases.Count; cases = @($cases) }
     if ($ReportPath) { $summary | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $ReportPath -Encoding UTF8 }
     Write-Host ("RESULT {0}/{1} candidate admission checks passed" -f $summary.passed, $summary.total)
     if ($failed.Count -gt 0) { throw "$($failed.Count) candidate admission check(s) failed." }
 }
-finally { Remove-Item -LiteralPath $temp -Recurse -Force -ErrorAction SilentlyContinue }
+finally {
+    # The owned temporary clone is removed; a failure to remove it is surfaced.
+    if (Test-Path -LiteralPath $temp) {
+        try { Remove-Item -LiteralPath $temp -Recurse -Force -ErrorAction Stop }
+        catch { Write-Warning "The temporary clone could not be removed: $temp ($($_.Exception.Message))" }
+        if (Test-Path -LiteralPath $temp) { throw "The temporary clone remains: $temp" }
+    }
+}

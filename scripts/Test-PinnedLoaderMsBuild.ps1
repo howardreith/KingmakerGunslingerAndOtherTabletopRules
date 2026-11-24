@@ -73,13 +73,29 @@ try {
     # pins it is valid; otherwise (UMM 0.33.0 on the development machine) it is refused before compilation.
     $pinnedUmm = Join-Path $clone 'artifacts\references\loader\UnityModManager\UnityModManager.dll'
     $pinnedHarmony = Join-Path $clone 'artifacts\references\loader\UnityModManager\0Harmony12.dll'
-    $installedMatchesPins = (Get-Sha (Join-Path $installedLoader 'UnityModManager.dll')) -ceq (Get-Sha $pinnedUmm) -and (Get-Sha (Join-Path $installedLoader '0Harmony12.dll')) -ceq (Get-Sha $pinnedHarmony)
-    $installed = & $msbuildDirect @("/p:UnityModManagerDir=$installedLoader")
-    if ($installedMatchesPins) {
-        Add-Case 'direct-msbuild-installed-loader-byte-identical-accepted' ($installed.ExitCode -eq 0) "installed loader is byte-identical to the pins; exit $($installed.ExitCode)"
-    } else {
-        Add-Case 'direct-msbuild-installed-loader-refused' ($installed.ExitCode -ne 0 -and $installed.Output -match 'KMGPIN: Pinned loader reference differs from its pin: UnityModManager/UnityModManager\.dll' -and $installed.Output -notmatch 'KingmakerGunslinger -> ' -and (Get-Sha $dll) -ceq $dllSha) ([regex]::Match($installed.Output, 'KMGPIN: [^;]*').Value)
+    # The installed-set decision, judged by bytes: the expected refusal names the first component that differs from the
+    # pins (UnityModManager.dll, else 0Harmony12.dll); a byte-identical set is accepted. Exercised on controlled reference
+    # directories (exact, UMM-only mismatch, Harmony-only mismatch) and on the actual installation (read only).
+    function Get-ExpectedLoaderVerdict([string]$Directory) {
+        if ((Get-Sha (Join-Path $Directory 'UnityModManager.dll')) -cne (Get-Sha $pinnedUmm)) { return 'UnityModManager/UnityModManager.dll' }
+        if ((Get-Sha (Join-Path $Directory '0Harmony12.dll')) -cne (Get-Sha $pinnedHarmony)) { return 'UnityModManager/0Harmony12.dll' }
+        return 'accepted'
     }
+    function Test-LoaderSetVerdict([string]$Name, [string]$Directory) {
+        $expected = Get-ExpectedLoaderVerdict $Directory
+        $result = & $msbuildDirect @("/p:UnityModManagerDir=$Directory")
+        $ok = if ($expected -eq 'accepted') { $result.ExitCode -eq 0 } else { $result.ExitCode -ne 0 -and $result.Output -match ('KMGPIN: Pinned loader reference differs from its pin: ' + [regex]::Escape($expected)) }
+        Add-Case $Name $ok "expected $expected; exit $($result.ExitCode)"
+    }
+    $controlled = Join-Path $temp 'controlled sets'
+    foreach ($set in @(@('exact', $false, $false), @('umm-only-mismatch', $true, $false), @('harmony-only-mismatch', $false, $true))) {
+        $dir = Join-Path $controlled "$($set[0])\UnityModManager"; [void][IO.Directory]::CreateDirectory($dir)
+        Copy-Item -LiteralPath $pinnedUmm -Destination (Join-Path $dir 'UnityModManager.dll'); Copy-Item -LiteralPath $pinnedHarmony -Destination (Join-Path $dir '0Harmony12.dll')
+        if ($set[1]) { $b = [IO.File]::ReadAllBytes((Join-Path $dir 'UnityModManager.dll')); $b[$b.Length - 1] = $b[$b.Length - 1] -bxor 0x5A; [IO.File]::WriteAllBytes((Join-Path $dir 'UnityModManager.dll'), $b) }
+        if ($set[2]) { $b = [IO.File]::ReadAllBytes((Join-Path $dir '0Harmony12.dll')); $b[$b.Length - 1] = $b[$b.Length - 1] -bxor 0x5A; [IO.File]::WriteAllBytes((Join-Path $dir '0Harmony12.dll'), $b) }
+        Test-LoaderSetVerdict "direct-msbuild-controlled-$($set[0])-set" $dir
+    }
+    Test-LoaderSetVerdict 'direct-msbuild-installed-loader-judged-by-bytes' $installedLoader
 
     # A copy of the pinned files with one byte changed in 0Harmony12: refused.
     $tampered = Join-Path $temp 'tampered loader\UnityModManager'

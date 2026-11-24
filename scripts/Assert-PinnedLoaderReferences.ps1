@@ -22,6 +22,12 @@ try {
     Write-Host ('Pinned loader references verified: ' + (($verified | ForEach-Object { $_.relativePath + ' ' + $_.assemblyVersion }) -join ', '))
 }
 catch {
-    [Console]::Error.WriteLine('error KMGPIN: ' + $_.Exception.Message + ' Run scripts\build.ps1 (it fetches the pinned files into artifacts\references\loader) or pass /p:UnityModManagerDir=<pinned root>\UnityModManager.')
+    $message = $_.Exception.Message
+    $advice = if ($message -like '*differs from its pin*') {
+        ' The file is present with different bytes and was left untouched: inspect it, move or delete that one file yourself, then rerun scripts\build.ps1 to fetch the pinned copy (see docs\BUILDING.md).'
+    } elseif ($message -like '*missing*' -or $message -like '*not found*') {
+        ' Run scripts\build.ps1 (it fetches absent pinned files into artifacts\references\loader), or pass /p:UnityModManagerDir=<pinned root>\UnityModManager.'
+    } else { ' See docs\BUILDING.md (pinned loader references).' }
+    [Console]::Error.WriteLine('error KMGPIN: ' + $message + $advice)
     exit 1
 }

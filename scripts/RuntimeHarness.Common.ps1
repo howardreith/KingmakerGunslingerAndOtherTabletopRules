@@ -398,6 +398,7 @@ function Read-KmgBuildLocalManifest {
         $measured = & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $package -PassThru | Select-Object -Last 1
         Assert-KmgReceiptDescribesPackagedDll -Receipt $receipt -Measured $measured
         if ($RequireCurrentMaterialInputs) { Assert-KmgCandidateMaterialInputsCurrent -RepositoryRoot $RepositoryRoot -Commit ([string]$receipt.commit) }
+        $receipt | Add-Member -NotePropertyName measuredDll -NotePropertyValue $measured -Force
         return $receipt
     }
     Assert-KmgNotDevelopmentCandidate -PackagePath $package -RepositoryRoot $RepositoryRoot
@@ -428,6 +429,7 @@ function Read-KmgBuildLocalManifest {
     $measured = & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $package -PassThru | Select-Object -Last 1
     Assert-KmgReceiptDescribesPackagedDll -Receipt $manifest -Measured $measured
     if ($RequireCurrentMaterialInputs) { Assert-KmgCandidateMaterialInputsCurrent -RepositoryRoot $RepositoryRoot -Commit ([string]$manifest.commit) }
+    $manifest | Add-Member -NotePropertyName measuredDll -NotePropertyValue $measured -Force
     return $manifest
 }
 
@@ -439,6 +441,85 @@ function Assert-KmgReceiptDescribesPackagedDll {
     if ([string]$Receipt.dllSha256 -cne [string]$Measured.sha256 -or [string]$Receipt.dllMvid -cne [string]$Measured.mvid) {
         throw "The DLL inside the package is not the build its receipt names (receipt $($Receipt.dllSha256)/$($Receipt.dllMvid), packaged $($Measured.sha256)/$($Measured.mvid))."
     }
+    # A DLL that carries its source stamp (AssemblyMetadata GitCommit, written by the exact-reference builder) must have
+    # been built from the receipt's producing commit.
+    $embedded = if ($Measured.PSObject.Properties['gitCommit'] -and $Measured.gitCommit) { [string]$Measured.gitCommit } else { '' }
+    if ($embedded -and $embedded -cne [string]$Receipt.commit) {
+        throw "The DLL inside the package was built from $embedded, not the receipt's producing commit $($Receipt.commit)."
+    }
+    # A receipt that records the exact compiler output must name that same DLL.
+    if ($Receipt.PSObject.Properties['compilerDllSha256'] -and
+        ([string]$Receipt.compilerDllSha256 -cne [string]$Measured.sha256 -or [string]$Receipt.compilerDllMvid -cne [string]$Measured.mvid)) {
+        throw "The DLL inside the package is not the exact compiler output its receipt records ($($Receipt.compilerDllSha256))."
+    }
+}
+
+# An explicitly identified historical release, admitted only by its committed release record
+# (scripts/historical-release-records.json): the package bytes must be the recorded release package, the release tag
+# must resolve to the recorded commit, and the packaged DLL must be the recorded DLL built from that commit. A
+# development package or any other build of the same version is refused.
+function Read-KmgHistoricalReleasePackage {
+    param(
+        [Parameter(Mandatory = $true)][string]$PackagePath,
+        [Parameter(Mandatory = $true)][string]$RepositoryRoot,
+        [Parameter(Mandatory = $true)][string]$Version
+    )
+    $records = Get-Content -LiteralPath (Join-Path $RepositoryRoot 'scripts\historical-release-records.json') -Raw | ConvertFrom-Json
+    if ($records.schemaVersion -ne 1) { throw 'The historical release record has an unknown schema.' }
+    $record = @($records.releases | Where-Object { [string]$_.version -ceq $Version })
+    if ($record.Count -ne 1) { throw "No historical release record names version '$Version'." }
+    $record = $record[0]
+    $package = (Resolve-Path -LiteralPath $PackagePath).ProviderPath
+    $packageSha = Get-KmgSha256 -Path $package
+    if ($packageSha -cne [string]$record.packageSha256) {
+        throw "The package is not the recorded v$Version release package (package $packageSha, recorded $($record.packageSha256))."
+    }
+    $previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    try { $tagCommit = (& git -C $RepositoryRoot rev-parse --verify --quiet ("refs/tags/$($record.tag)^{commit}") 2>$null | Select-Object -First 1) }
+    finally { $ErrorActionPreference = $previous }
+    if ([string]$tagCommit -cne [string]$record.tagCommit) { throw "The release tag $($record.tag) does not resolve to the recorded commit $($record.tagCommit)." }
+    $extraction = Join-Path ([IO.Path]::GetTempPath()) ('KmgHistoricalRelease-' + [Guid]::NewGuid().ToString('N'))
+    [void][IO.Directory]::CreateDirectory($extraction)
+    try {
+        $modDirectory = Expand-KmgPackageEntries -ZipPath $package -Destination $extraction -ModId 'KingmakerGunslinger'
+        $info = Get-Content -LiteralPath (Join-Path $modDirectory 'Info.json') -Raw | ConvertFrom-Json
+        if ([string]$info.Version -cne $Version) { throw "The package declares version $($info.Version), not $Version." }
+        $identity = Get-KmgPackagedDllIdentity -DllPath (Join-Path $modDirectory 'KingmakerGunslinger.dll')
+    }
+    finally { Remove-Item -LiteralPath $extraction -Recurse -Force -ErrorAction SilentlyContinue }
+    if ([string]$identity.sha256 -cne [string]$record.dllSha256 -or [string]$identity.mvid -cne [string]$record.dllMvid -or
+        [string]$identity.gitCommit -cne [string]$record.tagCommit) {
+        throw "The packaged DLL is not the recorded v$Version release DLL built from $($record.tagCommit)."
+    }
+    return [pscustomobject]@{ historicalRelease = $true; version = $Version; releaseTag = [string]$record.tag; commit = [string]$record.tagCommit
+        packagePath = $package; packageSha256 = $packageSha; dllSha256 = [string]$identity.sha256; dllMvid = [string]$identity.mvid; measuredDll = $identity }
+}
+
+# Staging takes an admitted package from a private copy: the copy must have the admitted package digest, so bytes that
+# replace the supplied path after admission are never staged.
+function New-KmgAdmittedPackageCopy {
+    param([Parameter(Mandatory = $true)]$Admission, [Parameter(Mandatory = $true)][string]$Destination)
+    if (Test-Path -LiteralPath $Destination) { throw "The admitted-copy directory already exists: $Destination" }
+    [void][IO.Directory]::CreateDirectory($Destination)
+    $copy = Join-Path $Destination 'admitted-package.zip'
+    [IO.File]::Copy([string]$Admission.packagePath, $copy)
+    if ((Get-KmgSha256 -Path $copy) -cne [string]$Admission.packageSha256) {
+        Remove-Item -LiteralPath $Destination -Recurse -Force
+        throw 'The package changed after admission; nothing was staged.'
+    }
+    return $copy
+}
+# Extracts the admitted private copy (checked entries) into an empty destination and requires the extracted DLL to be
+# the admitted DLL (SHA-256 and MVID) before anything is replaced. Returns the extracted mod directory.
+function Expand-KmgAdmittedPackage {
+    param([Parameter(Mandatory = $true)]$Admission, [Parameter(Mandatory = $true)][string]$AdmittedCopy, [Parameter(Mandatory = $true)][string]$Destination)
+    if ((Get-KmgSha256 -Path $AdmittedCopy) -cne [string]$Admission.packageSha256) { throw 'The admitted package copy changed; nothing was staged.' }
+    $modDirectory = Expand-KmgPackageEntries -ZipPath $AdmittedCopy -Destination $Destination -ModId 'KingmakerGunslinger'
+    $dll = Join-Path $modDirectory 'KingmakerGunslinger.dll'
+    if ((Get-KmgSha256 -Path $dll) -cne [string]$Admission.dllSha256 -or (Get-KmgDllMvid -Path $dll) -cne [string]$Admission.dllMvid) {
+        throw 'The extracted DLL is not the admitted DLL; nothing was staged.'
+    }
+    return $modDirectory
 }
 
 function Assert-KmgExplicitCandidateIdentity {

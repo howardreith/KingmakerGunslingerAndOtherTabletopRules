@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "description": "Released packages that may be admitted as an explicit historical release control (Deploy-Local / loader harness -HistoricalReleaseControl -HistoricalReleaseVersion). Each identity was verified from the published GitHub asset (docs/evidence/umm-0311/published-release-verification.json).",
+  "releases": [
+    {
+      "version": "0.0.188",
+      "tag": "v0.0.188",
+      "tagCommit": "097e522f9fa0a8fdc8a773fb51fc3cfbf91d115c",
+      "asset": "KingmakerGunslinger-0.0.188-umm-0311-minimum.zip",
+      "packageSha256": "64d83955478c3824c5fee485f4189b7d0be1141938a89e70e4cdab037461d412",
+      "dllSha256": "0eb2f0027f1b8639cb8988f24fffda263cf92bfdadd180f40b1aebe79019b151",
+      "dllMvid": "e4454979-fb41-4a66-bc2e-ced5184097c4"
+    },
+    {
+      "version": "0.0.195",
+      "tag": "v0.0.195",
+      "tagCommit": "ef0e1fe15d59fc6f04ef4956337690f14de3c528",
+      "asset": "KingmakerGunslinger-0.0.195-gunslinger-remediation-sprint6.zip",
+      "packageSha256": "456d504ddde0ad3d0bb41a7dc141848a99feeee83d9665db9eeadcd95c359444",
+      "dllSha256": "3ef052ea441af368381b1cea7d2ee7acaa813000986de8644430ff63ee1d6a6b",
+      "dllMvid": "d06352f9-efe2-4f75-bbf7-72da04a4b793"
+    }
+  ]
+}

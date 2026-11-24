@@ -4,6 +4,9 @@ param(
     [string]$Configuration = 'Release',
 
     [string]$MSBuildPath,
+    # The production DLL a caller has just compiled (build.ps1, Invoke-KmgGate). When the loader-reference case is
+    # selected and no DLL is given, this script compiles production of this checkout first.
+    [string]$ProductionDll,
 
     [switch]$Clean,
 
@@ -59,20 +62,48 @@ if (-not (Test-Path -LiteralPath $testExecutable -PathType Leaf)) {
     throw "Domain test executable was not produced: $testExecutable"
 }
 
+# loader.production-dll-references-pinned-loader inspects a verified compiler output: the given production DLL, or one
+# compiled here, bound by path and SHA-256, with the expected identities read by the existing pin reader.
+$loaderCase = 'loader.production-dll-references-pinned-loader'
+$filterTerms = @(([string]$env:KMG_TEST_FILTER).Split(@(';', ','), [StringSplitOptions]::RemoveEmptyEntries) | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+$selectsLoaderCase = $filterTerms.Count -eq 0 -or @($filterTerms | Where-Object { $loaderCase.IndexOf($_, [StringComparison]::OrdinalIgnoreCase) -ge 0 }).Count -gt 0
+$bindingNames = @('KMG_PRODUCTION_DLL', 'KMG_PRODUCTION_DLL_SHA256', 'KMG_EXPECTED_LOADER_REFERENCES')
+$previousBinding = @{}; foreach ($name in $bindingNames) { $previousBinding[$name] = [Environment]::GetEnvironmentVariable($name, 'Process') }
+if ($selectsLoaderCase) {
+    if (-not $PSBoundParameters.ContainsKey('ProductionDll')) {
+        $compileArguments = @{ Configuration = $Configuration; CompileOnly = $true }
+        if ($MSBuildPath) { $compileArguments.MSBuildPath = $MSBuildPath }
+        & (Join-Path $PSScriptRoot 'build.ps1') @compileArguments
+        $ProductionDll = Join-Path $repositoryRoot "artifacts\bin\$Configuration\KingmakerGunslinger\KingmakerGunslinger.dll"
+    }
+    . (Join-Path $PSScriptRoot 'ReferenceProvenance.Common.ps1')
+    $expectedLoaderReferences = @((Get-KmgLoaderReferencePins).References | ForEach-Object {
+        '{0}, Version={1}, Culture=neutral, PublicKeyToken=null' -f [IO.Path]::GetFileNameWithoutExtension([string]$_.relativePath), [string]$_.assemblyVersion })
+    foreach ($name in $bindingNames) { [Environment]::SetEnvironmentVariable($name, $null, 'Process') }
+    if ($ProductionDll -and (Test-Path -LiteralPath $ProductionDll -PathType Leaf)) {
+        [Environment]::SetEnvironmentVariable('KMG_PRODUCTION_DLL', [IO.Path]::GetFullPath($ProductionDll), 'Process')
+        [Environment]::SetEnvironmentVariable('KMG_PRODUCTION_DLL_SHA256', (Get-FileHash -LiteralPath $ProductionDll -Algorithm SHA256).Hash.ToLowerInvariant(), 'Process')
+        [Environment]::SetEnvironmentVariable('KMG_EXPECTED_LOADER_REFERENCES', ($expectedLoaderReferences -join ';'), 'Process')
+    }
+}
+
 Write-Host "Running dependency-free domain/reflection tests: $testExecutable"
-if ($RunnerLogPath) {
-    $runnerErrorPath = "$RunnerLogPath.stderr"
-    $runner = Start-Process -FilePath $testExecutable -NoNewWindow -Wait -PassThru `
-        -RedirectStandardOutput $RunnerLogPath -RedirectStandardError $runnerErrorPath
-    Get-Content -LiteralPath $RunnerLogPath | Out-Host
-    Get-Content -LiteralPath $runnerErrorPath | Out-Host
-    $runnerExitCode = $runner.ExitCode
-} else {
-    & $testExecutable
-    $runnerExitCode = $LASTEXITCODE
+try {
+    if ($RunnerLogPath) {
+        $runnerErrorPath = "$RunnerLogPath.stderr"
+        $runner = Start-Process -FilePath $testExecutable -NoNewWindow -Wait -PassThru `
+            -RedirectStandardOutput $RunnerLogPath -RedirectStandardError $runnerErrorPath
+        Get-Content -LiteralPath $RunnerLogPath | Out-Host
+        Get-Content -LiteralPath $runnerErrorPath | Out-Host
+        $runnerExitCode = $runner.ExitCode
+    } else {
+        & $testExecutable
+        $runnerExitCode = $LASTEXITCODE
+    }
+    if ($runnerExitCode -ne 0) {
+        throw "Domain tests failed with exit code $runnerExitCode."
+    }
 }
-if ($runnerExitCode -ne 0) {
-    throw "Domain tests failed with exit code $runnerExitCode."
-}
+finally { foreach ($name in $bindingNames) { [Environment]::SetEnvironmentVariable($name, $previousBinding[$name], 'Process') } }
 
 Write-Host 'Dependency-free domain/reflection tests passed.'

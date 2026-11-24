@@ -79,27 +79,35 @@ function Acquire-LcSharedLock([string]$RunId) {
 
 # Inputs checked before anything is acquired: the candidate package must exist and
 # be readable (its digest is returned) and the harness must be complete.
-function Assert-LcSessionInputs([string]$CandidateZip, [string]$HarnessDir, [string]$DevelopmentPurpose, [switch]$HistoricalReleaseControl) {
+function Assert-LcSessionInputs([string]$CandidateZip, [string]$HarnessDir, [string]$DevelopmentPurpose, [switch]$HistoricalReleaseControl, [string]$HistoricalReleaseVersion) {
     if (-not $CandidateZip -or -not (Test-Path -LiteralPath $CandidateZip -PathType Leaf)) { throw "Candidate ZIP not found: $CandidateZip. Nothing was acquired." }
-    # The candidate is admitted exactly as Deploy-Local admits it (package contract including the DLL's actual loader
-    # references, receipt-to-DLL binding and current material inputs), in its own process, before anything is acquired.
-    # An explicitly identified historical release control is checked against the package contract only.
-    $repository = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..\..'))
-    $zip = $CandidateZip.Replace("'", "''")
-    $admission = if ($HistoricalReleaseControl) {
-        "& '$((Join-Path $repository 'scripts\validate-package.ps1').Replace("'", "''"))' -PackagePath '$zip'"
-    } else {
-        ". '$((Join-Path $repository 'scripts\RuntimeHarness.Common.ps1').Replace("'", "''"))'; [void](Read-KmgBuildLocalManifest -PackagePath '$zip' -RepositoryRoot '$($repository.Replace("'", "''"))' -DevelopmentPurpose '$DevelopmentPurpose' -RequireCurrentMaterialInputs)"
-    }
-    $previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
-    try { $admissionOutput = & powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command $admission 2>&1 | ForEach-Object { "$_" } }
-    finally { $ErrorActionPreference = $previous }
-    if ($LASTEXITCODE -ne 0) { throw "Candidate admission refused $CandidateZip; nothing was acquired: $(($admissionOutput | Select-Object -Last 3) -join ' ')" }
-    $sha = Get-LcSha256 $CandidateZip
+    # Cheap prerequisites first: the harness files.
     foreach ($name in @('KmgLoaderCompatHarness.dll', 'Info.json')) {
         if (-not (Test-Path -LiteralPath (Join-Path $HarnessDir $name) -PathType Leaf)) { throw "Harness file missing: $(Join-Path $HarnessDir $name). Nothing was acquired." }
     }
-    return $sha
+    # Admission modes are mutually exclusive; a development purpose is validated before any child process starts.
+    if ($HistoricalReleaseControl -and -not [string]::IsNullOrEmpty($DevelopmentPurpose)) { throw '-HistoricalReleaseControl and -CandidateDevelopmentPurpose are mutually exclusive. Nothing was acquired.' }
+    if ([bool]$HistoricalReleaseControl -ne (-not [string]::IsNullOrEmpty($HistoricalReleaseVersion))) { throw '-HistoricalReleaseControl requires -HistoricalReleaseVersion, and the version is valid only with it. Nothing was acquired.' }
+    $repository = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..\..'))
+    if (-not [string]::IsNullOrEmpty($DevelopmentPurpose)) {
+        . (Join-Path $repository 'scripts\DevelopmentCandidate.Common.ps1')
+        [void](Assert-KmgDevelopmentPurpose $DevelopmentPurpose)
+    }
+    # The candidate is admitted exactly as Deploy-Local admits it (or as the recorded historical release), in its own
+    # process with every value passed as a bound parameter, and a private copy with the admitted digest is what stages.
+    $copyDirectory = Join-Path ([IO.Path]::GetTempPath()) ('kmg-lc-admitted-' + [Guid]::NewGuid().ToString('N'))
+    $arguments = @('-NoLogo', '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $PSScriptRoot 'Invoke-LcCandidateAdmission.ps1'),
+        '-PackagePath', $CandidateZip, '-AdmittedCopyDirectory', $copyDirectory)
+    if (-not [string]::IsNullOrEmpty($DevelopmentPurpose)) { $arguments += @('-DevelopmentPurpose', $DevelopmentPurpose) }
+    if ($HistoricalReleaseControl) { $arguments += @('-HistoricalReleaseVersion', $HistoricalReleaseVersion) }
+    $previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    try { $admissionOutput = @(& powershell.exe @arguments 2>&1 | ForEach-Object { "$_" }) }
+    finally { $ErrorActionPreference = $previous }
+    if ($LASTEXITCODE -ne 0) {
+        if (Test-Path -LiteralPath $copyDirectory) { Remove-Item -LiteralPath $copyDirectory -Recurse -Force }
+        throw "Candidate admission refused $CandidateZip; nothing was acquired: $(($admissionOutput | Select-Object -Last 3) -join ' ')"
+    }
+    return (($admissionOutput | Select-Object -Last 1) | ConvertFrom-Json)
 }
 
 # --- admission -------------------------------------------------------------------

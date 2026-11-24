@@ -237,7 +237,8 @@ function Get-KmgPackagedDllIdentity {
     $escaped = $DllPath.Replace("'", "''")
     $script = "`$ErrorActionPreference='Stop'; `$bytes=[IO.File]::ReadAllBytes('$escaped'); `$a=[Reflection.Assembly]::ReflectionOnlyLoad(`$bytes); " +
         "`$sha=[Security.Cryptography.SHA256]::Create(); [ordered]@{ name=`$a.GetName().Name; sha256=([BitConverter]::ToString(`$sha.ComputeHash(`$bytes))).Replace('-','').ToLowerInvariant(); " +
-        "mvid=`$a.ManifestModule.ModuleVersionId.ToString(); references=@(`$a.GetReferencedAssemblies() | ForEach-Object { `$_.FullName }) } | ConvertTo-Json -Compress"
+        "mvid=`$a.ManifestModule.ModuleVersionId.ToString(); references=@(`$a.GetReferencedAssemblies() | ForEach-Object { `$_.FullName }); " +
+        "gitCommit=(@([Reflection.CustomAttributeData]::GetCustomAttributes(`$a) | Where-Object { `$_.AttributeType.FullName -ceq 'System.Reflection.AssemblyMetadataAttribute' -and [string]`$_.ConstructorArguments[0].Value -ceq 'GitCommit' } | ForEach-Object { [string]`$_.ConstructorArguments[1].Value }) | Select-Object -First 1) } | ConvertTo-Json -Compress"
     $previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
     try { $output = & powershell.exe -NoLogo -NoProfile -NonInteractive -Command $script 2>&1 | ForEach-Object { "$_" } }
     finally { $ErrorActionPreference = $previous }
@@ -256,8 +257,8 @@ function Assert-KmgPackagedLoaderContract {
         throw 'Package lacks Info.json.'
     }
     $info = Get-Content -LiteralPath $infoPath -Raw | ConvertFrom-Json
-    if ($null -eq $info.PSObject.Properties['ManagerVersion'] -or
-        [string]$info.ManagerVersion -cne $pins.MinimumManagerVersion) {
+    if ($null -eq $info.PSObject.Properties['ManagerVersion'] -or -not ($info.ManagerVersion -is [string]) -or
+        $info.ManagerVersion -cne $pins.MinimumManagerVersion) {
         throw "Packaged ManagerVersion must equal the pinned loader floor $($pins.MinimumManagerVersion)."
     }
     $binaryFiles = @(
@@ -299,9 +300,10 @@ function Assert-KmgPackagedLoaderContract {
 
 # Material inputs of a candidate: the product tree, its manifest, the loader pins and every helper that selects or
 # verifies what the compiler receives. A candidate is current only while none of them differs from its producing commit.
-$script:KmgCandidateMaterialPaths = @('src/KingmakerGunslinger', 'assets', 'assets-source', 'blueprints', 'Info.json',
-    'scripts/loader-reference-pins.json', 'scripts/ReferenceProvenance.Common.ps1', 'scripts/Assert-PinnedLoaderReferences.ps1',
-    'scripts/Build-Local.ps1', 'scripts/build.ps1', 'tools/build_mod_from_private_references.py')
+# Every file outside docs/ is a material input of a candidate: product sources, shipped files (Info.json, README,
+# CHANGELOG, licences and guides), assets, blueprints, project files and every build, packaging and validation helper.
+# Only documentation under docs/ (review records and evidence) can change without making a candidate stale.
+$script:KmgCandidateMaterialPaths = @('.', ':(exclude)docs')
 
 function Assert-KmgCandidateMaterialInputsCurrent {
     param([Parameter(Mandatory = $true)][string]$RepositoryRoot, [Parameter(Mandatory = $true)][string]$Commit)

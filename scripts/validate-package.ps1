@@ -26,6 +26,8 @@ $info = Get-KmgModInfo -RepositoryRoot $repositoryRoot
 if (-not (Test-Path -LiteralPath $PackagePath -PathType Leaf)) {
     throw "Package does not exist: $PackagePath"
 }
+# Resolved once, against the PowerShell location, and used everywhere below.
+$PackagePath = (Resolve-Path -LiteralPath $PackagePath).ProviderPath
 
 $tempDirectory = Join-Path ([IO.Path]::GetTempPath()) ("KmgPackageValidation-" + [Guid]::NewGuid().ToString('N'))
 # Strict validation must use and remove only its private temp extraction even
@@ -37,20 +39,9 @@ try {
     # which can race on a just-extracted file.
     # The complete archive entry set: every entry lies under the single mod root, so nothing beside the mod directory
     # (for example a runtime DLL at the archive root) can ship.
-    Add-Type -AssemblyName System.IO.Compression.FileSystem
-    $zipArchive = [IO.Compression.ZipFile]::OpenRead($PackagePath)
-    try {
-        $outside = @($zipArchive.Entries | ForEach-Object { $_.FullName.Replace('\', '/') } | Where-Object { -not $_.StartsWith($info.Id + '/', [StringComparison]::Ordinal) })
-    }
-    finally { $zipArchive.Dispose() }
-    if ($outside.Count -ne 0) { throw "Package contains entries outside the '$($info.Id)' mod root: $($outside -join ', ')" }
-    Expand-Archive -LiteralPath $PackagePath -DestinationPath $tempDirectory -WhatIf:$false
-    $roots = @(Get-ChildItem -LiteralPath $tempDirectory -Directory)
-    if ($roots.Count -ne 1 -or $roots[0].Name -ne $info.Id) {
-        throw "Package must contain exactly one root directory named '$($info.Id)'."
-    }
-
-    $modDirectory = $roots[0].FullName
+    # Every entry's normalized destination is checked and exactly those entries are extracted (nothing beside the mod
+    # root, no files at the extraction root).
+    $modDirectory = Expand-KmgPackageEntries -ZipPath $PackagePath -Destination $tempDirectory -ModId $info.Id
     $expected = @(
         'CHANGELOG.md',
         'Info.json',

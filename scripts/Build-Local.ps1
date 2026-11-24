@@ -237,6 +237,9 @@ if (-not $development) {
     --csc $csc.FullName --net47-ref-dir $net47 --output-dir $exactRoot `
     --configuration Release --git-commit $git.Commit
 if ($LASTEXITCODE -ne 0) { throw "Exact-reference Release build failed with exit code $LASTEXITCODE." }
+# The exact compiler output, measured in its private output folder before anything is copied or packaged.
+$compilerDllIdentity = Get-KmgPackagedDllIdentity -DllPath (Join-Path $exactRoot 'bin\KingmakerGunslinger.dll')
+if ([string]$compilerDllIdentity.gitCommit -cne $git.Commit) { throw "The exact build carries source stamp '$($compilerDllIdentity.gitCommit)', not $($git.Commit)." }
 & powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
     (Join-Path $PSScriptRoot 'Test-SupplyItemIcons.ps1') `
     -ReferenceBundleDir $ReferenceBundleDir
@@ -466,6 +469,17 @@ $firearmManifestPath = Join-Path $stagedMod `
     'assets\soundbanks\firearm-soundbank-manifest.json'
 $firearmSoundBankPath = Join-Path $stagedMod `
     'assets\soundbanks\KMG_Firearms.bnk'
+# The DLL inside the finished ZIP must be the exact compiler output (and the loose copy in the shared output folder must
+# be it too) before either receipt is written; the receipt records all of them.
+$packagedDllIdentity = & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $packagePath -PassThru | Select-Object -Last 1
+if ($null -eq $packagedDllIdentity) { throw 'Package validation returned no measured DLL identity.' }
+$looseDllSha256 = Get-KmgSha256 -Path $dllPath
+$looseDllMvid = Get-KmgDllMvid -Path $dllPath
+if ([string]$packagedDllIdentity.sha256 -cne [string]$compilerDllIdentity.sha256 -or [string]$packagedDllIdentity.mvid -cne [string]$compilerDllIdentity.mvid -or
+    $looseDllSha256 -cne [string]$compilerDllIdentity.sha256 -or $looseDllMvid -cne [string]$compilerDllIdentity.mvid -or
+    [string]$packagedDllIdentity.gitCommit -cne $git.Commit) {
+    throw "The packaged DLL ($($packagedDllIdentity.sha256)) or the loose output ($looseDllSha256) is not the exact compiler output ($($compilerDllIdentity.sha256)) of $($git.Commit)."
+}
 if ($development) {
     if ((Get-KmgSourceStateFingerprint -RepositoryRoot $root) -cne $sourceStateSha256) {
         throw 'The source state changed during the development build.'
@@ -488,8 +502,11 @@ if ($development) {
         informationalVersion = [string]$developmentProps.Project.PropertyGroup.KmgInformationalVersion
         packagePath = $packagePath
         packageSha256 = Get-KmgSha256 -Path $packagePath
-        dllSha256 = Get-KmgSha256 -Path $dllPath
-        dllMvid = Get-KmgDllMvid -Path $dllPath
+        dllSha256 = [string]$packagedDllIdentity.sha256
+        dllMvid = [string]$packagedDllIdentity.mvid
+        compilerDllSha256 = [string]$compilerDllIdentity.sha256
+        compilerDllMvid = [string]$compilerDllIdentity.mvid
+        embeddedGitCommit = [string]$packagedDllIdentity.gitCommit
         firearmManifestSha256 = Get-KmgSha256 -Path $firearmManifestPath
         firearmSoundBankSha256 = Get-KmgSha256 -Path $firearmSoundBankPath
         references = [ordered]@{
@@ -540,8 +557,11 @@ $manifest = [ordered]@{
     version = $info.Version
     packagePath = $packagePath
     packageSha256 = Get-KmgSha256 -Path $packagePath
-    dllSha256 = Get-KmgSha256 -Path $dllPath
-    dllMvid = Get-KmgDllMvid -Path $dllPath
+    dllSha256 = [string]$packagedDllIdentity.sha256
+    dllMvid = [string]$packagedDllIdentity.mvid
+    compilerDllSha256 = [string]$compilerDllIdentity.sha256
+    compilerDllMvid = [string]$compilerDllIdentity.mvid
+    embeddedGitCommit = [string]$packagedDllIdentity.gitCommit
     firearmManifestSha256 = Get-KmgSha256 -Path $firearmManifestPath
     firearmSoundBankSha256 = Get-KmgSha256 -Path $firearmSoundBankPath
     validated = $true
