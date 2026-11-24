@@ -2,6 +2,8 @@
 
 Raw evidence stays in the lab; these are copies. Owner judgment is separate.
 
+Round 4: this index is the round-3 lab set. Its party-camera rows were not bound to the body renderer. The body-bound gameplay-distance views and the released/candidate Ghaele combat and lighting views are `evidence/sprint7-review/*/r4-*.jpg`, listed in `evidence/sprint7-review/INDEX.json`. Audio is in the private packet described in `docs/evidence/sprint7/audio-context-r4.json`.
+
 | Story | File | SHA-256 | Note |
 | --- | --- | --- | --- |
 | T1-REP-04 | `T1-REP-04/bright-loop-high-t094-rawdissolve-1.00.jpg` | `47f96ece…026d` | After (no product change): ordinary Ghaele at 94.42 game-seconds, raw body _Dissolve 1.00, cutout 0.00; the body stays visible. |

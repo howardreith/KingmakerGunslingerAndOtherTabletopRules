@@ -1,0 +1,308 @@
+{
+ "harness": {
+  "conditions": {},
+  "exitRequested": true,
+  "failure": "kmgGhaeleLifetime[lifecycle](lifecycle): lifecycle.pending: the abandoned pending command was not settled exactly | lifecycle.spawned: the summon produced before registration outlived the abandoned cast",
+  "finishedUtc": "2026-11-24T16:00:37.9871875Z",
+  "isolation": "saves=<lab>/Saved Games; areas=<lab>/Areas",
+  "isolationRestored": true,
+  "kmgGhaeleLifetime_lifecycle": {
+   "area": "JamandisMansionThroneroom",
+   "cases": {
+    "abandonedAfterSpawn": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+     "abilityGrantRemains": false,
+     "borrowed": false,
+     "bystanderCommandSurvived": false,
+     "commandReleased": true,
+     "earlySummonDestroyed": true,
+     "granted": true,
+     "lateSummons": 0,
+     "lateSummonsDestroyed": 1,
+     "loanReleased": true,
+     "ownedCommandRemains": false,
+     "spawnSeenBeforeRegistration": true
+    },
+    "abandonedPending": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+     "abilityGrantRemains": false,
+     "actedBeforeAbandon": false,
+     "borrowed": false,
+     "bystanderCommandSurvived": false,
+     "commandReleased": true,
+     "executionBeforeAbandon": false,
+     "granted": true,
+     "lateSummons": 0,
+     "lateSummonsDestroyed": 0,
+     "loanReleased": true,
+     "ownedCommandRemains": false
+    },
+    "borrowedNonDefault": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+     "borrowed": true,
+     "commandReleased": true,
+     "finished": true,
+     "granted": false,
+     "lateSummonsDestroyed": 0,
+     "loanReleased": true,
+     "overrideDuringCast": {
+      "casterLevel": 20,
+      "spellLevel": 9
+     },
+     "paramsRestored": true,
+     "result": "Success",
+     "sameInstance": true,
+     "spawned": "KMG_Summoning_Unit_GhaeleAzata"
+    },
+    "replacedGrant": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+     "borrowed": false,
+     "commandReleased": true,
+     "finished": true,
+     "granted": true,
+     "lateSummonsDestroyed": 0,
+     "loanReleased": true,
+     "overrideDuringCast": {
+      "casterLevel": 20,
+      "spellLevel": 9
+     },
+     "replacementSurvived": true,
+     "replacementUntouched": true,
+     "result": "Success",
+     "spawned": "KMG_Summoning_Unit_GhaeleAzata"
+    }
+   },
+   "mode": "lifecycle",
+   "pauseRestored": true,
+   "problems": [
+    "lifecycle.pending: the abandoned pending command was not settled exactly",
+    "lifecycle.spawned: the summon produced before registration outlived the abandoned cast"
+   ],
+   "productVersion": "0.0.195",
+   "termination": {
+    "cleanupAttempted": [
+     "probe iterator",
+     "borrowed: summon ability loan",
+     "borrowed: summon command",
+     "borrowed: unregistered summons",
+     "borrowed setup",
+     "replaced: summon ability loan",
+     "replaced: summon command",
+     "replaced: unregistered summons",
+     "replacement setup",
+     "pending: summon command",
+     "pending: summon ability loan",
+     "pending: unregistered summons",
+     "spawned: summon command",
+     "spawned: summon ability loan",
+     "spawned: unregistered summons",
+     "pause",
+     "disposable units",
+     "disposable blueprints"
+    ],
+    "cleanupFailures": [],
+    "isolationRestored": true,
+    "passed": false,
+    "step": "2|kmgGhaeleLifetime_lifecycle",
+    "testFailure": "lifecycle.pending: the abandoned pending command was not settled exactly | lifecycle.spawned: the summon produced before registration outlived the abandoned cast"
+   }
+  },
+  "kmgInitialization_create": {
+   "blueprintsFailed": false,
+   "blueprintsInitialized": true,
+   "contextFailed": false,
+   "environment": {
+    "conditions": {
+     "blankResolutions": 0,
+     "events": [],
+     "gritUiPass": {
+      "firstPassStillOpen": false,
+      "firstPassStoppedOnDescriptionOf": null,
+      "installed": false,
+      "passesCompleted": 0,
+      "passesOpened": 0,
+      "projectAbilitiesRead": 0,
+      "projectAbilityDescriptionReads": 0,
+      "substituted": [],
+      "thrown": []
+     },
+     "libraryPrepared": false,
+     "nativeDescriptions": [],
+     "nullResolutions": 0
+    },
+    "currentLocale": "enGB",
+    "currentPackLocale": "enGB",
+    "currentPackStrings": 41552,
+    "emptyKeyResolvesTo": "",
+    "unassignedStringResolvesTo": "<null>",
+    "unknownKeyResolvesTo": "[unknown key: KmgLoaderCompatHarness.UnknownKeyProbe]"
+   },
+   "failureChain": [],
+   "loaderEntryActive": true,
+   "mainState": "Loaded"
+  },
+  "kmgModules_all-on": {
+   "active": {
+    "AcadamaeGraduate": true,
+    "BodyguardFeats": true,
+    "BrownFurTransmuter": true,
+    "EasternWeapons": true,
+    "ElementalRaces": true,
+    "ElvenBranchedSpears": true,
+    "ExpandedSummoning": true,
+    "Gunslinger": true,
+    "MagicCircleSpells": true,
+    "ProtectionFromAlignmentControlImmunity": true,
+    "ShieldOther": true,
+    "TeleportationSpells": true,
+    "UrbanBarbarian": true
+   },
+   "file": null,
+   "fileSha256": null,
+   "pending": {
+    "AcadamaeGraduate": true,
+    "BodyguardFeats": true,
+    "BrownFurTransmuter": true,
+    "EasternWeapons": true,
+    "ElementalRaces": true,
+    "ElvenBranchedSpears": true,
+    "ExpandedSummoning": true,
+    "Gunslinger": true,
+    "MagicCircleSpells": true,
+    "ProtectionFromAlignmentControlImmunity": true,
+    "ShieldOther": true,
+    "TeleportationSpells": true,
+    "UrbanBarbarian": true
+   },
+   "restartRequired": false
+  },
+  "loggerExceptionHooks": 4,
+  "requestPath": "<lab>/harness-request.json",
+  "runId": "20261124T155845Z-owner-0.33.0-s7-ghaele-01-ghaele",
+  "startedUtc": "2026-11-24T15:59:03.8141420Z",
+  "status": "failed",
+  "steps": [
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgModules[all-on]()"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgInitialization[create]"
+   },
+   {
+    "expectedFailure": null,
+    "failure": "lifecycle.pending: the abandoned pending command was not settled exactly | lifecycle.spawned: the summon produced before registration outlived the abandoned cast",
+    "isolationRestored": true,
+    "status": "Failed",
+    "step": "kmgGhaeleLifetime[lifecycle](lifecycle)"
+   }
+  ]
+ },
+ "harnessEvents": [
+  {
+   "detail": {
+    "ummWindowOpen": true
+   },
+   "event": "mainMenu",
+   "t": 58.9529,
+   "utc": "2026-11-24T15:59:58.3050946Z"
+  },
+  {
+   "detail": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+   "event": "loadSave",
+   "t": 58.95729,
+   "utc": "2026-11-24T15:59:58.3096087Z"
+  },
+  {
+   "detail": "JamandisMansionThroneroom",
+   "event": "saveLoaded",
+   "t": 66.52006,
+   "utc": "2026-11-24T16:00:05.8722138Z"
+  },
+  {
+   "detail": "kmgModules[all-on]()",
+   "event": "stepBegin",
+   "t": 68.55867,
+   "utc": "2026-11-24T16:00:07.9115367Z"
+  },
+  {
+   "detail": "kmgModules[all-on]()",
+   "event": "stepDone",
+   "t": 68.57697,
+   "utc": "2026-11-24T16:00:07.9295692Z"
+  },
+  {
+   "detail": "kmgInitialization[create]",
+   "event": "stepBegin",
+   "t": 68.5907,
+   "utc": "2026-11-24T16:00:07.9431159Z"
+  },
+  {
+   "detail": "kmgInitialization[create]",
+   "event": "stepDone",
+   "t": 68.5944061,
+   "utc": "2026-11-24T16:00:07.9471143Z"
+  },
+  {
+   "detail": "kmgGhaeleLifetime[lifecycle](lifecycle)",
+   "event": "stepBegin",
+   "t": 68.62365,
+   "utc": "2026-11-24T16:00:07.9762369Z"
+  },
+  {
+   "detail": "kmgGhaeleLifetime[lifecycle](lifecycle): lifecycle.pending: the abandoned pending command was not settled exactly | lifecycle.spawned: the summon produced before registration outlived the abandoned cast",
+   "event": "stepFailed",
+   "t": 98.63343,
+   "utc": "2026-11-24T16:00:37.9861920Z"
+  }
+ ],
+ "launch": "01-ghaele",
+ "launchSummary": {
+  "conditions": {},
+  "gameArguments": [
+   "locale=enGB"
+  ],
+  "harness": "failed",
+  "identity": {
+   "activeMods": [
+    "KingmakerGunslinger 0.0.195",
+    "KmgLoaderCompatHarness 0.1.0"
+   ],
+   "harmony12Sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+   "harmony2": [
+    "2.3.6.0 df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80"
+   ],
+   "productSha256": "d826ae76899f317d06df1f261bcd2cbcd8b7a50e84c43f69baf8657b48335822",
+   "umm": "0.33.0.0",
+   "ummReported": "0.33.0.0",
+   "ummSha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
+  },
+  "label": "01-ghaele",
+  "log": {
+   "absent": [
+    "[initialize.failed] x0"
+   ],
+   "once": [],
+   "present": [
+    "[blueprints][initialize.complete] x1"
+   ]
+  },
+  "pid": 39640,
+  "problems": [
+   "harness: kmgGhaeleLifetime[lifecycle](lifecycle): lifecycle.pending: the abandoned pending command was not settled exactly | lifecycle.spawned: the summon produced before registration outlived the abandoned cast"
+  ],
+  "seconds": 105,
+  "verdict": "FAIL"
+ },
+ "session": "20261124T155845Z-owner-0.33.0-s7-ghaele",
+ "sources": {
+  "harness-result.json": "a3ec466370e3b02bc0c0764364c43e12d050016c5e445910d620d74bd17717fe"
+ }
+}

@@ -998,5 +998,125 @@
   "committed": null,
   "committedSha256": null,
   "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/r4-party-nalfeshnee-bright-after.jpg",
+  "sha256": "68dfb0eaee054e6537e4418e7484968d893435f426331c8a661e966e8c441604",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T162110Z-owner-0.33.0-s7-models/01-mod/product/s7-nalfeshnee-bright-after-party.png",
+  "note": "Round 4 (R1-F3): gameplay-distance party view of the nalfeshnee on its enabled body renderer, Sprint 7 export (after), bright; readback bound to that renderer and mesh, judged in the verdict. Candidate a07716e3ab, session 20261124T162110Z-owner-0.33.0-s7-models.",
+  "committed": "T2-VIS-01/r4-party-nalfeshnee-bright-after.jpg",
+  "committedSha256": "6c59e17a4bd57aa8ad1d6a98073fe6e603ad0d40b4b14ca8f14883c8d3f65b97",
+  "reason": "re-encoded JPEG quality 92 from the lab PNG"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/r4-party-nalfeshnee-bright-before.jpg",
+  "sha256": "f87f958253e4b4fece1b92adbe201d64132a24c382050a68986554cdab503671",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T162110Z-owner-0.33.0-s7-models/01-mod/product/s7-nalfeshnee-bright-before-party.png",
+  "note": "Round 4 (R1-F3): gameplay-distance party view of the nalfeshnee on its enabled body renderer, pinned pre-Sprint-7 export (before), bright; readback bound to that renderer and mesh, judged in the verdict. Candidate a07716e3ab, session 20261124T162110Z-owner-0.33.0-s7-models.",
+  "committed": "T2-VIS-01/r4-party-nalfeshnee-bright-before.jpg",
+  "committedSha256": "1b05a258b0e5efb122c947754295dc1dbc327e6398676db5ec97e8e242c454d6",
+  "reason": "re-encoded JPEG quality 92 from the lab PNG"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/r4-party-nalfeshnee-dim-after.jpg",
+  "sha256": "653b4edaef3611fdfa43f1fe5abb45e96d094999d19f47f2f51aaaad0544d6a3",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T162110Z-owner-0.33.0-s7-models/02-modd/product/s7-nalfeshnee-dim-after-party.png",
+  "note": "Round 4 (R1-F3): gameplay-distance party view of the nalfeshnee on its enabled body renderer, Sprint 7 export (after), dim; readback bound to that renderer and mesh, judged in the verdict. Candidate a07716e3ab, session 20261124T162110Z-owner-0.33.0-s7-models.",
+  "committed": "T2-VIS-01/r4-party-nalfeshnee-dim-after.jpg",
+  "committedSha256": "e26a5e5b0d39c7c3200dc69a3f8d70d65e5253938a66785fbfdd21dd6f547320",
+  "reason": "re-encoded JPEG quality 92 from the lab PNG"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/r4-party-nalfeshnee-dim-before.jpg",
+  "sha256": "c9749c847e2dbc569713fa7f2b12063043402d13bb90f0dcc266591f0d3dba29",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T162110Z-owner-0.33.0-s7-models/02-modd/product/s7-nalfeshnee-dim-before-party.png",
+  "note": "Round 4 (R1-F3): gameplay-distance party view of the nalfeshnee on its enabled body renderer, pinned pre-Sprint-7 export (before), dim; readback bound to that renderer and mesh, judged in the verdict. Candidate a07716e3ab, session 20261124T162110Z-owner-0.33.0-s7-models.",
+  "committed": "T2-VIS-01/r4-party-nalfeshnee-dim-before.jpg",
+  "committedSha256": "5792288308acfa89bbd1af9647bae4f0ff6219f790396d3792e47357704e1627",
+  "reason": "re-encoded JPEG quality 92 from the lab PNG"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/r4-party-salamander-bright-after.jpg",
+  "sha256": "589df90dd8eaa303eda10885daaab580d2dc3cd0280d7df00c896b3374de2ac4",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T162110Z-owner-0.33.0-s7-models/01-mod/product/s7-salamander-bright-after-party.png",
+  "note": "Round 4 (R1-F3): gameplay-distance party view of the salamander on its enabled body renderer, Sprint 7 export (after), bright; readback bound to that renderer and mesh, judged in the verdict. Candidate a07716e3ab, session 20261124T162110Z-owner-0.33.0-s7-models.",
+  "committed": "T3-VIS-02/r4-party-salamander-bright-after.jpg",
+  "committedSha256": "fd2cd0fd11531845a35eaa98239de1004b1f8a490dfc79c6f07d3f8b94696e06",
+  "reason": "re-encoded JPEG quality 92 from the lab PNG"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/r4-party-salamander-bright-before.jpg",
+  "sha256": "6d262a8ab73602c16536129cb9fe74ed4a5a2cab1913d92908b613c3def3448d",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T162110Z-owner-0.33.0-s7-models/01-mod/product/s7-salamander-bright-before-party.png",
+  "note": "Round 4 (R1-F3): gameplay-distance party view of the salamander on its enabled body renderer, pinned pre-Sprint-7 export (before), bright; readback bound to that renderer and mesh, judged in the verdict. Candidate a07716e3ab, session 20261124T162110Z-owner-0.33.0-s7-models.",
+  "committed": "T3-VIS-02/r4-party-salamander-bright-before.jpg",
+  "committedSha256": "32e7b7dd75d5d9f465121e7ba72abf49a1b4bbc91e9c5de28373b87b21330d93",
+  "reason": "re-encoded JPEG quality 92 from the lab PNG"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/r4-party-salamander-dim-after.jpg",
+  "sha256": "cfdb047cdc0cc4a907858f2036729a26fbce96befb85c4b4ff0e61dc29694f63",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T162110Z-owner-0.33.0-s7-models/02-modd/product/s7-salamander-dim-after-party.png",
+  "note": "Round 4 (R1-F3): gameplay-distance party view of the salamander on its enabled body renderer, Sprint 7 export (after), dim; readback bound to that renderer and mesh, judged in the verdict. Candidate a07716e3ab, session 20261124T162110Z-owner-0.33.0-s7-models.",
+  "committed": "T3-VIS-02/r4-party-salamander-dim-after.jpg",
+  "committedSha256": "d239e7ad24418c269b272422118d599c4f62aa8f86d055d98d13e1dff9703e7a",
+  "reason": "re-encoded JPEG quality 92 from the lab PNG"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/r4-party-salamander-dim-before.jpg",
+  "sha256": "3afec79f8c3896417f69d37a457cba6be234849e7b51b9773253d80d7d0eac9a",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T162110Z-owner-0.33.0-s7-models/02-modd/product/s7-salamander-dim-before-party.png",
+  "note": "Round 4 (R1-F3): gameplay-distance party view of the salamander on its enabled body renderer, pinned pre-Sprint-7 export (before), dim; readback bound to that renderer and mesh, judged in the verdict. Candidate a07716e3ab, session 20261124T162110Z-owner-0.33.0-s7-models.",
+  "committed": "T3-VIS-02/r4-party-salamander-dim-before.jpg",
+  "committedSha256": "7886db90c8e4f109882ee76070d3bcd94cdaa81a4312af27d3778a7e7f9bd517",
+  "reason": "re-encoded JPEG quality 92 from the lab PNG"
+ },
+ {
+  "story": "T1-REP-04",
+  "file": "T1-REP-04/r4-released-ghaele-idle-party.jpg",
+  "sha256": "5895ed1128f16aa6e62df0bcb26da2934628705ee1ffe8af5b2cbc940c3d8822",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T162819Z-owner-0.33.0-s7-ghaele/01-ghaele/harness/s7-ghaele-idle.png",
+  "note": "Round 4 (R3-F1): harness game-camera party view of the ordinary Ghaele, idle, on released v0.0.195 (456d504d...9444), Jamandi mansion throne room (interior); body readback bound to the enabled renderer. Session 20261124T162819Z-owner-0.33.0-s7-ghaele.",
+  "committed": "T1-REP-04/r4-released-ghaele-idle-party.jpg",
+  "committedSha256": "d7fb5ad657a86d8cf332ad4d4228394b996aad51ae72b5b5f8e536c323b7ff7c",
+  "reason": "re-encoded JPEG quality 92 from the lab PNG"
+ },
+ {
+  "story": "T1-REP-04",
+  "file": "T1-REP-04/r4-released-ghaele-combat-party.jpg",
+  "sha256": "c51df4a730c4dcedcea24630dc6bd8b7b65a8099994ad5b23cd59d7dfb1bfaf2",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T162819Z-owner-0.33.0-s7-ghaele/01-ghaele/harness/s7-ghaele-combat.png",
+  "note": "Round 4 (R3-F1): harness game-camera party view of the ordinary Ghaele, combat, on released v0.0.195 (456d504d...9444), Jamandi mansion throne room (interior); body readback bound to the enabled renderer. Session 20261124T162819Z-owner-0.33.0-s7-ghaele.",
+  "committed": "T1-REP-04/r4-released-ghaele-combat-party.jpg",
+  "committedSha256": "409e25bd3ebf5b860772c15f152333dee7b39a47c438c0949730d8bda179a34a",
+  "reason": "re-encoded JPEG quality 92 from the lab PNG"
+ },
+ {
+  "story": "T1-REP-04",
+  "file": "T1-REP-04/r4-candidate-ghaele-idle-party.jpg",
+  "sha256": "9bf8b9f4384107279a1a4ca26f2dee111010df2c40bd6b5e4a9a3afa276d84f9",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T163235Z-owner-0.33.0-s7-ghaele/01-ghaele/harness/s7-ghaele-idle.png",
+  "note": "Round 4 (R3-F1): harness game-camera party view of the ordinary Ghaele, idle, on candidate a07716e3ab, Jamandi mansion throne room (interior); body readback bound to the enabled renderer. Session 20261124T163235Z-owner-0.33.0-s7-ghaele.",
+  "committed": "T1-REP-04/r4-candidate-ghaele-idle-party.jpg",
+  "committedSha256": "5f8d7d025a7fb3b75a9651e7705c6080b6f741e41524119db6f6378d6497cc2b",
+  "reason": "re-encoded JPEG quality 92 from the lab PNG"
+ },
+ {
+  "story": "T1-REP-04",
+  "file": "T1-REP-04/r4-candidate-ghaele-combat-party.jpg",
+  "sha256": "783f6b22e23458f73237ec25736a19fd5e96176fb0f8c871dfdb204ad7dd2abe",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T163235Z-owner-0.33.0-s7-ghaele/01-ghaele/harness/s7-ghaele-combat.png",
+  "note": "Round 4 (R3-F1): harness game-camera party view of the ordinary Ghaele, combat, on candidate a07716e3ab, Jamandi mansion throne room (interior); body readback bound to the enabled renderer. Session 20261124T163235Z-owner-0.33.0-s7-ghaele.",
+  "committed": "T1-REP-04/r4-candidate-ghaele-combat-party.jpg",
+  "committedSha256": "79de8686ef2e569e86845a7634b3e6dd11fa4b0d8ba350bbd2d23b9761726e1c",
+  "reason": "re-encoded JPEG quality 92 from the lab PNG"
  }
 ]

@@ -237,20 +237,22 @@ from RISK-01).
 
 ## Sprint 7 (started 2026-11-23; agent-review controller, foreground)
 
-**Current state (2026-11-24): BLOCKED by the agent-review controller after round 3 on `511160dc6e` (no progress on R1-F1, R1-F3, R1-F5, R1-F9 for three reviews); owner decision needed; draft PR #219** (record
-`docs/GUNSLINGER-SPRINT7-RECORD.md`; enrollment `kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1`; base
-post-release master `35763430ac`, v0.0.195). Nothing is merged or released. Every visual and listening judgment is the
-owner's.
+**Current state (2026-11-24): IN REVIEW, round 4 of 5.** The owner resumed the round-3 BLOCKED enrollment through owner
+amendment 1 (revision 1, sha256 `59be8e3f…31e0`). The round-3 no-progress stop on `511160dc6e` and every earlier failure
+remain recorded. Draft PR #219; record `docs/GUNSLINGER-SPRINT7-RECORD.md`; enrollment
+`kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1`; base post-release master `35763430ac` (v0.0.195). Nothing is
+merged or released. Every visual and listening judgment is the owner's. The private listening packet is at
+`<lab>/private/s7-listening-packet-r4/`.
 
 | Story / record | Category | Result | Evidence | Delivery state | Owner decision |
 |---|---|---|---|---|---|
-| S7 T1 / REP-04 | historical incident | Current and released builds: no premature dissolve (native looping non-cutout loop, also on an unsummoned donor); no product change. The October incident itself is not attributed (its writer and frames are unavailable) | harness timeline on v0.0.195 and the candidate; `6f2f16ca88` `gh`/`ghd` PASS | Disposition, draft PR; historical scope open | Accept the current-build disposition |
-| S7 T2 / VIS-01 | asset defect | Generator repair: 48 zero-area triangles and inside-out welded membranes removed | `ed88ad994e`; `6f2f16ca88` natural-appearance before/after PASS | Implemented, draft PR | Visual acceptance |
-| S7 T3 / VIS-02 | asset defect | Exact-source repair: 16 opposing normal corners to 0 | `d864e7b01f`; `6f2f16ca88` natural-appearance before/after PASS | Implemented, draft PR | Visual acceptance |
-| S7 T4 / VIS-03 | presentation | Scoped override: "within twice this creature's speed", no school | `2614ea3bd6`; `6f2f16ca88` windows with controls PASS | Implemented, draft PR; controller mode open (needs a console in-game UI admission) | Wording |
-| S7 T5 / VIS-04 | audio | One owned cue per resolved tail hit on the roll's own in-game target (`Sweetener_Low_06_Quake`, provisional) | `f564cbb844` `fx` PASS | Implemented, draft PR | Listening choice |
-| S7 T6 / VIS-05 | presentation | Owned per-instance dust recolour bound to the executing owned Dust breath | `f564cbb844` `fx` PASS | Implemented, draft PR | Visual acceptance |
-| S7 T7 / VIS-06 | audio decision | Proposed: keep `InspireCourage`; six alternatives sampled | `r6` PASS; cue across an in-process reload PASS | Disposition, draft PR | Listening decision |
+| S7 T1 / REP-04 | historical incident | Released v0.0.195 and candidate: no premature dissolve (native looping non-cutout loop, also on an unsummoned donor; 11/11 positive samples); ordinary move, combat and expiry; no product change. October incident not attributed | harness `…162819Z` (released) / `…163235Z` (candidate); round-3 `gh`/`ghd` | Bounded disposition, draft PR; released outdoor/bright case has no admitted route; historical scope open | Accept the bounded disposition |
+| S7 T2 / VIS-01 | asset defect | Generator repair: 48 zero-area triangles and inside-out welded membranes removed | `ed88ad994e`; models `…162110Z` (body-bound party views) | Implemented, draft PR | Visual acceptance |
+| S7 T3 / VIS-02 | asset defect | Exact-source repair: 16 opposing normal corners to 0 | `d864e7b01f`; models `…162110Z` | Implemented, draft PR | Visual acceptance |
+| S7 T4 / VIS-03 | presentation | Scoped override: "within twice this creature's speed" (owner-approved wording), no school | `2614ea3bd6`; round-3 `ui` PASS | Implemented, draft PR; controller mode unexecuted (no admitted route creates or selects a summon in the console UI) | None pending for wording |
+| S7 T5 / VIS-04 | audio | One owned cue per resolved tail hit on the roll's own in-game target (`Sweetener_Low_06_Quake`, provisional) | `bc67438f3b` fx `…170720Z` PASS; private packet | Implemented, draft PR; one lost native end callback retained (cause unknown) | Listening and choice |
+| S7 T6 / VIS-05 | presentation | Owned per-instance dust recolour bound to CreateView's own cast-effect call; released Sickened mechanics kept | `9733a0c9b7`; fx `…170720Z` PASS | Implemented, draft PR | Visual acceptance |
+| S7 T7 / VIS-06 | audio decision | `InspireCourage` kept provisionally; six alternatives sampled | r6 and Trumpet reload `…162605Z` PASS; private packet | Disposition, draft PR | Listening and choice |
 
 ## Sprint 6 (started 2026-11-22; manual review workflow)
 

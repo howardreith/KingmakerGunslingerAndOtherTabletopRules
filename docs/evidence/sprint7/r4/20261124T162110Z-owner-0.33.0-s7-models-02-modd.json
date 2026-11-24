@@ -1,0 +1,818 @@
+{
+ "checks": [
+  {
+   "observed": {
+    "beforeVertices": 12402,
+    "cast": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_Nalfeshnee_One",
+     "appearanceEndedAfterSeconds": 1.75,
+     "appearanceEndedNaturally": true,
+     "borrowed": false,
+     "castGameSeconds": 43200.032999999996,
+     "castUtc": "2026-11-24T16:24:59.4930761Z",
+     "commandFinished": true,
+     "commandResult": "Success",
+     "granted": true,
+     "restored": true,
+     "spawned": 1
+    },
+    "clearOfOccluders": true,
+    "currentVertices": 11593,
+    "motionAfter": {
+     "movePeakVelocity": 4.063944,
+     "moveTravel": 2.969177,
+     "turnDegrees": 110.997444
+    },
+    "motionBefore": {
+     "movePeakVelocity": 4.063921,
+     "moveTravel": 2.95352221,
+     "turnDegrees": 110.997009
+    },
+    "obstructedWholeBodyViews": [
+     "after-rear:4/9",
+     "before-rear:4/9"
+    ],
+    "partyBound": true,
+    "settledDissolve": 0.0,
+    "stillsAfter": {
+     "body": {
+      "cutoutDissolve": 0.0,
+      "dissolve": 0.0,
+      "enabled": true,
+      "mesh": "KMG_nalfeshnee_Original",
+      "renderer": "SkinnedMeshRenderer:_lizardman001:KMG_nalfeshnee_Original",
+      "vertices": 11593
+     },
+     "detail-wing-root-left": true,
+     "detail-wing-root-right": true,
+     "detail-wing-roots-rear": true,
+     "dissolve": 0.0,
+     "front": true,
+     "occluders": {
+      "detail-wing-root-left": {
+       "blockedRays": 0,
+       "distance": 9.91,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-wing-root-right": {
+       "blockedRays": 0,
+       "distance": 9.91,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-wing-roots-rear": {
+       "blockedRays": 0,
+       "distance": 11.28,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "front": {
+       "blockedRays": 0,
+       "distance": 27.83,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 15.0
+      },
+      "rear": {
+       "blockedRays": 4,
+       "distance": 27.83,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 45.0
+      }
+     },
+     "party": {
+      "readback": "png=s7-nalfeshnee-dim-after-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=32.4;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=KMG_nalfeshnee_Original;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+      "reason": null,
+      "renderer": "_lizardman001",
+      "valid": true
+     },
+     "rear": true
+    },
+    "stillsBefore": {
+     "body": {
+      "cutoutDissolve": 0.0,
+      "dissolve": 0.0,
+      "enabled": true,
+      "mesh": "KMG_nalfeshnee_S7BeforeEvidence",
+      "renderer": "SkinnedMeshRenderer:_lizardman001:KMG_nalfeshnee_S7BeforeEvidence",
+      "vertices": 12402
+     },
+     "detail-wing-root-left": true,
+     "detail-wing-root-right": true,
+     "detail-wing-roots-rear": true,
+     "dissolve": 0.0,
+     "front": true,
+     "occluders": {
+      "detail-wing-root-left": {
+       "blockedRays": 0,
+       "distance": 9.91,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-wing-root-right": {
+       "blockedRays": 0,
+       "distance": 9.91,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-wing-roots-rear": {
+       "blockedRays": 0,
+       "distance": 11.28,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "front": {
+       "blockedRays": 0,
+       "distance": 27.67,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 15.0
+      },
+      "rear": {
+       "blockedRays": 4,
+       "distance": 27.67,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 45.0
+      }
+     },
+     "party": {
+      "readback": "png=s7-nalfeshnee-dim-before-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=32.3;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=KMG_nalfeshnee_S7BeforeEvidence;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+      "reason": null,
+      "renderer": "_lizardman001",
+      "valid": true
+     },
+     "rear": true
+    },
+    "unit": "KMG_Summoning_Unit_Nalfeshnee"
+   },
+   "passed": true,
+   "predicate": "s7-nalfeshnee-dim"
+  },
+  {
+   "observed": {
+    "error": null
+   },
+   "passed": true,
+   "predicate": "r6-s7-nalfeshnee-dim-completed"
+  },
+  {
+   "observed": {
+    "beforeVertices": 2198,
+    "cast": {
+     "ability": "KMG_Summoning_Ability_SM_Tier5_Salamander_One",
+     "appearanceEndedAfterSeconds": 1.75,
+     "appearanceEndedNaturally": true,
+     "borrowed": false,
+     "castGameSeconds": 43218.018,
+     "castUtc": "2026-11-24T16:25:26.1590193Z",
+     "commandFinished": true,
+     "commandResult": "Success",
+     "granted": true,
+     "restored": true,
+     "spawned": 1
+    },
+    "clearOfOccluders": true,
+    "currentVertices": 2198,
+    "motionAfter": {
+     "movePeakVelocity": 2.0320003,
+     "moveTravel": 2.95724344,
+     "turnDegrees": 104.994858
+    },
+    "motionBefore": {
+     "movePeakVelocity": 2.032,
+     "moveTravel": 2.96948433,
+     "turnDegrees": 104.994713
+    },
+    "obstructedWholeBodyViews": [],
+    "partyBound": true,
+    "settledDissolve": 0.0,
+    "stillsAfter": {
+     "body": {
+      "cutoutDissolve": 0.0,
+      "dissolve": 0.0,
+      "enabled": true,
+      "mesh": "KMG_SalamanderHuman_-263760_Mesh",
+      "renderer": "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:KMG_SalamanderHuman_-263760_Mesh",
+      "vertices": 2198
+     },
+     "detail-left-hand": true,
+     "detail-right-hand": true,
+     "detail-waist-front": true,
+     "detail-waist-rear": true,
+     "dissolve": 0.0,
+     "front": true,
+     "occluders": {
+      "detail-left-hand": {
+       "blockedRays": 0,
+       "distance": 1.57,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-right-hand": {
+       "blockedRays": 0,
+       "distance": 1.57,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": -45.0
+      },
+      "detail-waist-front": {
+       "blockedRays": 0,
+       "distance": 3.28,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-waist-rear": {
+       "blockedRays": 0,
+       "distance": 3.28,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "front": {
+       "blockedRays": 0,
+       "distance": 13.31,
+       "otherUnits": 1,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "rear": {
+       "blockedRays": 0,
+       "distance": 13.31,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      }
+     },
+     "party": {
+      "readback": "png=s7-salamander-dim-after-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=33.3;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=KMG_SalamanderHuman_-263760_Mesh;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=not-attempted",
+      "reason": null,
+      "renderer": "Renderer_Character_Diffuse_Cutout",
+      "valid": true
+     },
+     "rear": true
+    },
+    "stillsBefore": {
+     "body": {
+      "cutoutDissolve": 0.0,
+      "dissolve": 0.0,
+      "enabled": true,
+      "mesh": "KMG_salamander_S7BeforeEvidence",
+      "renderer": "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:KMG_salamander_S7BeforeEvidence",
+      "vertices": 2198
+     },
+     "detail-left-hand": true,
+     "detail-right-hand": true,
+     "detail-waist-front": true,
+     "detail-waist-rear": true,
+     "dissolve": 0.0,
+     "front": true,
+     "occluders": {
+      "detail-left-hand": {
+       "blockedRays": 0,
+       "distance": 1.57,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-right-hand": {
+       "blockedRays": 0,
+       "distance": 1.57,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": -45.0
+      },
+      "detail-waist-front": {
+       "blockedRays": 0,
+       "distance": 3.28,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-waist-rear": {
+       "blockedRays": 0,
+       "distance": 3.28,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "front": {
+       "blockedRays": 0,
+       "distance": 13.5,
+       "otherUnits": 1,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "rear": {
+       "blockedRays": 0,
+       "distance": 13.5,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      }
+     },
+     "party": {
+      "readback": "png=s7-salamander-dim-before-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=33.3;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=KMG_salamander_S7BeforeEvidence;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=not-attempted",
+      "reason": null,
+      "renderer": "Renderer_Character_Diffuse_Cutout",
+      "valid": true
+     },
+     "rear": true
+    },
+    "unit": "KMG_Summoning_Unit_Salamander"
+   },
+   "passed": true,
+   "predicate": "s7-salamander-dim"
+  },
+  {
+   "observed": {
+    "error": null
+   },
+   "passed": true,
+   "predicate": "r6-s7-salamander-dim-completed"
+  },
+  {
+   "observed": {
+    "errors": []
+   },
+   "passed": true,
+   "predicate": "s7-models-owned-state-restored"
+  },
+  {
+   "observed": {
+    "cleanup": {
+     "areaChanges": [],
+     "casterAbsent": true,
+     "extraUnits": "",
+     "missingUnits": "",
+     "partyAfter": 1,
+     "partyBefore": 1,
+     "partyExact": true,
+     "unitsAfter": 23,
+     "unitsBefore": 23,
+     "unitsExact": true
+    },
+    "clockRestored": true,
+    "referencesRestored": true
+   },
+   "passed": true,
+   "predicate": "fixture-restored"
+  }
+ ],
+ "harness": {
+  "conditions": {},
+  "exitRequested": false,
+  "failure": null,
+  "finishedUtc": "2026-11-24T16:24:51.4152605Z",
+  "isolation": "saves=<lab>/Saved Games; areas=<lab>/Areas",
+  "isolationRestored": true,
+  "loggerExceptionHooks": 4,
+  "requestPath": "<lab>/harness-request.json",
+  "runId": "20261124T162110Z-owner-0.33.0-s7-models-02-modd",
+  "startedUtc": "2026-11-24T16:23:55.4613825Z",
+  "status": "passed",
+  "steps": []
+ },
+ "harnessEvents": [
+  {
+   "detail": {
+    "ummWindowOpen": true
+   },
+   "event": "mainMenu",
+   "t": 60.27286,
+   "utc": "2026-11-24T16:24:51.2224983Z"
+  }
+ ],
+ "launch": "02-modd",
+ "launchSummary": {
+  "conditions": {},
+  "gameArguments": [
+   "locale=enGB"
+  ],
+  "harness": "passed",
+  "identity": {
+   "activeMods": [
+    "KingmakerGunslinger 0.0.195",
+    "KmgLoaderCompatHarness 0.1.0"
+   ],
+   "harmony12Sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+   "harmony2": [
+    "2.3.6.0 df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80"
+   ],
+   "productSha256": "c26b7aa02b5650e6277c1ae208efbc58baa0cd9193356d9ed1ab3bb53369857f",
+   "umm": "0.33.0.0",
+   "ummReported": "0.33.0.0",
+   "ummSha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
+  },
+  "label": "02-modd",
+  "pid": 40144,
+  "problems": [],
+  "product": {
+   "failed": [],
+   "scenario": "disposable-expanded-summoning-sprint32-native-review",
+   "status": "PASS"
+  },
+  "seconds": 133,
+  "verdict": "PASS"
+ },
+ "records": {
+  "summon-s7-models-interior.json": {
+   "area": "JamandisMansionThroneroom",
+   "limits": "Summons are cast through the published spell as native commands (caster level 20 only); the arrival and appearance complete naturally before the unit is moved to its mark. Body readbacks and the party capture name the enabled body renderer; whole-body views are context, details carry the anatomical claims. Commanded motion with brains inactive. Images are presentation evidence only; aesthetic approval is the owner's.",
+   "nalfeshnee": {
+    "beforeVertices": 12402,
+    "cast": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_Nalfeshnee_One",
+     "appearanceEndedAfterSeconds": 1.75,
+     "appearanceEndedNaturally": true,
+     "borrowed": false,
+     "castGameSeconds": 43200.032999999996,
+     "castUtc": "2026-11-24T16:24:59.4930761Z",
+     "commandFinished": true,
+     "commandResult": "Success",
+     "granted": true,
+     "restored": true,
+     "spawned": 1
+    },
+    "clearOfOccluders": true,
+    "currentVertices": 11593,
+    "motionAfter": {
+     "movePeakVelocity": 4.063944,
+     "moveTravel": 2.969177,
+     "turnDegrees": 110.997444
+    },
+    "motionBefore": {
+     "movePeakVelocity": 4.063921,
+     "moveTravel": 2.95352221,
+     "turnDegrees": 110.997009
+    },
+    "obstructedWholeBodyViews": [
+     "after-rear:4/9",
+     "before-rear:4/9"
+    ],
+    "partyBound": true,
+    "settledDissolve": 0.0,
+    "stillsAfter": {
+     "body": {
+      "cutoutDissolve": 0.0,
+      "dissolve": 0.0,
+      "enabled": true,
+      "mesh": "KMG_nalfeshnee_Original",
+      "renderer": "SkinnedMeshRenderer:_lizardman001:KMG_nalfeshnee_Original",
+      "vertices": 11593
+     },
+     "detail-wing-root-left": true,
+     "detail-wing-root-right": true,
+     "detail-wing-roots-rear": true,
+     "dissolve": 0.0,
+     "front": true,
+     "occluders": {
+      "detail-wing-root-left": {
+       "blockedRays": 0,
+       "distance": 9.91,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-wing-root-right": {
+       "blockedRays": 0,
+       "distance": 9.91,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-wing-roots-rear": {
+       "blockedRays": 0,
+       "distance": 11.28,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "front": {
+       "blockedRays": 0,
+       "distance": 27.83,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 15.0
+      },
+      "rear": {
+       "blockedRays": 4,
+       "distance": 27.83,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 45.0
+      }
+     },
+     "party": {
+      "readback": "png=s7-nalfeshnee-dim-after-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=32.4;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=KMG_nalfeshnee_Original;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+      "reason": null,
+      "renderer": "_lizardman001",
+      "valid": true
+     },
+     "rear": true
+    },
+    "stillsBefore": {
+     "body": {
+      "cutoutDissolve": 0.0,
+      "dissolve": 0.0,
+      "enabled": true,
+      "mesh": "KMG_nalfeshnee_S7BeforeEvidence",
+      "renderer": "SkinnedMeshRenderer:_lizardman001:KMG_nalfeshnee_S7BeforeEvidence",
+      "vertices": 12402
+     },
+     "detail-wing-root-left": true,
+     "detail-wing-root-right": true,
+     "detail-wing-roots-rear": true,
+     "dissolve": 0.0,
+     "front": true,
+     "occluders": {
+      "detail-wing-root-left": {
+       "blockedRays": 0,
+       "distance": 9.91,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-wing-root-right": {
+       "blockedRays": 0,
+       "distance": 9.91,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-wing-roots-rear": {
+       "blockedRays": 0,
+       "distance": 11.28,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "front": {
+       "blockedRays": 0,
+       "distance": 27.67,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 15.0
+      },
+      "rear": {
+       "blockedRays": 4,
+       "distance": 27.67,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 45.0
+      }
+     },
+     "party": {
+      "readback": "png=s7-nalfeshnee-dim-before-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=32.3;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=KMG_nalfeshnee_S7BeforeEvidence;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+      "reason": null,
+      "renderer": "_lizardman001",
+      "valid": true
+     },
+     "rear": true
+    },
+    "unit": "KMG_Summoning_Unit_Nalfeshnee"
+   },
+   "phase": "summon-s7-models-interior",
+   "restoreErrors": [],
+   "runId": "lc-20261124T162110Z-owner-0.33.0-s7-models-02-modd",
+   "salamander": {
+    "beforeVertices": 2198,
+    "cast": {
+     "ability": "KMG_Summoning_Ability_SM_Tier5_Salamander_One",
+     "appearanceEndedAfterSeconds": 1.75,
+     "appearanceEndedNaturally": true,
+     "borrowed": false,
+     "castGameSeconds": 43218.018,
+     "castUtc": "2026-11-24T16:25:26.1590193Z",
+     "commandFinished": true,
+     "commandResult": "Success",
+     "granted": true,
+     "restored": true,
+     "spawned": 1
+    },
+    "clearOfOccluders": true,
+    "currentVertices": 2198,
+    "motionAfter": {
+     "movePeakVelocity": 2.0320003,
+     "moveTravel": 2.95724344,
+     "turnDegrees": 104.994858
+    },
+    "motionBefore": {
+     "movePeakVelocity": 2.032,
+     "moveTravel": 2.96948433,
+     "turnDegrees": 104.994713
+    },
+    "obstructedWholeBodyViews": [],
+    "partyBound": true,
+    "settledDissolve": 0.0,
+    "stillsAfter": {
+     "body": {
+      "cutoutDissolve": 0.0,
+      "dissolve": 0.0,
+      "enabled": true,
+      "mesh": "KMG_SalamanderHuman_-263760_Mesh",
+      "renderer": "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:KMG_SalamanderHuman_-263760_Mesh",
+      "vertices": 2198
+     },
+     "detail-left-hand": true,
+     "detail-right-hand": true,
+     "detail-waist-front": true,
+     "detail-waist-rear": true,
+     "dissolve": 0.0,
+     "front": true,
+     "occluders": {
+      "detail-left-hand": {
+       "blockedRays": 0,
+       "distance": 1.57,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-right-hand": {
+       "blockedRays": 0,
+       "distance": 1.57,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": -45.0
+      },
+      "detail-waist-front": {
+       "blockedRays": 0,
+       "distance": 3.28,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-waist-rear": {
+       "blockedRays": 0,
+       "distance": 3.28,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "front": {
+       "blockedRays": 0,
+       "distance": 13.31,
+       "otherUnits": 1,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "rear": {
+       "blockedRays": 0,
+       "distance": 13.31,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      }
+     },
+     "party": {
+      "readback": "png=s7-salamander-dim-after-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=33.3;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=KMG_SalamanderHuman_-263760_Mesh;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=not-attempted",
+      "reason": null,
+      "renderer": "Renderer_Character_Diffuse_Cutout",
+      "valid": true
+     },
+     "rear": true
+    },
+    "stillsBefore": {
+     "body": {
+      "cutoutDissolve": 0.0,
+      "dissolve": 0.0,
+      "enabled": true,
+      "mesh": "KMG_salamander_S7BeforeEvidence",
+      "renderer": "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:KMG_salamander_S7BeforeEvidence",
+      "vertices": 2198
+     },
+     "detail-left-hand": true,
+     "detail-right-hand": true,
+     "detail-waist-front": true,
+     "detail-waist-rear": true,
+     "dissolve": 0.0,
+     "front": true,
+     "occluders": {
+      "detail-left-hand": {
+       "blockedRays": 0,
+       "distance": 1.57,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-right-hand": {
+       "blockedRays": 0,
+       "distance": 1.57,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": -45.0
+      },
+      "detail-waist-front": {
+       "blockedRays": 0,
+       "distance": 3.28,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-waist-rear": {
+       "blockedRays": 0,
+       "distance": 3.28,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "front": {
+       "blockedRays": 0,
+       "distance": 13.5,
+       "otherUnits": 1,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "rear": {
+       "blockedRays": 0,
+       "distance": 13.5,
+       "otherUnits": 0,
+       "rays": 9,
+       "scenery": 0,
+       "yawOffset": 0.0
+      }
+     },
+     "party": {
+      "readback": "png=s7-salamander-dim-before-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=33.3;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=KMG_salamander_S7BeforeEvidence;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=not-attempted",
+      "reason": null,
+      "renderer": "Renderer_Character_Diffuse_Cutout",
+      "valid": true
+     },
+     "rear": true
+    },
+    "unit": "KMG_Summoning_Unit_Salamander"
+   },
+   "scene": "dim"
+  }
+ },
+ "session": "20261124T162110Z-owner-0.33.0-s7-models",
+ "sources": {
+  "harness-result.json": "e8e5ceaf0fd138b2ba3d766e48726f28168d01aee991bd220e47adfbd42b9c88",
+  "sprint32-review.json": "45083ed18bd3d2d37261acbe0a243f434d64943fab1fb62ec42f1812d554e0cb",
+  "summon-s7-models-interior.json": "150b315bf46f85acec72fb63a0a69ec2345b4753c1b3da5df37ec59ffdc2c378"
+ },
+ "summary": [
+  "Kingmaker Gunslinger runtime test",
+  "Run ID: lc-20261124T162110Z-owner-0.33.0-s7-models-02-modd",
+  "Scenario: disposable-expanded-summoning-sprint32-native-review",
+  "Status: PASS",
+  "Loaded mod: 0.0.195",
+  "Runtime: KingmakerGunslinger, Version=0.0.195.0, Culture=neutral, PublicKeyToken=null",
+  "Started UTC: 2026-11-24T16:23:55.3355379Z",
+  "Ended UTC: 2026-11-24T16:25:58.1441143Z",
+  "Duration ms: 122808"
+ ]
+}
