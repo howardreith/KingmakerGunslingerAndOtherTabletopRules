@@ -314,23 +314,42 @@ namespace KingmakerGunslinger.DomainTests
             catch (ArgumentException) { }
         }
 
-        // VIS-04: the owned impact cue fires for exactly one resolved tail hit
-        // on the roll's own present target and for nothing else; the later save
-        // plays no part in the decision.
+        // VIS-04: the owned impact cue fires once per resolved tail roll on the
+        // roll's own in-game target; the cue's claim is taken only when every
+        // other condition holds, so a stale, removed or mismatched wrapper never
+        // consumes it. The later save plays no part in the decision.
         internal static void Vis04ImpactCueQualification()
         {
             int qualifying = 0;
-            for (int mask = 0; mask < 64; mask++)
+            for (int mask = 0; mask < 32; mask++)
             {
                 bool exactOwner = (mask & 1) != 0, exactTail = (mask & 2) != 0, hit = (mask & 4) != 0,
-                    first = (mask & 8) != 0, victim = (mask & 16) != 0, rollTarget = (mask & 32) != 0;
-                bool cue = Summoning.AnkylosaurusTailImpactPolicy.QualifiesForCue(exactOwner, exactTail, hit, first, victim, rollTarget);
+                    inGame = (mask & 8) != 0, rollTarget = (mask & 16) != 0;
+                int claims = 0;
+                bool cue = Summoning.AnkylosaurusTailImpactPolicy.QualifiesForCue(exactOwner, exactTail, hit, inGame, rollTarget, () => { claims++; return true; });
+                bool valid = exactOwner && exactTail && hit && inGame && rollTarget;
                 if (cue) qualifying++;
-                Assertions.Equal(exactOwner && exactTail && hit && first && victim && rollTarget, cue,
-                    "Only the exact owner's resolved first tail hit on the roll's own present target plays the cue (mask " + mask + ").");
+                Assertions.Equal(valid, cue, "Only the exact owner's resolved tail hit on the roll's own in-game target plays the cue (mask " + mask + ").");
+                Assertions.Equal(valid ? 1 : 0, claims, "The cue claim is taken only for a valid strike (mask " + mask + ").");
             }
-            Assertions.Equal(1, qualifying,
-                "A miss, a foreign owner or weapon, a repeated observation, a missing or destroyed creature or a creature other than the roll's target never plays it.");
+            Assertions.Equal(1, qualifying, "A miss, a foreign owner or weapon, a removed creature or another creature than the roll's target never plays it.");
+            Assertions.False(Summoning.AnkylosaurusTailImpactPolicy.QualifiesForCue(true, true, true, true, true, () => false),
+                "A roll whose cue was already claimed does not play again.");
+
+            // The production gate: a mismatched wrapper first, then the valid
+            // wrapper of the same roll, then a duplicate of it, then a later roll.
+            var gate = new Firing.ReferenceEventGate();
+            object roll = new object(), later = new object();
+            Func<bool, bool, object, bool> observe = (inGame, rollTarget, r) =>
+                Summoning.AnkylosaurusTailImpactPolicy.QualifiesForCue(true, true, true, inGame, rollTarget, () => gate.TryMark(r));
+            Assertions.False(observe(true, false, roll), "A wrapper naming another creature than the roll's target posts nothing.");
+            Assertions.False(observe(false, true, roll), "A removed target posts nothing.");
+            Assertions.True(observe(true, true, roll), "The valid wrapper of the same roll still posts its one cue.");
+            Assertions.False(observe(true, true, roll), "A duplicate observation of that roll posts nothing.");
+            Assertions.True(observe(true, true, later), "A later roll posts its own cue.");
+            string control = File.ReadAllText("src/KingmakerGunslinger/Summoning/AnkylosaurusTailControl.cs");
+            Assertions.True(control.Contains("victim != null && !victim.Destroyed && victim.IsInGame") && control.Contains("() => CueEvents.TryMark(attack)"),
+                "The production handler maps the event to the in-game target, the roll target and the cue's own gate.");
             Assertions.Equal("Sweetener_Low_06_Quake", Summoning.AnkylosaurusTailImpactPolicy.ImpactCue,
                 "The provisional cue is the installed VFX-bank quake sweetener.");
             Assertions.Equal("VFX", Summoning.SummonPlaytestR6Policy.CueBank, "It plays from the bank the cue helper already loads.");
@@ -362,27 +381,54 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(Summoning.MephitBreathPolicy.PresentsDustBreath(null, breath, cold), "A launcher without identity is not recoloured.");
         }
 
-        // VIS-05: the projectile-to-effect association lives for one frame and
-        // one adoption; an interrupted creation cannot bind a later spawn.
-        internal static void Vis05CastFxAssociationIsBounded()
+        // VIS-05: a cast-effect spawn belongs only to the innermost creation of
+        // the innermost execution scope of its frame; foreign creations shadow,
+        // interrupted creations cannot lend their identity, and nothing outside
+        // a scope adopts.
+        internal static void Vis05CreationTrackerOwnership()
         {
-            var association = new Summoning.DustCastFxAssociation();
-            object dust = new object();
-            association.Begin(dust, 10);
-            Assertions.True(ReferenceEquals(dust, association.Peek(10)), "The pending projectile is visible in its own frame.");
-            Assertions.True(ReferenceEquals(dust, association.Adopt(10)), "The first spawn of its cast effect adopts it.");
-            Assertions.True(association.Adopt(10) == null, "A second spawn in the same creation does not adopt it again.");
-            Assertions.True(association.End(10) == null, "An adopted creation ends with nothing outstanding.");
-            association.Begin(dust, 11);
-            Assertions.True(ReferenceEquals(dust, association.End(11)), "A creation whose native effect was skipped is reported as unadopted.");
-            Assertions.True(association.Peek(11) == null, "Ending clears the association.");
-            association.Begin(dust, 12);
-            // The creation threw before its end: nothing in a later frame can use it.
-            Assertions.True(association.Peek(13) == null && association.Adopt(13) == null && association.End(13) == null,
-                "An interrupted creation leaves no association for a later frame.");
-            association.Begin(dust, 14);
-            association.Reset();
-            Assertions.True(association.Adopt(14) == null, "The next creation's reset clears a stale association.");
+            var tracker = new Summoning.DustCreationTracker();
+            object dust = "dust", ice = "ice", other = "other";
+            Assertions.True(tracker.BeginCreation(dust, true, 1) == null && tracker.Peek(1) == null, "Outside an execution scope nothing is tracked or adopted.");
+
+            // Nested owned and foreign creations in one scope.
+            object scope = tracker.BeginScope(1);
+            object owned = tracker.BeginCreation(dust, true, 1);
+            object foreign = tracker.BeginCreation(ice, false, 1);
+            Assertions.True(tracker.Adopt(1) == null, "A spawn inside the nested foreign creation is not tinted.");
+            Assertions.False(tracker.EndCreation(foreign), "The foreign creation ends without an owned result.");
+            Assertions.True(ReferenceEquals(dust, tracker.Adopt(1)), "The enclosing owned creation's own spawn is tinted.");
+            Assertions.True(tracker.Adopt(1) == null, "It is tinted once.");
+            Assertions.False(tracker.EndCreation(owned), "An adopted creation ends with nothing outstanding.");
+            Assertions.True(tracker.Adopt(1) == null, "After its end the scope lends nothing.");
+
+            // An owned creation that throws (never ends) inside an enclosing foreign one.
+            object outer = tracker.BeginCreation(other, false, 1);
+            tracker.BeginCreation(dust, true, 1);
+            Assertions.True(ReferenceEquals(dust, tracker.Peek(1)), "While the owned creation runs its spawn would be tinted.");
+            tracker.EndCreation(outer);
+            Assertions.True(tracker.Peek(1) == null && tracker.Adopt(1) == null, "The enclosing creation's end discards the interrupted one.");
+
+            // An owned creation that throws at the top of the scope: the scope's end discards it.
+            tracker.BeginCreation(dust, true, 1);
+            tracker.EndScope(scope);
+            Assertions.True(tracker.ScopeDepth == 0 && tracker.Adopt(1) == null, "After the execution scope ends an unrelated matching spawn in the same frame is not tinted.");
+
+            // A creation whose native effect was skipped is reported once.
+            object again = tracker.BeginScope(2);
+            object skipped = tracker.BeginCreation(dust, true, 2);
+            Assertions.True(tracker.EndCreation(skipped), "An owned creation with no adopted effect is reported as unadopted.");
+            Assertions.True(tracker.Adopt(3) == null, "Another frame never adopts.");
+            tracker.EndScope(again);
+
+            // A scope left behind by an earlier frame (its tick threw before its own handling) is discarded.
+            tracker.BeginScope(4);
+            tracker.BeginScope(5);
+            Assertions.Equal(1, tracker.ScopeDepth, "A stale scope from an earlier frame is dropped when the next one begins.");
+            Assertions.True(tracker.BeginCreation(dust, true, 5) != null && ReferenceEquals(dust, tracker.Adopt(5)), "The new scope tracks normally.");
+            string patch = File.ReadAllText("src/KingmakerGunslinger/Summoning/DustMephitBreathPresentation.cs");
+            Assertions.True(patch.Contains("point != projectile.LaunchPosition") && patch.Contains("Creations.EndScope(saved.Scope)"),
+                "The spawn must also match its creation's launch point, and every execution tick ends its scope.");
         }
 
         // VIS-05: the recolour keeps each colour's alpha and brightness and
@@ -446,30 +492,143 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, phase) || ExpandedSummoningNativeProfilePolicy.Sprint7OutdoorPhase(phase), phase + " stays in the static interior.");
             foreach (string near in new[] { "summon-s7", "summon-s7-", "summon-s7-fx", "summon-s7-ghaele-dim", "summon-s7-trumpet" })
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint7Phase(near) || ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 1, near), near + " is not admitted.");
-            string screen = File.ReadAllText("src/KingmakerGunslinger/RuntimeTesting/NativeIconScreenEvidence.cs");
-            Assertions.True(screen.Contains("ExpandedSummoningNativeProfilePolicy.Sprint39S7UiPhase"), "The UI phase is the Sprint 7 phase admitted to screen capture.");
-            foreach (string name in new[] { "Sprint39S7GhaelePhase", "Sprint39S7GhaeleInteriorPhase", "Sprint39S7ModelsPhase", "Sprint39S7ModelsInteriorPhase", "Sprint39S7EffectsPhase" })
-                Assertions.False(screen.Contains("ExpandedSummoningNativeProfilePolicy." + name), name + " is not admitted to screen capture.");
+            // Screen capture: the production decision NativeIconScreenEvidence.Supports consumes.
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32ScreenCaptureAdmitted(scenario, 1, ExpandedSummoningNativeProfilePolicy.Sprint39S7UiPhase),
+                "The Sprint 7 UI phase is admitted to screen capture.");
+            foreach (string phase in outdoor.Concat(interior).Where(value => value != ExpandedSummoningNativeProfilePolicy.Sprint39S7UiPhase))
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32ScreenCaptureAdmitted(scenario, 1, phase), phase + " is refused screen capture.");
+            foreach (int count in new[] { 0, 2 })
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32ScreenCaptureAdmitted(scenario, count, ExpandedSummoningNativeProfilePolicy.Sprint39S7UiPhase),
+                    "Screen capture refuses " + count + " parameters.");
+            foreach (string malformed in new[] { "summon-s7-ui ", "SUMMON-S7-UI", "summon-s7-ui-hud", "", null })
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32ScreenCaptureAdmitted(scenario, 1, malformed), "Malformed phase '" + malformed + "' is refused screen capture.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32ScreenCaptureAdmitted(RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview, 1,
+                ExpandedSummoningNativeProfilePolicy.Sprint39S7UiPhase), "Another scenario cannot borrow the Sprint 7 capture admission.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32ScreenCaptureAdmitted(scenario, 1, ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestUiPhase),
+                "The existing R3 UI capture admission is unchanged.");
         }
 
-        // F4: the tooltip observer acts only on what it acquired.
+        // F4, R2-F3, R2-F4, F14: observers act only on what they acquired and
+        // report an incomplete rollback beside the original failure.
         internal static void Sprint7ObserverOwnsOnlyItsAcquisitions()
         {
-            Assertions.True(RuntimeTesting.Sprint7ObserverPolicy.CanOpenWindow(false, false, false), "A clear screen admits the observer's window.");
-            Assertions.False(RuntimeTesting.Sprint7ObserverPolicy.CanOpenWindow(true, false, false), "An initially open description window refuses the phase.");
-            Assertions.False(RuntimeTesting.Sprint7ObserverPolicy.CanOpenWindow(false, true, false), "An open hover tooltip refuses the phase.");
-            Assertions.False(RuntimeTesting.Sprint7ObserverPolicy.CanOpenWindow(false, false, true), "An unrelated modal refuses the phase.");
+            Assertions.True(Sprint7ObserverPolicy.CanOpenWindow(false, false, false), "A clear screen admits the observer's window.");
+            Assertions.False(Sprint7ObserverPolicy.CanOpenWindow(true, false, false), "An initially open description window refuses the phase.");
+            Assertions.False(Sprint7ObserverPolicy.CanOpenWindow(false, true, false), "An open hover tooltip refuses the phase.");
+            Assertions.False(Sprint7ObserverPolicy.CanOpenWindow(false, false, true), "An unrelated modal refuses the phase.");
             object opened = new object(), foreign = new object();
-            Assertions.True(RuntimeTesting.Sprint7ObserverPolicy.OwnsWindow(opened, opened), "The window showing the observer's own data is its own.");
-            Assertions.False(RuntimeTesting.Sprint7ObserverPolicy.OwnsWindow(foreign, opened), "A replaced or foreign window is never closed by the observer.");
-            Assertions.False(RuntimeTesting.Sprint7ObserverPolicy.OwnsWindow(null, null), "With nothing opened the observer owns nothing.");
-            Assertions.False(RuntimeTesting.Sprint7ObserverPolicy.OwnsWindow(foreign, null), "After its own close the observer owns no window.");
-            Assertions.True(RuntimeTesting.Sprint7ObserverPolicy.OwnsFact(false, true), "A fact the observer's grant created is removed.");
-            Assertions.False(RuntimeTesting.Sprint7ObserverPolicy.OwnsFact(true, true), "A pre-existing control fact is left in place.");
-            Assertions.False(RuntimeTesting.Sprint7ObserverPolicy.OwnsFact(false, false), "A refused grant leaves nothing to remove.");
-            string source = File.ReadAllText("src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.Sprint7Presentation.cs");
-            Assertions.False(source.Contains("catch (Exception error) { windows["), "No per-window catch swallows an unexpected UI or ownership loss.");
-            Assertions.True(source.Contains("screens.Dispose()"), "The screen capture session is disposed.");
+            Assertions.True(Sprint7ObserverPolicy.OwnsWindow(opened, opened), "The window showing the observer's own data is its own.");
+            Assertions.False(Sprint7ObserverPolicy.OwnsWindow(foreign, opened), "A replaced or foreign window is never closed by the observer.");
+            Assertions.False(Sprint7ObserverPolicy.OwnsWindow(null, null) || Sprint7ObserverPolicy.OwnsWindow(foreign, null), "With nothing opened the observer owns nothing.");
+
+            // Control facts and borrowed abilities: grant only when absent;
+            // release only the observer's own instance while it is still held.
+            Assertions.False(Sprint7ObserverPolicy.ShouldGrant(true), "An existing control is used as it is, never granted again.");
+            Assertions.True(Sprint7ObserverPolicy.ShouldGrant(false), "A missing control is granted.");
+            object original = new object(), granted = new object(), replacement = new object();
+            Assertions.False(Sprint7ObserverPolicy.ShouldRelease(null, original), "An existing (not granted) control is never released.");
+            Assertions.True(Sprint7ObserverPolicy.ShouldRelease(granted, granted), "The observer's own grant is released.");
+            Assertions.False(Sprint7ObserverPolicy.ShouldRelease(granted, replacement), "A replacement made during a yielded window survives.");
+            Assertions.False(Sprint7ObserverPolicy.ShouldRelease(granted, null), "A grant already gone is not released twice.");
+            string observer = File.ReadAllText("src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.Sprint7Presentation.cs");
+            Assertions.True(observer.Contains("used.OverrideParams = priorOverride") && observer.Contains("Abilities.RemoveFact(granted)") &&
+                observer.Contains("Abilities.RemoveFact(entry.Value)"), "Borrowed overrides are restored and grants are released by instance.");
+
+            // Conditions: only the breath-owned instances are removed.
+            object breathOwned = new object(), otherContext = new object(), laterBreath = new object();
+            List<object> removed = Sprint7ObserverPolicy.Acquired(new[] { otherContext, breathOwned, laterBreath }, new[] { breathOwned, laterBreath });
+            Assertions.Equal(2, removed.Count, "Both breath-owned instances are selected.");
+            Assertions.False(removed.Contains(otherContext), "A Sickened from another context survives the reset and the cleanup.");
+
+            // Rollback: every release runs; failures are reported with the original cause.
+            var order = new List<string>();
+            List<string> failures = Sprint7ObserverPolicy.RunReleases(new[] {
+                new KeyValuePair<string, Action>("first", () => order.Add("first")),
+                new KeyValuePair<string, Action>("broken", () => { throw new InvalidOperationException("cannot unpatch"); }),
+                new KeyValuePair<string, Action>("last", () => order.Add("last")) });
+            Assertions.Equal("first,last", string.Join(",", order.ToArray()), "One failing release does not skip the later ones.");
+            Assertions.Equal(1, failures.Count, "The failing release is recorded.");
+            var cause = new InvalidOperationException("injected failure after the first patch");
+            InvalidOperationException reported = Sprint7ObserverPolicy.SetupFailure("S7ProjectileTrace", cause, failures, 2);
+            Assertions.True(ReferenceEquals(reported.InnerException, cause), "The original setup failure is preserved as the cause.");
+            Assertions.True(reported.Message.Contains("rollback INCOMPLETE: 2 owned item(s) remain") && reported.Message.Contains("cannot unpatch"),
+                "An incomplete rollback is reported, not hidden.");
+            Assertions.True(Sprint7ObserverPolicy.SetupFailure("S7BodySwap", cause, new List<string>(), 0).Message.Contains("rollback complete"),
+                "A complete rollback says so.");
+            Assertions.True(observer.Contains("Inject == \"after-first-patch\"") && observer.Contains("Inject == \"after-comparison-mesh\"") && observer.Contains("s7-observer-rollback"),
+                "Both observers carry the bounded native failure checks after partial acquisition.");
+        }
+
+        // R2-F1: the reload probe judges the saved cue by the product's own
+        // records: playing ID, native end, and for a retirement the recorded
+        // stop result and ordering.
+        internal static void TrumpetReloadVerdict()
+        {
+            const string requested = "stop-requested";
+            DateTime post = new DateTime(2026, 11, 24, 2, 26, 2, DateTimeKind.Utc);
+            DateTime end = post.AddSeconds(3.9), stop = post.AddSeconds(2);
+            Assertions.Equal("natural", KmgLoaderCompatHarness.TrumpetCueVerdict.SavedCue(159, 159, post, end, null, null, null, requested), "A natural end is accepted.");
+            Assertions.Equal("retired:view-destroyed", KmgLoaderCompatHarness.TrumpetCueVerdict.SavedCue(159, 159, post, end, "view-destroyed", requested, stop, requested),
+                "A retirement with the product's recorded stop-requested result, before the native end, is accepted.");
+            Assertions.Equal("invalid:stop-not-requested", KmgLoaderCompatHarness.TrumpetCueVerdict.SavedCue(159, 159, post, end, "view-destroyed", "stop-failed", stop, requested),
+                "A failed stop is rejected.");
+            Assertions.Equal("invalid:stop-not-requested", KmgLoaderCompatHarness.TrumpetCueVerdict.SavedCue(159, 159, post, end, "view-destroyed", "StopRequested", stop, requested),
+                "Only the product's exact recorded value counts.");
+            Assertions.Equal("invalid:no-native-end", KmgLoaderCompatHarness.TrumpetCueVerdict.SavedCue(159, 159, post, null, "view-destroyed", requested, stop, requested),
+                "A missing end-of-event callback is rejected, even after a stop request.");
+            Assertions.Equal("invalid:playing-id", KmgLoaderCompatHarness.TrumpetCueVerdict.SavedCue(159, 160, post, end, null, null, null, requested), "Another playing ID is rejected.");
+            Assertions.Equal("invalid:end-before-post", KmgLoaderCompatHarness.TrumpetCueVerdict.SavedCue(159, 159, post, post.AddSeconds(-1), null, null, null, requested), "An end before the post is rejected.");
+            Assertions.Equal("invalid:stop-order", KmgLoaderCompatHarness.TrumpetCueVerdict.SavedCue(159, 159, post, end, "view-destroyed", requested, end.AddSeconds(1), requested),
+                "A stop requested after the end is rejected.");
+            Assertions.True(KmgLoaderCompatHarness.TrumpetCueVerdict.Accepted("natural") && KmgLoaderCompatHarness.TrumpetCueVerdict.Accepted("retired:entity-retired") &&
+                !KmgLoaderCompatHarness.TrumpetCueVerdict.Accepted("invalid:no-native-end"), "Only natural ends and valid retirements are accepted.");
+            string probe = File.ReadAllText("tools/LoaderCompatHarness/TrumpetCueProbes.cs");
+            Assertions.True(probe.Contains("GetField(\"StopRequested\", Any)") && probe.Contains("TrumpetCueVerdict.SavedCue("),
+                "The probe reads the product's own stop-result constant and applies this verdict.");
+        }
+
+        // R2-F2: abandoned while yielded, a probe restores pause, its event
+        // subscription and the shared generator exactly once, newest first;
+        // a failing restore is reported and the others still run.
+        internal static void TrumpetProbeAbandonmentRestores()
+        {
+            bool paused = true, subscribed = false; int rng = 5;
+            var order = new List<string>();
+            var owned = new KmgLoaderCompatHarness.OwnedProbeResources();
+            Func<IEnumerable<object>> body = () => Body(owned, () => paused = false, () => subscribed = true, () => rng = 9,
+                () => { paused = true; order.Add("pause"); }, () => { subscribed = false; order.Add("subscription"); }, () => { rng = 5; order.Add("rng"); });
+            IEnumerator<object> script = body().GetEnumerator();
+            Assertions.True(script.MoveNext() && !paused && subscribed && rng == 9, "While yielded the probe has unpaused, subscribed and seeded.");
+            script.Dispose(); // the slot abandons the probe (timeout) while it is yielded
+            Assertions.True(paused && !subscribed && rng == 5, "Disposing the yielded iterator restores pause, subscription and the generator exactly.");
+            Assertions.Equal("rng,subscription,pause", string.Join(",", order.ToArray()), "Restores run newest first.");
+            KmgLoaderCompatHarness.CleanupReport again = owned.ReleaseAll();
+            Assertions.True(again.Restored && again.Attempted.Count == 0 && order.Count == 3, "A later release finds nothing left and changes nothing.");
+
+            var failing = new KmgLoaderCompatHarness.OwnedProbeResources();
+            bool later = false;
+            failing.Hold("first", () => later = true);
+            failing.Hold("broken", () => { throw new InvalidOperationException("cannot unsubscribe"); });
+            KmgLoaderCompatHarness.CleanupReport report = failing.ReleaseAll();
+            Assertions.True(later && !report.Restored && report.Failures.Count == 1, "A failing restore is reported and the others still run.");
+            var early = new KmgLoaderCompatHarness.OwnedProbeResources();
+            int seeded = 1; var failures = new List<string>();
+            early.Hold("blast seeding", () => seeded = 0);
+            early.ReleaseNow("blast seeding", failures);
+            Assertions.True(seeded == 0 && early.Count == 0 && failures.Count == 0, "Seeding is released right after its blast, once.");
+            string probe = File.ReadAllText("tools/LoaderCompatHarness/TrumpetCueProbes.cs");
+            Assertions.True(probe.Contains("() => script.Dispose()") && probe.Contains("owned.ReleaseAll()") && probe.Contains("owned.ReleaseNow(\"blast seeding\""),
+                "The probe's Release disposes its iterator and releases every held restore; seeding ends with its blast.");
+        }
+
+        private static IEnumerable<object> Body(KmgLoaderCompatHarness.OwnedProbeResources owned, Action unpause, Action subscribe, Action seed,
+            Action restorePause, Action unsubscribe, Action restoreRng)
+        {
+            owned.Hold("pause", restorePause); unpause();
+            owned.Hold("subscription", unsubscribe); subscribe();
+            owned.Hold("rng", restoreRng); seed();
+            try { yield return null; yield return null; }
+            finally { owned.ReleaseAll(); }
         }
     }
 }

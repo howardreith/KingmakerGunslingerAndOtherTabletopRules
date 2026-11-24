@@ -29,9 +29,12 @@ namespace KingmakerGunslinger.Summoning
         /// whether the club landed.
         /// </summary>
         internal static bool QualifiesForCue(bool exactOwner, bool exactTail, bool hit,
-            bool firstObservation, bool victimPresent, bool victimIsRollTarget)
+            bool victimInGame, bool victimIsRollTarget, Func<bool> claimOnce)
         {
-            return exactOwner && exactTail && hit && firstObservation && victimPresent && victimIsRollTarget;
+            // The cue's own once-per-roll claim is taken last, so a stale,
+            // removed or mismatched wrapper never consumes the roll's cue.
+            return exactOwner && exactTail && hit && victimInGame && victimIsRollTarget &&
+                claimOnce != null && claimOnce();
         }
 
         internal static float Weight(float elapsed)

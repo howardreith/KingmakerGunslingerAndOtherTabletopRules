@@ -546,6 +546,17 @@ namespace KmgLoaderCompatHarness
                     return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
                 }
 
+                case "kmgGhaeleLifetime":
+                {
+                    // Sprint 7 T1 / REP-04 (R1-F2): an ordinary Ghaele timeline on the loaded product package (see GhaeleLifetimeProbes.cs).
+                    string identity = StepIdentity(step);
+                    if (!probes.IsActive) probes.Begin(identity, new GhaeleLifetimeProbe(step.Match));
+                    ProbeOutcome outcome = probes.Poll(identity);
+                    if (outcome == null) return StepStatus.Running;
+                    RecordProbe(outcome);
+                    return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
+                }
+
                 case "kmgTrumpetCue":
                 {
                     // Sprint 7 T7 / VIS-06 (R1-F12): "match" is before or after, around saveGame and loadLastSave (see TrumpetCueProbes.cs).

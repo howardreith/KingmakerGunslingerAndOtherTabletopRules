@@ -34,18 +34,24 @@ namespace KingmakerGunslinger.Summoning
     {
         internal static Kingmaker.Controllers.AbilityExecutionProcess Current;
         internal static int Frame = -1;
+        internal static readonly DustCreationTracker Creations = new DustCreationTracker();
+
+        private sealed class Saved { internal Kingmaker.Controllers.AbilityExecutionProcess Process; internal int Frame; internal object Scope; }
 
         // A nested execution tick restores the enclosing one when it returns.
+        // The native tick catches every exception its delivery raises, so the
+        // postfix always runs and ends the creation scope.
         private static void Prefix(Kingmaker.Controllers.AbilityExecutionProcess __instance, out object __state)
         {
-            __state = new KeyValuePair<Kingmaker.Controllers.AbilityExecutionProcess, int>(Current, Frame);
+            __state = new Saved { Process = Current, Frame = Frame, Scope = Creations.BeginScope(Time.frameCount) };
             Current = __instance; Frame = Time.frameCount;
         }
 
         private static void Postfix(object __state)
         {
-            var previous = (KeyValuePair<Kingmaker.Controllers.AbilityExecutionProcess, int>)__state;
-            Current = previous.Key; Frame = previous.Value;
+            var saved = (Saved)__state;
+            Creations.EndScope(saved.Scope);
+            Current = saved.Process; Frame = saved.Frame;
         }
 
         /// <summary>The ability blueprint executing this frame for this launcher, if any.</summary>
@@ -62,31 +68,28 @@ namespace KingmakerGunslinger.Summoning
     [HarmonyPatch(typeof(ProjectileController), "CreateView", new[] { typeof(Projectile), typeof(Vector3?) })]
     internal static class DustMephitBreathPresentation
     {
-        // The Dust projectile whose cast effect may be spawned in this
-        // CreateView; bound to one frame and adopted at most once.
-        internal static readonly DustCastFxAssociation Association = new DustCastFxAssociation();
         internal static int Unadopted;
 
-        private static void Prefix(Projectile projectile)
+        // Every creation inside an execution scope is tracked (owned or not),
+        // so a nested foreign creation can never lend an enclosing Dust identity.
+        private static void Prefix(Projectile projectile, out object __state)
         {
-            Association.Reset();
+            __state = null;
             try
             {
-                if (projectile == null || projectile.Launcher == null || projectile.Launcher.Blueprint == null ||
-                    projectile.Blueprint == null) return;
-                string ability = DustMephitBreathExecutionScope.ExecutingAbility(projectile.Launcher);
-                if (MephitBreathPolicy.PresentsDustBreath(projectile.Launcher.Blueprint.AssetGuid, ability,
-                        projectile.Blueprint.AssetGuid))
-                    Association.Begin(projectile, Time.frameCount);
+                bool owned = projectile != null && projectile.Launcher != null && projectile.Launcher.Blueprint != null &&
+                    projectile.Blueprint != null && MephitBreathPolicy.PresentsDustBreath(projectile.Launcher.Blueprint.AssetGuid,
+                        DustMephitBreathExecutionScope.ExecutingAbility(projectile.Launcher), projectile.Blueprint.AssetGuid);
+                __state = DustMephitBreathExecutionScope.Creations.BeginCreation(projectile, owned, Time.frameCount);
             }
             catch (Exception error) { Debug.LogException(error); }
         }
 
-        // Ends the association; a creation whose cast effect was not adopted
-        // (native skipped it or the blueprint has none) is only counted.
-        private static void Postfix()
+        // A creation whose cast effect was not adopted (native skipped it or
+        // the blueprint has none) is only counted.
+        private static void Postfix(object __state)
         {
-            if (Association.End(Time.frameCount) != null) Unadopted++;
+            if (DustMephitBreathExecutionScope.Creations.EndCreation(__state)) Unadopted++;
         }
     }
 
@@ -94,14 +97,17 @@ namespace KingmakerGunslinger.Summoning
         new[] { typeof(GameObject), typeof(Vector3), typeof(Quaternion) })]
     internal static class DustMephitBreathCastFxPatch
     {
-        private static void Postfix(GameObject prefab, GameObject __result)
+        private static void Postfix(GameObject prefab, Vector3 point, GameObject __result)
         {
             try
             {
                 if (__result == null || prefab == null) return;
-                var projectile = DustMephitBreathPresentation.Association.Peek(Time.frameCount) as Projectile;
-                if (projectile == null || !ReferenceEquals(prefab, projectile.Blueprint.CastFx.Load())) return;
-                if (DustMephitBreathPresentation.Association.Adopt(Time.frameCount) == null) return;
+                var creations = DustMephitBreathExecutionScope.Creations;
+                var projectile = creations.Peek(Time.frameCount) as Projectile;
+                // Only this creation's own cast effect, at its own launch point.
+                if (projectile == null || !ReferenceEquals(prefab, projectile.Blueprint.CastFx.Load()) ||
+                    point != projectile.LaunchPosition) return;
+                if (creations.Adopt(Time.frameCount) == null) return;
                 DustMephitBreathTint.Adopt(__result, projectile.Launcher.UniqueId);
             }
             catch (Exception error)

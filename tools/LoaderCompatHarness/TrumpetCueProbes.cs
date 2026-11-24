@@ -48,8 +48,10 @@ namespace KmgLoaderCompatHarness
         private readonly IEnumerator<object> script;
         private readonly List<UnitEntityData> created = new List<UnitEntityData>();
         private readonly List<UnitEntityData> awakeAdded = new List<UnitEntityData>();
+        private readonly OwnedProbeResources owned = new OwnedProbeResources();
+        private readonly List<string> releaseFailures = new List<string>();
         private string verdict;
-        private bool subscribed;
+        private bool subscribed, seeding;
         private int seed = -1;
         private UnitEntityData trumpet;
         private Assembly product;
@@ -70,11 +72,23 @@ namespace KmgLoaderCompatHarness
             return verdict;
         }
 
+        // Every exit (normal end, failure, timeout, abandonment while yielded):
+        // the iterator is disposed (its finally blocks run), then every held
+        // restore runs once, newest first; failures are reported in the slot outcome.
         public CleanupReport Release(string testFailure)
         {
             var releases = new List<KeyValuePair<string, Action>>
             {
-                new KeyValuePair<string, Action>("save seeding", Unsubscribe),
+                new KeyValuePair<string, Action>("probe iterator", () => script.Dispose()),
+                new KeyValuePair<string, Action>("held state", () =>
+                {
+                    CleanupReport held = owned.ReleaseAll();
+                    if (!held.Restored) throw new InvalidOperationException(string.Join("; ", held.Failures.ToArray()));
+                }),
+                new KeyValuePair<string, Action>("early releases", () =>
+                {
+                    if (releaseFailures.Count > 0) throw new InvalidOperationException(string.Join("; ", releaseFailures.ToArray()));
+                }),
                 new KeyValuePair<string, Action>("awake registrations", () => { foreach (UnitEntityData u in awakeAdded) Game.Instance.State.AwakeUnits.Remove(u); awakeAdded.Clear(); })
             };
             // The "before" Trumpet must survive into the save; it is released by the "after" step (or by any failure).
@@ -83,9 +97,10 @@ namespace KmgLoaderCompatHarness
             return ProbeCleanup.RunAll(releases);
         }
 
+        // Seeds only the saves of the blast being observed.
         public void OnEventAboutToTrigger(RuleSavingThrow evt)
         {
-            if (evt != null && evt.Initiator != null && !ReferenceEquals(evt.Initiator, trumpet) && seed >= 0) UnityEngine.Random.InitState(seed);
+            if (seeding && evt != null && evt.Initiator != null && !ReferenceEquals(evt.Initiator, trumpet) && seed >= 0) UnityEngine.Random.InitState(seed);
         }
 
         public void OnEventDidTrigger(RuleSavingThrow evt) { }
@@ -93,14 +108,20 @@ namespace KmgLoaderCompatHarness
         private void Subscribe() { if (!subscribed) { EventBus.Subscribe(this); subscribed = true; } }
         private void Unsubscribe() { if (subscribed) { EventBus.Unsubscribe(this); subscribed = false; } }
 
+        // Finds the seed without leaving the shared generator changed.
         private static int D20Seed(int expected)
         {
-            for (int value = 0; value < 100000; value++)
+            UnityEngine.Random.State saved = UnityEngine.Random.state;
+            try
             {
-                UnityEngine.Random.InitState(value);
-                if (UnityEngine.Random.Range(1, 21) == expected) return value;
+                for (int value = 0; value < 100000; value++)
+                {
+                    UnityEngine.Random.InitState(value);
+                    if (UnityEngine.Random.Range(1, 21) == expected) return value;
+                }
+                throw new InvalidOperationException("no d20 seed for " + expected);
             }
-            throw new InvalidOperationException("no d20 seed for " + expected);
+            finally { UnityEngine.Random.state = saved; }
         }
 
         private IEnumerable<object> Run()
@@ -111,15 +132,22 @@ namespace KmgLoaderCompatHarness
             seed = D20Seed(20);
             result["area"] = Game.Instance.CurrentlyLoadedArea == null ? null : Game.Instance.CurrentlyLoadedArea.name;
             bool paused = Game.Instance.IsPaused;
+            owned.Hold("pause", () => Game.Instance.IsPaused = paused);
             Subscribe();
+            owned.Hold("save seeding subscription", Unsubscribe);
+            Game.Instance.IsPaused = false;
             try
             {
-                Game.Instance.IsPaused = false;
                 IEnumerable<object> body = mode == "before" ? Before() : mode == "after" ? After() : null;
                 if (body == null) { problems.Add("unknown mode " + mode); yield break; }
                 foreach (object step in body) yield return step;
             }
-            finally { Unsubscribe(); Game.Instance.IsPaused = paused; }
+            finally
+            {
+                CleanupReport held = owned.ReleaseAll();
+                if (!held.Restored) problems.Add("restore failures: " + string.Join("; ", held.Failures.ToArray()));
+                result["pauseRestored"] = Game.Instance.IsPaused == paused;
+            }
         }
 
         // ---------------------------------------------------------------- cue records (read-only, by reflection)
@@ -188,9 +216,14 @@ namespace KmgLoaderCompatHarness
             row["ability"] = blast.Blueprint.name; row["available"] = blast.Data.IsAvailable; row["canTarget"] = blast.Data.CanTarget(target);
             if (!blast.Data.IsAvailable || !blast.Data.CanTarget(target)) { problems.Add("the blast is not available to cast"); yield break; }
             var command = new UnitUseAbility(blast.Data, target);
+            UnityEngine.Random.State rng = UnityEngine.Random.state;
+            seeding = true;
+            owned.Hold("blast seeding", () => { seeding = false; UnityEngine.Random.state = rng; });
             unit.Commands.Run(command);
             float deadline = Time.realtimeSinceStartup + 30f;
             while (Time.realtimeSinceStartup < deadline && !(command.IsFinished && (command.ExecutionProcess == null || command.ExecutionProcess.IsEnded))) yield return null;
+            owned.ReleaseNow("blast seeding", releaseFailures);
+            row["seedingEnded"] = !seeding;
             row["finished"] = command.IsFinished; row["result"] = command.Result.ToString();
             row["executionEnded"] = command.ExecutionProcess != null && command.ExecutionProcess.IsEnded;
             if (!command.IsFinished || command.Result != Kingmaker.UnitLogic.Commands.Base.UnitCommand.ResultType.Success) problems.Add(row.Path + ": the blast did not complete");
@@ -257,13 +290,13 @@ namespace KmgLoaderCompatHarness
             JObject saved = Describe(s_PlayingCue);
             result["savedCue"] = saved;
             DateTime? end = Field<DateTime?>(s_PlayingCue, "EndUtc");
-            string reason = Field<string>(s_PlayingCue, "StopReason");
-            bool natural = end.HasValue && reason == null;
-            bool retired = end.HasValue && reason != null && Field<string>(s_PlayingCue, "StopResult") == "StopRequested";
-            saved["endedBy"] = natural ? "natural" : retired ? "retirement:" + reason : "unended";
+            string stopRequested = (string)product.GetType("KingmakerGunslinger.Summoning.SummonCastCueLifecycle", true).GetField("StopRequested", Any).GetValue(null);
+            string endedBy = TrumpetCueVerdict.SavedCue(s_PlayingId, Field<uint>(s_PlayingCue, "PlayingId"), Field<DateTime>(s_PlayingCue, "Utc"), end,
+                Field<string>(s_PlayingCue, "StopReason"), Field<string>(s_PlayingCue, "StopResult"), Field<DateTime?>(s_PlayingCue, "StopRequestedUtc"), stopRequested);
+            saved["endedBy"] = endedBy;
+            saved["productStopRequested"] = stopRequested;
             saved["endedBeforeAfterStep"] = end.HasValue && end.Value <= started;
-            if (!natural && !retired) problems.Add("after: the cue playing at the save has no native end");
-            if (Field<uint>(s_PlayingCue, "PlayingId") != s_PlayingId) problems.Add("after: the saved cue's playing ID changed");
+            if (!TrumpetCueVerdict.Accepted(endedBy)) problems.Add("after: the cue playing at the save did not end acceptably: " + endedBy);
 
             // 2. No replay: nothing posted for this Trumpet since the before step ended, through a quiet interval.
             foreach (object step in Seconds(5f)) yield return step;

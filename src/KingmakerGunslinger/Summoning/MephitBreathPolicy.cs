@@ -265,39 +265,83 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>
-    /// VIS-05: carries one Dust projectile from its own CreateView to the cast
-    /// effect spawned inside it. Bound to the frame it began in and adopted at
-    /// most once; a CreateView that throws before its end leaves an
-    /// association that a later frame cannot use, and the next CreateView
-    /// resets it.
+    /// VIS-05: which projectile creation a cast-effect spawn belongs to.
+    /// Creations are tracked only inside an ability execution scope (the
+    /// native AbilityExecutionProcess.Tick, which catches every exception
+    /// raised by its delivery, so the scope always ends). Every creation in a
+    /// scope is pushed, owned or not, so a nested foreign creation shadows an
+    /// enclosing owned one; a spawn adopts only the innermost creation of the
+    /// innermost scope of the current frame, at most once. A creation that
+    /// throws never ends itself: the enclosing creation's end or the scope's
+    /// end discards it, and nothing outside a scope can adopt. A scope left
+    /// behind by an earlier frame is discarded when the next one begins.
     /// </summary>
-    internal sealed class DustCastFxAssociation
+    internal sealed class DustCreationTracker
     {
-        private object _token;
-        private int _frame = -1;
-        private bool _adopted;
+        private sealed class Scope { internal int Frame; internal readonly List<Entry> Entries = new List<Entry>(); }
 
-        internal void Reset() { _token = null; _frame = -1; _adopted = false; }
+        private sealed class Entry { internal Scope Scope; internal object Token; internal bool Owned; internal bool Adopted; }
 
-        internal void Begin(object token, int frame) { _token = token; _frame = frame; _adopted = false; }
+        private readonly List<Scope> _scopes = new List<Scope>();
 
-        /// <summary>The pending token for this frame, without consuming it.</summary>
-        internal object Peek(int frame) { return _token != null && frame == _frame && !_adopted ? _token : null; }
+        internal int ScopeDepth { get { return _scopes.Count; } }
 
-        /// <summary>Consumes the pending token for this frame once.</summary>
-        internal object Adopt(int frame)
+        internal object BeginScope(int frame)
         {
-            object token = Peek(frame);
-            if (token != null) _adopted = true;
-            return token;
+            if (_scopes.Count > 0 && _scopes[_scopes.Count - 1].Frame != frame) _scopes.Clear();
+            var scope = new Scope { Frame = frame };
+            _scopes.Add(scope);
+            return scope;
         }
 
-        /// <summary>Ends the association; returns the token if no effect was adopted (reported, never supplied).</summary>
-        internal object End(int frame)
+        internal void EndScope(object handle)
         {
-            object pending = Peek(frame);
-            Reset();
-            return pending;
+            int index = _scopes.IndexOf(handle as Scope);
+            if (index >= 0) _scopes.RemoveRange(index, _scopes.Count - index);
+        }
+
+        /// <summary>Starts tracking one creation; null outside an execution scope of this frame.</summary>
+        internal object BeginCreation(object token, bool owned, int frame)
+        {
+            if (_scopes.Count == 0) return null;
+            Scope scope = _scopes[_scopes.Count - 1];
+            if (scope.Frame != frame) return null;
+            var entry = new Entry { Scope = scope, Token = token, Owned = owned };
+            scope.Entries.Add(entry);
+            return entry;
+        }
+
+        /// <summary>Ends one creation and discards any interrupted creation nested inside it.</summary>
+        internal bool EndCreation(object handle)
+        {
+            var entry = handle as Entry;
+            if (entry == null) return false;
+            int index = entry.Scope.Entries.IndexOf(entry);
+            if (index >= 0) entry.Scope.Entries.RemoveRange(index, entry.Scope.Entries.Count - index);
+            return entry.Owned && !entry.Adopted;
+        }
+
+        private Entry Innermost(int frame)
+        {
+            if (_scopes.Count == 0) return null;
+            Scope scope = _scopes[_scopes.Count - 1];
+            if (scope.Frame != frame || scope.Entries.Count == 0) return null;
+            return scope.Entries[scope.Entries.Count - 1];
+        }
+
+        /// <summary>The owned, not yet adopted creation a spawn in this frame would belong to.</summary>
+        internal object Peek(int frame)
+        {
+            Entry entry = Innermost(frame);
+            return entry != null && entry.Owned && !entry.Adopted ? entry.Token : null;
+        }
+
+        internal object Adopt(int frame)
+        {
+            Entry entry = Innermost(frame);
+            if (entry == null || !entry.Owned || entry.Adopted) return null;
+            entry.Adopted = true;
+            return entry.Token;
         }
     }
 }

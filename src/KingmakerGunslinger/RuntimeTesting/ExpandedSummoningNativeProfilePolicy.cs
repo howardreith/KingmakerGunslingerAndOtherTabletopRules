@@ -177,6 +177,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             phase == Sprint40IceDevilPublicPhase ||
             phase == Sprint40IceDevilAiPhase ||
             phase == Sprint40IceDevilSlowTurnPhase; }
+        /// <summary>
+        /// The Sprint 32 review phases admitted to native screen capture
+        /// (NativeIconScreenEvidence.Supports consumes this decision): the three
+        /// input phases and the listed UI phases, each only as the exact single
+        /// parameter of the exact Sprint 32 review scenario.
+        /// </summary>
+        internal static bool Sprint32ScreenCapturePhase(string phase)
+        {
+            return Sprint32NativeInputPhase(phase) || phase == Sprint32PresentationPhase || phase == Sprint39PlaytestUiPhase ||
+                phase == Sprint39PlaytestMephitPhase || phase == Sprint39PlaytestMephitFinishPhase || phase == Sprint39PlaytestSpellsPhase ||
+                phase == Sprint39AlphabeticalMenusPhase || phase == Sprint39ClericAlignmentPhase || phase == Sprint39CotwConversionPhase ||
+                phase == Sprint39MenuOrderSunderPhase || phase == Sprint39S7UiPhase;
+        }
+
+        internal static bool Sprint32ScreenCaptureAdmitted(string scenario, int parameterCount, string phase)
+        {
+            return scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview &&
+                parameterCount == 1 && Sprint32ScreenCapturePhase(phase);
+        }
+
         internal static bool Sprint32NativeInputPhase(string phase)
         { return phase == Sprint32DruidInputPhase || phase == Sprint32WizardInputPhase || phase == Sprint32SorcererInputPhase; }
         internal static bool Sprint32NativeDefaultPhase(string phase)
