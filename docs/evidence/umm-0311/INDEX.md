@@ -1,6 +1,6 @@
 # UMM 0.31.1 baseline evidence
 
-Machine-generated outputs exported 2026-11-24 17:43 UTC for candidate commit `4f196b26d112640ace1eaa49dea355d16e210127`. Each row names what produced that output (its
+Machine-generated outputs exported 2026-11-24 17:46 UTC for candidate commit `4f196b26d112640ace1eaa49dea355d16e210127`. Each row names what produced that output (its
 source commit, or the reused input it describes); outputs produced at another commit are identified there.
 Only local path prefixes were replaced: `<repo>` (this checkout or its temporary clone root), `<temp>`, `<game>`
 (the Kingmaker installation, read-only), `<buildtools>`, `<reference-assemblies>`, `<dotnet>`, `<controller>` (the agent-review controller), `<dev>` (the owner's development folder), `<steam>`, `<user-profile>`, `<fleet>` (the owner's fleet mission folder,
@@ -22,6 +22,7 @@ python -c "import hashlib,subprocess,sys; print(hashlib.sha256(subprocess.check_
 | `development-validation.json` | `4f196b26d112640ace1eaa49dea355d16e210127` | `6badab24baec22b702c48c5b25f9c8001e4f9844c025dd06cf5aaf72bd7e291d` | `c22f7c6b3fb26f337b084affd1ba1bedb9f9e588e1a048fc0710555b4a572c2c` |
 | `development-selected-tests.txt` | `4f196b26d112640ace1eaa49dea355d16e210127` | `d7c6e1c0f2b6ded4af11270c49dd9fa53733c0e58073b7a628812e5ab311c51a` | `5513757f52d36958f731376890882919d3749f4023411bea40b038040ffdfe4d` |
 | `package-validation.json` | `4f196b26d112640ace1eaa49dea355d16e210127` | `1dfe37df6366d775ea9c91f02be03cff5c33242a1b42707620c5e8d2930aa086` | `156b129910f3c9831af7969f615c66f4673f607bc2b1c701342a5c35b9cd158a` |
+| `development-build-console.txt` | `4f196b26d112640ace1eaa49dea355d16e210127` | `adf838ef1aa5488a950cd84578e31356325e893552977c61dd07dd794a1fb7aa` | `9086d0b90c885786a17aa299184e3d48be37be84d11b07381c340135b2588df7` |
 | `api-audit.json` | frozen packaged DLL b1e07c2a of the 4f196b26d1 candidate | `4b3bf0ac20cfd0d493bdefdf6c82e078ee90a11eff6bae442e88a14d1e254c8d` | `7e96ed45a94d05b408998db15fa327e1a954c2937f5a19f25511652d94bc289d` |
 | `complete-suite-unfiltered.txt` | `4f196b26d112640ace1eaa49dea355d16e210127` | `a8a6e84c2a62099be51766e97e77f039715715d84f35c81f4e62d6dd4da65eb3` | `046de58be07aed597ee8cbc92c67efc1f783ac7292a44938efec0ad901f7f678` |
 | `pinned-loader-msbuild.json` | `4f196b26d112640ace1eaa49dea355d16e210127` | `e832ae1c6f3ab27e021e889c77ffdb8398e479d560c58175cab4923f7f1a5195` | `7e4752eefc38d4a80c45dde2a5e4f8d81222fd2d8618898505e5fbf47a452165` |
