@@ -36,6 +36,7 @@ function Get-LoaderRefs([string]$Dll) {
     return (($result.Output -split "`n") | Where-Object { $_ }) -join ', '
 }
 function Get-Sha([string]$Path) { (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant() }
+function Get-Sha256Bytes([byte[]]$Bytes) { $h = [Security.Cryptography.SHA256]::Create(); try { ([BitConverter]::ToString($h.ComputeHash($Bytes))).Replace('-', '').ToLowerInvariant() } finally { $h.Dispose() } }
 
 $temp = Join-Path ([IO.Path]::GetTempPath()) ('kmg-pinned-loader-' + [Guid]::NewGuid().ToString('N'))
 $clone = Join-Path $temp 'clone with space'
@@ -105,6 +106,32 @@ try {
     [IO.File]::WriteAllBytes((Join-Path $tampered '0Harmony12.dll'), $bytes)
     $t = & $msbuildDirect @("/p:UnityModManagerDir=$tampered")
     Add-Case 'direct-msbuild-altered-pinned-copy-refused' ($t.ExitCode -ne 0 -and $t.Output -match 'KMGPIN: Pinned loader reference differs from its pin: UnityModManager/0Harmony12\.dll') ([regex]::Match($t.Output, 'KMGPIN: [^;]*').Value)
+    # Recovery advice from the actual entry points. An external folder standing in for a newer installation (here the
+    # UMM-only mismatch set): not the pinned cache, left untouched, build against the verified cache via
+    # build.ps1 -CompileOnly.
+    $external = Join-Path $controlled 'umm-only-mismatch\UnityModManager'
+    $externalBefore = @(Get-ChildItem -LiteralPath $external -File | ForEach-Object { $_.Name + '=' + (Get-Sha $_.FullName) }) -join ';'
+    $e = & $msbuildDirect @("/p:UnityModManagerDir=$external")
+    $externalAfter = @(Get-ChildItem -LiteralPath $external -File | ForEach-Object { $_.Name + '=' + (Get-Sha $_.FullName) }) -join ';'
+    $eText = $e.Output -replace '\s+', ' '
+    Add-Case 'direct-msbuild-external-folder-advice-points-to-the-verified-cache' ($e.ExitCode -ne 0 -and $eText -match 'not the pinned cache and was left untouched' -and $eText -match 'scripts\\build\.ps1 -CompileOnly' -and $eText -notmatch 'move or delete' -and $externalBefore -ceq $externalAfter) ([regex]::Match($eText, 'KMGPIN: .{0,330}').Value)
+    # A mismatched file in the pinned cache itself: inspect and remove that one file, then build.ps1 -CompileOnly.
+    $cacheUmm = Join-Path $clone 'artifacts\references\loader\UnityModManager\UnityModManager.dll'
+    $cacheBytes = [IO.File]::ReadAllBytes($cacheUmm)
+    $changed = [byte[]]$cacheBytes.Clone(); $changed[$changed.Length - 1] = $changed[$changed.Length - 1] -bxor 0x33; [IO.File]::WriteAllBytes($cacheUmm, $changed)
+    $mc = & $msbuildDirect @()
+    $mcText = $mc.Output -replace '\s+', ' '
+    $kept = (Get-Sha $cacheUmm) -ceq (Get-Sha256Bytes $changed)
+    [IO.File]::WriteAllBytes($cacheUmm, $cacheBytes)
+    Add-Case 'direct-msbuild-mismatched-cache-file-advice' ($mc.ExitCode -ne 0 -and $mcText -match 'differs from its pin: UnityModManager/UnityModManager\.dll' -and $mcText -match 'move or delete that one file yourself, then run scripts\\build\.ps1 -CompileOnly' -and $kept) ([regex]::Match($mcText, 'KMGPIN: .{0,300}').Value)
+    # An absent cache: the first diagnostic is the missing loader reference with the -CompileOnly bootstrap.
+    $cacheRoot = Join-Path $clone 'artifacts\references\loader'
+    $cacheAside = Join-Path $temp 'loader cache aside'
+    Move-Item -LiteralPath $cacheRoot -Destination $cacheAside
+    try { $ab = & $msbuildDirect @() } finally { Move-Item -LiteralPath $cacheAside -Destination $cacheRoot }
+    $abText = $ab.Output -replace '\s+', ' '
+    $firstError = [regex]::Match($abText, 'error [A-Z0-9]+: [^.]*\.').Value
+    Add-Case 'direct-msbuild-absent-cache-first-error-gives-the-bootstrap' ($ab.ExitCode -ne 0 -and $firstError -match 'KMGPIN: Pinned loader reference missing' -and $abText -match 'scripts\\build\.ps1 -CompileOnly') ([regex]::Match($abText, 'error KMGPIN: .{0,260}').Value)
 
     # A source manifest that does not declare the pinned floor: a direct build is refused before compilation.
     $infoFile = Join-Path $clone 'Info.json'

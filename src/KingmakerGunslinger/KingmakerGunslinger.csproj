@@ -2225,6 +2225,9 @@
   <Target Name="ValidateKingmakerReferences" BeforeTargets="PrepareForBuild" Condition=" '$(DesignTimeBuild)' != 'true' ">
     <Error Condition=" '$(KingmakerInstallDir)' == '' " Text="KingmakerInstallDir is not configured. Copy GamePath.props.example to GamePath.props, edit the path, or pass /p:KingmakerInstallDir=&quot;C:\Path\To\Pathfinder Kingmaker&quot;." />
     <Error Condition=" '$(KingmakerInstallDir)' != '' and !Exists('$(KingmakerInstallDir)') " Text="KingmakerInstallDir does not exist: $(KingmakerInstallDir)" />
+    <!-- A missing loader reference is reported first with the pinned-cache guidance (the same advice the pin check gives). -->
+    <Error Code="KMGPIN" Condition=" '$(KingmakerInstallDir)' != '' and !Exists('$(UnityModManagerDir)\UnityModManager.dll') " Text="Pinned loader reference missing: $(UnityModManagerDir)\UnityModManager.dll. Run scripts\build.ps1 -CompileOnly once (it fetches and verifies the pinned files into artifacts\references\loader), then build again against that cache (no /p:UnityModManagerDir, or /p:UnityModManagerDir=&lt;repository&gt;\artifacts\references\loader\UnityModManager)." />
+    <Error Code="KMGPIN" Condition=" '$(KingmakerInstallDir)' != '' and !Exists('$(UnityModManagerDir)\0Harmony12.dll') " Text="Pinned loader reference missing: $(UnityModManagerDir)\0Harmony12.dll. Run scripts\build.ps1 -CompileOnly once (it fetches and verifies the pinned files into artifacts\references\loader), then build again against that cache (no /p:UnityModManagerDir, or /p:UnityModManagerDir=&lt;repository&gt;\artifacts\references\loader\UnityModManager)." />
     <Error Condition=" '$(KingmakerInstallDir)' != '' and !Exists('%(RequiredKingmakerAssembly.Identity)') " Text="Required Kingmaker/UMM assembly is missing: %(RequiredKingmakerAssembly.Identity)" />
   </Target>
 

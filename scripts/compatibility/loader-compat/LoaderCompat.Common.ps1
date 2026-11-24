@@ -221,6 +221,17 @@ function Install-LcLoaderProfile($Paths, [string]$ProfileName) {
 # and the test-only harness.
 # $Admitted: the admitted identity from Assert-LcSessionInputs (private copy, package and DLL digests).
 function Set-LcGameCopyMods($Paths, [string[]]$OwnerMods, $Admitted, [string]$HarnessDir) {
+    # The owner set is checked before anything is replaced: the product never comes from it, and every named mod exists.
+    foreach ($name in @($OwnerMods | Where-Object { $_ })) {
+        if ($name -eq 'KingmakerGunslinger') { throw 'The product comes from the candidate ZIP, never the owner set.' }
+        if (-not (Test-Path -LiteralPath (Join-Path $Paths.Pristine "Mods\$name"))) { throw "Mod not found in the pristine set: $name" }
+    }
+    # The private staging tree (extracted with the checked extractor by the admission child) is verified against the
+    # admission before Mods is replaced: the private copy's digest and the extracted DLL's digest.
+    $extractedMod = [string]$Admitted.extractedModDirectory
+    $extractedDll = Join-Path $extractedMod 'KingmakerGunslinger.dll'
+    if ((Get-LcSha256 ([string]$Admitted.privateCopy)) -cne [string]$Admitted.packageSha256) { throw 'The admitted candidate copy changed; nothing was staged.' }
+    if (-not (Test-Path -LiteralPath $extractedDll -PathType Leaf) -or (Get-LcSha256 $extractedDll) -cne [string]$Admitted.dllSha256) { throw 'The extracted candidate DLL is not the admitted DLL; nothing was staged.' }
     if (Test-Path -LiteralPath $Paths.ModsDir) { Remove-Item -LiteralPath $Paths.ModsDir -Recurse -Force }
     New-Item -ItemType Directory -Path $Paths.ModsDir | Out-Null
     $staged = [ordered]@{}
@@ -236,22 +247,13 @@ function Set-LcGameCopyMods($Paths, [string[]]$OwnerMods, $Admitted, [string]$Ha
             managerVersion = $(if ($info.PSObject.Properties['ManagerVersion']) { $info.ManagerVersion })
             dllSha256 = $(if ($dll) { Get-LcSha256 $dll.FullName }) }
     }
-    # Only the admitted private copy stages, and its extracted DLL must be the admitted DLL before it enters Mods.
-    if ((Get-LcSha256 ([string]$Admitted.privateCopy)) -cne [string]$Admitted.packageSha256) { throw 'The admitted candidate copy changed; nothing was staged.' }
-    $extraction = Join-Path ([IO.Path]::GetTempPath()) ('kmg-lc-extract-' + [Guid]::NewGuid().ToString('N'))
-    try {
-        Expand-Archive -LiteralPath ([string]$Admitted.privateCopy) -DestinationPath $extraction
-        $extractedDll = Join-Path $extraction 'KingmakerGunslinger\KingmakerGunslinger.dll'
-        if (-not (Test-Path -LiteralPath $extractedDll -PathType Leaf) -or (Get-LcSha256 $extractedDll) -cne [string]$Admitted.dllSha256) { throw 'The extracted candidate DLL is not the admitted DLL; nothing was staged.' }
-        Move-Item -LiteralPath (Join-Path $extraction 'KingmakerGunslinger') -Destination (Join-Path $Paths.ModsDir 'KingmakerGunslinger')
-    }
-    finally {
-        if (Test-Path -LiteralPath $extraction) { Remove-Item -LiteralPath $extraction -Recurse -Force }
-        $copyDirectory = Split-Path -Parent ([string]$Admitted.privateCopy)
-        if ((Split-Path -Leaf $copyDirectory) -like 'kmg-lc-admitted-*' -and (Test-Path -LiteralPath $copyDirectory)) { Remove-Item -LiteralPath $copyDirectory -Recurse -Force }
-    }
+    # Only the verified private staging tree enters Mods; the staged DLL is compared directly with the admitted digest.
+    try { Move-Item -LiteralPath $extractedMod -Destination (Join-Path $Paths.ModsDir 'KingmakerGunslinger') }
+    finally { Remove-LcAdmittedCopy $Admitted }
+    $stagedDllSha256 = Get-LcSha256 (Join-Path $Paths.ModsDir 'KingmakerGunslinger\KingmakerGunslinger.dll')
+    if ($stagedDllSha256 -cne [string]$Admitted.dllSha256) { throw 'The staged candidate DLL is not the admitted DLL.' }
     $staged['KingmakerGunslinger'] = [ordered]@{ zipSha256 = [string]$Admitted.packageSha256
-        dllSha256 = Get-LcSha256 (Join-Path $Paths.ModsDir 'KingmakerGunslinger\KingmakerGunslinger.dll')
+        dllSha256 = [string]$Admitted.dllSha256
         managerVersion = (Get-Content -LiteralPath (Join-Path $Paths.ModsDir 'KingmakerGunslinger\Info.json') -Raw | ConvertFrom-Json).ManagerVersion }
     $harnessTarget = Join-Path $Paths.ModsDir 'KmgLoaderCompatHarness'
     New-Item -ItemType Directory -Path $harnessTarget | Out-Null

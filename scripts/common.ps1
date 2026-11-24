@@ -123,6 +123,7 @@ function Expand-KmgPackageEntries {
         $outside = [Collections.Generic.List[string]]::new()
         $files = [Collections.Generic.List[object]]::new()
         $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+        $directories = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
         foreach ($entry in $archive.Entries) {
             $name = $entry.FullName
             $normalized = $name.Replace('\', '/')
@@ -137,8 +138,20 @@ function Expand-KmgPackageEntries {
                 if (-not $seen.Add($target)) { throw "Package contains a duplicate entry: $name" }
                 $files.Add([pscustomobject]@{ Entry = $entry; Target = $target })
             }
+            else {
+                # A directory record carries no data (declared and decoded) and appears once.
+                $directoryStream = $entry.Open()
+                try { $decodedByte = $directoryStream.ReadByte() } finally { $directoryStream.Dispose() }
+                if ($entry.Length -ne 0 -or $decodedByte -ne -1) { throw "Package contains a data-bearing directory record: $name" }
+                if (-not $directories.Add($target.TrimEnd('\'))) { throw "Package contains a duplicate directory record: $name" }
+            }
         }
         if ($outside.Count -ne 0) { throw "Package contains entries outside the '$ModId' mod root: $($outside -join ', ')" }
+        # No destination may be both a file and a directory (a directory record, or the parent of another file).
+        foreach ($file in $files) {
+            if ($directories.Contains($file.Target)) { throw "Package contains a directory record and a file at the same destination: $($file.Entry.FullName)" }
+            if (@($files | Where-Object { $_.Target.StartsWith($file.Target + '\', [StringComparison]::OrdinalIgnoreCase) }).Count -ne 0) { throw "Package contains a file that is also the parent of other entries: $($file.Entry.FullName)" }
+        }
         foreach ($file in $files) {
             [void][IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($file.Target))
             [IO.Compression.ZipFileExtensions]::ExtractToFile($file.Entry, $file.Target, $false)

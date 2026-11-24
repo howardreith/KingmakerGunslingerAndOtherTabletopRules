@@ -79,6 +79,24 @@ function Acquire-LcSharedLock([string]$RunId) {
 
 # Inputs checked before anything is acquired: the candidate package must exist and
 # be readable (its digest is returned) and the harness must be complete.
+# The admitted private copy (and its extracted tree) has one owner: the session. It is removed when staging consumed it,
+# when the session stops before staging (preflight, lease acquisition), and by the session's final cleanup.
+function Remove-LcAdmittedCopy($Admitted) {
+    if ($null -eq $Admitted -or -not $Admitted.PSObject.Properties['privateCopy']) { return }
+    $copyDirectory = Split-Path -Parent ([string]$Admitted.privateCopy)
+    if ((Split-Path -Leaf $copyDirectory) -like 'kmg-lc-admitted-*' -and (Test-Path -LiteralPath $copyDirectory)) { Remove-Item -LiteralPath $copyDirectory -Recurse -Force }
+}
+
+# The session's step between admission and staging: the host preflight, then the journaled transaction. A refusal at
+# either removes the admitted private copy (the session never stages it) and acquires nothing further.
+function Enter-LcSessionForAdmission($Admitted, [string]$SessionId) {
+    try {
+        Assert-LcPreflight
+        return Enter-LcSessionTransaction $SessionId
+    }
+    catch { Remove-LcAdmittedCopy $Admitted; throw }
+}
+
 function Assert-LcSessionInputs([string]$CandidateZip, [string]$HarnessDir, [string]$DevelopmentPurpose, [switch]$HistoricalReleaseControl, [string]$HistoricalReleaseVersion) {
     if (-not $CandidateZip -or -not (Test-Path -LiteralPath $CandidateZip -PathType Leaf)) { throw "Candidate ZIP not found: $CandidateZip. Nothing was acquired." }
     # Cheap prerequisites first: the harness files.

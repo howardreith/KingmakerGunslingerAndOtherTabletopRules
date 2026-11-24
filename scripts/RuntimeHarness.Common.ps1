@@ -447,6 +447,17 @@ function Assert-KmgReceiptDescribesPackagedDll {
     if ($embedded -and $embedded -cne [string]$Receipt.commit) {
         throw "The DLL inside the package was built from $embedded, not the receipt's producing commit $($Receipt.commit)."
     }
+    # A receipt that records the packaged DLL or the embedded source stamp must agree with the measured DLL; a recorded
+    # stamp requires the measured DLL to carry it.
+    if ($Receipt.PSObject.Properties['packagedDllSha256'] -and [string]$Receipt.packagedDllSha256 -cne [string]$Measured.sha256) {
+        throw "The DLL inside the package is not the packaged DLL its receipt records ($($Receipt.packagedDllSha256))."
+    }
+    if ($Receipt.PSObject.Properties['embeddedGitCommit']) {
+        if (-not $embedded) { throw "The receipt records the source stamp $($Receipt.embeddedGitCommit), but the DLL inside the package carries none." }
+        if ([string]$Receipt.embeddedGitCommit -cne $embedded -or [string]$Receipt.embeddedGitCommit -cne [string]$Receipt.commit) {
+            throw "The receipt's recorded source stamp $($Receipt.embeddedGitCommit) is not the packaged DLL's stamp $embedded or its producing commit."
+        }
+    }
     # A receipt that records the exact compiler output must name that same DLL.
     if ($Receipt.PSObject.Properties['compilerDllSha256'] -and
         ([string]$Receipt.compilerDllSha256 -cne [string]$Measured.sha256 -or [string]$Receipt.compilerDllMvid -cne [string]$Measured.mvid)) {
@@ -464,7 +475,15 @@ function Read-KmgHistoricalReleasePackage {
         [Parameter(Mandatory = $true)][string]$RepositoryRoot,
         [Parameter(Mandatory = $true)][string]$Version
     )
-    $records = Get-Content -LiteralPath (Join-Path $RepositoryRoot 'scripts\historical-release-records.json') -Raw | ConvertFrom-Json
+    # The trusted record is the one committed at HEAD; a working-tree record that differs from it is refused, so an
+    # uncommitted edit can never authorize another package.
+    $previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    try { $committedText = (@(& git -C $RepositoryRoot show 'HEAD:scripts/historical-release-records.json' 2>$null) -join "`n"); $showExit = $LASTEXITCODE }
+    finally { $ErrorActionPreference = $previous }
+    if ($showExit -ne 0 -or -not $committedText) { throw 'The historical release record is not committed at HEAD.' }
+    $records = $committedText | ConvertFrom-Json
+    $workingRecords = Get-Content -LiteralPath (Join-Path $RepositoryRoot 'scripts\historical-release-records.json') -Raw | ConvertFrom-Json
+    if (($workingRecords | ConvertTo-Json -Depth 8 -Compress) -cne ($records | ConvertTo-Json -Depth 8 -Compress)) { throw 'The working-tree historical release record differs from the committed record; commit or revert it.' }
     if ($records.schemaVersion -ne 1) { throw 'The historical release record has an unknown schema.' }
     $record = @($records.releases | Where-Object { [string]$_.version -ceq $Version })
     if ($record.Count -ne 1) { throw "No historical release record names version '$Version'." }
@@ -493,6 +512,48 @@ function Read-KmgHistoricalReleasePackage {
     }
     return [pscustomobject]@{ historicalRelease = $true; version = $Version; releaseTag = [string]$record.tag; commit = [string]$record.tagCommit
         packagePath = $package; packageSha256 = $packageSha; dllSha256 = [string]$identity.sha256; dllMvid = [string]$identity.mvid; measuredDll = $identity }
+}
+
+# Deploy-Local admits the candidate again under the runtime lease; it must be the candidate the first admission accepted.
+function Assert-KmgSameAdmission {
+    param([Parameter(Mandatory = $true)]$First, [Parameter(Mandatory = $true)]$Second)
+    foreach ($field in @('packageSha256', 'dllSha256', 'dllMvid', 'commit', 'version')) {
+        if ([string]$Second.$field -cne [string]$First.$field) { throw "The candidate changed between admission and the deployment lease ($field); nothing was deployed." }
+    }
+    if ([bool]($First.PSObject.Properties['historicalRelease'] -and $First.historicalRelease) -ne [bool]($Second.PSObject.Properties['historicalRelease'] -and $Second.historicalRelease)) {
+        throw 'The candidate changed between admission and the deployment lease (admission mode); nothing was deployed.'
+    }
+}
+
+# What a deployment expects of the extracted package and records, from its admission. A Build-Local candidate's audio
+# digests come from its receipt; a historical release has no receipt, so its audio is the audio inside the digest-bound
+# release package its committed record admitted, and its record names the release tag. Every record field must exist.
+function Get-KmgDeploymentExpectations {
+    param(
+        [Parameter(Mandatory = $true)]$Admission,
+        [switch]$HistoricalRelease,
+        [Parameter(Mandatory = $true)][string]$PackagedFirearmManifestSha256,
+        [Parameter(Mandatory = $true)][string]$PackagedFirearmSoundBankSha256
+    )
+    $isHistorical = [bool]($Admission.PSObject.Properties['historicalRelease'] -and $Admission.historicalRelease)
+    if ([bool]$HistoricalRelease -ne $isHistorical) { throw 'The deployment mode does not match the admission.' }
+    if ($isHistorical) {
+        $expected = [ordered]@{ firearmManifestSha256 = $PackagedFirearmManifestSha256; firearmSoundBankSha256 = $PackagedFirearmSoundBankSha256
+            branch = 'tag:' + [string]$Admission.releaseTag; sourceStateSha256 = 'historical-release ' + [string]$Admission.releaseTag }
+        if ([string]::IsNullOrEmpty([string]$Admission.releaseTag)) { throw 'A deployment-record field is missing for this admission (releaseTag); nothing was deployed.' }
+    }
+    else {
+        $expected = [ordered]@{ firearmManifestSha256 = [string]$Admission.firearmManifestSha256; firearmSoundBankSha256 = [string]$Admission.firearmSoundBankSha256
+            branch = [string]$Admission.branch; sourceStateSha256 = [string]$Admission.sourceStateSha256 }
+    }
+    if ($PackagedFirearmManifestSha256 -cne $expected.firearmManifestSha256 -or $PackagedFirearmSoundBankSha256 -cne $expected.firearmSoundBankSha256) {
+        throw 'Extracted package firearm audio differs from its immutable build manifest.'
+    }
+    foreach ($field in @('branch', 'sourceStateSha256')) { if ([string]::IsNullOrEmpty([string]$expected[$field])) { throw "A deployment-record field is missing for this admission ($field); nothing was deployed." } }
+    foreach ($field in @('packagePath', 'packageSha256', 'commit', 'version', 'dllSha256', 'dllMvid')) {
+        if (-not $Admission.PSObject.Properties[$field] -or [string]::IsNullOrEmpty([string]$Admission.$field)) { throw "A deployment-record field is missing for this admission ($field); nothing was deployed." }
+    }
+    return [pscustomobject]$expected
 }
 
 # Staging takes an admitted package from a private copy: the copy must have the admitted package digest, so bytes that

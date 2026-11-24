@@ -5,7 +5,10 @@ param(
 
     [switch]$IncludeSymbols,
     [switch]$AllowMissingFirearmSoundBank,
-    [string]$PackagePath
+    [string]$PackagePath,
+    # Writes the strict validation's measured DLL identity and the package digest here (JSON), for a caller that must
+    # not validate the same ZIP twice (Build-Local).
+    [string]$MeasuredIdentityPath
 )
 
 Set-StrictMode -Version Latest
@@ -69,34 +72,9 @@ foreach ($copy in $copies) {
     }
     Copy-Item -LiteralPath $copy.Source -Destination $copy.Destination
 }
-foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
-    'docs\WEAPON-FINDABILITY-QUALIFICATION.md',
-    'planning\PROJECT-MAGIC-ITEM-ACQUISITION-INVENTORY.md',
-    'validation\weapon-findability-native-reference.json',
-    'validation\weapon-findability-scene-corrections.json',
-    'validation\weapon-findability-runtime-qualification.json',
-    'docs\RELEASE-NOTES-0.0.145.md',
-    'docs\RELEASE-NOTES-0.0.146.md',
-    'docs\RELEASE-NOTES-0.0.151.md',
-    'docs\RELEASE-NOTES-0.0.152.md',
-    'docs\RELEASE-NOTES-0.0.153.md',
-    'docs\RELEASE-NOTES-0.0.155.md',
-    'docs\RELEASE-NOTES-0.0.156.md',
-    'docs\RELEASE-NOTES-0.0.157.md',
-    'docs\RELEASE-NOTES-0.0.158.md',
-    'docs\RELEASE-NOTES-0.0.159.md',
-    'docs\RELEASE-NOTES-0.0.160.md',
-    'docs\RELEASE-NOTES-0.0.161.md',
-    'docs\RELEASE-NOTES-0.0.162.md',
-    'docs\RELEASE-NOTES-0.0.163.md',
-    'docs\RELEASE-NOTES-0.0.164.md',
-    'docs\RELEASE-NOTES-0.0.165.md',
-    'docs\RELEASE-NOTES-0.0.166.md',
-    'docs\RELEASE-NOTES-0.0.167.md',
-    'docs\RELEASE-NOTES-0.0.168.md',
-    'docs\RELEASE-NOTES-0.0.169.md',
-    'docs\RELEASE-NOTES-0.0.170.md',
-    'docs\RELEASE-NOTES-0.0.171.md')) {
+# The shipped documents come from scripts/package-documents.json (also read by candidate freshness checks).
+$shippedDocuments = @((Get-Content -LiteralPath (Join-Path $repositoryRoot 'scripts\package-documents.json') -Raw | ConvertFrom-Json).documents)
+foreach ($relative in @($shippedDocuments | ForEach-Object { ([string]$_).Replace('/', '\') })) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
@@ -378,11 +356,17 @@ $expectedPackageFileCount = if ($hasFirearmSoundBank) {
 if ($LASTEXITCODE -ne 0) {
     throw 'Deterministic standalone package creation failed.'
 }
-& (Join-Path $PSScriptRoot 'validate-package.ps1') `
+$packageSha256BeforeValidation = Get-KmgSha256 -Path $packagePath
+$measuredIdentity = & (Join-Path $PSScriptRoot 'validate-package.ps1') `
     -PackagePath $packagePath -Configuration $Configuration `
-    -AllowMissingFirearmSoundBank:$AllowMissingFirearmSoundBank
+    -AllowMissingFirearmSoundBank:$AllowMissingFirearmSoundBank -PassThru | Select-Object -Last 1
 
 $checksum = Get-KmgSha256 -Path $packagePath
+if ($checksum -cne $packageSha256BeforeValidation) { throw 'The package changed while it was being validated.' }
+if ($MeasuredIdentityPath) {
+    if ($null -eq $measuredIdentity) { throw 'Package validation returned no measured DLL identity.' }
+    [ordered]@{ packageSha256 = $checksum; dll = $measuredIdentity } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $MeasuredIdentityPath -Encoding UTF8
+}
 Set-Content -LiteralPath $checksumPath -Value "$checksum  $([IO.Path]::GetFileName($packagePath))" -Encoding ASCII
 
 Write-Host "Created standalone UMM package: $packagePath"

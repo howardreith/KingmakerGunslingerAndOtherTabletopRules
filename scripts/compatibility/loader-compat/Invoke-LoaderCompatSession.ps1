@@ -171,11 +171,13 @@ $profileDir = Join-Path $evidence 'profile'
 $admitted = Assert-LcSessionInputs $CandidateZip $HarnessDir $CandidateDevelopmentPurpose -HistoricalReleaseControl:$HistoricalReleaseControl -HistoricalReleaseVersion $HistoricalReleaseVersion
 $summary = [ordered]@{ sessionId = $sessionId; session = $session.name; loaderProfile = $LoaderProfile
     candidateZip = $CandidateZip; candidateZipSha256 = [string]$admitted.packageSha256; candidateDllSha256 = [string]$admitted.dllSha256; gameCopy = $copyRoot
+    admission = [ordered]@{ mode = [string]$admitted.admissionMode; version = [string]$admitted.version; producerCommit = [string]$admitted.producerCommit
+        releaseTag = $admitted.releaseTag; packageSha256 = [string]$admitted.packageSha256; dllSha256 = [string]$admitted.dllSha256; dllMvid = [string]$admitted.dllMvid }
     git = (& git -C (Split-Path (Split-Path (Split-Path $PSScriptRoot))) rev-parse HEAD); launches = @(); status = 'started' }
-Assert-LcPreflight
+# A busy host or a refused acquisition stops the session before staging; the admitted private copy is removed then.
 # One journaled transaction for the whole session: the shared runtime lease (compatibility.lock) and the private
 # loader-compat lock. From here on every fallible step is inside the try, whose finally completes or retains it.
-$transaction = Enter-LcSessionTransaction $sessionId
+$transaction = Enter-LcSessionForAdmission $admitted $sessionId
 $scope = $transaction.Scope
 $journal = $transaction.Journal
 $summary.runtimeLease = $scope.Lease.RunId
@@ -203,7 +205,7 @@ try {
     $expectedUmm = $summary.loaderInstall.files['UnityModManager.dll']
     $expectedHarmony2 = $summary.loaderInstall.files['0Harmony.dll']
     $expectedHarmony12 = $summary.loaderInstall.files['0Harmony12.dll']
-    $expectedProduct = $summary.stagedMods['KingmakerGunslinger'].dllSha256
+    $expectedProduct = [string]$admitted.dllSha256
 
     $index = 0
     foreach ($launch in @($session.launches)) {
@@ -376,6 +378,8 @@ catch {
 }
 finally {
     $problems = @()
+    # The admitted private copy is the session's: removed if staging did not consume it.
+    try { Remove-LcAdmittedCopy $admitted } catch { $problems += "admitted private copy cleanup failed: $($_.Exception.Message)" }
     # At a safe boundary only: restore the verified game settings, read them back, verify the owner's files, then
     # complete the lease and release this session's claims. Any failure retains the session for manual recovery.
     $ownership = $null

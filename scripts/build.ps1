@@ -83,7 +83,8 @@ if ($CompileOnly) {
 # The domain tests run after the production compilation, so the loader-reference case inspects this compiler output.
 if (-not $SkipDomainTests) {
     $productionDll = Join-Path $repositoryRoot "artifacts\bin\$Configuration\KingmakerGunslinger\KingmakerGunslinger.dll"
-    & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration $Configuration -MSBuildPath $MSBuildPath -SkipRepositoryValidation -ProductionDll $productionDll
+    $productionDllSha256 = (Get-FileHash -LiteralPath $productionDll -Algorithm SHA256).Hash.ToLowerInvariant()
+    & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration $Configuration -MSBuildPath $MSBuildPath -SkipRepositoryValidation -ProductionDll $productionDll -ProductionDllSha256 $productionDllSha256
 }
 
 if ($Package) {

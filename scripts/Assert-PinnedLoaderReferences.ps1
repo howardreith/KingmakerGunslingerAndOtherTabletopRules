@@ -23,10 +23,18 @@ try {
 }
 catch {
     $message = $_.Exception.Message
+    # The pinned cache of this repository (artifacts\references\loader) or another loader folder (for example an
+    # installed newer loader passed as /p:UnityModManagerDir): files outside the cache are never to be changed.
+    $repositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+    $pinnedCache = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts\references\loader')).TrimEnd('\')
+    $isPinnedCache = [string]::Equals([IO.Path]::GetFullPath($LoaderReferenceDir).TrimEnd('\'), $pinnedCache, [StringComparison]::OrdinalIgnoreCase)
+    $useCache = ' Build against the verified cache instead: run scripts\build.ps1 -CompileOnly once (it fetches and verifies the pinned files into artifacts\references\loader), then build again without /p:UnityModManagerDir (or with /p:UnityModManagerDir=<repository>\artifacts\references\loader\UnityModManager).'
     $advice = if ($message -like '*differs from its pin*') {
-        ' The file is present with different bytes and was left untouched: inspect it, move or delete that one file yourself, then rerun scripts\build.ps1 to fetch the pinned copy (see docs\BUILDING.md).'
+        if ($isPinnedCache) { ' The cache file has different bytes and was left untouched: inspect it, move or delete that one file yourself, then run scripts\build.ps1 -CompileOnly to fetch the pinned copy (see docs\BUILDING.md).' }
+        else { ' This loader folder is not the pinned cache and was left untouched; do not change it.' + $useCache }
     } elseif ($message -like '*missing*' -or $message -like '*not found*') {
-        ' Run scripts\build.ps1 (it fetches absent pinned files into artifacts\references\loader), or pass /p:UnityModManagerDir=<pinned root>\UnityModManager.'
+        if ($isPinnedCache) { ' Run scripts\build.ps1 -CompileOnly: it fetches and verifies the absent pinned files into artifacts\references\loader.' }
+        else { ' This loader folder is not the pinned cache.' + $useCache }
     } else { ' See docs\BUILDING.md (pinned loader references).' }
     [Console]::Error.WriteLine('error KMGPIN: ' + $message + $advice)
     exit 1

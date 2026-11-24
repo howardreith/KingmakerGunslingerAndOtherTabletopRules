@@ -67,7 +67,10 @@ $WhatIfPreference = $false
 $runtimeScope = Enter-KmgRuntimeLease -ParentLease $RuntimeLease -Purpose 'deploy local candidate'
 try {
 Assert-KmgNotRunning
+# Admission again under the lease; it must be the same candidate the first admission accepted.
+$firstAdmission = $manifest
 $manifest = Read-DeployAdmission
+Assert-KmgSameAdmission -First $firstAdmission -Second $manifest
 # Staging uses a private copy with the admitted digest; the extracted DLL must be the admitted DLL.
 $admittedRoot = Join-Path $root 'artifacts\deploy-admitted'
 if (Test-Path -LiteralPath $admittedRoot) { Remove-Item -LiteralPath (Assert-KmgPathWithin -Path $admittedRoot -Root (Join-Path $root 'artifacts')) -Recurse -Force }
@@ -97,10 +100,11 @@ $packagedFirearmSoundBank = Join-Path $source `
     'assets\soundbanks\KMG_Firearms.bnk'
 $packagedFirearmManifestSha256 = Get-KmgSha256 -Path $packagedFirearmManifest
 $packagedFirearmSoundBankSha256 = Get-KmgSha256 -Path $packagedFirearmSoundBank
-if ($packagedFirearmManifestSha256 -ne $manifest.firearmManifestSha256 -or
-    $packagedFirearmSoundBankSha256 -ne $manifest.firearmSoundBankSha256) {
-    throw 'Extracted package firearm audio differs from its immutable build manifest.'
-}
+# The expected audio and every deployment-record field are established before the target is replaced.
+$expectations = Get-KmgDeploymentExpectations -Admission $manifest -HistoricalRelease:$HistoricalReleaseControl `
+    -PackagedFirearmManifestSha256 $packagedFirearmManifestSha256 -PackagedFirearmSoundBankSha256 $packagedFirearmSoundBankSha256
+$recordBranch = $expectations.branch
+$recordSourceState = $expectations.sourceStateSha256
 
 $deployedDll = Join-Path $live 'KingmakerGunslinger.dll'
 $deployedFirearmBundle = Join-Path $live 'assets\bundles\kingmakergunslinger.firearms'
@@ -150,8 +154,8 @@ $deploymentRecord = [ordered]@{
     packagePath = $manifest.packagePath
     packageSha256 = $manifest.packageSha256
     commit = $manifest.commit
-    branch = $manifest.branch
-    sourceStateSha256 = $manifest.sourceStateSha256
+    branch = $recordBranch
+    sourceStateSha256 = $recordSourceState
     version = $manifest.version
     dllSha256 = $manifest.dllSha256
     dllMvid = $manifest.dllMvid
@@ -169,6 +173,10 @@ $deploymentRecord = [ordered]@{
     backupDirectory = $backup.Destination
     backupWasEmpty = [bool]$backup.EmptySource
     files = $actualFiles
+}
+if ($HistoricalReleaseControl) {
+    $deploymentRecord.candidateKind = 'historical-release'
+    $deploymentRecord.releaseTag = [string]$manifest.releaseTag
 }
 if ($developmentDeployment) {
     $deploymentRecord.candidateKind = 'development'

@@ -315,6 +315,12 @@ function Assert-KmgCandidateMaterialInputsCurrent {
         $changed = @(& git -C $RepositoryRoot diff --name-only $Commit -- @($script:KmgCandidateMaterialPaths) 2>&1 | ForEach-Object { "$_" })
         if ($LASTEXITCODE -ne 0) { throw 'Unable to compare the candidate material inputs.' }
         $untracked = @(& git -C $RepositoryRoot ls-files --others --exclude-standard -- @($script:KmgCandidateMaterialPaths) 2>&1 | ForEach-Object { "$_" })
+        # Documents package.ps1 ships are material wherever they live, docs/ included (the packaging inventory is
+        # scripts/package-documents.json, itself a material input); other documentation under docs/ is not.
+        $shipped = @((Get-Content -LiteralPath (Join-Path $RepositoryRoot 'scripts\package-documents.json') -Raw | ConvertFrom-Json).documents | ForEach-Object { [string]$_ })
+        if ($shipped.Count -eq 0) { throw 'The shipped document list is empty.' }
+        $changed += @(& git -C $RepositoryRoot diff --name-only $Commit -- @($shipped) 2>&1 | ForEach-Object { "$_" })
+        if ($LASTEXITCODE -ne 0) { throw 'Unable to compare the shipped documents.' }
     }
     finally { $ErrorActionPreference = $previous }
     $all = @($changed + $untracked | Where-Object { $_ })

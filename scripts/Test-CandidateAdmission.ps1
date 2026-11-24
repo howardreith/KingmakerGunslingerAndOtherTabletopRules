@@ -103,6 +103,15 @@ try {
         Add-Case "receipt-with-another-builds-$($edit[0])-refused" ($r.ExitCode -ne 0 -and $r.Output -match 'not the build its receipt names') (Get-Reason $r.Output)
         [IO.File]::WriteAllText($receiptPath, $receiptOriginal)
     }
+    # The receipt's other recorded identities: a different packaged-DLL digest or source stamp (the primary DLL fields
+    # unchanged) is refused.
+    foreach ($edit in @(@('packaged-dll-hash', 'packagedDllSha256', ('cd' * 32), 'not the packaged DLL its receipt records'), @('source-stamp', 'embeddedGitCommit', ('0' * 40), 'recorded source stamp 0{40} is not the packaged DLL'))) {
+        $j = $receiptOriginal | ConvertFrom-Json; $j.($edit[1]) = $edit[2]
+        [IO.File]::WriteAllText($receiptPath, ($j | ConvertTo-Json -Depth 12))
+        $r = & $admit $package
+        Add-Case "receipt-with-another-$($edit[0])-refused" ($r.ExitCode -ne 0 -and $r.Output -match $edit[3]) (Get-Reason $r.Output)
+        [IO.File]::WriteAllText($receiptPath, $receiptOriginal)
+    }
 
     # Stale candidates: a committed change to a material input with the version held constant refuses the old candidate;
     # reverting it (material inputs equal to the producing commit again) admits it.
@@ -126,6 +135,26 @@ try {
     $preflight = { param([string]$zip) Invoke-PS @('-Command', ". '$((Join-Path $lc 'LoaderCompat.Common.ps1').Replace("'", "''"))'; . '$((Join-Path $lc 'LoaderCompat.Transaction.ps1').Replace("'", "''"))'; 'PREFLIGHT ' + (Assert-LcSessionInputs '$($zip.Replace("'", "''"))' '$($harnessDir.Replace("'", "''"))' '$purpose').packageSha256") }
     $pf = & $preflight $package
     Add-Case 'loader-preflight-admits-matching-candidate' ($pf.ExitCode -eq 0 -and $pf.Output -match 'PREFLIGHT [0-9a-f]{64}') "exit $($pf.ExitCode)"
+    # The admitted identity the session carries (mode, version, producer commit) and a verified private staging tree; a
+    # session that stops before staging (here, the preflight refusing a running game) removes the private copy.
+    $carryProbe = Join-Path $temp 'carry-probe.ps1'
+    [IO.File]::WriteAllText($carryProbe, @'
+param([string]$Lc, [string]$Package, [string]$HarnessDir, [string]$Purpose)
+$ErrorActionPreference = 'Stop'
+. (Join-Path $Lc 'LoaderCompat.Common.ps1')
+$a = Assert-LcSessionInputs $Package $HarnessDir $Purpose
+$dll = Join-Path ([string]$a.extractedModDirectory) 'KingmakerGunslinger.dll'
+'CARRIED ' + $a.admissionMode + ' ' + $a.version + ' ' + $a.producerCommit + ' ' + ((Get-LcSha256 $dll) -ceq [string]$a.dllSha256)
+$copyDirectory = Split-Path -Parent ([string]$a.privateCopy)
+# The session's pre-staging step (Enter-LcSessionForAdmission) with a refusing preflight (a running game): nothing is
+# acquired and the admitted copy is removed.
+function Assert-LcPreflight { throw 'Kingmaker is running (fixture).' }
+try { $null = Enter-LcSessionForAdmission -Admitted $a -SessionId 'fixture-prestaging'; 'PREFLIGHT-ACCEPTED' } catch { 'PREFLIGHT-REFUSED ' + $_.Exception.Message }
+'COPY-REMAINS ' + (Test-Path -LiteralPath $copyDirectory)
+'@)
+    $cp = Invoke-PS @('-File', $carryProbe, '-Lc', $lc, '-Package', $package, '-HarnessDir', $harnessDir, '-Purpose', $purpose)
+    Add-Case 'loader-admission-carries-the-admitted-identity-and-a-verified-staging-tree' ($cp.Output -match ('CARRIED development \S+ ' + $commit + ' True')) ([regex]::Match($cp.Output, 'CARRIED .{0,120}').Value)
+    Add-Case 'loader-admitted-copy-removed-when-the-session-stops-before-staging' ($cp.Output -match 'PREFLIGHT-REFUSED Kingmaker is running' -and $cp.Output -match 'COPY-REMAINS False') ([regex]::Match($cp.Output, 'COPY-REMAINS \w+').Value)
     $pf = & $preflight $newer
     Add-Case 'loader-preflight-refuses-mismatched-zip' ($pf.ExitCode -ne 0 -and $pf.Output -match 'Candidate admission refused') (Get-Reason $pf.Output)
 
@@ -181,7 +210,14 @@ try {
 
     # --- Stale candidates: shipped inputs and packaging helpers outside the earlier path list; documentation under docs/
     #     only keeps the candidate admissible.
-    foreach ($material in @(@('shipped-readme', 'README.md', '<!-- shipped change -->'), @('packaging-helper', 'scripts/common.ps1', '# packaging helper change'))) {
+    $shippedDocument = [string]@((Get-Content -LiteralPath (Join-Path $clone 'scripts\package-documents.json') -Raw | ConvertFrom-Json).documents | Where-Object { $_ -like 'docs/*' })[0]
+    $shippedPath = Join-Path $clone $shippedDocument.Replace('/', '\')
+    $shippedOriginal = [IO.File]::ReadAllText($shippedPath)
+    [IO.File]::WriteAllText($shippedPath, $shippedOriginal + "`r`n<!-- uncommitted shipped document change -->`r`n")
+    $r = & $admit $package
+    [IO.File]::WriteAllText($shippedPath, $shippedOriginal)
+    Add-Case 'candidate-with-an-uncommitted-shipped-document-change-refused' ($r.ExitCode -ne 0 -and $r.Output -match ('candidate is stale: material inputs changed.*' + [regex]::Escape($shippedDocument))) (Get-Reason $r.Output)
+    foreach ($material in @(@('shipped-readme', 'README.md', '<!-- shipped change -->'), @('packaging-helper', 'scripts/common.ps1', '# packaging helper change'), @('shipped-docs-document', $shippedDocument, '<!-- shipped document change -->'))) {
         $path = Join-Path $clone $material[1]
         $original = [IO.File]::ReadAllText($path)
         [IO.File]::WriteAllText($path, $original + "`r`n" + $material[2] + "`r`n")
@@ -206,6 +242,12 @@ try {
     New-ZipVariant $HistoricalReleaseZip $changedRelease @{} @{ 'KingmakerGunslinger/NOTES.txt' = [Text.Encoding]::ASCII.GetBytes('changed') }
     $h = & $historical $changedRelease '0.0.188'
     Add-Case 'historical-changed-archive-refused' ($h.ExitCode -ne 0 -and $h.Output -match 'is not the recorded v0\.0\.188 release package') (Get-Reason $h.Output)
+    $recordsPath = Join-Path $clone 'scripts\historical-release-records.json'
+    $recordsOriginal = [IO.File]::ReadAllText($recordsPath)
+    [IO.File]::WriteAllText($recordsPath, $recordsOriginal.Replace('"0.0.188"', '"0.0.188-edited"'))
+    $h = & $historical $HistoricalReleaseZip '0.0.188'
+    [IO.File]::WriteAllText($recordsPath, $recordsOriginal)
+    Add-Case 'historical-uncommitted-record-edit-refused' ($h.ExitCode -ne 0 -and $h.Output -match 'working-tree historical release record differs from the committed record') (Get-Reason $h.Output)
     $h = & $historical $package '0.0.195'
     Add-Case 'historical-same-version-development-package-refused' ($h.ExitCode -ne 0 -and $h.Output -match 'is not the recorded v0\.0\.195 release package') (Get-Reason $h.Output)
     $deploy = Join-Path $clone 'scripts\Deploy-Local.ps1'
@@ -217,6 +259,67 @@ try {
         $pfConflict.ExitCode -ne 0 -and $pfConflict.Output -match 'mutually exclusive') "Deploy-Local: $(Get-Reason $d1.Output) | $(Get-Reason $d2.Output); preflight: $(Get-Reason $pfConflict.Output)"
     $pfHistorical = Invoke-PS @('-Command', ". '$((Join-Path $lc 'LoaderCompat.Common.ps1').Replace("'", "''"))'; `$a = Assert-LcSessionInputs '$($HistoricalReleaseZip.Replace("'", "''"))' '$($harnessDir.Replace("'", "''"))' '' -HistoricalReleaseControl -HistoricalReleaseVersion 0.0.188; 'PREFLIGHT ' + `$a.packageSha256 + ' ' + `$a.dllSha256; Remove-Item -LiteralPath (Split-Path -Parent `$a.privateCopy) -Recurse -Force")
     Add-Case 'loader-preflight-admits-recorded-historical-release' ($pfHistorical.ExitCode -eq 0 -and $pfHistorical.Output -match 'PREFLIGHT 64d83955[0-9a-f]{56} 0eb2f002') "exit $($pfHistorical.ExitCode)"
+
+    # --- Deployment decisions on real admissions: the under-lease admission must be the first candidate; a historical
+    #     release's expectations come from its digest-bound package and its record names the release tag.
+    $deployProbe = Join-Path $temp 'deploy-probe.ps1'
+    [IO.File]::WriteAllText($deployProbe, @'
+param([string]$Harness, [string]$Clone, [string]$Package, [string]$Purpose, [string]$Historical, [string]$Work)
+$ErrorActionPreference = 'Stop'
+. $Harness
+$dev = Read-KmgBuildLocalManifest -PackagePath $Package -RepositoryRoot $Clone -DevelopmentPurpose $Purpose -RequireCurrentMaterialInputs
+$hist = Read-KmgHistoricalReleasePackage -PackagePath $Historical -RepositoryRoot $Clone -Version '0.0.188'
+try { Assert-KmgSameAdmission -First $dev -Second $dev; 'SAME-ACCEPTED' } catch { 'SAME-REFUSED ' + $_.Exception.Message }
+try { Assert-KmgSameAdmission -First $dev -Second $hist; 'CHANGED-ACCEPTED' } catch { 'CHANGED-REFUSED ' + $_.Exception.Message }
+$changed = $dev | ConvertTo-Json -Depth 12 | ConvertFrom-Json; $changed.dllMvid = [Guid]::NewGuid().ToString()
+try { Assert-KmgSameAdmission -First $dev -Second $changed; 'MVID-ACCEPTED' } catch { 'MVID-REFUSED ' + $_.Exception.Message }
+# The historical release extracted from its admitted private copy, as Deploy-Local does.
+$copy = New-KmgAdmittedPackageCopy -Admission $hist -Destination (Join-Path $Work 'hist-copy')
+$staging = Join-Path $Work 'hist-staging'; [void][IO.Directory]::CreateDirectory($staging)
+$mod = Expand-KmgAdmittedPackage -Admission $hist -AdmittedCopy $copy -Destination $staging
+$fm = Get-KmgSha256 -Path (Join-Path $mod 'assets\soundbanks\firearm-soundbank-manifest.json')
+$fb = Get-KmgSha256 -Path (Join-Path $mod 'assets\soundbanks\KMG_Firearms.bnk')
+$e = Get-KmgDeploymentExpectations -Admission $hist -HistoricalRelease -PackagedFirearmManifestSha256 $fm -PackagedFirearmSoundBankSha256 $fb
+'HISTORICAL-EXPECTATIONS ' + $e.branch + ' | ' + $e.sourceStateSha256 + ' | ' + ($e.firearmManifestSha256 -ceq $fm) + ' ' + ($e.firearmSoundBankSha256 -ceq $fb)
+try { Get-KmgDeploymentExpectations -Admission $hist -PackagedFirearmManifestSha256 $fm -PackagedFirearmSoundBankSha256 $fb | Out-Null; 'MODE-ACCEPTED' } catch { 'MODE-REFUSED ' + $_.Exception.Message }
+$d = Get-KmgDeploymentExpectations -Admission $dev -PackagedFirearmManifestSha256 ([string]$dev.firearmManifestSha256) -PackagedFirearmSoundBankSha256 ([string]$dev.firearmSoundBankSha256)
+'DEVELOPMENT-EXPECTATIONS ' + ($d.branch -ceq [string]$dev.branch) + ' ' + ($d.sourceStateSha256 -ceq [string]$dev.sourceStateSha256)
+try { Get-KmgDeploymentExpectations -Admission $dev -PackagedFirearmManifestSha256 ('e' * 64) -PackagedFirearmSoundBankSha256 ([string]$dev.firearmSoundBankSha256) | Out-Null; 'AUDIO-ACCEPTED' } catch { 'AUDIO-REFUSED ' + $_.Exception.Message }
+$noBranch = $dev | ConvertTo-Json -Depth 12 | ConvertFrom-Json; $noBranch.branch = ''
+try { Get-KmgDeploymentExpectations -Admission $noBranch -PackagedFirearmManifestSha256 ([string]$dev.firearmManifestSha256) -PackagedFirearmSoundBankSha256 ([string]$dev.firearmSoundBankSha256) | Out-Null; 'FIELD-ACCEPTED' } catch { 'FIELD-REFUSED ' + $_.Exception.Message }
+'@)
+    $dp = Invoke-PS @('-File', $deployProbe, '-Harness', $harness, '-Clone', $clone, '-Package', $package, '-Purpose', $purpose, '-Historical', $HistoricalReleaseZip, '-Work', (Join-Path $temp 'deploy-work'))
+    Add-Case 'deploy-under-lease-admission-must-be-the-first-candidate' ($dp.Output -match 'SAME-ACCEPTED' -and $dp.Output -match 'CHANGED-REFUSED The candidate changed between admission and the deployment lease \(packageSha256\)' -and $dp.Output -match 'MVID-REFUSED The candidate changed between admission and the deployment lease \(dllMvid\)') ([regex]::Matches($dp.Output, '(SAME|CHANGED|MVID)-\w+') -join ', ')
+    Add-Case 'deploy-historical-release-expectations-from-its-package-and-tag' ($dp.Output -match 'HISTORICAL-EXPECTATIONS tag:v0\.0\.188 \| historical-release v0\.0\.188 \| True True' -and $dp.Output -match 'MODE-REFUSED The deployment mode does not match the admission') ([regex]::Match($dp.Output, 'HISTORICAL-EXPECTATIONS [^|]+\|[^|]+\| \w+ \w+').Value)
+    Add-Case 'deploy-development-expectations-from-its-receipt' ($dp.Output -match 'DEVELOPMENT-EXPECTATIONS True True' -and $dp.Output -match 'AUDIO-REFUSED Extracted package firearm audio differs' -and $dp.Output -match 'FIELD-REFUSED A deployment-record field is missing for this admission \(branch\)') ([regex]::Matches($dp.Output, '(DEVELOPMENT-EXPECTATIONS \w+ \w+|AUDIO-\w+|FIELD-\w+)') -join ', ')
+
+    # --- The checked extractor: directory records carry no data, appear once, and never share a destination with a file.
+    $extractProbe = Join-Path $temp 'extract-probe.ps1'
+    [IO.File]::WriteAllText($extractProbe, @'
+param([string]$Common, [string]$Zip, [string]$Work)
+$ErrorActionPreference = 'Stop'
+. $Common
+$destination = Join-Path $Work ([Guid]::NewGuid().ToString('N')); [void][IO.Directory]::CreateDirectory($destination)
+try { $m = Expand-KmgPackageEntries -ZipPath $Zip -Destination $destination -ModId 'KingmakerGunslinger'; 'EXTRACTED ' + (Split-Path -Leaf $m) } catch { 'REFUSED ' + $_.Exception.Message }
+'@)
+    $common = Join-Path $clone 'scripts\common.ps1'
+    $extractWork = Join-Path $temp 'extract-work'; [void][IO.Directory]::CreateDirectory($extractWork)
+    $emptyDirectory = [byte[]]@()
+    $extractVariants = @(
+        @('data-bearing-directory-record', @{ 'KingmakerGunslinger/notes/' = [Text.Encoding]::ASCII.GetBytes('hidden data') }, 'data-bearing directory record: KingmakerGunslinger/notes/'),
+        @('duplicate-directory-record', $(& { $h = [Collections.Hashtable]::new([StringComparer]::Ordinal); $h['KingmakerGunslinger/notes/'] = $emptyDirectory; $h['KingmakerGunslinger/NOTES/'] = $emptyDirectory; $h }), 'duplicate directory record'),
+        @('directory-record-at-a-file-destination', @{ 'KingmakerGunslinger/Info.json/' = $emptyDirectory }, 'directory record and a file at the same destination: KingmakerGunslinger/Info\.json'),
+        @('file-that-is-the-parent-of-another-entry', @{ 'KingmakerGunslinger/Info.json/child.txt' = [Text.Encoding]::ASCII.GetBytes('child') }, 'file that is also the parent of other entries: KingmakerGunslinger/Info\.json'))
+    foreach ($variantCase in $extractVariants) {
+        $variantZip = Join-Path $variants ("extract-" + $variantCase[0] + '.zip')
+        New-ZipVariant $package $variantZip @{} $variantCase[1]
+        $x = Invoke-PS @('-File', $extractProbe, '-Common', $common, '-Zip', $variantZip, '-Work', $extractWork)
+        Add-Case "extractor-$($variantCase[0])-refused" ($x.Output -match ('REFUSED Package contains a ' + $variantCase[2])) ([regex]::Match($x.Output, '(REFUSED|EXTRACTED) .{0,200}').Value)
+    }
+    $emptyDirZip = Join-Path $variants 'extract-empty-directory-record.zip'
+    New-ZipVariant $package $emptyDirZip @{} @{ 'KingmakerGunslinger/notes/' = $emptyDirectory }
+    $x = Invoke-PS @('-File', $extractProbe, '-Common', $common, '-Zip', $emptyDirZip, '-Work', $extractWork)
+    Add-Case 'extractor-single-empty-directory-record-accepted' ($x.Output -match 'EXTRACTED KingmakerGunslinger') ([regex]::Match($x.Output, '(REFUSED|EXTRACTED) .{0,200}').Value)
 
     # --- Staging carries the admitted identity: bytes replacing the supplied path after admission are never staged
     #     (refused before the private copy, or the original bytes staged from the copy).
