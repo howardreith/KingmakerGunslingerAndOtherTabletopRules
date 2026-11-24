@@ -237,7 +237,7 @@ from RISK-01).
 
 ## Sprint 7 (started 2026-11-23; agent-review controller, foreground)
 
-**Current state (2026-11-24): development candidate for review on draft PR #219, review round 3** (record
+**Current state (2026-11-24): BLOCKED by the agent-review controller after round 3 on `511160dc6e` (no progress on R1-F1, R1-F3, R1-F5, R1-F9 for three reviews); owner decision needed; draft PR #219** (record
 `docs/GUNSLINGER-SPRINT7-RECORD.md`; enrollment `kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1`; base
 post-release master `35763430ac`, v0.0.195). Nothing is merged or released. Every visual and listening judgment is the
 owner's.

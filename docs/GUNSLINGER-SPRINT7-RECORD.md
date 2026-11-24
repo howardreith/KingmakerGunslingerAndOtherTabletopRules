@@ -1,6 +1,16 @@
 # Sprint 7 record: presentation and audio remediation (S7 T1–T7)
 
-Status: **development candidate for review (2026-11-24), review round 3; nothing is merged or released.**
+Status: **BLOCKED (2026-11-24): the agent-review controller stopped the enrollment after review round 3 on
+`511160dc6e` (no progress: R1-F1, R1-F3, R1-F5, R1-F9 open for three consecutive reviews). Nothing is merged or
+released.** An owner decision is needed before development continues; the mission does not authorize raising the
+round or progress limits. Open findings after round 3: R1-F1 (playable audio through a private channel, event-time
+distance, listening-based recommendation), R1-F3 (party-camera readback bound to the body), R1-F5 (trace the cleanup2
+console action-bar phases to the exact Inspect prerequisite), R1-F9 (an interrupted inner owned creation followed by a
+foreign same-frame spawn before the outer call exits), R2-F2 (Trumpet seeding scoped to the blast's own rule), R2-F4
+(baseline harness ability loan bounded to the cast), and R3-F1 to R3-F6 (released-baseline combat and lighting,
+probe cleanup-failure propagation, later-cast Sickened ownership, failed normal trace disposal in the verdict, baseline
+summon command ownership on interruption, positive-sample Ghaele attribution). Verified so far: R1-F2, F4, F6, F7, F8,
+F10, F11, F12, F13, F14, R2-F1, R2-F3.
 - Draft PR #219; one agent-review enrollment (`kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1`, foreground,
   single plan); branch `codex/s7-visual-audio-remediation`.
 - Mission: `docs/missions/sprint7/SPRINT7-AUTONOMOUS-MISSION.md` (verbatim, sha256 `c232f135…f56f0`).
