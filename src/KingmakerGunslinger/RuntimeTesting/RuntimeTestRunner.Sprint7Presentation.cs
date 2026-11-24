@@ -1254,7 +1254,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 };
                 if (qualifying != null)
                 {
-                    Kingmaker.Items.ItemEntityWeapon tail = qualifying.Weapon, unarmed = first.Body.EmptyHandWeapon;
+                    // A foreign weapon: the humanoid caster's own weapon (the Ankylosaurus has no hands).
+                    Kingmaker.Items.ItemEntityWeapon tail = qualifying.Weapon,
+                        unarmed = fixture.Caster.Body.PrimaryHand.MaybeWeapon ?? fixture.Caster.Body.EmptyHandWeapon;
                     crafted["valid"] = run(wrap(hostile, tail, freshRoll(hostile, tail)));
                     crafted["foreignWeapon"] = run(wrap(hostile, unarmed, freshRoll(hostile, unarmed)));
                     RuleAttackRoll shared = freshRoll(hostile, tail);
@@ -1274,7 +1276,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (int)crafted[name]["newCues"] == count && crafted[name]["error"].Type == JTokenType.Null;
                 Sprint25Check("s7-anky-production-controls", posted("valid", 1) && posted("foreignWeapon", 0) && posted("mismatchedWrapper", 0) &&
                     posted("sameRollValidWrapper", 1) && posted("removedTarget", 0), (JObject)crafted.DeepClone(),
-                    "Through the owner's own production handler: a valid fresh resolved tail roll posts one cue; the same owner's unarmed weapon posts none; a wrapper naming another creature than its roll's target posts none and does not consume the roll, whose valid wrapper then posts its one cue; an out-of-game target posts none.");
+                    "Through the owner's own production handler: a valid fresh resolved tail roll posts one cue; a roll with a foreign (non-tail) weapon posts none; a wrapper naming another creature than its roll's target posts none and does not consume the roll, whose valid wrapper then posts its one cue; an out-of-game target posts none.");
 
                 Sprint25Check("s7-anky-replay-dedup", qualifying != null && sameCalls >= 1 && afterSame == 0 && foreign != null && foreignCalls >= 1 &&
                     afterForeign == 0 && laterHits >= 1 && laterCues == laterHits, (JObject)row["replay"].DeepClone(),
@@ -1828,7 +1830,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int overlapFrames = 0, restoredAt = DustMephitBreathTint.Restored, sampleFrame = 0;
                 var donorTimeline = new JArray();
                 DateTime concurrentDeadline = DateTime.UtcNow.AddSeconds(40);
-                while ((dustMore || iceRun == null || iceMore || DustMephitBreathTint.Live > 0) && DateTime.UtcNow < concurrentDeadline)
+                bool donorWasLive = false;
+                // Runs until both commands end, no tint is live and the donor instance is gone,
+                // so the donor is sampled at the moment the Dust instance is restored.
+                while ((dustMore || iceRun == null || iceMore || DustMephitBreathTint.Live > 0 || donorWasLive) && DateTime.UtcNow < concurrentDeadline)
                 {
                     if (dustMore) dustMore = dustRun.MoveNext();
                     // The Ice breath starts about two seconds after the Dust cone appears, so the Ice
@@ -1851,6 +1856,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["particleSystems"] = now == null ? null : now["particleSystems"] });
                     }
                     restoredAt = DustMephitBreathTint.Restored;
+                    donorWasLive = donor != null;
                     yield return 0;
                 }
                 foreach (int step in S7WaitDustReleased()) yield return step;
