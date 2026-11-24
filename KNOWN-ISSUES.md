@@ -17,8 +17,8 @@
       was affected.
     - The product kept the cue tracked on its own source until that source was destroyed; the tracking went with it, and
       the source's own retirement requested a stop for the already ended playing ID.
-    - This development limitation is documented under the owner's conditional disposition and is subject to independent
-      review.
+    - This development limitation is documented under the owner's conditional disposition (amendment 2), accepted by the
+      round-6 independent review. The original missing callback's cause stays unknown.
   - The Dust Mephit's breath is a recoloured native cold cone, not a separately authored dust effect. Repeated breaths
     from one spot each show their cone (the game skips a cone only for a second launch from the same point within one
     frame).

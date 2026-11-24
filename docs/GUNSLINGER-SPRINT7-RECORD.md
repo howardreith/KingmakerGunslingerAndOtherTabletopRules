@@ -1,9 +1,34 @@
 # Sprint 7 record: presentation and audio remediation (S7 T1–T7)
 
-Status: **BLOCKED (2026-11-24): after review round 6 of 7 on `b37faaf883` the agent-review controller stopped the
-enrollment under its mandatory no-progress rule ("no progress: R4-F1 open for 3 consecutive reviews"). Owner amendment 2
-does not authorize resuming such a stop; continuing needs an owner decision. Nothing is merged or released, and no visual
-or listening choice has been accepted.**
+Status: **IN REVIEW (round 7 of 7, 2026-11-24, under owner amendment 3). Nothing is merged or released, and no visual or
+listening choice has been accepted.**
+
+**Owner amendment 3** (revision 3, sha256 `3321dd31…44e0`; message sha256 `70e46f79…45cf4`; stored outside the worktree at
+`<lab>/owner-guidance/S7-OWNER-AMENDMENT-3-2026-11-24.md`) authorized one resumption after the round-6 no-progress stop
+(applied with `resume --amend-mission`; the cap stays seven reviews, six spent), exactly one additional product candidate
+(three in all) and a combined rounds-6-and-7 validation ceiling of 75 minutes. It keeps every earlier scope decision.
+The applicable owner amendments are 1 (revision 1, `59be8e3f…31e0`), 2 (revision 2, `26409cd8…3ab4`) and 3.
+
+**Round 7** addresses the eight findings open after round 6 (matrix in §7): R4-F1, R5-F1, R5-F3 and R6-F1 to R6-F5. All
+are verification code or records; no product presentation or mechanics changed. One cumulative cleanup result now governs
+the effects phase (cell admission and final restoration) and the probe slot. The third and final candidate
+**`9c39b1ff7f`** (package `49f8b88c…6413`, DLL `5969f596…e2c3`, harness `ee7742a4…a395`) ran:
+- `…223809Z` effects: 35 of 36 structured checks (r6 16/16). Every new isolation path passed (callback-hook abandonment,
+  Dust abandonment with the exact execution observed settled, phase restoration). The callback-loss characterization
+  found no overlap in its declared 16 s ("not-both-playing", retained FAIL);
+- `…224649Z` Ghaele lifecycle and visibility: PASS;
+- `…224949Z` effects, one rerun of the same package: 35 of 36 (r6 16/16). The final collector ran its whole live path. Its
+  in-run verdict, "survivor-stopped-by-other-retirement", is retained FAIL and is an evaluator defect (§4.5): in memory a
+  null C# string is a String-typed JSON value, which the evaluator's null test misreads. The same evaluator, unchanged,
+  over that run's recorded row gives "characterized". Correcting the evaluator would change compiled RuntimeTesting
+  bytes after the third candidate, which amendment 3 does not allow; it is the remaining blocker for an in-game PASS of
+  that predicate.
+
+Validation spent: 65 min 2 s of the 75-minute ceiling (39 min 4 s in round 6, 25 min 58 s in round 7), before the round-7
+controller gates.
+
+Round-6 stop (historical): after review round 6 on `b37faaf883` the controller stopped the enrollment under its mandatory
+no-progress rule ("no progress: R4-F1 open for 3 consecutive reviews"). Owner amendment 3 authorized the resumption.
 
 Round-6 review outcome (decision changes_required):
 - verified: R1-F1, R2-F2, R4-F2, R5-F2, R5-F4, R5-F5 and R5-F6;
@@ -18,9 +43,8 @@ Round-6 review outcome (decision changes_required):
   reach the effects phase), R6-F3 (terminal playback reads are not verdict inputs), R6-F4 (the settled evaluation is not
   bound to the collector that ran) and R6-F5 (this record's expenditure and scope rows, corrected below).
 
-Of the open items, R4-F1, R6-F2 and the in-game half of R6-F4 need RuntimeTesting changes, so a third product candidate
-would be required to establish them natively. The owner authorized two, and both are used. Validation spent: 39 min 4 s
-of the 60-minute exception, leaving 20 min 56 s. After the controller stopped the enrollment at the round-5 cap, the owner issued owner amendment 2
+At the round-6 stop, R4-F1, R6-F2 and the in-game half of R6-F4 needed RuntimeTesting changes and a third product
+candidate, which amendment 3 then authorized. Round 6 spent 39 min 4 s. After the controller stopped the enrollment at the round-5 cap, the owner issued owner amendment 2
 (revision 2, sha256 `26409cd8…3ab4`; message sha256 `cc57e9e9…9bb7`, stored outside the worktree at
 `<lab>/owner-guidance/S7-OWNER-AMENDMENT-2-2026-11-24.md`). Applied to the stopped enrollment, it left it BLOCKED at the
 exhausted cap, as the owner expected. The owner's separate extension (`resume --max-rounds 7`) then raised the cap from
@@ -41,12 +65,32 @@ Verified by the independent reviewer:
 presentation or mechanics changed:
 - two are record reconciliations: R1-F1 and R5-F6;
 - eight concern observers and harnesses: R2-F2, R4-F1, R4-F2 and R5-F1 to R5-F5;
-- R4-F5 is the impact-cue playback and tracking requirement. Round 6 characterizes the missing-callback path (§4.5) and
-  claims the conditional owner disposition of amendment 2 §4 on that evidence. Independent review has not accepted it.
+- R4-F5 is the impact-cue playback and tracking requirement. Round 6 characterized the missing-callback path (§4.5) and
+  claimed the conditional owner disposition of amendment 2 §4; the round-6 review accepted it.
 
-**Validation exception (owner amendment 2 §7).** For rounds 6 and 7 together, the owner authorized up to 60 minutes of
-cumulative validation-command time (a one-off exception to the 30-minute ceiling; `VALIDATION-POLICY.md` is unchanged) and
-at most two new product candidates.
+**Validation exception (owner amendment 2 §7, raised by owner amendment 3 §6).** For rounds 6 and 7 together, the owner
+authorized up to 60 minutes of cumulative validation-command time and at most two new product candidates (amendment 2),
+then 75 minutes and three candidates (amendment 3, which adds 15 minutes and one candidate without resetting the clock).
+It is a one-off exception to the 30-minute ceiling; `VALIDATION-POLICY.md` is unchanged.
+
+Spent in round 7 (wall clock, failed attempts included):
+
+| # | Command | Result | Time |
+|---|---|---|---|
+| 1 | Harness build (uncommitted round-7 source) | PASS | 1.2 s |
+| 2 | Controller `verify` (uncommitted) | Refused: gates run on a committed candidate | 1.7 s |
+| 3 | Focused gate `sprint7-visual` (local) | PASS, 22 tests | 20.8 s |
+| 4 | Harness build (`9c39b1ff7f` source) | PASS, `ee7742a4…a395` | 1.3 s |
+| 5 | Focused gate `sprint7-visual` (local) | PASS | 1.7 s |
+| 6 | Build-Local candidate 3 (`9c39b1ff7f`) | PASS | 7 min 2 s |
+| 7 | Session `20261124T223809Z-…-s7-fx` | FAIL, retained (no cue overlap in the declared search) | 8 min 0 s |
+| 8 | Session `20261124T224649Z-…-s7-ghaele` | PASS | 2 min 15 s |
+| 9 | Session `20261124T224949Z-…-s7-fx` (rerun, same package) | FAIL, retained (evaluator null typing) | 8 min 9 s |
+| 10 | Focused gate `sprint7-visual` (local, test-only addition) | PASS | 5.5 s |
+
+Round 7 total before the controller's required gates: 25 min 58 s; cumulative 65 min 2 s of 75. The game window
+(22:30Z–22:58Z) was agreed with the other Kingmaker session on this machine and handed back; every session completed its
+transaction and verified the owner files.
 
 Spent in round 6 (wall clock, failed attempts included):
 
@@ -111,11 +155,31 @@ other Kingmaker session on this machine and handed back at 20:35Z.
 | S7 T2 / VIS-01 | 48 zero-area wing-root triangles (and inside-out welded membranes) | **Repaired at the generator.** 0 zero-area triangles, 0 repeated edges, all parts outward | `ed88ad994e`; export receipt; models `…162110Z` (round 4, party views bound to the body) and `…050957Z` | Implemented and verified | Owner visual acceptance |
 | S7 T3 / VIS-02 | 19/12,924 normal corners at a waist pleat and the left-hand fingers | **Repaired from the exact private input.** 16 → 0 opposing corners | `d864e7b01f`; export receipt; `…162110Z`, `…050957Z` | Implemented and verified | Owner visual acceptance |
 | S7 T4 / VIS-03 | Owned Trample/Overrun windows: "Target point within 0 ft. feet." and school "None" | **Scoped presentation override:** "Target point within twice this creature's speed." (owner-approved wording), no school | `2614ea3bd6`; `…050957Z` `ui` | Implemented and verified for desktop fact and HUD | **Controller mode unexecuted** (§4.4): no admitted route creates or selects a summon in the console UI. Not a controller PASS. |
-| S7 T5 / VIS-04 | No added impact sound on the Ankylosaurus tail strike | **One owned cue per resolved tail roll on the roll's own in-game target** (`Sweetener_Low_06_Quake`, provisional) | `90bc2ae7eb`; fx `…180635Z` (round 5), `…170720Z` and `…061437Z` | Cue ownership and timing verified; concurrent retirement passed in four of the five round-4/5 runs that include it (`…154136Z`, `…161344Z`, `…170720Z`, `…180635Z`; failed in `…164749Z`); private packet delivered | **Unresolved technical requirement:** in `…164749Z` a surviving cue's native end callback never arrived (cause unknown, §4.5). **Listening and choice pending (owner).** |
+| S7 T5 / VIS-04 | No added impact sound on the Ankylosaurus tail strike | **One owned cue per resolved tail roll on the roll's own in-game target** (`Sweetener_Low_06_Quake`, provisional) | `90bc2ae7eb`; fx `…180635Z` (round 5), `…170720Z` and `…061437Z`; concurrent retirement also passed in round 6 (`…200320Z`, `…202648Z`) and round 7 (`…223809Z`, `…224949Z`) | Cue ownership and timing verified; private packet delivered | **R4-F5 disposition accepted by the round-6 review** (amendment 2 §4): under synthetic callback loss playback ends normally, no other source is affected, and the residual tracking belongs to the survivor's own source and ends with its disposal. The cause of the `…164749Z` missing callback stays unknown (§4.5). **Listening and choice pending (owner).** |
 | S7 T6 / VIS-05 | The Dust Mephit breath shows the ice cone | **Owned per-instance dust recolour** of the one cone CreateView spawns for the executing owned Dust breath, now bound to that native spawn call; restored on release; released mechanics (Sickened, damage, save, enemies only, action) unchanged | `9733a0c9b7`; fx `…180635Z` and `…170720Z` | Implemented and verified | Owner visual acceptance. Allies' harmless saves stay documented. |
-| S7 T7 / VIS-06 | Provisional `InspireCourage` cue on the Trumpet Blast | **Kept provisionally** (no code change); six alternatives sampled; cue verified across an in-process save and load, with blast-owned seeding | `r6` in `…180635Z` and `…170720Z`; Trumpet reload `…182558Z` (round 5) and `…162605Z` | Cue technically verified; private packet delivered | **Listening and choice pending (owner).** |
+| S7 T7 / VIS-06 | Provisional `InspireCourage` cue on the Trumpet Blast | **Kept provisionally** (no code change); six alternatives sampled; cue verified across an in-process save and load. The current probe (`…201133Z`) marks only the observed blast's own save passed through its `AutoPass` field; all dice roll natively | `r6` in `…180635Z` and `…170720Z`; Trumpet reload `…182558Z` (round 5) and `…162605Z` | Cue technically verified; private packet delivered | **Listening and choice pending (owner).** |
 
 ## 3. Candidates, sessions and identities
+
+**Round 7 (owner amendment 3).** No product change: only `RuntimeTesting/`, the harness, the tests and the sessions changed.
+- **Candidate 3** `9c39b1ff7f95c995ead0ecdfca2e679e62506825`: package
+  `49f8b88c052ca448b214552a6aab7a0e615697c10ecbea842ae013456faf6413`, DLL
+  `5969f596811984eaaf69014bc3bc8ddb39d733d8837cce280a76655abd98e2c3`.
+- **Harness:** `ee7742a493eb3879cffa30c69879592a51da60a3b7205a902832d8e4395ea373`, built from the `9c39b1ff7f` source.
+- **Collector and evaluator:** the effects collector is `RuntimeTestRunner.Sprint7Presentation.cs` at `9c39b1ff7f`. Its one
+  callback-loss evaluator is `Sprint7ObserverPolicy.CallbackLossSettled` at the same commit. Later commits change records
+  and tests only; RuntimeTesting is unchanged after the candidate.
+- **Counts:** each round-7 effects extract has 36 structured checks.
+
+| Session | Result |
+|---|---|
+| `20261124T223809Z-…-s7-fx` (fx, r6) | FAIL, retained: 35/36, r6 16/16. `s7-anky-callback-loss-characterized` found no two cues confirmed playing at once within the declared 16 s (607 ended 13.6043 s, 641 posted 13.6023 s; the per-frame selection did not land in the 2 ms overlap). Every other check passed, including `s7-anky-callback-abandoned-unwound`, `s7-dust-abandoned-unwound` and `s7-effects-owned-state-restored`. |
+| **`20261124T224649Z-…-s7-ghaele`** (lifecycle, visibility) | **PASS** |
+| `20261124T224949Z-…-s7-fx` (fx, r6; rerun of the same package) | FAIL, retained: 35/36, r6 16/16. The callback-loss collector reached overlap and ran its whole live path; the in-run verdict misread the survivor's null stop fields (§4.5). Every other check passed. |
+
+Reused at their original identities, not rerun: models, desktop UI, Trumpet reload (`…201133Z`, harness `9240a3d6…`; the
+round-7 harness changes the Trumpet probe only by recording destruction requests in its cumulative outcome), the audio
+packet and the full Ghaele lifetimes (`…182757Z`, `…183206Z`, `…201333Z`).
 
 **Round 6.** No product change: only `RuntimeTesting/`, the harness, the tests and the sessions changed. Product code
 outside `RuntimeTesting/` is identical from the round-5 head `091446a079` to the round-6 head.
@@ -130,10 +194,11 @@ outside `RuntimeTesting/` is identical from the round-5 head `091446a079` to the
 | `f3bfab1303` | as above | **`20261124T201333Z-…-s7-ghaele`** | **PASS** |
 | `740d94a995` | `e0eda5b9ee7bde2b6c6bacb5f6167dc531cc0c470091182665fc5b8b0c55b7a7` / `f145ed84917be449c1ca994b838644f0a270d262a69553dc15f786535c9a36cb` | `20261124T202648Z-…-s7-fx` (fx, r6) | FAIL, retained (observer). Both cues were confirmed playing, but the predicate read the other source's stop in the retirement frame, before the product requests it in that view's destroy callback ("other-not-stopped-by-own-id"). The other 33 structured checks and r6 16/16 pass. The offline re-evaluation of this run's own records is in §4.5. |
 
-What the final head changes after these runs:
-- `c9c4c33154` makes the in-run predicate read the other source's retirement once settled (`RetiredByOwnId`), as the
+What the round-6 head changed after these runs (historical; superseded by round 7):
+- `c9c4c33154` made the in-run predicate read the other source's retirement once settled (`RetiredByOwnId`), as the
   normal-callback control does.
-- That observer change is **not natively exercised**: both authorized candidates are used.
+- That observer change was not natively exercised in round 6. Round 7 replaced it with the one settled evaluator,
+  natively run on candidate 3.
 - The Trumpet and Ghaele sessions ran on candidate 1. Candidate 2 changed only the callback-loss observer, which they do
   not use.
 
@@ -217,6 +282,25 @@ The private listening packet is described in §4.5. Game audio is never committe
 ## 4. Per story
 
 ### 4.1 T1 / REP-04 Ghaele
+
+**Round 7 (owner amendment 3; `…224649Z`, candidate `9c39b1ff7f`, harness `ee7742a4…`).**
+- **Lifecycle (R5-F1, R6-F1).** The positive pending case held again: command pending and loan held before disposal, the
+  witness saw no owned or unattributed summon, verdict null. The new post-disposal negative control ran in this order:
+  queued; before disposal (zero owned results); cast owner disposed; disposable unit registered with its owner; result
+  delivered to the witness handler by a labelled controlled notification injection, a never-triggered `RuleSummonUnit`
+  whose context is a fresh execution context of the abandoned cast's own AbilityData. The witness matched it by
+  ability-data. The verdict, computed from the case's own readbacks, was "late-owned-summon". The foreign same-caster
+  control was kept, the witness unsubscribed, and the late unit was requested once and destroyed. In the real-spawn case
+  the witness matched the cast's own summon by its retained execution.
+- **Visibility (R5-F3), a short current capture.** The Ghaele's row read its own fader present (component identity
+  recorded) and visible, and qualified. The disposable donor, with its fader set hidden by the probe (held, restored),
+  was refused as "fader-hidden". A missing component is exercised through the same producer and verdict offline only:
+  removing a live view's fader was not attempted.
+- **Retained lighting rows.** No retained row recorded the subject's component presence; their `faderVisible=true` came
+  from the shared helper's fallback, which also reports true without a fader. Under the corrected reader they are
+  "fader-presence-unrecorded", while every other readback still qualifies, and their recorded in-run values are kept.
+  This limits only the fader-presence part of those lighting observations. The accepted bounded body, movement, combat
+  and expiry observations stand.
 
 Harness probe `kmgGhaeleLifetime`, round 4, run identically on the released v0.0.195 package (`…162819Z`) and the
 candidate (`…163235Z`), in the admitted fixture save KMCS_AFTER_NORMAL_012_MODONLY (Jamandi mansion throne room):
@@ -493,12 +577,38 @@ The check passed in `…200320Z` and `…202648Z`.
     "characterized" for `…202648Z`;
   - the same reader keeps `…200320Z` at "not-both-playing". That run's survivor 599 also played out naturally (callback
     withheld 37.54, confirmed inactive 38.01), but its other cue had already ended.
-- **Disposition claimed (amendment 2 §4; for independent review).** Under synthetic callback loss:
+- **Disposition (amendment 2 §4; accepted by the round-6 review).** Under synthetic callback loss:
   - playback ended normally;
   - the other source was unaffected;
   - the only residual was source-local tracking, which disappeared when that source's view and component were destroyed.
   No product change and no watchdog. The historical `…164749Z` failure and its unknown cause are kept: the
   characterization does not explain why that callback was missing, only how the product behaves when one is.
+
+**Round 7: the one settled evaluator and the final collector (R6-F3, R6-F4).**
+- **Evaluator.** `Sprint7ObserverPolicy.CallbackLossSettled` reads the callback-loss row as the collector emits it, with
+  the other source's settled cue record and the retirement time. It is the in-game verdict and the reader of retained
+  rows. Beyond the round-6 inputs, it requires the survivor's terminal reads, at the window end and after its own source's
+  disposal, to be confirmed inactive. Playing is persistence; unknown or missing is never completion; playing again after
+  an inactive sample contradicts. Query states, callback records, stop requests and tracking are separate inputs.
+- **Retained rows, as a reader over fields their collector already emitted** (not a later live-sampling path):
+  `…202648Z` (collector `740d94a995`) gives "characterized"; `…200320Z` (`f3bfab1303`) stays "not-both-playing". In copies
+  of the `…202648Z` row, setting either terminal read to playing, unknown or missing prevents characterization (domain
+  `impact-cue-playback-verdicts`).
+- **Final collector in game (candidate `9c39b1ff7f`).**
+  - `…223809Z`: no overlap in the declared search; the in-run "not-both-playing" stands.
+  - `…224949Z`: survivor 586 (posted 22:51:54.350) and other 622 (posted 56.414) were both confirmed playing. The other
+    source was retired at 56.429; the product requested a stop for 622 alone at 56.433, and 622 ended natively at 56.442.
+    586's callback was withheld at 56.624. The query confirmed it inactive from 56.956 and in every later window sample,
+    and inactive at the window end and after disposal. The product kept tracking it on its own source. Retiring that
+    source made the product request a stop for the already inactive 586 (view-destroyed, 22:52:08.463); `EndUtc` stayed
+    unset. The view and playback component were observed destroyed, no other record changed, and the hook was removed.
+  - **Its in-run verdict, "survivor-stopped-by-other-retirement", is retained as recorded and is wrong.** The evaluator
+    received the collector's in-memory row, where the survivor's null stop fields are String-typed JSON values, and its
+    null test treats only JSON nulls as null. The recorded row has JSON nulls, and the same evaluator, unchanged, gives
+    "characterized" for it. The domain case reproduces the in-run verdict by rebuilding those fields as String-typed nulls.
+  - **Remaining blocker:** an in-game PASS of this predicate needs that null test corrected in compiled RuntimeTesting, a
+    fourth candidate that amendment 3 does not authorize. The collector itself is qualified: candidate 3 ran its whole live
+    path and emitted every field the verdict reads.
 
 **Private listening packet (R1-F1, owner amendment 1).**
 - **Location (round 5):** `C:\Dev\KingmakerGunslingerLab\private\s7-listening-packet-r5\` and
@@ -681,8 +791,10 @@ Round 5 had 18 cases: it added `ghaele-lighting-and-loan` and `probe-final-relea
 - the condition ledger, release verdict and party-capture verdict (`cell-ownership-and-capture`).
 
 Neighbour selections: `summon-playtest-r3`, `-r4`, `-r6`, `-r7`, `sprint22-`, `sprint5-`, `salamander`,
-`native-admission`, `native-profile` and `loader-compat-probe`. Round 5 ran 111 tests locally. The round-6 controller
-receipts on `b37faaf883` select 20 `sprint7-visual` tests and 96 neighbour tests, all passing. The controller
+`native-admission`, `native-profile` and `loader-compat-probe`. Counts by gate run: round 5 ran 111 tests locally; the
+round-6 controller receipts on `b37faaf883` report 116 selected-test executions (20 in `sprint7-visual`, 96 in the
+neighbour filters), all passing. Round 7's local focused runs selected 22 `sprint7-visual` tests; the round-7 controller
+receipts are on the reviewed head. The controller
 records the required gate receipts on the reviewed head.
 
 ## 6. Owner decisions pending and open scopes
@@ -693,12 +805,26 @@ records the required gate receipts on the reviewed head.
 3. T4: the controller-admission disposition is accepted by owner amendment 2. Controller rendering stays unexecuted,
    not PASS (§4.4).
 4. T5, T7: listen with the private packet and choose; both cues stay provisional until then.
-5. T5 / R4-F5: the conditional disposition of amendment 2 §4 is claimed on the round-6 characterization (§4.5). Its
-   in-run predicate failed on an observer timing defect and is accepted only through the offline re-evaluation of the
-   same retained records, subject to independent review.
+5. T5 / R4-F5: the conditional disposition of amendment 2 §4 was accepted by the round-6 review on the retained
+   `…202648Z` records (§4.5). The cause of the `…164749Z` missing callback stays unknown. The in-run callback-loss
+   predicates of `…200320Z`, `…202648Z`, `…223809Z` and `…224949Z` stay FAIL as recorded.
 6. Merge and release remain the owner's; this sprint authorizes neither.
 
 ## 7. Review findings and corrections
+
+Round-7 correction matrix (the eight findings open after round 6; owner amendment 3). Sessions are in
+`docs/evidence/sprint7/r7/`.
+
+| Finding | Trigger | Owning caller | Change | Decisive test | Evidence | Disposition |
+|---|---|---|---|---|---|---|
+| R4-F1 | Enclosing runner disposed inside the Dust early-exit cast, with the owned removal failing and the execution still live | `ReviewSprint7Effects` (cell sequence), `S7Dust`, `S7DustCastOwningConditions`, `S7DustConditions`, `S7DustAbandoned` | `Sprint7CellIsolation`: the cell registers before acquiring and publishes from its finally. Named failures stay; each retained execution process not yet ended is a residual re-read by the admission guard. The driver disposes the phase's own `Sequence` over a child isolation with a next cell, repairs its leftover and reports safety to the phase only on explicit observation | Domain `effects-cell-sequence-isolation` (live, unreadable and failed-release refusal; recovery does not erase the failure). Native `s7-dust-abandoned-unwound` | `…223809Z`, `…224949Z`: named failure in the child; execution pending at cleanup, then observed settled; next cell refused and never started; repair proven; phase isolation restored | Corrected |
+| R6-F2 | Callback-loss observer abandoned while holding its hook, unpatch failing | `S7CallbackLoss`, `S7CallbackAbandoned`, the cell sequence | The observer registers with the phase and publishes the hook's outcome from its finally after every independent release (commands, source retirement). The driver disposes the sequence with an injected unpatch failure, then repairs its own hook | Domain `effects-cell-sequence-isolation` (hook case and zero-hook control). Native `s7-anky-callback-abandoned-unwound` | `…223809Z`, `…224949Z`: named unpatch failure and "hooks remaining: 1" in the child; both sources retired; next cell refused; zero hooks after repair. The ordinary observer left zero hooks in both runs | Corrected |
+| R6-F1 | Early direct destruction throws; witness still held after settlement | `OwnedDisposables`, `YieldedProbeLifecycle.Release`, `WitnessSettlement`, `GhaeleLifetimeProbe` | Every request, direct or final, is recorded in the probe's one cumulative outcome; a throwing request is a named failure and stays requested; an unsettled witness throws a named failure. Release reads that outcome last | Domain `ghaele-early-release-failures-reach-slot` through `ProbeSlot` / `Poll` / `Release` / unwind: one request, original error kept, independent releases run, isolation fails, next probe refused; settled control | domain; `…224649Z` lifecycle (normal path) | Corrected |
+| R5-F1 | A result first delivered after the cast owner's disposal | `GhaeleLifetimeProbe.Lifecycle`, `SummonWitness`, `GhaeleWitness`, `GhaelePending` | The witness holds its own correlation (the cast's exact AbilityData and retained execution contexts). New post-disposal negative control: queue, verify pending and loan with zero owned results, dispose the cast owner, register a disposable unit with its owner, then a labelled controlled notification injection to the witness handler. Every verdict input is a readback | Domain witness correlation cases | `…224649Z`: order queued → before-disposal (0) → cast-owner-disposed (0) → late-unit-registered (0) → delivered (1, by ability-data); verdict "late-owned-summon"; foreign kept; witness unsubscribed; late unit requested once and destroyed. Positive pending verdict null | Corrected |
+| R5-F3 | A live view without an EntityFader read as visible | `GhaeleLifetimeProbe.Lighting`, `GhaeleLighting.Subject`/`Valid` | The subject, its view and its own fader component (identity, Visible) are read at the Ghaele boundary; missing, hidden and visible stay distinct; the helper's own field is not used and is unchanged for other callers | Domain producer-to-verdict cases for all three, no-view and unrecorded | `…224649Z` visibility: Ghaele present-visible valid; donor present-hidden "fader-hidden". Retained rows: "fader-presence-unrecorded" (§4.1) | Corrected; retained-row limit stated |
+| R6-F3 | Terminal playback playing or unknown after earlier inactivity | `Sprint7ObserverPolicy.CallbackLossSettled` | Terminal reads at the window end and after disposal are inputs; inactivity earlier never overrides them | Domain mutations of the retained `…202648Z` row; retained rows re-evaluated | §4.5 | Corrected |
+| R6-F4 | Final collector qualified by a run that never executed it | collector at `9c39b1ff7f`, one evaluator | One evaluator for native and retained judgments; retained rows labelled as a reader over their collector's own fields; candidate 3 ran the final collector | Native `…224949Z` live path; domain re-evaluation of its row | §3, §4.5. The in-run verdict of `…224949Z` is a retained FAIL from the evaluator's in-memory null test; the same evaluator over the recorded row characterizes | Collector natively executed; in-game PASS blocked by the evaluator null-typing defect (a fourth candidate is not authorized) |
+| R6-F5 | Stale expenditure, counts and accepted-scope rows | this record, status table, known issues | Cumulative expenditure, counts by gate run, R4-F5 accepted throughout, Trumpet `AutoPass` wording, Ghaele scope accepted, amendments identified | Record against receipts | this record | Corrected |
 
 Round-6 correction matrix (the eleven findings open after round 5; owner amendment 2). All candidate sessions listed are in
 `docs/evidence/sprint7/r6/`.

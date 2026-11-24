@@ -1362,6 +1362,34 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.Equal(retained.Settled, settled, retained.Name + ": the settled evaluation of the retained row.");
             }
 
+            // Round 7, the final collector (candidate 9c39b1ff7f, package 49f8b88c…) in game: 223809Z found no overlap (the
+            // in-run "not-both-playing" stands); 224949Z reached overlap and ran the whole live path, but its in-run verdict
+            // was "survivor-stopped-by-other-retirement". The same evaluator, unchanged, over that run's immutable row (the
+            // collector's own fields: the settled other-source record and the retirement time it emitted) characterizes it.
+            Func<string, JObject> r7 = name => (JObject)JObject.Parse(File.ReadAllText(Path.Combine("docs/evidence/sprint7/r7", name)))["records"]["summon-s7-effects.json"];
+            foreach (var run in new[] {
+                new { Name = "20261124T223809Z-owner-0.33.0-s7-fx-01-fx.json", Recorded = "not-both-playing", Settled = "not-both-playing" },
+                new { Name = "20261124T224949Z-owner-0.33.0-s7-fx-01-fx.json", Recorded = "survivor-stopped-by-other-retirement", Settled = (string)null } })
+            {
+                JObject row = (JObject)r7(run.Name)["ankylosaurus"]["callbackLoss"];
+                Assertions.Equal(run.Recorded, (string)row["verdict"], run.Name + ": the in-run verdict is retained as recorded.");
+                JObject settledOther = row["otherRetirementSettled"] == null ? null : (JObject)row["otherRetirementSettled"]["other"];
+                DateTime retiredAt = Sprint7ObserverPolicy.Utc(row["otherRetiredUtc"]) ?? DateTime.MinValue;
+                string settled = Sprint7ObserverPolicy.CallbackLossSettled(row, settledOther, retiredAt, "stop-requested");
+                Console.WriteLine("ANKY-CALLBACK-LOSS-R7 " + run.Name + " recorded=" + row["verdict"] + " settled=" + (settled ?? "characterized"));
+                Assertions.Equal(run.Settled, settled, run.Name + ": the same evaluator over the collector's recorded row.");
+            }
+            // The in-run defect, reproduced: in memory the collector writes a null C# string as a String-typed JValue,
+            // which the evaluator's null test does not treat as null; serialized and read back it is a JSON null. The
+            // same row rebuilt with the survivor's null stop fields as String-typed nulls gives the recorded in-run verdict.
+            {
+                JObject row = (JObject)r7("20261124T224949Z-owner-0.33.0-s7-fx-01-fx.json")["ankylosaurus"]["callbackLoss"].DeepClone();
+                foreach (string field in new[] { "stopResult", "stopRequestedUtc", "endUtc", "stopReason" }) row["survivorAtWindowEnd"]["cue"][field] = new JValue((string)null);
+                Assertions.True(row["survivorAtWindowEnd"]["cue"]["stopResult"].Type == JTokenType.String, "A null string JValue is String-typed in memory.");
+                Assertions.Equal("survivor-stopped-by-other-retirement", Sprint7ObserverPolicy.CallbackLossSettled(row, (JObject)row["otherRetirementSettled"]["other"],
+                    Sprint7ObserverPolicy.Utc(row["otherRetiredUtc"]).Value, "stop-requested"), "The in-memory typing reproduces the in-run verdict: an evaluator defect, not a stop.");
+            }
+
             // Copies of the retained 202648Z row: each required terminal read set to playing, unknown or removed prevents
             // characterization, although the earlier window samples stay inactive; every other input is exercised too.
             JObject basePhase = phaseOf("20261124T202648Z-owner-0.33.0-s7-fx-01-fx.json");
