@@ -695,7 +695,7 @@ namespace KingmakerGunslinger.DomainTests
             public string Poll() { return Life.Poll(); }
             public KmgLoaderCompatHarness.CleanupReport Release(string testFailure)
             {
-                return Life.Release(new[] { new KeyValuePair<string, Action>("disposable units", () => Units++) });
+                return Life.Release(() => new[] { new KeyValuePair<string, Action>("disposable units", () => Units++) });
             }
         }
 
@@ -742,34 +742,97 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(abandoned.IsolationRestored && clean.IsolationRestored && fine.Unsubscribe == 1 && fine.Units == 1, "A clean abandonment restores isolation.");
         }
 
-        // R2-F2 (round 4): no shared-generator intervention. Only the d20 rule whose
-        // parent on the rule stack is an open owned save is claimed (pre-rolled),
-        // once per save; a foreign save dispatched inside the owned save's
-        // callbacks, its d20 and any foreign draw are untouched; abandonment
-        // clears everything.
-        internal static void TrumpetOwnedD20Claim()
+        // R2-F2 (round 6): the Trumpet probe forces no die. Only the blast's own
+        // top-level save is marked passed (its AutoPass); a save nested inside
+        // another save is not the blast's. The decisive interval's verdict: a
+        // foreign d20 dispatched directly inside the owned save before its
+        // native roll, the owned save's own die and the following draw all keep
+        // their untreated values, and the owned save passed through AutoPass.
+        internal static void TrumpetOwnedSaveBoundary()
         {
-            var claim = new KmgLoaderCompatHarness.OwnedD20Claim();
-            object ownedSave = new object(), foreignSave = new object(), unrelatedSave = new object();
-            Assertions.False(claim.Claim(ownedSave), "Nothing is claimed before the owned save opens.");
-            claim.Begin(ownedSave);
-            Assertions.True(claim.Open, "The owned save is open between its callbacks.");
-            Assertions.False(claim.Claim(foreignSave), "A foreign save dispatched inside the owned save is not claimed (its d20's parent is the foreign save).");
-            Assertions.False(claim.Claim(null), "A d20 with no parent rule is not claimed.");
-            Assertions.True(claim.Claim(ownedSave), "The owned save's own d20 is claimed.");
-            Assertions.False(claim.Claim(ownedSave), "It is claimed once.");
-            claim.End(ownedSave);
-            Assertions.True(!claim.Open && !claim.Claim(ownedSave), "After the owned save ends nothing more is claimed.");
-            Assertions.False(claim.Claim(unrelatedSave), "An unrelated save is never claimed.");
-            Assertions.Equal(1, claim.Claims, "Exactly one d20 was pre-rolled.");
-            claim.Begin(ownedSave);
-            claim.Abandon();
-            Assertions.True(!claim.Open && !claim.Claim(ownedSave), "Abandonment closes the intervention.");
-            // A save dispatched inside another save's callbacks inherits the blast's rule context but is not the blast's.
             Func<object, bool> isSave = rule => rule is string && ((string)rule).StartsWith("save", StringComparison.Ordinal);
-            object blastSave = "save-blast", nestedSave = "save-nested", ability = "ability-rule";
-            Assertions.True(KmgLoaderCompatHarness.OwnedD20Claim.TopLevelSave(new[] { ability, blastSave }, blastSave, isSave), "The blast's own save is top level.");
-            Assertions.False(KmgLoaderCompatHarness.OwnedD20Claim.TopLevelSave(new[] { ability, blastSave, nestedSave }, nestedSave, isSave), "A save nested inside the blast save is not the blast's.");
+            object blastSave = "save-blast", nestedSave = "save-nested", ability = "ability-rule", d20 = "d20-foreign";
+            Assertions.True(KmgLoaderCompatHarness.TrumpetSaveOwnership.TopLevelSave(new[] { ability, blastSave }, blastSave, isSave), "The blast's own save is top level.");
+            Assertions.False(KmgLoaderCompatHarness.TrumpetSaveOwnership.TopLevelSave(new[] { ability, blastSave, nestedSave }, nestedSave, isSave), "A save nested inside the blast save is not the blast's.");
+            Assertions.True(KmgLoaderCompatHarness.TrumpetSaveOwnership.TopLevelSave(new[] { ability, blastSave, d20 }, blastSave, isSave), "A foreign d20 open above the owned save does not change which save is owned.");
+            Assertions.False(KmgLoaderCompatHarness.TrumpetSaveOwnership.TopLevelSave(new[] { ability }, null, isSave), "No save, no ownership.");
+            Func<bool, int, int, bool, int, int, bool, bool, bool, string> verdict = KmgLoaderCompatHarness.TrumpetSaveOwnership.NestedForeignVerdict;
+            Assertions.Equal(null, verdict(true, 7, 7, false, 13, 13, true, true, true), "Untreated foreign die, natural owned die, AutoPass pass and untouched following draw pass.");
+            Assertions.Equal("not-inside-owned-save", verdict(false, 7, 7, false, 13, 13, true, true, true), "A foreign die outside the owned save is not the decisive case.");
+            Assertions.Equal("foreign-d20-changed", verdict(true, 20, 7, false, 13, 13, true, true, true), "A foreign die given 20 (the round-5 claim defect) fails.");
+            Assertions.Equal("foreign-d20-changed", verdict(true, 7, 7, true, 13, 13, true, true, true), "A pre-rolled foreign die fails even with a matching value.");
+            Assertions.Equal("owned-save-not-passed", verdict(true, 7, 7, false, 13, 13, false, true, true), "An owned save not passed through AutoPass fails.");
+            Assertions.Equal("owned-save-die-not-natural", verdict(true, 7, 7, false, 20, 13, true, true, true), "A forced owned die fails.");
+            Assertions.Equal("following-draw-changed", verdict(true, 7, 7, false, 13, 13, true, true, false), "A shifted following draw fails.");
+            string probe = File.ReadAllText("tools/LoaderCompatHarness/TrumpetCueProbes.cs");
+            Assertions.True(probe.Contains("evt.AutoPass = true;") && !probe.Contains("PreRolled.SetValue") && !probe.Contains("IGlobalRulebookHandler<RuleRollD20>") &&
+                probe.Contains("Rulebook.Trigger(foreign)"), "The probe marks only the owned save, never sets a die, and dispatches the foreign d20 directly.");
+        }
+
+        // R5-F5: the real ProbeSlot -> Release -> iterator finally -> remaining
+        // resources sequence with deferred destruction. The combat cleanup in the
+        // iterator's finally requests the target's destruction; destruction
+        // completes later (Destroyed stays false); the final releases are built
+        // afterwards and request no unit twice. A failing independent release is
+        // retained and the other releases are still attempted.
+        private sealed class FakeUnit
+        {
+            internal readonly string Id; internal int DestroyRequests;
+            // Destruction is deferred past the whole test: it never completes here.
+            internal bool Destroyed { get { return false; } }
+            internal FakeUnit(string id) { Id = id; }
+        }
+
+        private sealed class DisposablesProbe : KmgLoaderCompatHarness.IOwnedProbe
+        {
+            internal readonly KmgLoaderCompatHarness.OwnedProbeResources Owned = new KmgLoaderCompatHarness.OwnedProbeResources();
+            internal readonly KmgLoaderCompatHarness.YieldedProbeLifecycle Life;
+            internal readonly KmgLoaderCompatHarness.OwnedDisposables<FakeUnit> Units;
+            internal readonly FakeUnit Target = new FakeUnit("hostile"), Ghaele = new FakeUnit("ghaele"), Donor = new FakeUnit("donor");
+            internal int WitnessSettled, Pause;
+            internal DisposablesProbe()
+            {
+                // Native destruction completes after the call: the request is counted, Destroyed stays false.
+                Units = new KmgLoaderCompatHarness.OwnedDisposables<FakeUnit>(u => u.Id, u => { if (!u.Destroyed) u.DestroyRequests++; if (u.Id == "donor") throw new InvalidOperationException("cannot destroy donor"); });
+                Life = new KmgLoaderCompatHarness.YieldedProbeLifecycle(Owned, lifecycle => Body());
+            }
+            private IEnumerable<object> Body()
+            {
+                Owned.Hold("pause", () => Pause++);
+                Units.Add(Ghaele); Units.Add(Donor); Units.Add(Target);
+                Owned.Hold("witness move", () => WitnessSettled++);
+                Owned.Hold("combat state", () => Units.Destroy(Target));
+                try { while (true) yield return null; }
+                finally { Owned.ReleaseAll(); }
+            }
+            public object Result { get { return "recorded"; } }
+            public string Poll() { return Life.Poll(); }
+            public KmgLoaderCompatHarness.CleanupReport Release(string testFailure) { return Life.Release(() => Units.Releases("disposable unit")); }
+        }
+
+        internal static void ProbeSlotDestroysEachUnitOnce()
+        {
+            const string owner = "4|kmgGhaeleLifetime_timeline";
+            var slot = new KmgLoaderCompatHarness.ProbeSlot();
+            var probe = new DisposablesProbe();
+            slot.Begin(owner, probe);
+            Assertions.True(slot.Poll(owner) == null, "The probe is yielded with combat active.");
+            KmgLoaderCompatHarness.ProbeOutcome outcome = slot.Abandon("step timeout after 360s");
+            Assertions.True(probe.Target.DestroyRequests == 1 && !probe.Target.Destroyed, "The target held by both the combat cleanup and the final collection gets exactly one request, with destruction still pending.");
+            Assertions.True(probe.Ghaele.DestroyRequests == 1 && probe.Donor.DestroyRequests == 1, "Every other owned unit gets exactly one request, the one after the failing release included.");
+            Assertions.True(probe.WitnessSettled == 1 && probe.Pause == 1, "The witness move and the pause are released once.");
+            Assertions.True(!outcome.IsolationRestored && outcome.Failure.Contains("disposable unit donor") && outcome.Failure.Contains("cannot destroy donor") &&
+                outcome.TestFailure == "step timeout after 360s", "The failed release is retained under its identity with the original error.");
+            Assertions.True(outcome.Cleanup.Attempted.Contains("disposable unit ghaele") && outcome.Cleanup.Attempted.Contains("disposable unit donor") &&
+                !outcome.Cleanup.Attempted.Contains("disposable unit hostile"), "Final releases are built only for units no earlier release requested.");
+            Assertions.True(probe.Units.Remaining.Count == 0 && probe.Units.WasRequested(probe.Target), "Nothing owned is left unrequested.");
+            // Control: the previous eager snapshot (built before the iterator's cleanup) would request the target twice.
+            var eager = new DisposablesProbe();
+            Assertions.True(eager.Life.Poll() == null, "The control probe is yielded.");
+            var eagerReleases = eager.Units.Releases("disposable unit");
+            eager.Owned.ReleaseAll();
+            KmgLoaderCompatHarness.ProbeCleanup.RunAll(eagerReleases);
+            Assertions.True(eagerReleases.Count == 3 && eager.Target.DestroyRequests == 1, "Even a snapshot built before the iterator's cleanup requests the target once: the request record, not Destroyed, decides.");
         }
 
         private static JObject Anim(bool started, bool delayed, double delay, double lifetime, bool loop, bool cutout, double current)
@@ -810,6 +873,16 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("positive", classify(Snapshot(new JArray(activeLoop()), driven(), null)), "A legacy row without the body property is judged without body identity.");
             var explicitNull = Snapshot(new JArray(activeLoop()), driven(), null); explicitNull["bodyMaterials"] = JValue.CreateNull();
             Assertions.Equal("inconclusive:no-readable-body", classify(explicitNull), "A current row whose body could not be read does not confirm.");
+            // R5-F2: an unreadable body withholds positive credit, never a contradiction.
+            Func<JObject, JObject> nullBody = row => { row["bodyMaterials"] = JValue.CreateNull(); return row; };
+            Assertions.Equal("contradicting", classify(nullBody(Snapshot(new JArray(activeLoop(), Anim(true, false, 4.75, 5, true, true, .4)), driven(), null))), "A null-body row with a cutout animation contradicts.");
+            Assertions.Equal("contradicting", classify(nullBody(Snapshot(new JArray(Anim(true, false, 2, 5, true, false, .4)), driven(), null))), "A null-body row with an animation the donor does not configure contradicts.");
+            Assertions.Equal("contradicting", classify(nullBody(Snapshot(new JArray(activeLoop()), new JArray(new JObject { ["material"] = 11, ["dissolve"] = .9 }), null))), "A null-body row whose readable driven value disagrees contradicts.");
+            foreach (JObject contradiction in new[] { nullBody(Snapshot(new JArray(Anim(true, false, 4.75, 5, true, true, .4)), driven(), null)), nullBody(Snapshot(new JArray(Anim(true, false, 2, 5, true, false, .4)), driven(), null)) })
+            {
+                JObject five = KmgLoaderCompatHarness.GhaeleAttribution.Evaluate(Enumerable.Repeat(Snapshot(new JArray(activeLoop()), driven(), new JArray(11)), 5).Concat(new[] { contradiction }), donors);
+                Assertions.True(!(bool)five["attributed"] && (int)five["contradicting"] == 1, "Five positive rows plus a null-body row with a cutout or unknown animation do not attribute.");
+            }
             Assertions.Equal("inconclusive:no-controller", classify(Snapshot(null, null, new JArray(11))), "An empty controller set does not confirm.");
             Assertions.Equal("inconclusive:no-animation", classify(Snapshot(new JArray(), driven(), new JArray(11))), "A controller without animations does not confirm.");
             Assertions.Equal("inconclusive:no-active-animation", classify(Snapshot(new JArray(Anim(false, false, 4.75, 5, true, false, 0)), driven(), new JArray(11))), "An inactive animation does not confirm.");
@@ -841,7 +914,10 @@ namespace KingmakerGunslinger.DomainTests
                 new { Folder = "r3", Name = "20261124T052619Z-owner-0.33.0-s7-ghaele-01-ghaele.json", Body = "not-recorded" },
                 new { Folder = "r3", Name = "20261124T052954Z-owner-0.33.0-s7-ghaele-01-ghaele.json", Body = "not-recorded" },
                 new { Folder = "r4", Name = "20261124T162819Z-owner-0.33.0-s7-ghaele-01-ghaele.json", Body = "recorded" },
-                new { Folder = "r4", Name = "20261124T163235Z-owner-0.33.0-s7-ghaele-01-ghaele.json", Body = "recorded" } })
+                new { Folder = "r4", Name = "20261124T163235Z-owner-0.33.0-s7-ghaele-01-ghaele.json", Body = "recorded" },
+                // Round 6: the complete retained round-5 datasets (released v0.0.195 and candidate) under the corrected readers.
+                new { Folder = "r5", Name = "20261124T182757Z-owner-0.33.0-s7-ghaele-01-ghaele.json", Body = "recorded" },
+                new { Folder = "r5", Name = "20261124T183206Z-owner-0.33.0-s7-ghaele-01-ghaele.json", Body = "recorded" } })
             {
                 JObject probe = (JObject)JObject.Parse(File.ReadAllText(Path.Combine("docs/evidence/sprint7/" + retained.Folder, retained.Name)))["harness"]["kmgGhaeleLifetime_timeline"];
                 double appeared = (double)probe["timeline"]["appearanceEndedAt"], ends = (double)probe["timeline"]["lifetimeEndsAt"];
@@ -852,11 +928,13 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True((bool)result["attributed"] && (int)result["contradicting"] == 0 && (int)result["positive"] >= KmgLoaderCompatHarness.GhaeleAttribution.MinimumPositive,
                     retained.Name + ": the retained rows still attribute through positive samples and observed donor loops.");
                 Assertions.Equal(retained.Body, (string)result["bodyMaterialIdentity"], retained.Name + ": body identity as recorded.");
-                if (retained.Folder == "r4")
+                if (retained.Folder != "r3")
                     foreach (JObject light in probe["lighting"].OfType<JObject>())
                     {
                         string why;
-                        Assertions.True(KmgLoaderCompatHarness.GhaeleLighting.Valid(light, out why), retained.Name + " " + light["label"] + ": the retained lighting row qualifies (" + why + ").");
+                        bool valid = KmgLoaderCompatHarness.GhaeleLighting.Valid(light, out why);
+                        Console.WriteLine("GHAELE-LIGHTING-REEVALUATION " + retained.Folder + "/" + retained.Name + " " + light["label"] + " valid=" + valid + " reason=" + (why ?? "none"));
+                        Assertions.True(valid, retained.Name + " " + light["label"] + ": the retained lighting row qualifies (" + why + ").");
                     }
             }
         }
@@ -881,6 +959,30 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(cut, out why) || why != "cutout", "A cut-out body fails.");
             var wrong = good(); wrong["partyCapture"] = ((string)wrong["partyCapture"]).Replace("mesh=GhaeleAzata_Mesh", "mesh=Wing_Mesh");
             Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(wrong, out why) || why != "wrong-body", "A capture of another mesh fails.");
+            // R5-F3: the unit's own fader must report it visible.
+            var hidden = good(); hidden["partyCapture"] = ((string)hidden["partyCapture"]).Replace("faderVisible=true", "faderVisible=false");
+            Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(hidden, out why) || why != "fader-hidden", "A capture whose subject's fader reports it hidden fails.");
+            var unread = good(); unread["partyCapture"] = ((string)unread["partyCapture"]).Replace("faderVisible=true;", "");
+            Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(unread, out why) || why != "fader-unavailable", "A capture without the fader readback fails with its own reason.");
+
+            // R5-F1: the pending abandonment verdict, with the controlled late-owned-result negative case.
+            Assertions.Equal(null, KmgLoaderCompatHarness.GhaelePending.Verdict(true, true, false, false, true, 0, 0, false), "Pending at disposal, settled after, foreign kept, nothing late: settled.");
+            Assertions.Equal("late-owned-summon", KmgLoaderCompatHarness.GhaelePending.Verdict(true, true, false, false, true, 1, 0, false), "A late owned summon seen by the witness fails.");
+            Assertions.Equal("unattributed-same-caster-summon", KmgLoaderCompatHarness.GhaelePending.Verdict(true, true, false, false, true, 0, 1, false), "An unattributed same-caster Ghaele fails.");
+            Assertions.Equal("command-not-pending-at-disposal", KmgLoaderCompatHarness.GhaelePending.Verdict(false, true, false, false, true, 0, 0, false), "A command no longer pending at disposal is not the case.");
+            Assertions.Equal("loan-not-held-at-disposal", KmgLoaderCompatHarness.GhaelePending.Verdict(true, false, false, false, true, 0, 0, false), "A loan disturbed by the control setup is not the case.");
+            Assertions.Equal("witness-still-subscribed", KmgLoaderCompatHarness.GhaelePending.Verdict(true, true, false, false, true, 0, 0, true), "The witness's own subscription must end.");
+            Assertions.Equal("foreign-summon-lost", KmgLoaderCompatHarness.GhaelePending.Verdict(true, true, false, false, false, 0, 0, false), "The known foreign summon must survive.");
+
+            // R4-F2 / R5-F4: the combat teardown verdict.
+            Assertions.Equal(null, KmgLoaderCompatHarness.GhaeleCombat.Verdict(0, true, true, true, 0, true, true, true), "Own activity released, control preserved, witness survived then settled, native leave.");
+            Assertions.Equal("conflict:unowned-engagement", KmgLoaderCompatHarness.GhaeleCombat.Verdict(0, true, true, true, 1, true, true, true), "An engagement the probe does not own is reported, not cleared.");
+            Assertions.Equal("independent-control-not-preserved", KmgLoaderCompatHarness.GhaeleCombat.Verdict(0, true, false, false, 0, true, true, true), "The independent engagement must survive the teardown.");
+            Assertions.Equal("witness-not-settled", KmgLoaderCompatHarness.GhaeleCombat.Verdict(0, true, true, true, 0, true, false, true), "A witness left running is not a clean teardown.");
+            Assertions.Equal("witness-interrupted", KmgLoaderCompatHarness.GhaeleCombat.Verdict(0, true, true, true, 0, false, true, true), "An interrupted witness fails.");
+            Assertions.Equal("native-leave-not-observed", KmgLoaderCompatHarness.GhaeleCombat.Verdict(0, true, true, true, 0, true, true, false), "Participants must leave combat natively.");
+            string probeSource = File.ReadAllText("tools/LoaderCompatHarness/GhaeleLifetimeProbes.cs");
+            Assertions.False(probeSource.Contains("LeaveCombat("), "The Ghaele probe never calls unit-wide LeaveCombat.");
 
             // R4-F3: the loan verdict against the exact prior state.
             object existing = new object(), prior = new object(), granted = new object(), replacement = new object(), other = new object();
@@ -907,7 +1009,7 @@ namespace KingmakerGunslinger.DomainTests
             public string Poll() { return Life.Poll(); }
             public KmgLoaderCompatHarness.CleanupReport Release(string testFailure)
             {
-                return Life.Release(KmgLoaderCompatHarness.ProbeReleases.PerItem("disposable unit", new[] { "unit-1", "unit-2" }, id => id, id =>
+                return Life.Release(() => KmgLoaderCompatHarness.ProbeReleases.PerItem("disposable unit", new[] { "unit-1", "unit-2" }, id => id, id =>
                 {
                     Releases[id]++;
                     if (id == "unit-1") throw new InvalidOperationException("cannot destroy unit-1");
@@ -949,7 +1051,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(present.Contains(foreign) && present.Contains(preexisting), "The foreign control and an instance present before the cell survive.");
             Assertions.Equal(0, ledger.Remaining(present, fromCellBreath), "No cell-owned condition remains.");
 
-            // Early exit right after application: its own ledger, released by its finally.
+            // A release whose removal fails (the early-exit cast's, round 6, now in the cell's own ledger).
             var early = new AcquisitionLedger<object>(present);
             var applying = new object(); owned.Add(applying); present.Add(applying);
             Assertions.Equal(1, early.Observe(present, fromCellBreath), "The early exit sees its application.");
@@ -972,6 +1074,34 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(Sprint7ObserverPolicy.PartyCaptureValid(good.Replace("screenFade=0", "screenFade=0.6"), "KMG_Nalfeshnee_Body", out reason) || reason != "screen-fade", "A frame under the native fade fails.");
             Assertions.False(Sprint7ObserverPolicy.PartyCaptureValid(good.Replace("intact=true", "intact=false"), "KMG_Nalfeshnee_Body", out reason) || reason != "dissolved", "A dissolving body fails.");
             Assertions.False(Sprint7ObserverPolicy.PartyCaptureValid(good, null, out reason), "Without an expected body nothing passes.");
+        }
+
+        // R4-F5: native playback query states and the two impact-cue verdicts.
+        internal static void ImpactCuePlaybackVerdicts()
+        {
+            const string playing = Sprint7ObserverPolicy.PlaybackPlaying, inactive = Sprint7ObserverPolicy.PlaybackInactive, unknown = Sprint7ObserverPolicy.PlaybackUnknown;
+            Assertions.Equal(playing, Sprint7ObserverPolicy.PlaybackState(true, 497, 3054481153u, false), "An event for the playing ID is playing.");
+            Assertions.Equal(inactive, Sprint7ObserverPolicy.PlaybackState(true, 497, 0, false), "An initialized engine answering 0 is confirmed inactive.");
+            Assertions.Equal(unknown, Sprint7ObserverPolicy.PlaybackState(false, 497, 0, false), "An uninitialized engine is unknown, never completion.");
+            Assertions.Equal(unknown, Sprint7ObserverPolicy.PlaybackState(true, 497, 0, true), "A query that threw is unknown.");
+            Assertions.Equal(unknown, Sprint7ObserverPolicy.PlaybackState(true, 0, 0, false), "No playing ID is unknown.");
+            Assertions.Equal(null, Sprint7ObserverPolicy.ConcurrentRetirementTrace(playing, playing, 0, true, inactive, false, inactive), "The normal-callback control passes on the per-ID trace.");
+            Assertions.Equal("survivor-callback-missing", Sprint7ObserverPolicy.ConcurrentRetirementTrace(playing, playing, 0, false, unknown, true, inactive), "The 164749Z shape (no survivor callback, playback unmeasured) fails.");
+            Assertions.Equal("survivor-still-tracked", Sprint7ObserverPolicy.ConcurrentRetirementTrace(playing, playing, 0, true, inactive, true, inactive), "Tracking left after the callback fails.");
+            Assertions.Equal("survivor-stopped-by-other-retirement", Sprint7ObserverPolicy.ConcurrentRetirementTrace(playing, playing, 1, true, inactive, false, inactive), "A cross-source stop fails.");
+            Assertions.Equal("not-both-playing", Sprint7ObserverPolicy.ConcurrentRetirementTrace(playing, inactive, 0, true, inactive, false, inactive), "Both IDs must be confirmed playing first.");
+            Func<string, string, int, bool, int, int, bool, bool, bool, bool, bool, bool, bool, int, int, string> loss = Sprint7ObserverPolicy.CallbackLossVerdict;
+            Assertions.Equal(null, loss(playing, playing, 1, true, 0, 1, false, true, false, true, true, true, false, 0, 0), "Synthetic loss with normal playback end, source-local residual and observed disposal is characterized.");
+            Assertions.Equal("survivor-playback-persisted", loss(playing, playing, 1, true, 0, 1, false, false, false, true, true, true, false, 0, 0), "Playback still confirmed after the window is persistence.");
+            Assertions.Equal("survivor-playback-unknown", loss(playing, playing, 1, true, 0, 1, false, false, true, true, true, true, false, 0, 0), "Only unknown answers are not completion.");
+            Assertions.Equal("callback-not-withheld", loss(playing, playing, 1, true, 0, 0, false, true, false, true, true, true, false, 0, 0), "Without a withheld callback the loss was not exercised.");
+            Assertions.Equal("callback-not-withheld", loss(playing, playing, 1, true, 0, 1, true, true, false, true, true, true, false, 0, 0), "A product that still recorded the end did not lose the callback.");
+            Assertions.Equal("source-disposal-not-observed", loss(playing, playing, 1, true, 0, 1, false, true, false, true, false, true, false, 0, 0), "A destroy request with disposal pending is insufficient.");
+            Assertions.Equal("end-manufactured", loss(playing, playing, 1, true, 0, 1, false, true, false, true, true, true, true, 0, 0), "An end the callback never delivered must not appear.");
+            Assertions.Equal("unrelated-record-affected", loss(playing, playing, 1, true, 0, 1, false, true, false, true, true, true, false, 1, 0), "Another record touched by the survivor's retirement fails.");
+            Assertions.Equal("intervention-not-restored", loss(playing, playing, 1, true, 0, 1, false, true, false, true, true, true, false, 0, 1), "The observer's hook must be gone.");
+            Assertions.Equal("survivor-stopped-by-other-retirement", loss(playing, playing, 1, true, 1, 1, false, true, false, true, true, true, false, 0, 0), "A stop for the survivor from the other retirement fails.");
+            Assertions.Equal("other-not-stopped-by-own-id", loss(playing, playing, 0, false, 0, 1, false, true, false, true, true, true, false, 0, 0), "The other source must request its own stop.");
         }
 
         private static IEnumerable<object> Body(KmgLoaderCompatHarness.OwnedProbeResources owned, Action unpause, Action subscribe, Action seed,

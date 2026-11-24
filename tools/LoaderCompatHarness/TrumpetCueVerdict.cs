@@ -87,9 +87,11 @@ namespace KmgLoaderCompatHarness
 
     /// <summary>
     /// The Poll/Release protocol both yielded harness probes (Trumpet, Ghaele) share (review R3-F2). Release disposes the
-    /// iterator (its finally blocks may drain the held state), drains whatever is still held, then runs the probe's own
-    /// final releases; the report it returns carries every held release's outcome from whichever drain ran it, so a
-    /// failed restore reaches ProbeSlot (IsolationRestored=false) and the launch stops. Each release runs once.
+    /// iterator (its finally blocks may drain the held state), drains whatever is still held, then builds and runs the
+    /// probe's own final releases from what it still owns at that point (review R5-F5: nothing released by the
+    /// iterator's cleanup is released again); the report it returns carries every held release's outcome from whichever
+    /// drain ran it, so a failed restore reaches ProbeSlot (IsolationRestored=false) and the launch stops. Each release
+    /// runs once.
     /// </summary>
     internal sealed class YieldedProbeLifecycle
     {
@@ -119,7 +121,7 @@ namespace KmgLoaderCompatHarness
             return verdict;
         }
 
-        internal CleanupReport Release(IEnumerable<KeyValuePair<string, Action>> finalReleases)
+        internal CleanupReport Release(Func<IEnumerable<KeyValuePair<string, Action>>> finalReleases)
         {
             var report = new CleanupReport();
             report.Attempted.Add("probe iterator");
@@ -128,7 +130,14 @@ namespace KmgLoaderCompatHarness
             Owned.ReleaseAll();
             report.Attempted.AddRange(Owned.Outcome.Attempted);
             report.Failures.AddRange(Owned.Outcome.Failures);
-            CleanupReport rest = ProbeCleanup.RunAll(finalReleases);
+            CleanupReport rest;
+            try { rest = ProbeCleanup.RunAll(finalReleases == null ? Enumerable.Empty<KeyValuePair<string, Action>>() : finalReleases().ToList()); }
+            catch (Exception exception)
+            {
+                rest = new CleanupReport();
+                rest.Attempted.Add("final releases");
+                rest.Failures.Add("final releases: " + exception.GetType().Name + ": " + exception.Message);
+            }
             report.Attempted.AddRange(rest.Attempted);
             report.Failures.AddRange(rest.Failures);
             foreach (string failure in report.Failures)
@@ -138,47 +147,76 @@ namespace KmgLoaderCompatHarness
     }
 
     /// <summary>
-    /// Review R2-F2: the observed blast's own saving throws get a natural 20 without touching the shared generator. A save
-    /// is registered as owned at its about-to-trigger (when correlated to the blast's execution) and released at its
-    /// did-trigger; the d20 rule native code triggers inside that save (the d20 whose previous event on the rule stack is
-    /// the owned save) is claimed once and pre-rolled. Any other rule or random draw, including one dispatched by another
-    /// handler while the owned save is open, is untouched.
+    /// Review R2-F2: which saving throws the Trumpet probe treats as the observed blast's own. A blast save is one the
+    /// blast's own action triggers: no other saving throw is below it on the rule stack. A save dispatched from inside
+    /// another save's callbacks inherits the blast's rule context but is not the blast's. The probe marks only such a
+    /// save as passed through the save's own AutoPass field; it never touches a d20 rule or the shared generator.
     /// </summary>
-    internal sealed class OwnedD20Claim
+    internal static class TrumpetSaveOwnership
     {
-        private readonly List<object> open = new List<object>();
-        private readonly List<object> claimed = new List<object>();
-
-        internal int Claims { get; private set; }
-
-        internal bool Open { get { return open.Count > 0; } }
-
-        internal void Begin(object ownedSave) { if (ownedSave != null && !open.Any(value => ReferenceEquals(value, ownedSave))) open.Add(ownedSave); }
-
-        internal void End(object ownedSave)
-        {
-            open.RemoveAll(value => ReferenceEquals(value, ownedSave));
-            claimed.RemoveAll(value => ReferenceEquals(value, ownedSave));
-        }
-
-        /// <summary>True once for the first d20 rule whose parent rule is an open owned save.</summary>
-        internal bool Claim(object parentRule)
-        {
-            if (parentRule == null || !open.Any(value => ReferenceEquals(value, parentRule)) || claimed.Any(value => ReferenceEquals(value, parentRule))) return false;
-            claimed.Add(parentRule);
-            Claims++;
-            return true;
-        }
-
-        internal void Abandon() { open.Clear(); claimed.Clear(); }
-
-        /// <summary>
-        /// A blast save is one the blast's own action triggers: no other saving throw is below it on the rule stack. A
-        /// save dispatched from inside another save's callbacks inherits the blast's rule context but is not the blast's.
-        /// </summary>
         internal static bool TopLevelSave(IEnumerable<object> ruleStack, object save, Func<object, bool> isSave)
         {
             return save != null && !(ruleStack ?? Enumerable.Empty<object>()).Any(rule => rule != null && !ReferenceEquals(rule, save) && isSave(rule));
+        }
+
+        /// <summary>
+        /// The decisive R2-F2 interval: a foreign d20 dispatched directly inside the owned save before its native roll.
+        /// Each value is compared with an untreated generator copy drawn in the same order: the foreign die, the owned
+        /// save's own die (rolled natively, not forced) and the next unrelated draw; the owned save passed through its
+        /// AutoPass alone and the foreign die was never pre-rolled.
+        /// </summary>
+        internal static string NestedForeignVerdict(bool insideOwnedSave, int foreignD20, int controlForeignD20, bool foreignPreRolled,
+            int ownedSaveD20, int controlOwnedD20, bool ownedAutoPass, bool ownedPassed, bool followingMatches)
+        {
+            if (!insideOwnedSave) return "not-inside-owned-save";
+            if (foreignPreRolled || foreignD20 != controlForeignD20) return "foreign-d20-changed";
+            if (!ownedAutoPass || !ownedPassed) return "owned-save-not-passed";
+            if (ownedSaveD20 != controlOwnedD20) return "owned-save-die-not-natural";
+            if (!followingMatches) return "following-draw-changed";
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Review R5-F5: the disposable units a probe created, each with one destruction-request owner. A request is
+    /// recorded before it is made, so no later drain requests the same unit again, whether or not native destruction
+    /// (which completes after the call) has finished; final releases are built only for units never requested.
+    /// </summary>
+    internal sealed class OwnedDisposables<T> where T : class
+    {
+        private readonly List<T> items = new List<T>();
+        private readonly List<T> requested = new List<T>();
+        private readonly Func<T, string> identity;
+        private readonly Action<T> destroy;
+
+        internal OwnedDisposables(Func<T, string> identity, Action<T> destroy)
+        {
+            this.identity = identity;
+            this.destroy = destroy;
+        }
+
+        private static bool Has(List<T> list, T item) { return list.Any(value => ReferenceEquals(value, item)); }
+
+        internal void Add(T item) { if (item != null && !Has(items, item)) items.Add(item); }
+
+        internal bool WasRequested(T item) { return item != null && Has(requested, item); }
+
+        /// <summary>Requests destruction once; returns false (and does nothing) when it was already requested.</summary>
+        internal bool Destroy(T item)
+        {
+            if (item == null || Has(requested, item)) return false;
+            requested.Add(item);
+            destroy(item);
+            return true;
+        }
+
+        /// <summary>Owned units never requested.</summary>
+        internal List<T> Remaining { get { return items.Where(item => !Has(requested, item)).ToList(); } }
+
+        /// <summary>One release per owned unit still unrequested, built when called.</summary>
+        internal List<KeyValuePair<string, Action>> Releases(string name)
+        {
+            return ProbeReleases.PerItem(name, Remaining, identity, item => Destroy(item));
         }
     }
 

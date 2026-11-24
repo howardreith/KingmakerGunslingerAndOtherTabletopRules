@@ -15,7 +15,9 @@ namespace KmgLoaderCompatHarness
     /// with a readable driven material equal to the animation's current value. A summon snapshot is positive only when
     /// one of its active looping non-cutout animations has a qualifying donor signature and drives a readable body
     /// material to that value. Current snapshots carry the "bodyMaterials" property: an explicit null (body unreadable)
-    /// is inconclusive. Legacy rows without the property are judged without body identity and labelled so. Any
+    /// cannot count positively, but its readable controller evidence is still examined first, so a contradiction on such
+    /// a row refuses attribution (review R5-F2); without one it is inconclusive. Legacy rows without the property are
+    /// judged without body identity and labelled so. Any
     /// cutout animation, any animation the donor does not configure, or an active animation whose readable driven
     /// material disagrees contradicts. Attribution needs at least <see cref="MinimumPositive"/> positive snapshots and
     /// no contradiction.
@@ -69,8 +71,9 @@ namespace KmgLoaderCompatHarness
             var row = snapshot as JObject;
             bool current = row != null && row.Property("bodyMaterials") != null;
             JToken bodyMaterials = snapshot["bodyMaterials"];
-            if (current && (bodyMaterials == null || bodyMaterials.Type != JTokenType.Array)) return Inconclusive + ":no-readable-body";
-            HashSet<long> body = current ? new HashSet<long>(bodyMaterials.Select(value => (long)value)) : null;
+            // R5-F2: an unreadable body withholds positive credit only; contradictions are evaluated first.
+            bool unreadableBody = current && (bodyMaterials == null || bodyMaterials.Type != JTokenType.Array);
+            HashSet<long> body = current && !unreadableBody ? new HashSet<long>(bodyMaterials.Select(value => (long)value)) : null;
             bool anyAnimation = false, anyActive = false, anyReadable = false, loopMatched = false, qualifyingLoop = false, positive = false;
             foreach (JToken controller in controllers)
             {
@@ -92,10 +95,11 @@ namespace KmgLoaderCompatHarness
                         loopMatched = true;
                         if (qualifying == null || !qualifying.Contains(Signature(animation))) continue;
                         qualifyingLoop = true;
-                        if (body == null || body.Contains((long)material["material"])) positive = true;
+                        if (!unreadableBody && (body == null || body.Contains((long)material["material"]))) positive = true;
                     }
                 }
             }
+            if (unreadableBody) return Inconclusive + ":no-readable-body";
             if (positive) return Positive;
             if (!anyAnimation) return Inconclusive + ":no-animation";
             if (!anyActive) return Inconclusive + ":no-active-animation";
@@ -129,7 +133,8 @@ namespace KmgLoaderCompatHarness
     /// <summary>
     /// Review R4-F6: a lighting observation counts only with a readable body whose cutout is clear and a usable party
     /// capture of that body: an image written, the unit in frame, a lit screen with the fade cleared, the capture's
-    /// renderer enabled and carrying the body's own mesh; and an interpolated light-probe reading.
+    /// renderer enabled, the unit's own fader reporting it visible (review R5-F3) and the renderer carrying the body's own
+    /// mesh; and an interpolated light-probe reading.
     /// </summary>
     internal static class GhaeleLighting
     {
@@ -153,10 +158,59 @@ namespace KmgLoaderCompatHarness
             else if (field("screenLit") != "true") reason = "unlit";
             else if (!double.TryParse(field("screenFade"), NumberStyles.Float, CultureInfo.InvariantCulture, out fade) || fade > .05) reason = "screen-fade";
             else if (field("rendererEnabled") != "true") reason = "renderer-disabled";
+            else if (field("faderVisible") == null) reason = "fader-unavailable";
+            else if (field("faderVisible") != "true") reason = "fader-hidden";
             else if (field("mesh") == null || field("mesh") != (string)row["bodyMesh"]) reason = "wrong-body";
             // The helper's "intact" flag reads the raw _Dissolve, which on the Ghaele is the native non-cutout loop
             // attributed above; the body's own cutout readback (checked first) is what removes surface.
             return reason == null;
+        }
+    }
+
+    /// <summary>
+    /// Review R5-F1: the cast abandoned with its command pending. Immediately before disposal (after every control was set
+    /// up) the exact command must still be queued without an execution and the exact ability loan still held; after the
+    /// observation window the command and grant are settled, the known foreign summon survives, the independent
+    /// execution-correlated witness saw no owned summon and no unattributed same-caster Ghaele, and its subscription
+    /// ended.
+    /// </summary>
+    internal static class GhaelePending
+    {
+        internal static string Verdict(bool commandPendingBeforeDispose, bool loanHeldBeforeDispose, bool commandRemains, bool grantRemains,
+            bool foreignSurvived, int witnessOwnedSummons, int witnessUnattributedSummons, bool witnessSubscribedAfter)
+        {
+            if (!commandPendingBeforeDispose) return "command-not-pending-at-disposal";
+            if (!loanHeldBeforeDispose) return "loan-not-held-at-disposal";
+            if (commandRemains) return "command-remains";
+            if (grantRemains) return "grant-remains";
+            if (!foreignSurvived) return "foreign-summon-lost";
+            if (witnessOwnedSummons != 0) return "late-owned-summon";
+            if (witnessUnattributedSummons != 0) return "unattributed-same-caster-summon";
+            if (witnessSubscribedAfter) return "witness-still-subscribed";
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Review R4-F2: the combat teardown releases only the probe's own attacks and target. A participant still fighting
+    /// afterwards is left alone; it is a reported conflict unless the engagement holding it belongs to the independent
+    /// control the observation set up (then it must still be held), and every participant that was idle at intake must
+    /// leave combat natively once that control is released.
+    /// </summary>
+    internal static class GhaeleCombat
+    {
+        internal static string Verdict(int ownedAttacksLeft, bool targetDestroyRequested, bool controlPreserved, bool controlEngagementHeld,
+            int unexplainedInCombat, bool witnessSurvived, bool witnessSettled, bool nativeLeaveObserved)
+        {
+            if (ownedAttacksLeft != 0) return "owned-attack-left";
+            if (!targetDestroyRequested) return "target-not-released";
+            if (!controlPreserved) return "independent-control-not-preserved";
+            if (!controlEngagementHeld) return "independent-engagement-not-held";
+            if (unexplainedInCombat != 0) return "conflict:unowned-engagement";
+            if (!witnessSurvived) return "witness-interrupted";
+            if (!witnessSettled) return "witness-not-settled";
+            if (!nativeLeaveObserved) return "native-leave-not-observed";
+            return null;
         }
     }
 

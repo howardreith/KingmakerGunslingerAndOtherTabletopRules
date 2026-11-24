@@ -13,7 +13,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// instance; every release is attempted and a failed one is reported
     /// beside the original failure, never in its place.
     /// </summary>
-    internal static class Sprint7ObserverPolicy
+    internal static partial class Sprint7ObserverPolicy
     {
         internal static bool CanOpenWindow(bool windowOpen, bool hoverOpen, bool modalOpen)
         {
@@ -105,6 +105,62 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (original == null ? "unknown" : original.GetType().Name + ": " + original.Message), original);
         }
     }
+    /// <summary>
+    /// R4-F5: native playback of one cue's playing ID through the installed query (GetEventIDFromPlayingID: the event of
+    /// a playing ID, 0 when it is not playing). Only an initialized engine that answered is evidence; an engine that is
+    /// not initialized, a query that threw or a missing playing ID is unknown, never completion. A queried inactivity is
+    /// recorded apart from the product's end-of-event callback.
+    /// </summary>
+    internal static partial class Sprint7ObserverPolicy
+    {
+        internal const string PlaybackPlaying = "playing";
+        internal const string PlaybackInactive = "inactive";
+        internal const string PlaybackUnknown = "unknown";
+
+        internal static string PlaybackState(bool initialized, uint playingId, uint eventId, bool threw)
+        {
+            if (!initialized || threw || playingId == 0) return PlaybackUnknown;
+            return eventId != 0 ? PlaybackPlaying : PlaybackInactive;
+        }
+
+        /// <summary>R4-F5, normal-callback control: the per-ID trace around a concurrent retirement, as a verdict.</summary>
+        internal static string ConcurrentRetirementTrace(string retiringBefore, string survivorBefore, int survivorStopAttempts, bool survivorCallback,
+            string survivorSettled, bool survivorTrackedSettled, string retiringSettled)
+        {
+            if (retiringBefore != PlaybackPlaying || survivorBefore != PlaybackPlaying) return "not-both-playing";
+            if (survivorStopAttempts != 0) return "survivor-stopped-by-other-retirement";
+            if (!survivorCallback) return "survivor-callback-missing";
+            if (survivorSettled != PlaybackInactive) return "survivor-playback-not-confirmed-inactive:" + survivorSettled;
+            if (survivorTrackedSettled) return "survivor-still-tracked";
+            if (retiringSettled != PlaybackInactive) return "retired-playback-not-confirmed-inactive:" + retiringSettled;
+            return null;
+        }
+
+        /// <summary>
+        /// R4-F5, synthetic callback loss: null only when the survivor's playback ended normally while its callback was
+        /// withheld, the other source's retirement stopped only its own ID, the residual was the survivor's tracking on
+        /// its own source, that source's view and playback component were actually destroyed, no other record changed, no
+        /// end was manufactured and the observer's intervention is gone.
+        /// </summary>
+        internal static string CallbackLossVerdict(string survivorBefore, string otherBefore, int otherStopAttempts, bool otherStopRequested,
+            int survivorStopAttemptsAfterOther, int withheldCallbacks, bool survivorEndRecordedInWindow, bool survivorInactiveInWindow, bool unknownInWindow,
+            bool survivorTrackedAtWindowEnd, bool sourceViewDestroyed, bool playbackComponentDestroyed, bool survivorEndAfterDisposal,
+            int unrelatedRecordsChanged, int interventionLeft)
+        {
+            if (survivorBefore != PlaybackPlaying || otherBefore != PlaybackPlaying) return "not-both-playing";
+            if (otherStopAttempts != 1 || !otherStopRequested) return "other-not-stopped-by-own-id";
+            if (survivorStopAttemptsAfterOther != 0) return "survivor-stopped-by-other-retirement";
+            if (withheldCallbacks < 1 || survivorEndRecordedInWindow) return "callback-not-withheld";
+            if (!survivorInactiveInWindow) return unknownInWindow ? "survivor-playback-unknown" : "survivor-playback-persisted";
+            if (!survivorTrackedAtWindowEnd) return "survivor-tracking-not-source-local";
+            if (!sourceViewDestroyed || !playbackComponentDestroyed) return "source-disposal-not-observed";
+            if (survivorEndAfterDisposal) return "end-manufactured";
+            if (unrelatedRecordsChanged != 0) return "unrelated-record-affected";
+            if (interventionLeft != 0) return "intervention-not-restored";
+            return null;
+        }
+    }
+
     /// <summary>
     /// R3-F3: the conditions a cell's own executions introduced. Instances
     /// already present when the cell began are never acquired; an instance is
