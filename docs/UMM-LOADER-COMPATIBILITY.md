@@ -18,14 +18,14 @@ This candidate checks the pinned-loader build change (PR #220). It is a developm
 
 | Item | Value |
 |---|---|
-| Producing commit | `04b9384ed1` |
-| Command | `scripts\Build-Local.ps1 -DevelopmentPurpose umm-0311-baseline -DevelopmentTestFilter model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged -ReferenceBundleDir <private bundle>`, 410 s, 1 of 3189 registered domain tests selected. Build-Local runs its domain tests before the exact build, so the loader-reference check of this DLL is `validate-package.ps1` after the build (below); the domain check `loader.production-dll-references-pinned-loader` runs in the focused gate on the DLL that gate compiles |
+| Producing commit | `91139e4368` |
+| Command | `scripts\Build-Local.ps1 -DevelopmentPurpose umm-0311-baseline -DevelopmentTestFilter model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged -ReferenceBundleDir <private bundle>`, about 8 minutes (validation summary 07:46:27 UTC, receipt 07:54:13 UTC; its console log was not retained), 1 of 3189 registered domain tests selected and passed. The loader references of this DLL are checked by `validate-package.ps1` after the exact build, and the receipt records the exact compiler output, which equals the packaged DLL (`compilerDllSha256` = `packagedDllSha256`), with the embedded source stamp `91139e4368` |
 | Compiler loader references | `UnityModManager.dll` 0.31.1.0 `2e038ff2…c2c4` and `0Harmony12.dll` 1.2.0.1 `aa1cd483…1292` from `artifacts\references\loader` (pins file `b13bed40…`) |
-| Package | `KingmakerGunslinger-0.0.195-development-umm-0311-baseline-04b9384ed1fe.zip`, SHA-256 `7275c768cfd9755ff7d8ba210549b1eb80acdabf64fec4e7f62dc32e2d4f6171` |
-| Packaged DLL | SHA-256 `4cbc662565de3c5608c6cb18dfc075b13fd6f574d98af0058ced2e02395ea446`, MVID `bd268aa9-7524-4559-b580-9918f1fded45` |
+| Package | `KingmakerGunslinger-0.0.195-development-umm-0311-baseline-91139e4368ed.zip`, SHA-256 `376ce2532e7895bcb7dfe6bea89177e8cb93a853bc81136ac285c58f4698edd0` |
+| Packaged DLL | SHA-256 `1ef167cca4135ef8f561ac437c55984ed59777c3962012bf90d738cdc4d1c0e9`, MVID `7c7a1479-98af-4eea-af25-e88ea9986839` |
 | DLL loader references (AssemblyRef table) | `UnityModManager, Version=0.31.1.0, Culture=neutral, PublicKeyToken=null`, `0Harmony12, Version=1.2.0.1, Culture=neutral, PublicKeyToken=null` |
 | Standalone validation | `scripts\validate-package.ps1 -PassThru`: passed (one binary, complete archive entry set, packaged DLL references equal the pins) |
-| Candidate admission | `scripts\Test-CandidateAdmission.ps1`: 13/13 passed on a development candidate that Build-Local built in a temporary clone of `04b9384ed1`. The matching candidate is admitted. Refused before staging: a newer-compiled DLL (the released v0.0.187 DLL, which references UnityModManager 0.33.0.0); an extra runtime DLL at the archive root or in the mod tree; a receipt naming another build's MVID or DLL hash while the ZIP digest matches; and a candidate whose project file or reference helper changed at the same version. The loader preflight admits the matching candidate and refuses a mismatched ZIP. |
+| Candidate admission | `scripts\Test-CandidateAdmission.ps1`: 29/29 on a development candidate that Build-Local built in a temporary clone of `91139e4368`. The matching candidate is admitted. Refused before staging: a newer-compiled DLL (v0.0.187, UnityModManager 0.33.0.0); an extra runtime DLL at the archive root or in the mod tree; a noncanonical entry landing beside the mod directory; an array-valued minimum; a receipt naming another build's MVID or DLL hash; another baseline-compatible build (the v0.0.195 DLL, stamped `ef0e1fe15d`) supplying both the loose and packaged DLL under a receipt naming this producer; a candidate after a project, reference-helper, shipped README or packaging-helper change. A change confined to `docs/` keeps the candidate admitted. A relative package path after a location change is accepted. Historical control: the recorded v0.0.188 release is admitted, while a changed archive, a same-version development package and conflicting mode arguments are refused. Staging refuses a package replaced before the private copy and stages only the admitted bytes after the supplied path changes (Deploy-Local and loader harness). A purpose containing an apostrophe gets the purpose-validation error before any child process. |
 
 **Static loader audit of this DLL.** The frozen packaged DLL was checked against four deduplicated targets. Each target is
 a UnityModManager build plus the Harmony 2 it references and 0Harmony12 1.2.0.1:
@@ -120,9 +120,12 @@ No compatibility adapter was needed and none was added.
 * **Every MSBuild compile (added 2026-11-24).** Until then the project's default `UnityModManagerDir` was the installed
   loader (`<KingmakerInstallDir>\Kingmaker_Data\Managed\UnityModManager`), so a direct MSBuild and the development
   compiles of `scripts\build.ps1` and `Invoke-KmgGate.ps1` were compiled against whichever loader was installed.
-  Release packages come from the exact-reference compiler. The verified assurance is limited to v0.0.188 and v0.0.195,
-  whose packaged DLLs reference UnityModManager 0.31.1.0 and 0Harmony12 1.2.0.1 (status table); this record makes no
-  claim about other builds. The default is now the pinned cache
+  `scripts\Publish-Release.ps1` has two packaging routes. With a private reference bundle it packages Build-Local's
+  exact-reference compiler output (`tools\build_mod_from_private_references.py`, given the pinned loader directory).
+  Without one it runs `build.ps1` and `package.ps1`, the MSBuild route, which compiled against the project's
+  `UnityModManagerDir` (the installed loader by default until this change). The verified assurance is therefore limited
+  to v0.0.188 and v0.0.195, whose packaged DLLs reference UnityModManager 0.31.1.0 and 0Harmony12 1.2.0.1 (status table);
+  this record makes no claim about other builds. The default is now the pinned cache
   `artifacts\references\loader\UnityModManager`, which `scripts\build.ps1` fetches and verifies first. Before
   references resolve, the project verifies the folder it is given against the pins (`scripts\Assert-PinnedLoaderReferences.ps1`),
   so a direct MSBuild pointed at the installed loader or at altered files is refused; after reference selection, the
@@ -133,25 +136,47 @@ No compatibility adapter was needed and none was added.
   source state, which invalidates earlier receipts.
 * **Package validation.** The packaged `ManagerVersion` must equal the pinned floor. The package must contain exactly one
   binary, the mod, and no loader, Harmony, dnlib, game or Unity assembly.
-* **Packaged DLL and admission (added 2026-11-24).** `validate-package.ps1` reads the AssemblyRef table of the DLL inside
-  the ZIP (isolated reflection-only load) and requires exactly the pinned `UnityModManager` and `0Harmony12` identities.
-  It checks the complete archive entry set, so a binary at the archive root or anywhere in the mod tree is refused.
-  Candidate admission in `Deploy-Local.ps1` and the loader harness preflight requires that DLL's SHA-256 and MVID to equal
-  the build receipt's, and the candidate's material inputs to be unchanged since its producing commit. Released packages
-  are admitted only as an explicit `-HistoricalReleaseControl`. Direct MSBuild checks `Info.json` `ManagerVersion`
-  against the pins.
+* **Packaged DLL and admission (added 2026-11-24).**
+  - `validate-package.ps1` resolves the package path once. It checks every archive entry's normalized destination (under
+    the mod root, no `.`/`..` segment, no duplicate, nothing at the extraction root) and extracts exactly those entries.
+    It reads the AssemblyRef table of the DLL inside the ZIP (isolated reflection-only load) and requires exactly the
+    pinned `UnityModManager` and `0Harmony12` identities, and a string `ManagerVersion` equal to the pinned floor.
+  - Build-Local measures the exact compiler output in its private folder. The DLL inside the finished ZIP and the loose
+    copy must equal it before either receipt is written. The receipt records the compiler and packaged identities and the
+    embedded source stamp (`AssemblyMetadata` `GitCommit`).
+  - Candidate admission (`Deploy-Local.ps1`, the loader harness preflight) requires the packaged DLL's SHA-256 and MVID to
+    equal the receipt's, and its embedded source stamp to be the receipt's producing commit. Every file outside `docs/`
+    must be unchanged since that commit: product sources, shipped files, assets and every build, packaging and
+    validation helper. A change confined to documentation under `docs/` keeps the candidate admissible.
+  - Staging copies the admitted package privately and requires the copy's digest to be the admitted one. It extracts the
+    checked entries and requires the extracted DLL to be the admitted DLL before any target is replaced, so bytes that
+    replace the supplied path after admission are never staged.
+  - The loader harness admits in its own process, with every value passed as a bound parameter. A development purpose is
+    validated before that process starts, and the harness files are checked first.
+  - A released package is admitted only as an explicit historical release control: `-HistoricalReleaseControl` with
+    `-HistoricalReleaseVersion`, exclusive of `-DevelopmentPurpose`. It is checked against the committed release record
+    `scripts/historical-release-records.json`: package digest, release tag resolving to the recorded commit, and
+    packaged DLL digest, MVID and source stamp.
+  - Direct MSBuild checks `Info.json` `ManagerVersion` against the pins.
+  - A pin failure names its recovery. An absent file is fetched by `scripts\build.ps1`. A file present with different
+    bytes is left untouched, to be inspected and removed by hand before rerunning (as in `docs\BUILDING.md`).
 * **Tests.**
   - `scripts/Test-LoaderReferencePins.ps1` (35 checks: fixture pins, and stub assemblies of known identity for the
     package reference cases) and `tools/test_loader_reference_pins.py` (5) run inside `validate-repository.ps1`.
-  - `scripts/Test-PinnedLoaderMsBuild.ps1` (9 checks) runs MSBuild on a temporary clone. The historical control is the
-    pinned commit `35763430ac`; its checkout is verified, and the installed-loader case applies only when the installed
-    loader differs from the pins. `build.ps1` and a direct MSBuild compile against the pinned files. Refused before
-    compilation: the installed or a mismatched loader set, an altered copy, a folder not named `UnityModManager`, a
+  - `scripts/Test-PinnedLoaderMsBuild.ps1` (12 checks) runs MSBuild on a temporary clone. The historical control is the
+    pinned commit `35763430ac`, with its checkout verified. `build.ps1` and a direct MSBuild compile against the pinned
+    files. Loader sets are judged by bytes, on controlled reference directories (exact set accepted; UMM-only mismatch and
+    Harmony-only mismatch refused naming the differing file) and on the installation, read only, with the expected
+    verdict taken from measurement. Refused before compilation: an altered copy, a folder not named `UnityModManager`, a
     mismatched `Info.json` minimum, and a stray HintPath to a copy outside the verified folder.
-  - `scripts/Test-CandidateAdmission.ps1` (13 checks) runs on a real Build-Local development candidate in a temporary
-    clone (see the current development candidate above).
-  - The domain check `loader.production-dll-references-pinned-loader` runs in the focused gate on the production DLL that
-    gate compiled (bound by path and SHA-256); without that binding it refuses.
+  - `scripts/Test-CandidateAdmission.ps1` (29 checks) runs on a real Build-Local development candidate in a temporary
+    clone (see the current development candidate above). It covers package entries, receipt binding including another
+    baseline-compatible build's source stamp, material inputs, historical release controls, staging from the admitted copy
+    and the purpose passed as data.
+  - The domain check `loader.production-dll-references-pinned-loader` inspects a verified compiler output wherever it is
+    selected. `test-domain.ps1` binds the DLL that `build.ps1` or the focused gate has just compiled, or compiles one
+    itself (for a complete-suite run), by path and SHA-256, with the expected identities read by the pin reader. A
+    mismatched binding is refused.
   - `Test-DevelopmentCandidate.ps1` proves that the compiler receives the pinned directory and that a tampered loader is
     refused before any child step.
 

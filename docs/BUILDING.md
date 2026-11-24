@@ -129,7 +129,8 @@ Loader references are pinned separately. `UnityModManager.dll` and `0Harmony12.d
 `build.ps1` and `Build-Local.ps1` fetch each **absent** file from its pinned upstream URL into
 `artifacts/references/loader` and verify its SHA-256 (and, for an archive source, the archive hash and entry). A file
 that is **present with different bytes** is not a cache miss: the build stops with `Pinned loader reference differs from
-its pin: <path>; pinnedSha256=…; actualSha256=…` and the file is left untouched. Inspect it, move or delete that one file
+its pin: <path>; pinnedSha256=…; actualSha256=…` (direct MSBuild adds the same recovery advice to its `KMGPIN` error),
+and the file is left untouched. Inspect it, move or delete that one file
 yourself, then rerun to fetch the pinned copy. Build-Local records role, assembly version, source and the pins hash in
 the build receipt. The compiler re-verifies the pins itself. Game and Unity references keep
 their exact bundle-equals-installation check. `Info.json` `ManagerVersion` must equal the pinned floor, which
