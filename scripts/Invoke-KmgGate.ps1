@@ -91,11 +91,24 @@ if ($Level -eq 'Focused') {
         if ($MSBuildPath) { $compileArguments.MSBuildPath = $MSBuildPath }
         & (Join-Path $PSScriptRoot 'build.ps1') @compileArguments
     }
-    Invoke-KmgWithTestFilter -Filter $effectiveFilter -Body {
-        Invoke-KmgGateStep 'domain-tests (focused)' {
-            & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -SkipRepositoryValidation -MSBuildPath $MSBuildPath
+    # The production DLL this gate just compiled, by path and SHA-256, for domain checks that inspect it
+    # (loader.production-dll-references-pinned-loader); they refuse any other file.
+    $productionDll = Join-Path (Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot) 'artifacts\bin\Release\KingmakerGunslinger\KingmakerGunslinger.dll'
+    $previousProductionDll = $env:KMG_PRODUCTION_DLL; $previousProductionSha = $env:KMG_PRODUCTION_DLL_SHA256
+    # Without a compiled DLL the binding stays unset and a check that needs it refuses.
+    if (Test-Path -LiteralPath $productionDll -PathType Leaf) {
+        $env:KMG_PRODUCTION_DLL = $productionDll
+        $env:KMG_PRODUCTION_DLL_SHA256 = (Get-FileHash -LiteralPath $productionDll -Algorithm SHA256).Hash.ToLowerInvariant()
+    }
+    else { $env:KMG_PRODUCTION_DLL = $null; $env:KMG_PRODUCTION_DLL_SHA256 = $null }
+    try {
+        Invoke-KmgWithTestFilter -Filter $effectiveFilter -Body {
+            Invoke-KmgGateStep 'domain-tests (focused)' {
+                & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -SkipRepositoryValidation -MSBuildPath $MSBuildPath
+            }
         }
     }
+    finally { $env:KMG_PRODUCTION_DLL = $previousProductionDll; $env:KMG_PRODUCTION_DLL_SHA256 = $previousProductionSha }
     Add-KmgDeferred 'repository wrapper' 'Focused level; runs at the sprint candidate boundary'
     Add-KmgDeferred 'complete domain suite' 'Focused level; runs at the sprint candidate boundary'
     Add-KmgDeferred 'exact-reference frozen Release candidate' 'Focused compiled production; immutable packaging is an explicit candidate boundary'

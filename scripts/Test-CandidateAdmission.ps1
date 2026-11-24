@@ -59,7 +59,7 @@ try {
 
     # A real development candidate (Build-Local, development purpose, one named loader test).
     $build = Invoke-PS @('-File', (Join-Path $clone 'scripts\Build-Local.ps1'), '-ReferenceBundleDir', $ReferenceBundleDir,
-        '-DevelopmentPurpose', $purpose, '-DevelopmentTestFilter', 'loader.production-dll-references-pinned-loader')
+        '-DevelopmentPurpose', $purpose, '-DevelopmentTestFilter', 'model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged')
     $package = [regex]::Match($build.Output, 'DEVELOPMENT CANDIDATE \(never a release\): (.+?\.zip)').Groups[1].Value
     Add-Case 'development-candidate-built' ($build.ExitCode -eq 0 -and $package -and (Test-Path -LiteralPath $package)) "exit $($build.ExitCode); $package"
     if (-not $package) { throw "Build-Local produced no candidate: $($build.Output.Substring([Math]::Max(0, $build.Output.Length - 600)))" }
