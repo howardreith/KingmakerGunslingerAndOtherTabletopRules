@@ -366,6 +366,13 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(Math.Abs(luminance(ice) - luminance(dust)) < 1e-4, "Brightness is unchanged.");
                 Assertions.True(dust[0] > dust[1] && dust[1] > dust[2], "The hue is warm dust, red over green over blue.");
             }
+            // A subtractive layer gets the complementary (cool) tone, so what
+            // it removes from the scene leaves warm dust behind.
+            float[] removed = Summoning.MephitBreathPolicy.DustTintSubtractive(.6f, .5f, .4f, .7f);
+            Assertions.Equal(.7f, removed[3], "Subtractive alpha is unchanged.");
+            Assertions.True(removed[2] > removed[1] && removed[1] > removed[0], "A subtractive layer removes cool light: blue over green over red.");
+            Assertions.True(Summoning.MephitBreathPolicy.IsSubtractiveMaterial("Horizontal_Smoke00_128_Transparent_Hdr_Detail_Substract_Queue_02") &&
+                !Summoning.MephitBreathPolicy.IsSubtractiveMaterial("Glow00_32_Add_Hdr_Offset_00"), "Subtractive layers are recognised by their native names.");
             float[] invalid = Summoning.MephitBreathPolicy.DustTint(float.NaN, 0, 0, .3f);
             Assertions.True(invalid.Take(3).All(value => !float.IsNaN(value)) && invalid[3] == .3f, "Non-finite input yields a finite dust tone.");
         }

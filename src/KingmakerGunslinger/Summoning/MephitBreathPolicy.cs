@@ -216,12 +216,35 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         internal static float[] DustTint(float r, float g, float b, float a)
         {
+            return Tone(r, g, b, a, DustDark, DustLight);
+        }
+
+        /// <summary>
+        /// A subtractive layer darkens the scene by its colour, so the
+        /// complement of the dust tone is what leaves warm dust behind it. The
+        /// same luminance-preserving mapping with the complementary palette.
+        /// </summary>
+        internal static float[] DustTintSubtractive(float r, float g, float b, float a)
+        {
+            return Tone(r, g, b, a, new[] { 1f - DustDark[0], 1f - DustDark[1], 1f - DustDark[2] },
+                new[] { 1f - DustLight[0], 1f - DustLight[1], 1f - DustLight[2] });
+        }
+
+        /// <summary>Whether a material subtracts its colour from the scene (the native names say so).</summary>
+        internal static bool IsSubtractiveMaterial(string name)
+        {
+            return name != null && (name.IndexOf("Substract", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("Subtract", StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
+        private static float[] Tone(float r, float g, float b, float a, float[] dark, float[] light)
+        {
             float luminance = .2126f * r + .7152f * g + .0722f * b;
             if (float.IsNaN(luminance) || float.IsInfinity(luminance) || luminance < 0f)
-                return new[] { DustDark[0], DustDark[1], DustDark[2], a };
+                return new[] { dark[0], dark[1], dark[2], a };
             float t = Math.Min(1f, luminance);
             var tone = new float[3];
-            for (int k = 0; k < 3; k++) tone[k] = DustDark[k] + (DustLight[k] - DustDark[k]) * t;
+            for (int k = 0; k < 3; k++) tone[k] = dark[k] + (light[k] - dark[k]) * t;
             float toneLuminance = .2126f * tone[0] + .7152f * tone[1] + .0722f * tone[2];
             float scale = luminance / toneLuminance;
             return new[] { tone[0] * scale, tone[1] * scale, tone[2] * scale, a };

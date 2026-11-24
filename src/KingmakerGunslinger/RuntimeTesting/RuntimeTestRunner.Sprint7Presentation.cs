@@ -1071,7 +1071,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     using (var clip = new R6Clip(_request.EvidenceDirectory, "s7-dust-cast-" + index, frame, bearing))
                         foreach (int step in R6RunPassive(dust, abilityData(dust, breath), new TargetWrapper(hostile), cast, clip)) yield return step;
                     int liveAtEnd = DustMephitBreathTint.Live;
-                    foreach (int step in R6Seconds(3f)) yield return step;
+                    DateTime release = DateTime.UtcNow, releaseDeadline = DateTime.UtcNow.AddSeconds(20);
+                    while (DateTime.UtcNow < releaseDeadline && DustMephitBreathTint.Live > 0) yield return 0;
+                    cast["secondsToRelease"] = (DateTime.UtcNow - release).TotalSeconds;
+                    foreach (int step in R6Seconds(1f)) yield return step;
                     mark("dust-cast-" + index + "-end");
                     var damage = recorder.Damage.Skip(damageFrom).Where(value => ReferenceEquals(value.Initiator, dust)).ToArray();
                     cast["damage"] = new JArray(damage.Select(value => new JObject { ["target"] = value.Target.UniqueId,
@@ -1125,7 +1128,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bothLive = Math.Max(bothLive, UnityEngine.Object.FindObjectsOfType<DustMephitBreathTint>().Length);
                     yield return 0;
                 }
-                foreach (int step in R6Seconds(3f)) yield return step;
+                DateTime concurrentDeadline = DateTime.UtcNow.AddSeconds(20);
+                while (DateTime.UtcNow < concurrentDeadline && DustMephitBreathTint.Live > 0) yield return 0;
+                foreach (int step in R6Seconds(1f)) yield return step;
                 mark("dust-concurrent-end");
                 var concurrent = trace.Rows.Skip(concurrentRows).ToArray();
                 var iceViews = concurrent.Where(value => (string)value["launcher"] == ice.UniqueId).ToArray();
@@ -1148,7 +1153,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool launched = DustMephitBreathTint.Applied > lossApplied;
                 mark("dust-loss-despawn");
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { spare });
-                foreach (int step in R6Seconds(4f)) yield return step;
+                DateTime lossDeadline = DateTime.UtcNow.AddSeconds(20);
+                while (DateTime.UtcNow < lossDeadline && DustMephitBreathTint.Live > 0) yield return 0;
+                foreach (int step in R6Seconds(1f)) yield return step;
                 mark("dust-loss-end");
                 Sprint25Check("s7-dust-source-loss", launched && DustMephitBreathTint.Live == 0 &&
                     UnityEngine.Object.FindObjectsOfType<DustMephitBreathTint>().Length == 0,

@@ -133,8 +133,11 @@ namespace KingmakerGunslinger.Summoning
                 foreach (Component system in GetComponentsInChildren(ParticleSystemType, true))
                 {
                     if (system == null || !_seenSystems.Add(system.GetInstanceID())) continue;
-                    TintModule(MainProperty.GetValue(system, null), "startColor", false);
-                    if (LifetimeProperty != null) TintModule(LifetimeProperty.GetValue(system, null), "color", true);
+                    Renderer drawn = system.GetComponent<Renderer>();
+                    bool subtractive = drawn != null && drawn.sharedMaterial != null &&
+                        MephitBreathPolicy.IsSubtractiveMaterial(drawn.sharedMaterial.name);
+                    TintModule(MainProperty.GetValue(system, null), "startColor", false, subtractive);
+                    if (LifetimeProperty != null) TintModule(LifetimeProperty.GetValue(system, null), "color", true, subtractive);
                 }
             foreach (Renderer renderer in GetComponentsInChildren<Renderer>(true))
             {
@@ -145,9 +148,10 @@ namespace KingmakerGunslinger.Summoning
                 {
                     if (original[index] == null) continue;
                     clones[index] = new Material(original[index]) { name = original[index].name + "_KMG_Dust" };
+                    bool subtractive = MephitBreathPolicy.IsSubtractiveMaterial(original[index].name);
                     foreach (string property in ColourProperties)
                         if (clones[index].HasProperty(property))
-                            clones[index].SetColor(property, Tint(clones[index].GetColor(property)));
+                            clones[index].SetColor(property, Tint(clones[index].GetColor(property), subtractive));
                     RecolouredMaterials++;
                 }
                 renderer.sharedMaterials = clones;
@@ -157,7 +161,7 @@ namespace KingmakerGunslinger.Summoning
 
         // The module structs write through to their particle system, so a
         // boxed copy is enough to read and assign the colour.
-        private void TintModule(object module, string member, bool onlyIfEnabled)
+        private void TintModule(object module, string member, bool onlyIfEnabled, bool subtractive)
         {
             if (module == null) return;
             Type type = module.GetType();
@@ -176,13 +180,13 @@ namespace KingmakerGunslinger.Summoning
             {
                 PropertyInfo value = gradientType.GetProperty(name);
                 if (value != null && value.CanWrite && value.PropertyType == typeof(Color))
-                    value.SetValue(tinted, Tint((Color)value.GetValue(tinted, null)), null);
+                    value.SetValue(tinted, Tint((Color)value.GetValue(tinted, null), subtractive), null);
             }
             foreach (string name in GradientMembers)
             {
                 PropertyInfo value = gradientType.GetProperty(name);
                 if (value != null && value.CanWrite && value.PropertyType == typeof(Gradient))
-                    value.SetValue(tinted, Tint((Gradient)value.GetValue(tinted, null)), null);
+                    value.SetValue(tinted, Tint((Gradient)value.GetValue(tinted, null), subtractive), null);
             }
             _particles.Add(new ParticleState { Module = module, Colour = colour, Original = original });
             colour.SetValue(module, tinted, null);
@@ -216,17 +220,18 @@ namespace KingmakerGunslinger.Summoning
         private void OnDisable() { Restore(); }
         private void OnDestroy() { Restore(); }
 
-        private static Color Tint(Color value)
+        private static Color Tint(Color value, bool subtractive)
         {
-            float[] dust = MephitBreathPolicy.DustTint(value.r, value.g, value.b, value.a);
+            float[] dust = subtractive ? MephitBreathPolicy.DustTintSubtractive(value.r, value.g, value.b, value.a)
+                : MephitBreathPolicy.DustTint(value.r, value.g, value.b, value.a);
             return new Color(dust[0], dust[1], dust[2], dust[3]);
         }
 
-        private static Gradient Tint(Gradient value)
+        private static Gradient Tint(Gradient value, bool subtractive)
         {
             if (value == null) return null;
             GradientColorKey[] keys = value.colorKeys;
-            for (int index = 0; index < keys.Length; index++) keys[index].color = Tint(keys[index].color);
+            for (int index = 0; index < keys.Length; index++) keys[index].color = Tint(keys[index].color, subtractive);
             var tinted = new Gradient { mode = value.mode };
             tinted.SetKeys(keys, value.alphaKeys);
             return tinted;
