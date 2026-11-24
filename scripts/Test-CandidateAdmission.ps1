@@ -132,7 +132,7 @@ try {
     $harnessDir = Join-Path $temp 'harness'; New-Item -ItemType Directory -Path $harnessDir | Out-Null
     foreach ($name in @('KmgLoaderCompatHarness.dll', 'Info.json')) { Set-Content -LiteralPath (Join-Path $harnessDir $name) -Value 'fixture' }
     $lc = Join-Path $clone 'scripts\compatibility\loader-compat'
-    $preflight = { param([string]$zip) Invoke-PS @('-Command', ". '$((Join-Path $lc 'LoaderCompat.Common.ps1').Replace("'", "''"))'; . '$((Join-Path $lc 'LoaderCompat.Transaction.ps1').Replace("'", "''"))'; 'PREFLIGHT ' + (Assert-LcSessionInputs '$($zip.Replace("'", "''"))' '$($harnessDir.Replace("'", "''"))' '$purpose').packageSha256") }
+    $preflight = { param([string]$zip) Invoke-PS @('-Command', ". '$((Join-Path $lc 'LoaderCompat.Common.ps1').Replace("'", "''"))'; . '$((Join-Path $lc 'LoaderCompat.Transaction.ps1').Replace("'", "''"))'; `$a = Assert-LcSessionInputs '$($zip.Replace("'", "''"))' '$($harnessDir.Replace("'", "''"))' '$purpose'; 'PREFLIGHT ' + `$a.packageSha256; Remove-LcAdmittedCopy `$a") }
     $pf = & $preflight $package
     Add-Case 'loader-preflight-admits-matching-candidate' ($pf.ExitCode -eq 0 -and $pf.Output -match 'PREFLIGHT [0-9a-f]{64}') "exit $($pf.ExitCode)"
     # The admitted identity the session carries (mode, version, producer commit) and a verified private staging tree; a
@@ -352,11 +352,43 @@ try {
 }
 finally { [IO.File]::WriteAllBytes($Package, $original) }
 '@)
+    $packageShaBeforeStaging = Get-Sha $package
     $sp = Invoke-PS @('-File', $stagingProbe, '-Harness', $harness, '-Clone', $clone, '-Package', $package, '-Purpose', $purpose, '-Replacement', $newer, '-Work', (Join-Path $temp 'staging-work'), '-Lc', $lc, '-HarnessDir', $harnessDir)
     $after = [regex]::Match($sp.Output, 'AFTER-COPY STAGED ([0-9a-f]{64}) ADMITTED ([0-9a-f]{64})')
     $loaderStaged = [regex]::Match($sp.Output, 'LOADER STAGED ([0-9a-f]{64}) ADMITTED ([0-9a-f]{64})')
     Add-Case 'staging-refuses-a-package-replaced-before-the-private-copy' ($sp.Output -match 'BEFORE-COPY REFUSED The package changed after admission') (Get-Reason $sp.Output)
-    Add-Case 'staging-uses-only-the-admitted-bytes-after-the-supplied-path-changes' ($after.Success -and $after.Groups[1].Value -ceq $after.Groups[2].Value -and $loaderStaged.Success -and $loaderStaged.Groups[1].Value -ceq $loaderStaged.Groups[2].Value -and (Get-Sha $package) -ceq (Get-Sha $package)) "deploy staging $($after.Groups[1].Value); loader staging $($loaderStaged.Groups[1].Value)"
+    Add-Case 'staging-uses-only-the-admitted-bytes-after-the-supplied-path-changes' ($after.Success -and $after.Groups[1].Value -ceq $after.Groups[2].Value -and $loaderStaged.Success -and $loaderStaged.Groups[1].Value -ceq $loaderStaged.Groups[2].Value -and $sp.ExitCode -eq 0 -and (Get-Sha $package) -ceq $packageShaBeforeStaging) "deploy staging $($after.Groups[1].Value); loader staging $($loaderStaged.Groups[1].Value)"
+
+    # --- Staging admission verifies the producer claim: a baseline-compatible MSBuild-route compile of this commit (no
+    #     source stamp) under a receipt in the earlier format (without the stamp field) is refused, whose digests match.
+    $looseDll = Join-Path $clone 'artifacts\bin\Release\KingmakerGunslinger\KingmakerGunslinger.dll'
+    $looseBeforeUnstamped = if (Test-Path -LiteralPath $looseDll) { [IO.File]::ReadAllBytes($looseDll) } else { $null }
+    $unstampedBuild = Invoke-PS @('-File', (Join-Path $clone 'scripts\build.ps1'), '-Configuration', 'Release', '-CompileOnly')
+    $unstampedDll = Join-Path $variants 'unstamped.dll'
+    [IO.File]::WriteAllBytes($unstampedDll, [IO.File]::ReadAllBytes($looseDll))
+    if ($null -ne $looseBeforeUnstamped) { [IO.File]::WriteAllBytes($looseDll, $looseBeforeUnstamped) }
+    $unstampedMvid = (Invoke-PS @('-Command', "[Reflection.Assembly]::ReflectionOnlyLoad([IO.File]::ReadAllBytes('$($unstampedDll.Replace("'", "''"))')).ManifestModule.ModuleVersionId.ToString()")).Output.Trim()
+    $unstampedStamp = (Invoke-PS @('-Command', ". '$($harness.Replace("'", "''"))'; (Get-KmgPackagedDllIdentity -DllPath '$($unstampedDll.Replace("'", "''"))').gitCommit")).Output.Trim()
+    $unstampedZip = Join-Path $variants 'unstamped-build.zip'
+    New-ZipVariant $package $unstampedZip @{ $dllEntry = [IO.File]::ReadAllBytes($unstampedDll) }
+    $packageBytes2 = [IO.File]::ReadAllBytes($package); $receipt2 = [IO.File]::ReadAllText($receiptPath)
+    $sidecar2 = "$package.sha256"; $sidecarText2 = if (Test-Path -LiteralPath $sidecar2) { [IO.File]::ReadAllText($sidecar2) } else { $null }
+    try {
+        [IO.File]::Copy($unstampedZip, $package, $true)
+        $earlier = $receipt2 | ConvertFrom-Json
+        foreach ($field in @('compilerDllSha256', 'compilerDllMvid', 'packagedDllSha256', 'embeddedGitCommit')) { [void]$earlier.PSObject.Properties.Remove($field) }
+        $earlier.packageSha256 = Get-Sha $package; $earlier.dllSha256 = Get-Sha $unstampedDll; $earlier.dllMvid = $unstampedMvid
+        [IO.File]::WriteAllText($receiptPath, ($earlier | ConvertTo-Json -Depth 12))
+        if ($null -ne $sidecarText2) { [IO.File]::WriteAllText($sidecar2, $sidecarText2.Replace(([regex]::Match($sidecarText2, '[0-9a-fA-F]{64}').Value), $earlier.packageSha256)) }
+        $r = & $admit $package
+        Add-Case 'unstamped-compile-under-an-earlier-format-receipt-refused-for-staging' ($unstampedBuild.ExitCode -eq 0 -and -not $unstampedStamp -and $r.ExitCode -ne 0 -and $r.Output -match 'carries no source stamp, so its producing commit') ("build exit $($unstampedBuild.ExitCode); stamp '$unstampedStamp'; " + (Get-Reason $r.Output))
+    }
+    finally {
+        [IO.File]::WriteAllBytes($package, $packageBytes2); [IO.File]::WriteAllText($receiptPath, $receipt2)
+        if ($null -ne $sidecarText2) { [IO.File]::WriteAllText($sidecar2, $sidecarText2) }
+    }
+    $r = & $admit $package
+    Add-Case 'candidate-admitted-again-after-the-unstamped-case' ($r.ExitCode -eq 0 -and $r.Output -match 'ADMITTED [0-9a-f]{64}') "exit $($r.ExitCode)"
 
     # --- The development purpose is data: an apostrophe gets the ordinary purpose-validation error before any child runs.
     $badPurpose = "umm-0311-admission'"

@@ -397,7 +397,10 @@ function Read-KmgBuildLocalManifest {
             -RepositoryRoot $RepositoryRoot -Purpose $DevelopmentPurpose
         $measured = & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $package -PassThru | Select-Object -Last 1
         Assert-KmgReceiptDescribesPackagedDll -Receipt $receipt -Measured $measured
-        if ($RequireCurrentMaterialInputs) { Assert-KmgCandidateMaterialInputsCurrent -RepositoryRoot $RepositoryRoot -Commit ([string]$receipt.commit) }
+        if ($RequireCurrentMaterialInputs) {
+            Assert-KmgStampedByReceiptCommit -Receipt $receipt -Measured $measured
+            Assert-KmgCandidateMaterialInputsCurrent -RepositoryRoot $RepositoryRoot -Commit ([string]$receipt.commit)
+        }
         $receipt | Add-Member -NotePropertyName measuredDll -NotePropertyValue $measured -Force
         return $receipt
     }
@@ -428,13 +431,26 @@ function Read-KmgBuildLocalManifest {
     }
     $measured = & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $package -PassThru | Select-Object -Last 1
     Assert-KmgReceiptDescribesPackagedDll -Receipt $manifest -Measured $measured
-    if ($RequireCurrentMaterialInputs) { Assert-KmgCandidateMaterialInputsCurrent -RepositoryRoot $RepositoryRoot -Commit ([string]$manifest.commit) }
+    if ($RequireCurrentMaterialInputs) {
+        Assert-KmgStampedByReceiptCommit -Receipt $manifest -Measured $measured
+        Assert-KmgCandidateMaterialInputsCurrent -RepositoryRoot $RepositoryRoot -Commit ([string]$manifest.commit)
+    }
     $manifest | Add-Member -NotePropertyName measuredDll -NotePropertyValue $measured -Force
     return $manifest
 }
 
 # The DLL inside the finished ZIP must be the build its receipt names (SHA-256 and MVID), and carry the receipt's source
 # stamp (the producing commit in its informational version) when the build recorded one.
+# Current-candidate admission compares the material inputs with the receipt's producing commit, so that claim is
+# verified first: the packaged DLL must carry a source stamp, and the stamp must be that commit. A DLL without a stamp
+# (an MSBuild-route compile, or a receipt format that predates the stamp) is not admitted for staging.
+function Assert-KmgStampedByReceiptCommit {
+    param([Parameter(Mandatory = $true)]$Receipt, [Parameter(Mandatory = $true)]$Measured)
+    $stamp = if ($Measured.PSObject.Properties['gitCommit'] -and $Measured.gitCommit) { [string]$Measured.gitCommit } else { '' }
+    if (-not $stamp) { throw "The DLL inside the package carries no source stamp, so its producing commit $($Receipt.commit) cannot be verified; rebuild it with Build-Local." }
+    if ($stamp -cne [string]$Receipt.commit) { throw "The DLL inside the package was built from $stamp, not the receipt's producing commit $($Receipt.commit)." }
+}
+
 function Assert-KmgReceiptDescribesPackagedDll {
     param([Parameter(Mandatory = $true)]$Receipt, $Measured)
     if ($null -eq $Measured) { throw 'Package validation returned no measured DLL identity.' }
