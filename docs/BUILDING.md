@@ -131,7 +131,12 @@ Loader references are pinned separately. `UnityModManager.dll` and `0Harmony12.d
 that is **present with different bytes** is not a cache miss: the build stops with `Pinned loader reference differs from
 its pin: <path>; pinnedSha256=…; actualSha256=…` (direct MSBuild adds the same recovery advice to its `KMGPIN` error),
 and the file is left untouched. Inspect it, move or delete that one file
-yourself, then rerun to fetch the pinned copy. Build-Local records role, assembly version, source and the pins hash in
+yourself, then run `.\scripts\build.ps1 -Configuration Release -CompileOnly` to fetch the pinned copy. A direct MSBuild
+reports a missing loader reference first (`error KMGPIN: Pinned loader reference missing: ...`) with that same bootstrap.
+When the refused folder is not this repository's pinned cache (for example an installed newer loader passed as
+`/p:UnityModManagerDir`), it is left alone: run the `-CompileOnly` bootstrap once, then build against the verified
+cache (no `/p:UnityModManagerDir`, or `/p:UnityModManagerDir=<repository>\artifacts\references\loader\UnityModManager`).
+Build-Local records role, assembly version, source and the pins hash in
 the build receipt. The compiler re-verifies the pins itself. Game and Unity references keep
 their exact bundle-equals-installation check. `Info.json` `ManagerVersion` must equal the pinned floor, which
 package validation enforces. See [UMM-LOADER-COMPATIBILITY.md](UMM-LOADER-COMPATIBILITY.md).

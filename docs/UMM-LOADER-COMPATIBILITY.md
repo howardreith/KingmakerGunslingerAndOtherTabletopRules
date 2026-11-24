@@ -143,23 +143,47 @@ No compatibility adapter was needed and none was added.
     pinned `UnityModManager` and `0Harmony12` identities, and a string `ManagerVersion` equal to the pinned floor.
   - Build-Local measures the exact compiler output in its private folder. The DLL inside the finished ZIP and the loose
     copy must equal it before either receipt is written. The receipt records the compiler and packaged identities and the
-    embedded source stamp (`AssemblyMetadata` `GitCommit`).
+    embedded source stamp (`AssemblyMetadata` `GitCommit`). Both receipts are written from the measurements that were
+    compared (round 4): the compiler-output identity, the package digest measured around the one strict validation
+    `package.ps1` runs (Build-Local reuses its measured DLL identity instead of validating the ZIP again), and the firearm
+    audio digests captured once.
   - Candidate admission (`Deploy-Local.ps1`, the loader harness preflight) requires the packaged DLL's SHA-256 and MVID to
-    equal the receipt's, and its embedded source stamp to be the receipt's producing commit. Every file outside `docs/`
-    must be unchanged since that commit: product sources, shipped files, assets and every build, packaging and
-    validation helper. A change confined to documentation under `docs/` keeps the candidate admissible.
+    equal the receipt's, and its embedded source stamp to be the receipt's producing commit. Every other identity the
+    receipt records (`packagedDllSha256`, `embeddedGitCommit`) must agree with the measured DLL too (round 4). Every file
+    outside `docs/` must be unchanged since that commit: product sources, shipped files, assets and every build,
+    packaging and validation helper. The documents `package.ps1` ships are material wherever they live, `docs/`
+    included: their list is `scripts/package-documents.json`, which `package.ps1` reads and the freshness check uses
+    (round 4). A change confined to other documentation under `docs/` keeps the candidate admissible.
   - Staging copies the admitted package privately and requires the copy's digest to be the admitted one. It extracts the
     checked entries and requires the extracted DLL to be the admitted DLL before any target is replaced, so bytes that
-    replace the supplied path after admission are never staged.
+    replace the supplied path after admission are never staged. The checked extractor also validates directory records
+    (round 4): a directory record carries no data, appears once, and never shares a destination with a file; no file is
+    the parent of another entry.
+  - `Deploy-Local.ps1` admits again under the runtime lease; that admission must be the first one (package and DLL
+    digests, MVID, producing commit, version and mode), or nothing is deployed. A historical release has no build
+    receipt, so its expected firearm audio is the audio inside its digest-bound release package, and its deployment
+    record names the release tag (`branch` `tag:<tag>`, `sourceStateSha256` `historical-release <tag>`, `candidateKind`
+    `historical-release`). Every record field is established before the target is replaced (round 4).
   - The loader harness admits in its own process, with every value passed as a bound parameter. A development purpose is
-    validated before that process starts, and the harness files are checked first.
+    validated before that process starts, and the harness files are checked first. Since round 4 that process also
+    extracts the admitted copy with the checked extractor and verifies the extracted DLL, and reports the admitted
+    identity (mode, version, producing commit, release tag, package and DLL digests, MVID). The session records that
+    identity in its summary and expects the admitted DLL digest at launch. Staging checks the owner set first, verifies
+    the private tree again before `Mods` is replaced, and compares the staged DLL with the admitted digest. The private
+    copy belongs to the session: it is removed when staging consumes it, when the session stops before staging
+    (preflight or lease refusal), and by the session's final cleanup.
   - A released package is admitted only as an explicit historical release control: `-HistoricalReleaseControl` with
     `-HistoricalReleaseVersion`, exclusive of `-DevelopmentPurpose`. It is checked against the committed release record
     `scripts/historical-release-records.json`: package digest, release tag resolving to the recorded commit, and
-    packaged DLL digest, MVID and source stamp.
+    packaged DLL digest, MVID and source stamp. The record is read from the commit at HEAD; a working-tree record that
+    differs from it is refused (round 4).
   - Direct MSBuild checks `Info.json` `ManagerVersion` against the pins.
-  - A pin failure names its recovery. An absent file is fetched by `scripts\build.ps1`. A file present with different
-    bytes is left untouched, to be inspected and removed by hand before rerunning (as in `docs\BUILDING.md`).
+  - A pin failure names its recovery from the actual entry point (round 4). An absent file in the pinned cache: run
+    `scripts\build.ps1 -CompileOnly`, which fetches and verifies it; a direct MSBuild reports the missing loader
+    reference first, with that bootstrap. A cache file present with different bytes is left untouched, to be inspected and
+    removed by hand before the `-CompileOnly` bootstrap. A folder that is not the pinned cache (an installed newer loader
+    passed as `/p:UnityModManagerDir`) is never to be changed: build against the verified cache instead (as in
+    `docs\BUILDING.md`).
 * **Tests.**
   - `scripts/Test-LoaderReferencePins.ps1` (35 checks: fixture pins, and stub assemblies of known identity for the
     package reference cases) and `tools/test_loader_reference_pins.py` (5) run inside `validate-repository.ps1`.
@@ -173,10 +197,15 @@ No compatibility adapter was needed and none was added.
     clone (see the current development candidate above). It covers package entries, receipt binding including another
     baseline-compatible build's source stamp, material inputs, historical release controls, staging from the admitted copy
     and the purpose passed as data.
-  - The domain check `loader.production-dll-references-pinned-loader` inspects a verified compiler output wherever it is
-    selected. `test-domain.ps1` binds the DLL that `build.ps1` or the focused gate has just compiled, or compiles one
-    itself (for a complete-suite run), by path and SHA-256, with the expected identities read by the pin reader. A
-    mismatched binding is refused.
+  - The domain check `loader.production-dll-references-pinned-loader` inspects a verified compiler output.
+    `test-domain.ps1` binds the DLL that `build.ps1` or the focused gate has just compiled, or compiles one itself (for
+    a complete-suite run), with the expected identities read by the pin reader. Since round 4 the caller passes the
+    SHA-256 it measured at its compile boundary with the path, and the case inspects a private copy that must have that
+    digest, so bytes replacing the shared output meanwhile are refused, never inspected. Build-Local no longer compiles
+    production with MSBuild for its domain-test run: that run defers the case, and Build-Local then runs it on its exact
+    compiler output with that output's digest (one production compile per candidate). A runner started without a
+    binding (the portable .NET 8 runner, a direct runner call) has no artifact to inspect, so the case does not apply
+    there, unless it is selected by name, which still refuses without a binding.
   - `Test-DevelopmentCandidate.ps1` proves that the compiler receives the pinned directory and that a tampered loader is
     refused before any child step.
 
