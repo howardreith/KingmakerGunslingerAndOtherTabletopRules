@@ -1273,7 +1273,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     finally { ghost.IsInGame = true; CleanupExpandedSummoningUnit(ghost); }
                 }
                 Func<string, int, bool> posted = (name, count) => crafted[name] != null && (int)crafted[name]["calls"] >= 1 &&
-                    (int)crafted[name]["newCues"] == count && crafted[name]["error"].Type == JTokenType.Null;
+                    (int)crafted[name]["newCues"] == count && string.IsNullOrEmpty((string)crafted[name]["error"]);
                 Sprint25Check("s7-anky-production-controls", posted("valid", 1) && posted("foreignWeapon", 0) && posted("mismatchedWrapper", 0) &&
                     posted("sameRollValidWrapper", 1) && posted("removedTarget", 0), (JObject)crafted.DeepClone(),
                     "Through the owner's own production handler: a valid fresh resolved tail roll posts one cue; a roll with a foreign (non-tail) weapon posts none; a wrapper naming another creature than its roll's target posts none and does not consume the roll, whose valid wrapper then posts its one cue; an out-of-game target posts none.");
