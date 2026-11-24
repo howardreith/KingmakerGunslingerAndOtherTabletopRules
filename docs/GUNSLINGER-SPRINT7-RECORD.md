@@ -1,7 +1,26 @@
 # Sprint 7 record: presentation and audio remediation (S7 T1–T7)
 
-Status: **IN REVIEW (round 6 of 7, 2026-11-24). Nothing is merged or released, and no visual or listening choice has
-been accepted.** After the controller stopped the enrollment at the round-5 cap, the owner issued owner amendment 2
+Status: **BLOCKED (2026-11-24): after review round 6 of 7 on `b37faaf883` the agent-review controller stopped the
+enrollment under its mandatory no-progress rule ("no progress: R4-F1 open for 3 consecutive reviews"). Owner amendment 2
+does not authorize resuming such a stop; continuing needs an owner decision. Nothing is merged or released, and no visual
+or listening choice has been accepted.**
+
+Round-6 review outcome (decision changes_required):
+- verified: R1-F1, R2-F2, R4-F2, R5-F2, R5-F4, R5-F5 and R5-F6;
+- **R4-F5: rebuttal accepted.** The reviewer accepted the conditional owner disposition (amendment 2 §4) on the retained
+  `…202648Z` trace: both IDs live, only 684 stopped, 656's callback withheld with its ID inactive through the window, its
+  component and view observed destroyed on its own retirement, the hook removed. The cause of the historical 497 failure
+  remains unknown;
+- still open: R4-F1 (the abandoned Dust execution is not carried through the final isolation decision), R5-F1 (the
+  negative-control summon is delivered before, not after, the cast owner's disposal) and R5-F3 (the capture producer
+  reports a missing EntityFader as visible);
+- raised: R6-F1 (failed early Ghaele releases do not reach ProbeSlot), R6-F2 (the callback hook's cleanup outcome does not
+  reach the effects phase), R6-F3 (terminal playback reads are not verdict inputs), R6-F4 (the settled evaluation is not
+  bound to the collector that ran) and R6-F5 (this record's expenditure and scope rows, corrected below).
+
+Of the open items, R4-F1, R6-F2 and the in-game half of R6-F4 need RuntimeTesting changes, so a third product candidate
+would be required to establish them natively. The owner authorized two, and both are used. Validation spent: 39 min 4 s
+of the 60-minute exception, leaving 20 min 56 s. After the controller stopped the enrollment at the round-5 cap, the owner issued owner amendment 2
 (revision 2, sha256 `26409cd8…3ab4`; message sha256 `cc57e9e9…9bb7`, stored outside the worktree at
 `<lab>/owner-guidance/S7-OWNER-AMENDMENT-2-2026-11-24.md`). Applied to the stopped enrollment, it left it BLOCKED at the
 exhausted cap, as the owner expected. The owner's separate extension (`resume --max-rounds 7`) then raised the cap from
@@ -46,7 +65,8 @@ Spent in round 6 (wall clock, failed attempts included):
 | 11 | Session `20261124T202648Z-…-s7-fx` | FAIL, retained (observer) | 8 min 16 s |
 | 12 | Focused gate `sprint7-visual` | PASS | 24 s |
 
-Total before the controller's required gates: 38 min 25 s; both authorized candidates are used. Restoration was never
+Total before the controller's required gates: 38 min 25 s. The eleven required controller gates on `b37faaf883` took
+39 s, for 39 min 4 s in all, which leaves 20 min 56 s of the exception. Both authorized candidates are used. Restoration was never
 interrupted: every session completed its transaction and verified the owner files. Each game window was agreed with the
 other Kingmaker session on this machine and handed back at 20:35Z.
 
@@ -87,7 +107,7 @@ other Kingmaker session on this machine and handed back at 20:35Z.
 
 | Story / record | Original problem | Result | Evidence | Technical status | Retained limitation / owner decision |
 |---|---|---|---|---|---|
-| S7 T1 / REP-04 | October review: "increasing" Ghaele dissolve; a scripted move that did not start | **No product change.** On released v0.0.195 and on the candidate, an ordinary Ghaele keeps its body (cutout 0.00) to its native 120 s expiry, moves, and fights. Its raw `_Dissolve` is the native looping non-cutout animation the unsummoned donor also runs: 11/11 positive samples per package, with driven body-material identity recorded. | Harness `…182757Z` (released) and `…183206Z` (candidate) in round 5; `…162819Z`/`…163235Z` in round 4; product `…050957Z` `gh`/`ghd` (round 3) | Current-build disposition, bounded to the observed packages and conditions | Released baseline observed only in the admitted fixture's interior throne room. The outdoor/bright released case has no admitted route (§4.1). **October incident unattributed.** Owner: accept the bounded disposition. |
+| S7 T1 / REP-04 | October review: "increasing" Ghaele dissolve; a scripted move that did not start | **No product change.** On released v0.0.195 and on the candidate, an ordinary Ghaele keeps its body (cutout 0.00) to its native 120 s expiry, moves, and fights. Its raw `_Dissolve` is the native looping non-cutout animation the unsummoned donor also runs: 11/11 positive samples per package, with driven body-material identity recorded. | Harness `…182757Z` (released) and `…183206Z` (candidate) in round 5; `…162819Z`/`…163235Z` in round 4; product `…050957Z` `gh`/`ghd` (round 3) | Current-build disposition, bounded to the observed packages and conditions | Released baseline observed only in the admitted fixture's interior throne room. The outdoor/bright released case has no admitted route (§4.1). **October incident unattributed.** Bounded scope accepted by owner amendment 2. |
 | S7 T2 / VIS-01 | 48 zero-area wing-root triangles (and inside-out welded membranes) | **Repaired at the generator.** 0 zero-area triangles, 0 repeated edges, all parts outward | `ed88ad994e`; export receipt; models `…162110Z` (round 4, party views bound to the body) and `…050957Z` | Implemented and verified | Owner visual acceptance |
 | S7 T3 / VIS-02 | 19/12,924 normal corners at a waist pleat and the left-hand fingers | **Repaired from the exact private input.** 16 → 0 opposing corners | `d864e7b01f`; export receipt; `…162110Z`, `…050957Z` | Implemented and verified | Owner visual acceptance |
 | S7 T4 / VIS-03 | Owned Trample/Overrun windows: "Target point within 0 ft. feet." and school "None" | **Scoped presentation override:** "Target point within twice this creature's speed." (owner-approved wording), no school | `2614ea3bd6`; `…050957Z` `ui` | Implemented and verified for desktop fact and HUD | **Controller mode unexecuted** (§4.4): no admitted route creates or selects a summon in the console UI. Not a controller PASS. |
@@ -661,7 +681,8 @@ Round 5 had 18 cases: it added `ghaele-lighting-and-loan` and `probe-final-relea
 - the condition ledger, release verdict and party-capture verdict (`cell-ownership-and-capture`).
 
 Neighbour selections: `summon-playtest-r3`, `-r4`, `-r6`, `-r7`, `sprint22-`, `sprint5-`, `salamander`,
-`native-admission`, `native-profile` and `loader-compat-probe` (111 tests in total, all passing locally). The controller
+`native-admission`, `native-profile` and `loader-compat-probe`. Round 5 ran 111 tests locally. The round-6 controller
+receipts on `b37faaf883` select 20 `sprint7-visual` tests and 96 neighbour tests, all passing. The controller
 records the required gate receipts on the reviewed head.
 
 ## 6. Owner decisions pending and open scopes

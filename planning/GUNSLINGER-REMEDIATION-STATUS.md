@@ -237,7 +237,7 @@ from RISK-01).
 
 ## Sprint 7 (started 2026-11-23; agent-review controller, foreground)
 
-**Current state (2026-11-24): IN REVIEW, round 6 of 7 under owner amendment 2.** The owner extended the review cap from five to seven. Round 6 corrects the eleven findings open after round 5 (matrix in the record, §7). Validation used 38 min 25 s of the 60-minute exception and both authorized candidates, before the controller gates. The owner resumed the round-3 BLOCKED enrollment through owner
+**Current state (2026-11-24): BLOCKED after review round 6 of 7 on `b37faaf883` (mandatory no-progress stop: R4-F1 open for three consecutive reviews).** Round 6 verified seven findings and accepted the R4-F5 conditional disposition. R4-F1, R5-F1, R5-F3 and R6-F1 to R6-F5 are open; R4-F1 and R6-F2 need a third product candidate, which is not authorized. Validation used 39 min 4 s of 60. Continuing needs an owner decision. Earlier in round 6: The owner extended the review cap from five to seven. Round 6 corrects the eleven findings open after round 5 (matrix in the record, §7). Validation used 38 min 25 s of the 60-minute exception and both authorized candidates, before the controller gates. The owner resumed the round-3 BLOCKED enrollment through owner
 amendment 1 (revision 1, sha256 `59be8e3f…31e0`). The round-3 no-progress stop on `511160dc6e` and every earlier failure
 remain recorded. Draft PR #219; record `docs/GUNSLINGER-SPRINT7-RECORD.md`; enrollment
 `kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1`; base post-release master `35763430ac` (v0.0.195). Nothing is
@@ -246,7 +246,7 @@ merged or released. Every visual and listening judgment is the owner's. The priv
 
 | Story / record | Category | Result | Evidence | Delivery state | Owner decision |
 |---|---|---|---|---|---|
-| S7 T1 / REP-04 | historical incident | Released v0.0.195 and candidate: no premature dissolve (native looping non-cutout loop, also on an unsummoned donor; 11/11 positive samples); ordinary move, combat and expiry; no product change. October incident not attributed | harness `…162819Z` (released) / `…163235Z` (candidate); round-3 `gh`/`ghd` | Bounded disposition, draft PR; released outdoor/bright case has no admitted route; historical scope open | Accept the bounded disposition |
+| S7 T1 / REP-04 | historical incident | Released v0.0.195 and candidate: no premature dissolve (native looping non-cutout loop, also on an unsummoned donor; 11/11 positive samples); ordinary move, combat and expiry; no product change. October incident not attributed | harness `…162819Z` (released) / `…163235Z` (candidate); round-3 `gh`/`ghd` | Bounded disposition, draft PR; released outdoor/bright case has no admitted route; historical scope open | Bounded scope accepted (owner amendment 2) |
 | S7 T2 / VIS-01 | asset defect | Generator repair: 48 zero-area triangles and inside-out welded membranes removed | `ed88ad994e`; models `…162110Z` (body-bound party views) | Implemented, draft PR | Visual acceptance |
 | S7 T3 / VIS-02 | asset defect | Exact-source repair: 16 opposing normal corners to 0 | `d864e7b01f`; models `…162110Z` | Implemented, draft PR | Visual acceptance |
 | S7 T4 / VIS-03 | presentation | Scoped override: "within twice this creature's speed" (owner-approved wording), no school | `2614ea3bd6`; round-3 `ui` PASS | Implemented, draft PR; controller mode unexecuted (no admitted route creates or selects a summon in the console UI) | None pending for wording |
