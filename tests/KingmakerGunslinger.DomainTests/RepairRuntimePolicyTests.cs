@@ -17,7 +17,8 @@ namespace KingmakerGunslinger.DomainTests
                 "featureModuleSettingsSha256" })
                 Assertions.True(deploy.Contains(identity),
                     "Deployment manifest omits repair-policy identity " + identity + ".");
-            Assertions.True(build.Contains("dllMvid = Get-KmgDllMvid") &&
+            Assertions.True(build.Contains("$compilerDllIdentity = Get-KmgPackagedDllIdentity") &&
+                build.Contains("dllMvid = [string]$compilerDllIdentity.mvid") &&
                 common.Contains("function Assert-KmgReusableDeployment") &&
                 common.Contains("Reusable runtime execution requires an exactly clean Git state") &&
                 common.Contains("Get-KmgDllMvid -Path $dll") &&

@@ -82,7 +82,7 @@ if ($selectsLoaderCase -and -not $LoaderCaseAfterExactBuild) {
         if ($MSBuildPath) { $compileArguments.MSBuildPath = $MSBuildPath }
         & (Join-Path $PSScriptRoot 'build.ps1') @compileArguments
         $ProductionDll = Join-Path $repositoryRoot "artifacts\bin\$Configuration\KingmakerGunslinger\KingmakerGunslinger.dll"
-        $ProductionDllSha256 = (Get-FileHash -LiteralPath $ProductionDll -Algorithm SHA256).Hash.ToLowerInvariant()
+        $ProductionDllSha256 = if (Test-Path -LiteralPath $ProductionDll -PathType Leaf) { (Get-FileHash -LiteralPath $ProductionDll -Algorithm SHA256).Hash.ToLowerInvariant() } else { '' }
     }
     . (Join-Path $PSScriptRoot 'ReferenceProvenance.Common.ps1')
     $expectedLoaderReferences = @((Get-KmgLoaderReferencePins).References | ForEach-Object {

@@ -91,7 +91,8 @@ if ($Level -eq 'Focused') {
         if ($MSBuildPath) { $compileArguments.MSBuildPath = $MSBuildPath }
         & (Join-Path $PSScriptRoot 'build.ps1') @compileArguments
         # Measured at the compile boundary; test-domain inspects a private copy with this digest.
-        $script:KmgGateProductionDllSha256 = (Get-FileHash -LiteralPath (Join-Path (Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot) 'artifacts\bin\Release\KingmakerGunslinger\KingmakerGunslinger.dll') -Algorithm SHA256).Hash.ToLowerInvariant()
+        $compiledDll = Join-Path (Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot) 'artifacts\bin\Release\KingmakerGunslinger\KingmakerGunslinger.dll'
+        $script:KmgGateProductionDllSha256 = if (Test-Path -LiteralPath $compiledDll -PathType Leaf) { (Get-FileHash -LiteralPath $compiledDll -Algorithm SHA256).Hash.ToLowerInvariant() } else { '' }
     }
     # The production DLL this gate just compiled; test-domain binds it (path and SHA-256) for the loader-reference case.
     $productionDll = Join-Path (Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot) 'artifacts\bin\Release\KingmakerGunslinger\KingmakerGunslinger.dll'
