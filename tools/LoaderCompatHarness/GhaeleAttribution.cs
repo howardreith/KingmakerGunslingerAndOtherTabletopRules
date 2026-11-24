@@ -133,15 +133,41 @@ namespace KmgLoaderCompatHarness
     /// <summary>
     /// Review R4-F6: a lighting observation counts only with a readable body whose cutout is clear and a usable party
     /// capture of that body: an image written, the unit in frame, a lit screen with the fade cleared, the capture's
-    /// renderer enabled, the unit's own fader reporting it visible (review R5-F3) and the renderer carrying the body's own
-    /// mesh; and an interpolated light-probe reading.
+    /// renderer enabled and carrying the body's own mesh; and an interpolated light-probe reading. Owner amendment 3
+    /// (R5-F3): the subject's visibility is read at the Ghaele observation boundary itself (<see cref="Subject"/>):
+    /// the exact unit and view, whether an EntityFader component is present (its identity) and its Visible state.
+    /// Missing, present-hidden and present-visible stay distinct; only present-visible counts. The shared capture
+    /// helper's own faderVisible field (true when no fader exists, kept for its other callers) is not used. A row
+    /// without the subject readback (every row produced before this boundary existed) is "fader-presence-unrecorded".
     /// </summary>
     internal static class GhaeleLighting
     {
+        /// <summary>The subject readback, from the raw component lookup: a null component is missing, not visible.</summary>
+        internal static JObject Subject(string unit, int? view, int? faderComponent, bool? faderVisible)
+        {
+            return new JObject { ["unit"] = unit, ["view"] = view, ["faderPresent"] = faderComponent.HasValue, ["faderComponent"] = faderComponent,
+                ["faderVisible"] = faderComponent.HasValue ? faderVisible : null };
+        }
+
+        /// <summary>Null for a present, visible fader; otherwise "fader-presence-unrecorded", "fader-unavailable" or "fader-hidden".</summary>
+        internal static string SubjectReason(JToken subject)
+        {
+            if (subject == null || subject.Type != JTokenType.Object) return "fader-presence-unrecorded";
+            JToken present = subject["faderPresent"], visible = subject["faderVisible"];
+            if (subject["view"] == null || subject["view"].Type == JTokenType.Null) return "fader-unavailable";
+            if (present == null || present.Type != JTokenType.Boolean || !(bool)present) return "fader-unavailable";
+            if (subject["faderComponent"] == null || subject["faderComponent"].Type != JTokenType.Integer) return "fader-unavailable";
+            if (visible == null || visible.Type != JTokenType.Boolean) return "fader-unavailable";
+            return (bool)visible ? null : "fader-hidden";
+        }
+
         internal static bool Valid(JToken row, out string reason)
         {
             reason = null;
             if (row == null) { reason = "no-row"; return false; }
+            // The subject's own visibility first: a hidden fader also disables the body renderer.
+            reason = SubjectReason(row["subject"]);
+            if (reason != null) return false;
             if (row["body"] == null || row["body"].Type == JTokenType.Null) { reason = "no-body"; return false; }
             if (row["bodyDissolveCutout"] == null || (double)row["bodyDissolveCutout"] < 0 || (double)row["bodyDissolveCutout"] > .02) { reason = "cutout"; return false; }
             if (row["probeDcLuminance"] == null || row["probeError"] != null) { reason = "no-light-probe"; return false; }
@@ -158,8 +184,6 @@ namespace KmgLoaderCompatHarness
             else if (field("screenLit") != "true") reason = "unlit";
             else if (!double.TryParse(field("screenFade"), NumberStyles.Float, CultureInfo.InvariantCulture, out fade) || fade > .05) reason = "screen-fade";
             else if (field("rendererEnabled") != "true") reason = "renderer-disabled";
-            else if (field("faderVisible") == null) reason = "fader-unavailable";
-            else if (field("faderVisible") != "true") reason = "fader-hidden";
             else if (field("mesh") == null || field("mesh") != (string)row["bodyMesh"]) reason = "wrong-body";
             // The helper's "intact" flag reads the raw _Dissolve, which on the Ghaele is the native non-cutout loop
             // attributed above; the body's own cutout readback (checked first) is what removes surface.
@@ -188,6 +212,42 @@ namespace KmgLoaderCompatHarness
             if (witnessUnattributedSummons != 0) return "unattributed-same-caster-summon";
             if (witnessSubscribedAfter) return "witness-still-subscribed";
             return null;
+        }
+    }
+
+    /// <summary>
+    /// Owner amendment 3 (R5-F1): the late-spawn witness's correlation, held by the witness itself and independent of the
+    /// disposed cast owner and of a command's mutable fields: a summon result is the watched cast's when its rule context
+    /// (or that context's source ability context) is an execution context the witness retained for the watched command,
+    /// or carries the exact AbilityData instance the witness took from that command when it began watching.
+    /// </summary>
+    internal static class GhaeleWitness
+    {
+        /// <returns>"execution", "ability-data", or null when the result is not the watched cast's.</returns>
+        internal static string Correlated(object watchedData, IEnumerable<object> retainedExecutions, object context, object sourceContext, object contextAbility, object sourceAbility)
+        {
+            var executions = (retainedExecutions ?? Enumerable.Empty<object>()).Where(value => value != null).ToList();
+            if ((context != null && executions.Any(value => ReferenceEquals(value, context))) || (sourceContext != null && executions.Any(value => ReferenceEquals(value, sourceContext))))
+                return "execution";
+            if (watchedData != null && (ReferenceEquals(contextAbility, watchedData) || ReferenceEquals(sourceAbility, watchedData))) return "ability-data";
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Owner amendment 3 (R6-F1): settling the witness move. If it has not finished it is interrupted; if it is then still
+    /// held by its unit and unfinished, the settlement fails with a named error, which the release records in the probe's
+    /// cumulative cleanup outcome (so ProbeSlot sees failed isolation). Returns true when settled.
+    /// </summary>
+    internal static class WitnessSettlement
+    {
+        internal const string StillHeld = "the witness move is still held and unfinished after its settlement";
+
+        internal static bool Settle(Action interrupt, Func<bool> finished, Func<bool> held)
+        {
+            if (!finished()) interrupt();
+            if (!finished() && held()) throw new InvalidOperationException(StillHeld);
+            return true;
         }
     }
 

@@ -78,6 +78,14 @@ namespace KmgLoaderCompatHarness
             return report;
         }
 
+        /// <summary>Runs releases the probe never held (its final releases), each once, keeping their outcome too.</summary>
+        internal CleanupReport Run(IEnumerable<KeyValuePair<string, Action>> releases)
+        {
+            CleanupReport report = ProbeCleanup.RunAll(releases);
+            Record(report);
+            return report;
+        }
+
         private void Record(CleanupReport report)
         {
             Outcome.Attempted.AddRange(report.Attempted);
@@ -89,9 +97,10 @@ namespace KmgLoaderCompatHarness
     /// The Poll/Release protocol both yielded harness probes (Trumpet, Ghaele) share (review R3-F2). Release disposes the
     /// iterator (its finally blocks may drain the held state), drains whatever is still held, then builds and runs the
     /// probe's own final releases from what it still owns at that point (review R5-F5: nothing released by the
-    /// iterator's cleanup is released again); the report it returns carries every held release's outcome from whichever
-    /// drain ran it, so a failed restore reaches ProbeSlot (IsolationRestored=false) and the launch stops. Each release
-    /// runs once.
+    /// iterator's cleanup is released again). The report it returns is the probe's one cumulative outcome, read last:
+    /// every held release from whichever drain ran it, every direct destruction request and witness settlement made
+    /// earlier (owner amendment 3, R6-F1) and the final releases, so a failure anywhere reaches ProbeSlot
+    /// (IsolationRestored=false) and the launch stops. Each release runs once.
     /// </summary>
     internal sealed class YieldedProbeLifecycle
     {
@@ -128,18 +137,14 @@ namespace KmgLoaderCompatHarness
             try { script.Dispose(); }
             catch (Exception exception) { report.Failures.Add("probe iterator: " + exception.GetType().Name + ": " + exception.Message); }
             Owned.ReleaseAll();
-            report.Attempted.AddRange(Owned.Outcome.Attempted);
-            report.Failures.AddRange(Owned.Outcome.Failures);
-            CleanupReport rest;
-            try { rest = ProbeCleanup.RunAll(finalReleases == null ? Enumerable.Empty<KeyValuePair<string, Action>>() : finalReleases().ToList()); }
+            try { Owned.Run(finalReleases == null ? Enumerable.Empty<KeyValuePair<string, Action>>() : finalReleases().ToList()); }
             catch (Exception exception)
             {
-                rest = new CleanupReport();
-                rest.Attempted.Add("final releases");
-                rest.Failures.Add("final releases: " + exception.GetType().Name + ": " + exception.Message);
+                Owned.Outcome.Attempted.Add("final releases");
+                Owned.Outcome.Failures.Add("final releases: " + exception.GetType().Name + ": " + exception.Message);
             }
-            report.Attempted.AddRange(rest.Attempted);
-            report.Failures.AddRange(rest.Failures);
+            report.Attempted.AddRange(Owned.Outcome.Attempted);
+            report.Failures.AddRange(Owned.Outcome.Failures);
             foreach (string failure in report.Failures)
                 if (!Problems.Contains("cleanup failed: " + failure)) Problems.Add("cleanup failed: " + failure);
             return report;
@@ -180,19 +185,26 @@ namespace KmgLoaderCompatHarness
     /// <summary>
     /// Review R5-F5: the disposable units a probe created, each with one destruction-request owner. A request is
     /// recorded before it is made, so no later drain requests the same unit again, whether or not native destruction
-    /// (which completes after the call) has finished; final releases are built only for units never requested.
+    /// (which completes after the call) has finished; final releases are built only for units never requested. Owner
+    /// amendment 3 (R6-F1): every request, direct or from a release, is recorded in the probe's one cumulative outcome
+    /// under the unit's identity, and a request that throws is kept there as a named failure (and rethrown to its
+    /// caller) even though the unit stays marked requested.
     /// </summary>
     internal sealed class OwnedDisposables<T> where T : class
     {
         private readonly List<T> items = new List<T>();
         private readonly List<T> requested = new List<T>();
+        private readonly string name;
         private readonly Func<T, string> identity;
         private readonly Action<T> destroy;
+        private readonly CleanupReport outcome;
 
-        internal OwnedDisposables(Func<T, string> identity, Action<T> destroy)
+        internal OwnedDisposables(string name, Func<T, string> identity, Action<T> destroy, CleanupReport outcome)
         {
+            this.name = name;
             this.identity = identity;
             this.destroy = destroy;
+            this.outcome = outcome ?? new CleanupReport();
         }
 
         private static bool Has(List<T> list, T item) { return list.Any(value => ReferenceEquals(value, item)); }
@@ -206,17 +218,29 @@ namespace KmgLoaderCompatHarness
         {
             if (item == null || Has(requested, item)) return false;
             requested.Add(item);
-            destroy(item);
+            string label = name + " " + identity(item);
+            outcome.Attempted.Add(label);
+            try { destroy(item); }
+            catch (Exception exception)
+            {
+                outcome.Failures.Add(label + ": " + exception.GetType().Name + ": " + exception.Message);
+                throw;
+            }
             return true;
         }
 
         /// <summary>Owned units never requested.</summary>
         internal List<T> Remaining { get { return items.Where(item => !Has(requested, item)).ToList(); } }
 
-        /// <summary>One release per owned unit still unrequested, built when called.</summary>
-        internal List<KeyValuePair<string, Action>> Releases(string name)
+        /// <summary>
+        /// The final release: one request per owned unit still unrequested, made when it runs. A failed request is
+        /// already kept in the outcome under its identity; the others still run.
+        /// </summary>
+        internal void ReleaseRemaining()
         {
-            return ProbeReleases.PerItem(name, Remaining, identity, item => Destroy(item));
+            foreach (T item in Remaining)
+                try { Destroy(item); }
+                catch (Exception) { }
         }
     }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -150,27 +151,164 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// R4-F5, synthetic callback loss: null only when the survivor's playback ended normally while its callback was
-        /// withheld, the other source's retirement stopped only its own ID, the residual was the survivor's tracking on
-        /// its own source, that source's view and playback component were actually destroyed, no other record changed, no
-        /// end was manufactured and the observer's intervention is gone.
+        /// R4-F5 synthetic callback loss, the one settled evaluator (owner amendment 3 §4, R6-F3/R6-F4). It reads the
+        /// callback-loss row exactly as the collector emitted it, with the other source's settled cue record and the
+        /// retirement time, and is used both for the in-game verdict and for re-evaluating retained rows. Null only when:
+        /// both IDs were confirmed playing; the other source's retirement stopped its own ID; the survivor received no
+        /// stop through the window; its callback was withheld and no end was recorded; the native query found it
+        /// inactive in the window, never playing again after that, and inactive at both required terminal reads (window
+        /// end and after its own source's disposal); it was still tracked by its own source at the window end; that
+        /// source's view and playback component were observed destroyed; no end was manufactured; no other record changed;
+        /// and the observer's hook is gone. A missing or unreadable required field is never evidence. Query states,
+        /// callbacks, stop requests and tracking are separate inputs.
         /// </summary>
-        internal static string CallbackLossVerdict(string survivorBefore, string otherBefore, int otherStopAttempts, bool otherStopRequested,
-            int survivorStopAttemptsAfterOther, int withheldCallbacks, bool survivorEndRecordedInWindow, bool survivorInactiveInWindow, bool unknownInWindow,
-            bool survivorTrackedAtWindowEnd, bool sourceViewDestroyed, bool playbackComponentDestroyed, bool survivorEndAfterDisposal,
-            int unrelatedRecordsChanged, int interventionLeft)
+        internal static string CallbackLossSettled(JObject row, JObject otherSettled, DateTime retiredUtc, string productStopRequested)
         {
-            if (survivorBefore != PlaybackPlaying || otherBefore != PlaybackPlaying) return "not-both-playing";
-            if (otherStopAttempts != 1 || !otherStopRequested) return "other-not-stopped-by-own-id";
-            if (survivorStopAttemptsAfterOther != 0) return "survivor-stopped-by-other-retirement";
-            if (withheldCallbacks < 1 || survivorEndRecordedInWindow) return "callback-not-withheld";
-            if (!survivorInactiveInWindow) return unknownInWindow ? "survivor-playback-unknown" : "survivor-playback-persisted";
-            if (!survivorTrackedAtWindowEnd) return "survivor-tracking-not-source-local";
-            if (!sourceViewDestroyed || !playbackComponentDestroyed) return "source-disposal-not-observed";
-            if (survivorEndAfterDisposal) return "end-manufactured";
-            if (unrelatedRecordsChanged != 0) return "unrelated-record-affected";
-            if (interventionLeft != 0) return "intervention-not-restored";
+            if (row == null) return "no-row";
+            JToken before = row["before"], windowEnd = row["survivorAtWindowEnd"], afterDisposal = row["survivorAfterDisposal"];
+            if (Text(before, "survivorPlayback") != PlaybackPlaying || Text(before, "otherPlayback") != PlaybackPlaying) return "not-both-playing";
+            int? otherStops = Number(otherSettled, "stopAttempts");
+            if (otherSettled == null || otherStops != 1 || !RetiredByOwnId(otherStops.Value, Text(otherSettled, "stopResult"), productStopRequested,
+                    Utc(otherSettled["stopRequestedUtc"]), Utc(otherSettled["endUtc"]), retiredUtc))
+                return "other-not-stopped-by-own-id";
+            JToken kept = windowEnd == null ? null : windowEnd["cue"];
+            if (kept == null || kept.Type != JTokenType.Object) return "survivor-window-end-unrecorded";
+            if (!Null(kept["stopResult"]) || !Null(kept["stopRequestedUtc"])) return "survivor-stopped-by-other-retirement";
+            JArray withheld = windowEnd["callbacksWithheld"] as JArray;
+            if (withheld == null || withheld.Count < 1 || !Null(kept["endUtc"])) return "callback-not-withheld";
+            var samples = (row["window"] as JArray ?? new JArray()).Select(sample => Text(sample, "survivorPlayback")).ToList();
+            int firstInactive = samples.IndexOf(PlaybackInactive);
+            if (firstInactive < 0) return samples.Contains(PlaybackUnknown) ? "survivor-playback-unknown" : "survivor-playback-persisted";
+            if (samples.Skip(firstInactive).Contains(PlaybackPlaying)) return "survivor-playback-contradictory";
+            string terminal = Terminal(Text(windowEnd, "playback"), "window-end") ?? Terminal(Text(afterDisposal, "playback"), "after-disposal");
+            if (terminal != null) return terminal;
+            if (Flag(windowEnd, "tracked") != true) return "survivor-tracking-not-source-local";
+            if (Flag(afterDisposal, "viewDestroyed") != true || Flag(afterDisposal, "playbackComponentDestroyed") != true) return "source-disposal-not-observed";
+            JToken disposedCue = afterDisposal["cue"];
+            if (disposedCue == null || disposedCue.Type != JTokenType.Object || !Null(disposedCue["endUtc"])) return "end-manufactured";
+            if (Number(afterDisposal, "unrelatedRecordsChanged") != 0) return "unrelated-record-affected";
+            int? hooks = Number(row, "interventionHooksAfter");
+            JArray hookFailures = row["interventionDisposeFailures"] as JArray;
+            if (hooks != 0 || hookFailures == null || hookFailures.Count != 0) return "intervention-not-restored";
             return null;
+        }
+
+        // A required terminal read: only a confirmed inactive ID passes; playing is persistence, anything else unknown.
+        private static string Terminal(string state, string which)
+        {
+            if (state == PlaybackInactive) return null;
+            return state == PlaybackPlaying ? "survivor-playback-persisted:" + which : "survivor-playback-unknown:" + which;
+        }
+
+        private static bool Null(JToken token) { return token == null || token.Type == JTokenType.Null; }
+        private static string Text(JToken parent, string name) { JToken token = parent == null || parent.Type != JTokenType.Object ? null : parent[name]; return Null(token) ? null : (string)token; }
+        private static bool? Flag(JToken parent, string name) { JToken token = parent == null || parent.Type != JTokenType.Object ? null : parent[name]; return token == null || token.Type != JTokenType.Boolean ? (bool?)null : (bool)token; }
+        private static int? Number(JToken parent, string name) { JToken token = parent == null || parent.Type != JTokenType.Object ? null : parent[name]; return token == null || token.Type != JTokenType.Integer ? (int?)null : (int)token; }
+
+        /// <summary>A recorded time: an ISO-8601 string as the collector writes it, or a date token as a parser reads it.</summary>
+        internal static DateTime? Utc(JToken token)
+        {
+            if (Null(token)) return null;
+            if (token.Type == JTokenType.Date) return ((DateTime)token).ToUniversalTime();
+            DateTime parsed;
+            return DateTime.TryParse((string)token, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind, out parsed)
+                ? parsed.ToUniversalTime() : (DateTime?)null;
+        }
+    }
+
+    /// <summary>
+    /// Owner amendment 3 §3 (R4-F1, R6-F2): one cumulative cleanup result for an effects phase, or for a child run of its
+    /// cells. A cell registers before its first acquisition (<see cref="Opened"/>) and publishes its cleanup from its own
+    /// finally, so iterator disposal cannot skip it: named failures, which stay (a later repair never erases one), and
+    /// residuals whose exact owned object is re-read until it settles. A cell that never reported, a residual still live
+    /// and a residual that cannot be read all count as not restored. Recoveries (residuals observed settled after
+    /// publication) are kept apart from the failures.
+    /// </summary>
+    internal sealed class Sprint7CellIsolation
+    {
+        private readonly List<string> failures = new List<string>();
+        private readonly List<string> unreported = new List<string>();
+        private readonly List<KeyValuePair<string, Func<bool?>>> pending = new List<KeyValuePair<string, Func<bool?>>>();
+        private readonly List<string> unreadable = new List<string>();
+        internal readonly List<string> Recoveries = new List<string>();
+        internal readonly List<string> Admitted = new List<string>();
+        internal string Refused;
+
+        internal List<string> Failures { get { return failures.ToList(); } }
+        internal List<string> Pending { get { return pending.Select(item => item.Key).ToList(); } }
+        internal List<string> Unreported { get { return unreported.ToList(); } }
+
+        internal bool Restored { get { return failures.Count == 0 && unreported.Count == 0 && pending.Count == 0; } }
+
+        internal void Opened(string owner) { if (!unreported.Contains(owner)) unreported.Add(owner); }
+        internal void Reported(string owner) { unreported.Remove(owner); }
+
+        internal void Fail(string owner, string reason) { failures.Add(owner + ": " + reason); }
+
+        internal void Fail(string owner, IEnumerable<string> reasons)
+        {
+            foreach (string reason in reasons ?? Enumerable.Empty<string>()) Fail(owner, reason);
+        }
+
+        /// <summary>A residual the owner still holds: settled() is true once settled, false while live, null when unreadable.</summary>
+        internal void Residual(string owner, string what, Func<bool?> settled)
+        {
+            pending.Add(new KeyValuePair<string, Func<bool?>>(owner + ": " + what, settled));
+        }
+
+        /// <summary>Re-reads every residual once; a settled one leaves with a recovery observation. True when none remains.</summary>
+        internal bool Settle()
+        {
+            unreadable.Clear();
+            foreach (KeyValuePair<string, Func<bool?>> item in pending.ToList())
+            {
+                bool? state;
+                try { state = item.Value == null ? null : item.Value(); }
+                catch (Exception) { state = null; }
+                if (state == true) { pending.Remove(item); Recoveries.Add(item.Key + " observed settled"); }
+                else if (state == null) unreadable.Add(item.Key);
+            }
+            return pending.Count == 0;
+        }
+
+        internal JObject Describe()
+        {
+            return new JObject { ["restored"] = Restored, ["failures"] = new JArray(failures.ToArray()), ["unreported"] = new JArray(unreported.ToArray()),
+                ["pending"] = new JArray(Pending.ToArray()), ["unreadable"] = new JArray(unreadable.ToArray()), ["recoveries"] = new JArray(Recoveries.ToArray()),
+                ["admitted"] = new JArray(Admitted.ToArray()), ["refused"] = Refused };
+        }
+    }
+
+    internal static partial class Sprint7ObserverPolicy
+    {
+        /// <summary>
+        /// Owner amendment 3 §3: the effects phase's cell sequence. Before each cell the residuals are re-read for at most
+        /// <paramref name="settleLimit"/>; the cell is admitted only when the isolation is restored, otherwise it is
+        /// recorded as refused and nothing later runs. Each admitted cell runs through <paramref name="run"/>; disposing
+        /// the sequence disposes the running cell, whose finally publishes its cleanup.
+        /// </summary>
+        internal static IEnumerable<int> Sequence(Sprint7CellIsolation isolation, IEnumerable<KeyValuePair<string, Func<IEnumerable<int>>>> cells,
+            Func<string, Func<IEnumerable<int>>, IEnumerable<int>> run, TimeSpan settleLimit)
+        {
+            foreach (KeyValuePair<string, Func<IEnumerable<int>>> cell in cells)
+            {
+                foreach (int step in Settle(isolation, settleLimit)) yield return step;
+                if (!isolation.Restored) { isolation.Refused = cell.Key; yield break; }
+                isolation.Admitted.Add(cell.Key);
+                foreach (int step in run(cell.Key, cell.Value)) yield return step;
+            }
+        }
+
+        /// <summary>Re-reads the residuals every step until none remains or the limit passes.</summary>
+        internal static IEnumerable<int> Settle(Sprint7CellIsolation isolation, TimeSpan limit)
+        {
+            DateTime end = DateTime.UtcNow + limit;
+            while (!isolation.Settle() && DateTime.UtcNow < end) yield return 0;
+        }
+
+        internal static KeyValuePair<string, Func<IEnumerable<int>>> Cell(string name, Func<IEnumerable<int>> body)
+        {
+            return new KeyValuePair<string, Func<IEnumerable<int>>>(name, body);
         }
     }
 

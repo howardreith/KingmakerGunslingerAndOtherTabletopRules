@@ -793,7 +793,7 @@ namespace KingmakerGunslinger.DomainTests
             internal DisposablesProbe()
             {
                 // Native destruction completes after the call: the request is counted, Destroyed stays false.
-                Units = new KmgLoaderCompatHarness.OwnedDisposables<FakeUnit>(u => u.Id, u => { if (!u.Destroyed) u.DestroyRequests++; if (u.Id == "donor") throw new InvalidOperationException("cannot destroy donor"); });
+                Units = new KmgLoaderCompatHarness.OwnedDisposables<FakeUnit>("disposable unit", u => u.Id, u => { if (!u.Destroyed) u.DestroyRequests++; if (u.Id == "donor") throw new InvalidOperationException("cannot destroy donor"); }, Owned.Outcome);
                 Life = new KmgLoaderCompatHarness.YieldedProbeLifecycle(Owned, lifecycle => Body());
             }
             private IEnumerable<object> Body()
@@ -807,7 +807,7 @@ namespace KingmakerGunslinger.DomainTests
             }
             public object Result { get { return "recorded"; } }
             public string Poll() { return Life.Poll(); }
-            public KmgLoaderCompatHarness.CleanupReport Release(string testFailure) { return Life.Release(() => Units.Releases("disposable unit")); }
+            public KmgLoaderCompatHarness.CleanupReport Release(string testFailure) { return Life.Release(() => new[] { new KeyValuePair<string, Action>("disposable units", Units.ReleaseRemaining) }); }
         }
 
         internal static void ProbeSlotDestroysEachUnitOnce()
@@ -823,16 +823,226 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(probe.WitnessSettled == 1 && probe.Pause == 1, "The witness move and the pause are released once.");
             Assertions.True(!outcome.IsolationRestored && outcome.Failure.Contains("disposable unit donor") && outcome.Failure.Contains("cannot destroy donor") &&
                 outcome.TestFailure == "step timeout after 360s", "The failed release is retained under its identity with the original error.");
-            Assertions.True(outcome.Cleanup.Attempted.Contains("disposable unit ghaele") && outcome.Cleanup.Attempted.Contains("disposable unit donor") &&
-                !outcome.Cleanup.Attempted.Contains("disposable unit hostile"), "Final releases are built only for units no earlier release requested.");
+            Assertions.True(outcome.Cleanup.Attempted.Count(name => name == "disposable unit ghaele") == 1 && outcome.Cleanup.Attempted.Count(name => name == "disposable unit donor") == 1 &&
+                outcome.Cleanup.Attempted.Count(name => name == "disposable unit hostile") == 1, "Every request is in the one cumulative outcome, each unit once; the final release requests only units no earlier release requested.");
             Assertions.True(probe.Units.Remaining.Count == 0 && probe.Units.WasRequested(probe.Target), "Nothing owned is left unrequested.");
-            // Control: the previous eager snapshot (built before the iterator's cleanup) would request the target twice.
+            // Control: a final release attempted before the iterator's cleanup still requests the target once.
             var eager = new DisposablesProbe();
             Assertions.True(eager.Life.Poll() == null, "The control probe is yielded.");
-            var eagerReleases = eager.Units.Releases("disposable unit");
+            eager.Units.ReleaseRemaining();
             eager.Owned.ReleaseAll();
-            KmgLoaderCompatHarness.ProbeCleanup.RunAll(eagerReleases);
-            Assertions.True(eagerReleases.Count == 3 && eager.Target.DestroyRequests == 1, "Even a snapshot built before the iterator's cleanup requests the target once: the request record, not Destroyed, decides.");
+            Assertions.True(eager.Target.DestroyRequests == 1 && eager.Ghaele.DestroyRequests == 1, "Even a final release made before the iterator's cleanup requests the target once: the request record, not Destroyed, decides.");
+        }
+
+        // Owner amendment 3 (R6-F1): failed early releases reach ProbeSlot. A probe built as the Ghaele probe is
+        // (YieldedProbeLifecycle, OwnedDisposables over the probe's cumulative outcome, a held witness settlement).
+        private sealed class EarlyReleaseProbe : KmgLoaderCompatHarness.IOwnedProbe
+        {
+            internal readonly KmgLoaderCompatHarness.OwnedProbeResources Owned = new KmgLoaderCompatHarness.OwnedProbeResources();
+            internal readonly KmgLoaderCompatHarness.YieldedProbeLifecycle Life;
+            internal readonly KmgLoaderCompatHarness.OwnedDisposables<FakeUnit> Units;
+            internal readonly FakeUnit First = new FakeUnit("first"), Second = new FakeUnit("second");
+            internal int Pause, Interrupts;
+            private readonly string mode;
+            internal EarlyReleaseProbe(string mode)
+            {
+                this.mode = mode;
+                Units = new KmgLoaderCompatHarness.OwnedDisposables<FakeUnit>("disposable unit", u => u.Id, u => { u.DestroyRequests++; if (u.Id == "first" && mode == "destroy-throws") throw new InvalidOperationException("cannot destroy first"); }, Owned.Outcome);
+                Life = new KmgLoaderCompatHarness.YieldedProbeLifecycle(Owned, lifecycle => Body());
+            }
+            private IEnumerable<object> Body()
+            {
+                Owned.Hold("pause", () => Pause++);
+                Units.Add(First); Units.Add(Second);
+                try
+                {
+                    yield return null;
+                    if (mode == "destroy-throws")
+                    {
+                        Life.Problems.Add("original test error: the lifecycle case did not hold");
+                        Units.Destroy(First); // the direct, early destruction request (as in Lifecycle) throws
+                    }
+                    else
+                    {
+                        // The witness move, settled right after its readback; interruption leaves it held and unfinished
+                        // unless the mode lets it finish.
+                        bool finished = false;
+                        Owned.Hold("witness move", () => KmgLoaderCompatHarness.WitnessSettlement.Settle(() => { Interrupts++; finished = mode == "witness-settles"; }, () => finished, () => !finished));
+                        var failures = new List<string>();
+                        Owned.ReleaseNow("witness move", failures);
+                        if (mode == "witness-held") Life.Problems.Add("original test error: the combat verdict did not hold");
+                    }
+                    while (true) yield return null;
+                }
+                finally { Owned.ReleaseAll(); }
+            }
+            public object Result { get { return "recorded"; } }
+            public string Poll() { return Life.Poll(); }
+            public KmgLoaderCompatHarness.CleanupReport Release(string testFailure) { return Life.Release(() => new[] { new KeyValuePair<string, Action>("disposable units", Units.ReleaseRemaining) }); }
+        }
+
+        internal static void GhaeleEarlyReleaseFailuresReachSlot()
+        {
+            const string owner = "3|kmgGhaeleLifetime_lifecycle";
+            Func<KmgLoaderCompatHarness.ProbeSlot, bool> refusesNext = slot =>
+            {
+                try { slot.Begin("4|kmgGhaeleLifetime_visibility", new EarlyReleaseProbe("witness-settles")); return false; }
+                catch (InvalidOperationException error) { return error.Message.Contains("isolation was not restored"); }
+            };
+            // An early direct destruction throws.
+            var slot1 = new KmgLoaderCompatHarness.ProbeSlot();
+            var throwing = new EarlyReleaseProbe("destroy-throws");
+            slot1.Begin(owner, throwing);
+            Assertions.True(slot1.Poll(owner) == null, "Yielded before the early release.");
+            KmgLoaderCompatHarness.ProbeOutcome thrown = slot1.Poll(owner);
+            Assertions.True(thrown != null && thrown.TestFailure.Contains("original test error: the lifecycle case did not hold") && thrown.TestFailure.Contains("cannot destroy first"),
+                "The original test error is kept beside the exception that ended the probe.");
+            Assertions.True(!thrown.IsolationRestored && thrown.Cleanup.Failures.Any(value => value == "disposable unit first: InvalidOperationException: cannot destroy first"),
+                "The failed direct request is a named failure in the cumulative outcome ProbeSlot reads.");
+            Assertions.True(throwing.First.DestroyRequests == 1 && throwing.Second.DestroyRequests == 1 && throwing.Pause == 1,
+                "The failed unit received exactly one request (it stays marked requested); the other unit and the pause were still released.");
+            Assertions.True(!slot1.IsolationRestored && refusesNext(slot1) &&
+                KmgLoaderCompatHarness.ProbeSlot.Decide(true, true, slot1.IsolationRestored) == KmgLoaderCompatHarness.StepContinuation.StopLaunch,
+                "Isolation fails and the next probe is refused, even for a step that continues on failure.");
+
+            // A witness command remains held and unfinished after its settlement.
+            var slot2 = new KmgLoaderCompatHarness.ProbeSlot();
+            var held = new EarlyReleaseProbe("witness-held");
+            slot2.Begin(owner, held);
+            Assertions.True(slot2.Poll(owner) == null && slot2.Poll(owner) == null, "Yielded after the witness settlement.");
+            KmgLoaderCompatHarness.ProbeOutcome abandoned = slot2.Abandon("step timeout after 240s");
+            Assertions.True(!abandoned.IsolationRestored && abandoned.Cleanup.Failures.Any(value => value == "witness move: InvalidOperationException: " + KmgLoaderCompatHarness.WitnessSettlement.StillHeld),
+                "The unsettled witness fails cleanup with its named error.");
+            Assertions.Equal("step timeout after 240s", abandoned.TestFailure, "The slot's original error is kept.");
+            Assertions.True(held.Interrupts == 1 && held.Pause == 1 && held.First.DestroyRequests == 1 && held.Second.DestroyRequests == 1, "The witness is interrupted once and every independent release still runs.");
+            Assertions.True(!slot2.IsolationRestored && refusesNext(slot2), "Isolation fails and the next probe is refused.");
+
+            // Control: a witness that settles leaves isolation restored.
+            var slot3 = new KmgLoaderCompatHarness.ProbeSlot();
+            var settles = new EarlyReleaseProbe("witness-settles");
+            slot3.Begin(owner, settles);
+            slot3.Poll(owner); slot3.Poll(owner);
+            KmgLoaderCompatHarness.ProbeOutcome clean = slot3.Abandon("step timeout after 240s");
+            Assertions.True(clean.IsolationRestored && slot3.IsolationRestored && settles.Interrupts == 1, "A settled witness and clean releases restore isolation.");
+        }
+
+        // Owner amendment 3 (R4-F1, R6-F2): the effects phase's cell sequence over one cumulative isolation, driven
+        // the way the phase drives it: cells publish their cleanup from their own finally; disposal of the sequence
+        // (the enclosing runner) unwinds the running cell; the admission guard refuses the next cell; a later repair
+        // never erases a named failure; residual executions are re-read until they settle.
+        private sealed class FakeExecution { internal bool? Ended = false; internal bool Throws; internal bool? Read() { if (Throws) throw new InvalidOperationException("unreadable"); return Ended; } }
+
+        private static IEnumerable<int> FakeCell(Sprint7CellIsolation isolation, string owner, Func<List<string>> releases, Action<Sprint7CellIsolation> residuals, Action started, int yields, bool throwBeforeReport = false)
+        {
+            isolation.Opened(owner);
+            started();
+            try { for (int index = 0; index < yields; index++) yield return index; }
+            finally
+            {
+                List<string> failures = releases();
+                if (throwBeforeReport) throw new InvalidOperationException("cleanup threw before reporting");
+                isolation.Fail(owner, failures);
+                residuals(isolation);
+                isolation.Reported(owner);
+            }
+        }
+
+        internal static void EffectsCellSequenceIsolation()
+        {
+            Func<string, Func<IEnumerable<int>>, IEnumerable<int>> run = (name, body) => body();
+            var limit = TimeSpan.Zero;
+
+            // R4-F1: the Dust cell's early-exit cast fails its owned condition removal while the enclosing runner is
+            // disposed; its execution is still live; the other releases run; the next cell never starts.
+            var isolation = new Sprint7CellIsolation();
+            var execution = new FakeExecution();
+            int independent = 0, nextStarts = 0;
+            const string named = "injected failure of an owned Sickened removal";
+            Func<List<string>> dustReleases = () => Sprint7ObserverPolicy.RunReleases(new[] {
+                new KeyValuePair<string, Action>("owned conditions", () => { throw new InvalidOperationException(named); }),
+                new KeyValuePair<string, Action>("projectile trace", () => independent++),
+                new KeyValuePair<string, Action>("condition ledger subscription", () => independent++) });
+            IEnumerator<int> phase = Sprint7ObserverPolicy.Sequence(isolation, new[] {
+                Sprint7ObserverPolicy.Cell("s7-dust", () => FakeCell(isolation, "s7-dust", dustReleases, value => value.Residual("s7-dust", "owned execution breath#1", execution.Read), () => { }, 100)),
+                Sprint7ObserverPolicy.Cell("s7-next", () => FakeCell(isolation, "s7-next", () => new List<string>(), value => { }, () => nextStarts++, 1)) }, run, limit).GetEnumerator();
+            Assertions.True(phase.MoveNext() && phase.MoveNext(), "The Dust cell is yielded mid-cast.");
+            Assertions.True(isolation.Unreported.Contains("s7-dust") && !isolation.Restored, "A cell registered before its first acquisition is unrestored until it reports.");
+            phase.Dispose();
+            Assertions.True(isolation.Failures.Contains("s7-dust: owned conditions: InvalidOperationException: " + named), "Disposing the enclosing runner publishes the named failure from the cell's own finally.");
+            Assertions.True(independent == 2 && isolation.Pending.Contains("s7-dust: owned execution breath#1") && isolation.Unreported.Count == 0,
+                "The independent releases still ran, and the live execution is a pending residual.");
+            Assertions.True(nextStarts == 0 && isolation.Admitted.SequenceEqual(new[] { "s7-dust" }), "Disposal admitted nothing further.");
+            // The same admission guard, on the same result: the execution is still live, so the next cell is refused.
+            foreach (int step in Sprint7ObserverPolicy.Sequence(isolation, new[] { Sprint7ObserverPolicy.Cell("s7-next", () => FakeCell(isolation, "s7-next", () => new List<string>(), value => { }, () => nextStarts++, 1)) }, run, limit)) { }
+            Assertions.True(isolation.Refused == "s7-next" && nextStarts == 0, "A still-live execution and a failed release refuse the next cell.");
+            // The exact execution ends (recovery observation); the named failure stays, so the next cell is still refused.
+            execution.Ended = true;
+            foreach (int step in Sprint7ObserverPolicy.Sequence(isolation, new[] { Sprint7ObserverPolicy.Cell("s7-next", () => FakeCell(isolation, "s7-next", () => new List<string>(), value => { }, () => nextStarts++, 1)) }, run, limit)) { }
+            Assertions.True(isolation.Recoveries.Contains("s7-dust: owned execution breath#1 observed settled") && isolation.Pending.Count == 0, "The exact execution is observed settled, as a recovery kept apart from the failures.");
+            Assertions.True(!isolation.Restored && isolation.Refused == "s7-next" && nextStarts == 0, "A repair or a later recovery never erases the named failure: advancement stays refused.");
+
+            // Residuals alone: live refuses, unreadable refuses, settled admits (with the recovery recorded).
+            var residual = new Sprint7CellIsolation();
+            var live = new FakeExecution();
+            int laterStarts = 0;
+            foreach (int step in Sprint7ObserverPolicy.Sequence(residual, new[] {
+                Sprint7ObserverPolicy.Cell("s7-dust", () => FakeCell(residual, "s7-dust", () => new List<string>(), value => value.Residual("s7-dust", "owned execution breath#2", live.Read), () => { }, 2)),
+                Sprint7ObserverPolicy.Cell("s7-later", () => FakeCell(residual, "s7-later", () => new List<string>(), value => { }, () => laterStarts++, 1)) }, run, limit)) { }
+            Assertions.True(residual.Refused == "s7-later" && laterStarts == 0 && residual.Failures.Count == 0, "A still-live execution alone prevents the next cell.");
+            live.Throws = true;
+            residual.Settle();
+            Assertions.True(residual.Describe()["unreadable"].Values<string>().Contains("s7-dust: owned execution breath#2") && !residual.Restored, "An unreadable execution is never restored.");
+            live.Throws = false; live.Ended = true;
+            foreach (int step in Sprint7ObserverPolicy.Sequence(residual, new[] { Sprint7ObserverPolicy.Cell("s7-later", () => FakeCell(residual, "s7-later", () => new List<string>(), value => { }, () => laterStarts++, 1)) }, run, limit)) { }
+            Assertions.True(residual.Restored && laterStarts == 1 && residual.Recoveries.Count == 1, "Once the exact execution is observed ended, the next cell is admitted.");
+
+            // A cell whose cleanup throws before it reports leaves the isolation unrestored.
+            var silent = new Sprint7CellIsolation();
+            int afterSilent = 0;
+            try
+            {
+                foreach (int step in Sprint7ObserverPolicy.Sequence(silent, new[] {
+                    Sprint7ObserverPolicy.Cell("s7-dust", () => FakeCell(silent, "s7-dust", () => new List<string>(), value => { }, () => { }, 1, true)),
+                    Sprint7ObserverPolicy.Cell("s7-later", () => FakeCell(silent, "s7-later", () => new List<string>(), value => { }, () => afterSilent++, 1)) }, run, limit)) { }
+            }
+            catch (InvalidOperationException) { }
+            Assertions.True(!silent.Restored && silent.Unreported.Contains("s7-dust") && afterSilent == 0, "A cleanup that never reported is not restored.");
+
+            // R6-F2: the callback hook is acquired, the runner is disposed and the unpatch fails; the sources are still
+            // retired; the next cell is refused; the outer driver removes its own hook (zero remain) without erasing
+            // the failure. Control: an ordinary unpatch leaves zero hooks and admits the next cell.
+            foreach (bool inject in new[] { true, false })
+            {
+                var hookPhase = new Sprint7CellIsolation();
+                int hooks = 0, retired = 0, starts = 0;
+                Func<List<string>> hookReleases = () =>
+                {
+                    List<string> failures = Sprint7ObserverPolicy.RunReleases(new[] {
+                        new KeyValuePair<string, Action>("cue callback hook", () => { if (inject) throw new InvalidOperationException("injected failure of the cue callback unpatch"); hooks--; }),
+                        new KeyValuePair<string, Action>("survivor source", () => retired++), new KeyValuePair<string, Action>("other source", () => retired++) });
+                    if (hooks != 0) failures.Add("hooks remaining: " + hooks);
+                    return failures;
+                };
+                IEnumerator<int> hookRun = Sprint7ObserverPolicy.Sequence(hookPhase, new[] {
+                    Sprint7ObserverPolicy.Cell("s7-callback", () => FakeCell(hookPhase, "callback-withhold", hookReleases, value => { }, () => hooks++, inject ? 100 : 2)),
+                    Sprint7ObserverPolicy.Cell("s7-next", () => FakeCell(hookPhase, "s7-next", () => new List<string>(), value => { }, () => starts++, 1)) }, run, limit).GetEnumerator();
+                if (inject)
+                {
+                    Assertions.True(hookRun.MoveNext() && hooks == 1, "The hook is acquired and the observer is yielded.");
+                    hookRun.Dispose();
+                    foreach (int step in Sprint7ObserverPolicy.Sequence(hookPhase, new[] { Sprint7ObserverPolicy.Cell("s7-next", () => FakeCell(hookPhase, "s7-next", () => new List<string>(), value => { }, () => starts++, 1)) }, run, limit)) { }
+                    Assertions.True(hookPhase.Failures.Contains("callback-withhold: cue callback hook: InvalidOperationException: injected failure of the cue callback unpatch") &&
+                        hookPhase.Failures.Contains("callback-withhold: hooks remaining: 1"), "The named unpatch failure and the remaining hook reach the phase.");
+                    Assertions.True(retired == 2 && starts == 0 && hookPhase.Refused == "s7-next", "The sources are still retired and the next cell is refused.");
+                    hooks = 0; // the outer driver's own repair
+                    Assertions.True(hooks == 0 && !hookPhase.Restored, "The driver's repair leaves zero hooks; the child failure stays recorded.");
+                }
+                else
+                {
+                    while (hookRun.MoveNext()) { }
+                    Assertions.True(hooks == 0 && retired == 2 && starts == 1 && hookPhase.Restored, "Ordinary control: zero hooks, the next cell admitted, isolation restored.");
+                }
+            }
         }
 
         private static JObject Anim(bool started, bool delayed, double delay, double lifetime, bool loop, bool cutout, double current)
@@ -931,10 +1141,17 @@ namespace KingmakerGunslinger.DomainTests
                 if (retained.Folder != "r3")
                     foreach (JObject light in probe["lighting"].OfType<JObject>())
                     {
+                        // Owner amendment 3 (R5-F3): no retained row recorded the subject's component presence (its
+                        // faderVisible=true came from the helper's fallback), so the corrected reader cannot establish the
+                        // fader; every other readback still qualifies. The recorded in-run value is kept.
                         string why;
                         bool valid = KmgLoaderCompatHarness.GhaeleLighting.Valid(light, out why);
-                        Console.WriteLine("GHAELE-LIGHTING-REEVALUATION " + retained.Folder + "/" + retained.Name + " " + light["label"] + " valid=" + valid + " reason=" + (why ?? "none"));
-                        Assertions.True(valid, retained.Name + " " + light["label"] + ": the retained lighting row qualifies (" + why + ").");
+                        var withSubject = (JObject)light.DeepClone(); withSubject["subject"] = KmgLoaderCompatHarness.GhaeleLighting.Subject("retained", 1, 1, true);
+                        string otherwise;
+                        bool rest = KmgLoaderCompatHarness.GhaeleLighting.Valid(withSubject, out otherwise);
+                        Console.WriteLine("GHAELE-LIGHTING-REEVALUATION " + retained.Folder + "/" + retained.Name + " " + light["label"] + " recorded=" + light["valid"] + " corrected=" + (why ?? "valid") + " otherReadbacks=" + (otherwise ?? "valid"));
+                        Assertions.True(!valid && why == "fader-presence-unrecorded" && rest, retained.Name + " " + light["label"] + ": only the fader's presence is unestablished (" + why + ", " + otherwise + ").");
+                        if (light["valid"] != null) Assertions.True((bool)light["valid"], retained.Name + " " + light["label"] + ": the in-run verdict is kept as recorded.");
                     }
             }
         }
@@ -944,6 +1161,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void GhaeleLightingAndLoanVerdicts()
         {
             Func<JObject> good = () => new JObject { ["label"] = "idle", ["body"] = "GhaeleAzata_R", ["bodyMesh"] = "GhaeleAzata_Mesh", ["bodyDissolveCutout"] = 0.0,
+                ["subject"] = KmgLoaderCompatHarness.GhaeleLighting.Subject("ghaele-1", 4401, 4417, true),
                 ["probeDcLuminance"] = .24, ["partyCapture"] = "png=s7-ghaele-idle.png;bytes=1;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=36;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=GhaeleAzata_Mesh;dissolve=0;intact=true" };
             string why;
             Assertions.True(KmgLoaderCompatHarness.GhaeleLighting.Valid(good(), out why), "A complete lighting row qualifies.");
@@ -959,11 +1177,34 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(cut, out why) || why != "cutout", "A cut-out body fails.");
             var wrong = good(); wrong["partyCapture"] = ((string)wrong["partyCapture"]).Replace("mesh=GhaeleAzata_Mesh", "mesh=Wing_Mesh");
             Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(wrong, out why) || why != "wrong-body", "A capture of another mesh fails.");
-            // R5-F3: the unit's own fader must report it visible.
-            var hidden = good(); hidden["partyCapture"] = ((string)hidden["partyCapture"]).Replace("faderVisible=true", "faderVisible=false");
-            Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(hidden, out why) || why != "fader-hidden", "A capture whose subject's fader reports it hidden fails.");
-            var unread = good(); unread["partyCapture"] = ((string)unread["partyCapture"]).Replace("faderVisible=true;", "");
-            Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(unread, out why) || why != "fader-unavailable", "A capture without the fader readback fails with its own reason.");
+            // Owner amendment 3 (R5-F3): the subject readback, from the raw component lookup through the producer to the
+            // verdict. Missing, present-hidden and present-visible stay distinct; the capture helper's own faderVisible
+            // (true when no fader exists) is not used.
+            var missing = good(); missing["subject"] = KmgLoaderCompatHarness.GhaeleLighting.Subject("ghaele-1", 4401, null, null);
+            Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(missing, out why) || why != "fader-unavailable", "A live view without an EntityFader is unavailable, although the helper still says faderVisible=true.");
+            Assertions.True((bool)missing["subject"]["faderPresent"] == false && missing["subject"]["faderVisible"].Type == JTokenType.Null, "The producer records a missing component as absent, never as visible.");
+            var presentHidden = good(); presentHidden["subject"] = KmgLoaderCompatHarness.GhaeleLighting.Subject("ghaele-1", 4401, 4417, false);
+            Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(presentHidden, out why) || why != "fader-hidden", "A present fader reporting hidden fails as hidden.");
+            var noView = good(); noView["subject"] = KmgLoaderCompatHarness.GhaeleLighting.Subject("ghaele-1", null, null, null);
+            Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(noView, out why) || why != "fader-unavailable", "No view: unavailable.");
+            var unrecorded = good(); unrecorded.Remove("subject");
+            Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(unrecorded, out why) || why != "fader-presence-unrecorded", "A row without the subject readback cannot establish the component.");
+            Assertions.True(KmgLoaderCompatHarness.GhaeleLighting.Valid(good(), out why) && why == null, "A present, visible fader with every other readback qualifies.");
+            Assertions.True(KmgLoaderCompatHarness.GhaeleLighting.Subject("ghaele-1", 4401, null, true)["faderVisible"].Type == JTokenType.Null, "A visible flag without a component is not carried.");
+            string probeText = File.ReadAllText("tools/LoaderCompatHarness/GhaeleLifetimeProbes.cs");
+            Assertions.True(probeText.Contains("row[\"subject\"] = GhaeleLighting.Subject(") && probeText.Contains("unit.View.GetComponent<EntityFader>()"),
+                "The probe's lighting producer reads the component itself at the observation boundary.");
+
+            // Owner amendment 3 (R5-F1): the witness's own correlation, independent of the cast owner and the command's fields.
+            object data = new object(), execution = new object(), otherData = new object(), otherExecution = new object();
+            Assertions.Equal("execution", KmgLoaderCompatHarness.GhaeleWitness.Correlated(data, new[] { execution }, execution, null, otherData, null), "A retained execution context correlates.");
+            Assertions.Equal("execution", KmgLoaderCompatHarness.GhaeleWitness.Correlated(data, new[] { execution }, otherExecution, execution, otherData, null), "A derived context whose source is retained correlates.");
+            Assertions.Equal("ability-data", KmgLoaderCompatHarness.GhaeleWitness.Correlated(data, new object[0], otherExecution, null, data, null), "The exact AbilityData taken from the command correlates after disposal.");
+            Assertions.Equal(null, KmgLoaderCompatHarness.GhaeleWitness.Correlated(data, new[] { execution }, otherExecution, null, otherData, otherData), "A foreign execution with another AbilityData does not.");
+            Assertions.Equal(null, KmgLoaderCompatHarness.GhaeleWitness.Correlated(null, new object[0], otherExecution, null, null, null), "Nothing watched, nothing owned.");
+            Assertions.True(probeText.Contains("lateWitness.OnEventDidTrigger(lateRule)") && probeText.Contains("mark(\"cast-owner-disposed\")") &&
+                probeText.IndexOf("lateRun.Dispose()", StringComparison.Ordinal) < probeText.IndexOf("lateWitness.OnEventDidTrigger(lateRule)", StringComparison.Ordinal) &&
+                !probeText.Contains("GhaelePending.Verdict(true, true"), "The negative control delivers after the cast owner's disposal and passes no hardcoded verdict input.");
 
             // R5-F1: the pending abandonment verdict, with the controlled late-owned-result negative case.
             Assertions.Equal(null, KmgLoaderCompatHarness.GhaelePending.Verdict(true, true, false, false, true, 0, 0, false), "Pending at disposal, settled after, foreign kept, nothing late: settled.");
@@ -1090,18 +1331,6 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("survivor-still-tracked", Sprint7ObserverPolicy.ConcurrentRetirementTrace(playing, playing, 0, true, inactive, true, inactive), "Tracking left after the callback fails.");
             Assertions.Equal("survivor-stopped-by-other-retirement", Sprint7ObserverPolicy.ConcurrentRetirementTrace(playing, playing, 1, true, inactive, false, inactive), "A cross-source stop fails.");
             Assertions.Equal("not-both-playing", Sprint7ObserverPolicy.ConcurrentRetirementTrace(playing, inactive, 0, true, inactive, false, inactive), "Both IDs must be confirmed playing first.");
-            Func<string, string, int, bool, int, int, bool, bool, bool, bool, bool, bool, bool, int, int, string> loss = Sprint7ObserverPolicy.CallbackLossVerdict;
-            Assertions.Equal(null, loss(playing, playing, 1, true, 0, 1, false, true, false, true, true, true, false, 0, 0), "Synthetic loss with normal playback end, source-local residual and observed disposal is characterized.");
-            Assertions.Equal("survivor-playback-persisted", loss(playing, playing, 1, true, 0, 1, false, false, false, true, true, true, false, 0, 0), "Playback still confirmed after the window is persistence.");
-            Assertions.Equal("survivor-playback-unknown", loss(playing, playing, 1, true, 0, 1, false, false, true, true, true, true, false, 0, 0), "Only unknown answers are not completion.");
-            Assertions.Equal("callback-not-withheld", loss(playing, playing, 1, true, 0, 0, false, true, false, true, true, true, false, 0, 0), "Without a withheld callback the loss was not exercised.");
-            Assertions.Equal("callback-not-withheld", loss(playing, playing, 1, true, 0, 1, true, true, false, true, true, true, false, 0, 0), "A product that still recorded the end did not lose the callback.");
-            Assertions.Equal("source-disposal-not-observed", loss(playing, playing, 1, true, 0, 1, false, true, false, true, false, true, false, 0, 0), "A destroy request with disposal pending is insufficient.");
-            Assertions.Equal("end-manufactured", loss(playing, playing, 1, true, 0, 1, false, true, false, true, true, true, true, 0, 0), "An end the callback never delivered must not appear.");
-            Assertions.Equal("unrelated-record-affected", loss(playing, playing, 1, true, 0, 1, false, true, false, true, true, true, false, 1, 0), "Another record touched by the survivor's retirement fails.");
-            Assertions.Equal("intervention-not-restored", loss(playing, playing, 1, true, 0, 1, false, true, false, true, true, true, false, 0, 1), "The observer's hook must be gone.");
-            Assertions.Equal("survivor-stopped-by-other-retirement", loss(playing, playing, 1, true, 1, 1, false, true, false, true, true, true, false, 0, 0), "A stop for the survivor from the other retirement fails.");
-            Assertions.Equal("other-not-stopped-by-own-id", loss(playing, playing, 0, false, 0, 1, false, true, false, true, true, true, false, 0, 0), "The other source must request its own stop.");
 
             // The settled retirement predicate: the product's stop is requested in the retired view's destroy callback.
             DateTime retire = new DateTime(2026, 11, 24, 20, 29, 2, 326, DateTimeKind.Utc);
@@ -1111,35 +1340,67 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(Sprint7ObserverPolicy.RetiredByOwnId(1, "stop-requested", "stop-requested", retire.AddSeconds(-1), retire.AddMilliseconds(53), retire), "A stop before the retirement is not caused by it.");
             Assertions.False(Sprint7ObserverPolicy.RetiredByOwnId(1, "failed:X", "stop-requested", retire.AddMilliseconds(4), retire.AddMilliseconds(53), retire), "A failed stop is not a retirement.");
 
-            // Round 6, offline re-evaluation of the retained native records (the in-run verdicts are kept as recorded):
-            // 202648Z (candidate 740d94a995) read the other source's stop in the retirement frame; its own records, read
-            // once settled, are judged by the same predicate. 200320Z (candidate f3bfab1303) selected a cue that had
-            // already ended and must stay unestablished.
+            // Owner amendment 3 (R6-F3/R6-F4): the one settled evaluator, CallbackLossSettled, is the in-game verdict of
+            // the final collector and the reader of the retained rows. For a retained row it reads fields that the
+            // collector that ran (candidate 740d94a995 for 202648Z, f3bfab1303 for 200320Z) already emitted: the row
+            // itself, the other source's cue record in the phase's cuesAtEnd and the retirement mark. That is a reader
+            // over existing fields; it did not execute the later live-sampling path. The in-run verdicts stay as recorded.
+            Func<string, JObject> phaseOf = name => (JObject)JObject.Parse(File.ReadAllText(Path.Combine("docs/evidence/sprint7/r6", name)))["records"]["summon-s7-effects.json"];
+            Func<JObject, JObject> otherOf = phaseRecord => phaseRecord["cuesAtEnd"].OfType<JObject>().First(cue => (uint)cue["playingId"] == (uint)phaseRecord["ankylosaurus"]["callbackLoss"]["before"]["other"]["playingId"]);
+            Func<JObject, DateTime> retiredOf = phaseRecord => Sprint7ObserverPolicy.Utc(phaseRecord["timeline"].First(mark => (string)mark["mark"] == "anky-loss-retire-other")["utc"]).Value;
             foreach (var retained in new[] {
                 new { Name = "20261124T202648Z-owner-0.33.0-s7-fx-01-fx.json", Recorded = "other-not-stopped-by-own-id", Settled = (string)null },
                 new { Name = "20261124T200320Z-owner-0.33.0-s7-fx-01-fx.json", Recorded = "not-both-playing", Settled = "not-both-playing" } })
             {
-                JObject phase = (JObject)JObject.Parse(File.ReadAllText(Path.Combine("docs/evidence/sprint7/r6", retained.Name)))["records"]["summon-s7-effects.json"];
+                JObject phase = phaseOf(retained.Name);
                 JObject row = (JObject)phase["ankylosaurus"]["callbackLoss"];
                 Assertions.Equal(retained.Recorded, (string)row["verdict"], retained.Name + ": the in-run verdict is retained as recorded.");
-                Func<JToken, DateTime?> utc = token => token == null || token.Type == JTokenType.Null ? (DateTime?)null : ((DateTime)token).ToUniversalTime();
-                DateTime retiredAt = ((DateTime)phase["timeline"].First(mark => (string)mark["mark"] == "anky-loss-retire-other")["utc"]).ToUniversalTime();
-                uint otherId = (uint)row["before"]["other"]["playingId"], keptId = (uint)row["before"]["survivor"]["playingId"];
-                JObject other = phase["cuesAtEnd"].OfType<JObject>().First(cue => (uint)cue["playingId"] == otherId);
-                JObject keptAtWindowEnd = (JObject)row["survivorAtWindowEnd"]["cue"];
-                JObject afterDisposal = (JObject)row["survivorAfterDisposal"];
-                var window = row["window"].OfType<JObject>().ToList();
-                bool retiredByOwnId = Sprint7ObserverPolicy.RetiredByOwnId((int)other["stopAttempts"], (string)other["stopResult"], "stop-requested", utc(other["stopRequestedUtc"]), utc(other["endUtc"]), retiredAt);
-                string settled = Sprint7ObserverPolicy.CallbackLossVerdict((string)row["before"]["survivorPlayback"], (string)row["before"]["otherPlayback"], (int)other["stopAttempts"], retiredByOwnId,
-                    keptAtWindowEnd["stopResult"].Type == JTokenType.Null ? 0 : 1, ((JArray)row["survivorAtWindowEnd"]["callbacksWithheld"]).Count, keptAtWindowEnd["endUtc"].Type != JTokenType.Null,
-                    window.Any(sample => (string)sample["survivorPlayback"] == inactive), window.Any(sample => (string)sample["survivorPlayback"] == unknown), (bool)row["survivorAtWindowEnd"]["tracked"],
-                    (bool)afterDisposal["viewDestroyed"], (bool)afterDisposal["playbackComponentDestroyed"], afterDisposal["cue"]["endUtc"].Type != JTokenType.Null,
-                    (int)afterDisposal["unrelatedRecordsChanged"], (int)row["interventionHooksAfter"] + ((JArray)row["interventionDisposeFailures"]).Count);
+                string settled = Sprint7ObserverPolicy.CallbackLossSettled(row, otherOf(phase), retiredOf(phase), "stop-requested");
                 Console.WriteLine("ANKY-CALLBACK-LOSS-REEVALUATION " + retained.Name + " recorded=" + row["verdict"] + " settled=" + (settled ?? "characterized") +
-                    " otherId=" + otherId + " otherStopRequested=" + other["stopRequestedUtc"] + " otherEnd=" + other["endUtc"] + " survivorId=" + keptId +
-                    " withheld=" + row["survivorAtWindowEnd"]["callbacksWithheld"].ToString(Newtonsoft.Json.Formatting.None) + " firstInactive=" + row["survivorFirstInactiveUtc"]);
-                Assertions.Equal(retained.Settled, settled, retained.Name + ": the settled re-evaluation of the retained records.");
+                    " windowEnd=" + (row["survivorAtWindowEnd"] == null ? null : row["survivorAtWindowEnd"]["playback"]) + " afterDisposal=" + (row["survivorAfterDisposal"] == null ? null : row["survivorAfterDisposal"]["playback"]) +
+                    " withheld=" + (row["survivorAtWindowEnd"] == null ? "" : row["survivorAtWindowEnd"]["callbacksWithheld"].ToString(Newtonsoft.Json.Formatting.None)) + " firstInactive=" + row["survivorFirstInactiveUtc"]);
+                Assertions.Equal(retained.Settled, settled, retained.Name + ": the settled evaluation of the retained row.");
             }
+
+            // Copies of the retained 202648Z row: each required terminal read set to playing, unknown or removed prevents
+            // characterization, although the earlier window samples stay inactive; every other input is exercised too.
+            JObject basePhase = phaseOf("20261124T202648Z-owner-0.33.0-s7-fx-01-fx.json");
+            JObject baseRow = (JObject)basePhase["ankylosaurus"]["callbackLoss"];
+            JObject baseOther = otherOf(basePhase);
+            DateTime baseRetired = retiredOf(basePhase);
+            Func<Action<JObject, JObject>, string> mutated = change =>
+            {
+                var row = (JObject)baseRow.DeepClone(); var other = (JObject)baseOther.DeepClone();
+                change(row, other);
+                return Sprint7ObserverPolicy.CallbackLossSettled(row, other, baseRetired, "stop-requested");
+            };
+            foreach (string terminal in new[] { "survivorAtWindowEnd", "survivorAfterDisposal" })
+            {
+                string which = terminal == "survivorAtWindowEnd" ? "window-end" : "after-disposal";
+                Assertions.Equal("survivor-playback-persisted:" + which, mutated((row, other) => row[terminal]["playback"] = playing), terminal + " playing is persistence.");
+                Assertions.Equal("survivor-playback-unknown:" + which, mutated((row, other) => row[terminal]["playback"] = unknown), terminal + " unknown is not completion.");
+                Assertions.Equal("survivor-playback-unknown:" + which, mutated((row, other) => ((JObject)row[terminal]).Remove("playback")), terminal + " missing is not completion.");
+            }
+            Assertions.Equal(null, mutated((row, other) => { }), "The unaltered copy is characterized.");
+            Assertions.Equal("not-both-playing", mutated((row, other) => row["before"]["otherPlayback"] = inactive), "Both IDs must be confirmed playing first.");
+            Assertions.Equal("other-not-stopped-by-own-id", mutated((row, other) => other["stopAttempts"] = 0), "The other source must request its own stop.");
+            Assertions.Equal("other-not-stopped-by-own-id", mutated((row, other) => other["endUtc"] = null), "A stop request without the native end is not its own retirement.");
+            Assertions.Equal("survivor-stopped-by-other-retirement", mutated((row, other) => row["survivorAtWindowEnd"]["cue"]["stopResult"] = "stop-requested"), "A stop for the survivor during the window fails.");
+            Assertions.Equal("callback-not-withheld", mutated((row, other) => row["survivorAtWindowEnd"]["callbacksWithheld"] = new JArray()), "Without a withheld callback the loss was not exercised.");
+            Assertions.Equal("callback-not-withheld", mutated((row, other) => row["survivorAtWindowEnd"]["cue"]["endUtc"] = "2026-11-24T20:29:03.0000000Z"), "A product that recorded the end did not lose the callback.");
+            Assertions.Equal("survivor-playback-persisted", mutated((row, other) => { foreach (JObject sample in row["window"]) sample["survivorPlayback"] = playing; }), "No inactive sample in the window is persistence.");
+            Assertions.Equal("survivor-playback-unknown", mutated((row, other) => { foreach (JObject sample in row["window"]) sample["survivorPlayback"] = unknown; }), "Only unknown samples are not completion.");
+            Assertions.Equal("survivor-playback-contradictory", mutated((row, other) => ((JArray)row["window"]).Add(new JObject { ["survivorPlayback"] = playing })), "Playing again after inactivity contradicts.");
+            Assertions.Equal("survivor-tracking-not-source-local", mutated((row, other) => row["survivorAtWindowEnd"]["tracked"] = false), "The residual must be the survivor's own source tracking.");
+            Assertions.Equal("source-disposal-not-observed", mutated((row, other) => row["survivorAfterDisposal"]["viewDestroyed"] = false), "A destroy request with disposal pending is insufficient.");
+            Assertions.Equal("end-manufactured", mutated((row, other) => row["survivorAfterDisposal"]["cue"]["endUtc"] = "2026-11-24T20:29:15.0000000Z"), "An end the callback never delivered must not appear.");
+            Assertions.Equal("unrelated-record-affected", mutated((row, other) => row["survivorAfterDisposal"]["unrelatedRecordsChanged"] = 1), "Another record touched by the survivor's retirement fails.");
+            Assertions.Equal("intervention-not-restored", mutated((row, other) => row["interventionHooksAfter"] = 1), "The observer's hook must be gone.");
+            Assertions.Equal("intervention-not-restored", mutated((row, other) => row.Remove("interventionHooksAfter")), "An unread hook count is not restoration.");
+            Assertions.Equal("intervention-not-restored", mutated((row, other) => row["interventionDisposeFailures"] = new JArray("cue callback hook: InvalidOperationException: x")), "A failed unpatch is not restoration.");
+            string collector = File.ReadAllText("src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.Sprint7Presentation.cs");
+            Assertions.True(collector.Contains("Sprint7ObserverPolicy.CallbackLossSettled(row, settledOther, retiredAt, SummonCastCueLifecycle.StopRequested)") && !collector.Contains("CallbackLossVerdict("),
+                "The in-game collector's verdict is the same evaluator, over the row it emitted.");
         }
 
         private static IEnumerable<object> Body(KmgLoaderCompatHarness.OwnedProbeResources owned, Action unpause, Action subscribe, Action seed,

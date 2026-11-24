@@ -65,8 +65,7 @@ namespace KmgLoaderCompatHarness
         private readonly JObject result = new JObject();
         private readonly OwnedProbeResources owned = new OwnedProbeResources();
         private readonly YieldedProbeLifecycle life;
-        private readonly OwnedDisposables<UnitEntityData> units =
-            new OwnedDisposables<UnitEntityData>(u => u.UniqueId, u => { if (!u.Destroyed) u.Destroy(); });
+        private readonly OwnedDisposables<UnitEntityData> units;
         private readonly List<BlueprintUnit> createdBlueprints = new List<BlueprintUnit>();
         private Type runner;
         private UnitEntityData attacker;
@@ -78,6 +77,9 @@ namespace KmgLoaderCompatHarness
             this.mode = mode;
             this.evidenceDirectory = evidenceDirectory;
             result["mode"] = mode;
+            // One destruction-request owner per unit; every request, direct or final, and any failure of one is kept in
+            // the probe's one cumulative outcome that ProbeSlot reads (owner amendment 3, R6-F1).
+            units = new OwnedDisposables<UnitEntityData>("disposable unit", u => u.UniqueId, u => { if (!u.Destroyed) u.Destroy(); }, owned.Outcome);
             life = new YieldedProbeLifecycle(owned, lifecycle => Run());
         }
 
@@ -93,7 +95,7 @@ namespace KmgLoaderCompatHarness
         public CleanupReport Release(string testFailure)
         {
             // Built after the iterator's cleanup: only units no earlier release requested (R5-F5), then the blueprints.
-            CleanupReport report = life.Release(() => units.Releases("disposable unit")
+            CleanupReport report = life.Release(() => new[] { new KeyValuePair<string, Action>("disposable units", units.ReleaseRemaining) }
                 .Concat(ProbeReleases.PerItem("disposable blueprint", createdBlueprints, b => b.name + "#" + b.GetInstanceID(), b => UnityEngine.Object.Destroy(b))).ToList());
             result["problems"] = new JArray(life.Problems.Cast<object>().ToArray());
             return report;
@@ -205,6 +207,10 @@ namespace KmgLoaderCompatHarness
                 .Select(light => (object)new JObject { ["name"] = light.name, ["type"] = light.type.ToString(), ["intensity"] = Math.Round(light.intensity, 3),
                     ["distance"] = light.type == LightType.Directional ? (double?)null : Math.Round(Vector3.Distance(light.transform.position, unit.Position), 2),
                     ["colour"] = Colour(light.color) }).ToArray());
+            // R5-F3: the exact subject, its view, and its own EntityFader component (presence, identity, Visible), read here.
+            EntityFader fader = unit == null || unit.View == null ? null : unit.View.GetComponent<EntityFader>();
+            row["subject"] = GhaeleLighting.Subject(unit == null ? null : unit.UniqueId, unit == null || unit.View == null ? (int?)null : unit.View.GetInstanceID(),
+                fader == null ? (int?)null : fader.GetInstanceID(), fader == null ? (bool?)null : fader.Visible);
             MethodInfo capture = runner.GetMethod("WriteExpandedSummoningPartyCameraCapture", Any);
             if (capture != null && body != null && !string.IsNullOrEmpty(evidenceDirectory))
                 row["partyCapture"] = (string)capture.Invoke(null, new object[] { unit, evidenceDirectory, "s7-ghaele-" + label + ".png", body.name });
@@ -356,7 +362,8 @@ namespace KmgLoaderCompatHarness
             try
             {
                 IEnumerable<object> body = mode == "timeline" ? Observe(main, ability, donorBlueprint, library) :
-                    mode == "lifecycle" ? Lifecycle(main, ability, donorBlueprint, library) : null;
+                    mode == "lifecycle" ? Lifecycle(main, ability, donorBlueprint, library) :
+                    mode == "visibility" ? Visibility(main, ability, donorBlueprint) : null;
                 if (body == null) { life.Problems.Add("unknown mode " + mode); yield break; }
                 foreach (object step in body) yield return step;
             }
@@ -535,11 +542,9 @@ namespace KmgLoaderCompatHarness
                         combat["endedAt"] = Math.Round(t, 2);
                         // R5-F4: the witness move on the main character is owned on its own, registered before it is issued.
                         var witness = new UnitMoveTo(ObstacleAnalyzer.TraceAlongNavmesh(main.Position, main.Position + Quaternion.Euler(0, main.Orientation, 0) * Vector3.back * 8f), .3f);
-                        owned.Hold("witness move", () =>
-                        {
-                            if (!witness.IsFinished) { main.Commands.InterruptAll(value => ReferenceEquals(value, witness)); main.Commands.RemoveFinishedAndUpdateQueue(); }
-                            witnessSettled = witness.IsFinished || !main.Commands.Contains(witness);
-                        });
+                        owned.Hold("witness move", () => witnessSettled = WitnessSettlement.Settle(
+                            () => { main.Commands.InterruptAll(value => ReferenceEquals(value, witness)); main.Commands.RemoveFinishedAndUpdateQueue(); },
+                            () => witness.IsFinished, () => main.Commands.Contains(witness)));
                         main.Commands.Run(witness);
                         combat["witnessBefore"] = CommandState(main, witness);
                         var teardownFailures = new List<string>();
@@ -704,7 +709,7 @@ namespace KmgLoaderCompatHarness
             var pendingHandle = new CastHandle();
             IEnumerator<object> pendingRun = CastOwned(main, ability, "pending", pending, pendingHandle, null, unit => units.Add(unit)).GetEnumerator();
             pendingRun.MoveNext();
-            pendingWitness.Command = pendingHandle.Command;
+            pendingWitness.Begin(pendingHandle.Command);
             var pendingMove = new UnitMoveTo(ObstacleAnalyzer.TraceAlongNavmesh(bystander.Position, bystander.Position + back * 12f), .3f);
             bystander.Commands.Run(pendingMove);
             var unrelated = new UnitCommandProbe { Unit = bystander, Command = pendingMove };
@@ -717,7 +722,7 @@ namespace KmgLoaderCompatHarness
                 ["overrideCasterLevel"] = heldNow == null || heldNow.OverrideParams == null ? (int?)null : heldNow.OverrideParams.CasterLevel };
             pendingRun.Dispose();
             pending["bystanderAfterAbandon"] = commandState(unrelated);
-            foreach (object step in Seconds(6f)) yield return step;
+            foreach (object step in Watching(pendingWitness, 6f)) yield return step;
             pending["ownedCommandRemains"] = pendingCommand != null && main.Commands.Contains(pendingCommand) && !pendingCommand.IsFinished;
             pending["foreignPreserved"] = foreignPending != null && !foreignPending.Destroyed && Game.Instance.State.Units.Contains(foreignPending);
             pending["abilityGrantRemains"] = main.Descriptor.Abilities.GetAbility(ability) != null;
@@ -729,6 +734,69 @@ namespace KmgLoaderCompatHarness
             pending["verdict"] = pendingVerdict;
             if (pendingVerdict != null || !(bool)pending["bystanderCommandSurvived"] || !(bool)pending["commandReleased"] || !(bool)pending["loanReleased"])
                 life.Problems.Add("lifecycle.pending: the abandoned pending command was not settled exactly: " + (pendingVerdict ?? "bystander or release"));
+
+            // 3b. The pending verdict's negative control (owner amendment 3, R5-F1), genuinely after disposal: a second
+            //     owned cast is queued with the same known foreign control; zero owned results are established before
+            //     disposal; the actual cast owner is disposed; a real disposable unit is registered with its own
+            //     destruction owner; then a labelled controlled notification injection delivers to the witness's own
+            //     handler a summon result correlated to that exact cast (a fresh execution context of the cast's own
+            //     AbilityData, the rule not triggered). Every verdict input is the case's own readback; the verdict must
+            //     reject the late result, the foreign control survives and the witness unsubscribes.
+            var late = new JObject(); cases["abandonedPendingLateResult"] = late;
+            var order = new JArray(); late["order"] = order;
+            SummonWitness lateWitness = Watch("late-result witness", main, foreignPending);
+            Action<string> mark = name => order.Add(new JObject { ["step"] = name, ["frame"] = Time.frameCount, ["witnessOwned"] = lateWitness.Owned.Count });
+            var lateHandle = new CastHandle();
+            IEnumerator<object> lateRun = CastOwned(main, ability, "pendingLate", late, lateHandle, null, unit => units.Add(unit)).GetEnumerator();
+            lateRun.MoveNext();
+            lateWitness.Begin(lateHandle.Command);
+            mark("queued");
+            UnitUseAbility lateCommand = lateHandle.Command;
+            Ability lateHeld = main.Descriptor.Abilities.GetAbility(ability);
+            bool lateCommandPending = lateCommand != null && main.Commands.Contains(lateCommand) && !lateCommand.IsFinished && !lateCommand.IsActed && lateCommand.ExecutionProcess == null;
+            bool lateLoanHeld = lateHeld != null && ReferenceEquals(lateHeld, lateHandle.Used) && lateHeld.OverrideParams != null && lateHeld.OverrideParams.CasterLevel == 20;
+            late["beforeDispose"] = new JObject { ["commandPending"] = lateCommandPending, ["loanHeld"] = lateLoanHeld, ["witnessOwned"] = lateWitness.Owned.Count };
+            mark("before-disposal");
+            lateRun.Dispose();
+            mark("cast-owner-disposed");
+            Vector3 right = Quaternion.Euler(0, main.Orientation + 90f, 0) * Vector3.forward;
+            UnitEntityData lateUnit = foreignPending == null ? null : SpawnDisposable(foreignPending.Blueprint, ObstacleAnalyzer.TraceAlongNavmesh(main.Position, main.Position + right * 3f));
+            late["lateUnit"] = lateUnit == null ? null : lateUnit.UniqueId;
+            late["lateUnitOwnedBeforeDelivery"] = lateUnit != null && units.Remaining.Contains(lateUnit);
+            mark("late-unit-registered");
+            if (lateUnit != null && lateCommand != null)
+            {
+                var lateContext = new AbilityExecutionContext(lateCommand.Spell, new AbilityParams { CasterLevel = 20, SpellLevel = 9 }, new TargetWrapper(lateUnit.Position));
+                var lateRule = new RuleSummonUnit(main, lateUnit.Blueprint, lateUnit.Position, new Rounds(1), 20) { Context = lateContext };
+                typeof(RuleSummonUnit).GetProperty("SummonedUnit", Any).GetSetMethod(true).Invoke(lateRule, new object[] { lateUnit });
+                late["injection"] = "controlled notification injection (labelled, owner amendment 3 section 4): the witness handler receives a RuleSummonUnit, never triggered, whose context is a fresh execution context of the abandoned cast's own AbilityData and whose summoned unit is a real disposable unit registered with the probe's destruction owner before delivery";
+                lateWitness.OnEventDidTrigger(lateRule);
+            }
+            mark("late-result-delivered");
+            foreach (object step in Watching(lateWitness, 1f)) yield return step;
+            late["ownedCommandRemains"] = lateCommand != null && main.Commands.Contains(lateCommand) && !lateCommand.IsFinished;
+            late["abilityGrantRemains"] = main.Descriptor.Abilities.GetAbility(ability) != null;
+            late["foreignPreserved"] = foreignPending != null && !foreignPending.Destroyed && Game.Instance.State.Units.Contains(foreignPending);
+            owned.ReleaseNow("late-result witness", null);
+            late["witness"] = lateWitness.Describe();
+            string lateVerdict = GhaelePending.Verdict(lateCommandPending, lateLoanHeld, (bool)late["ownedCommandRemains"], (bool)late["abilityGrantRemains"],
+                (bool)late["foreignPreserved"], lateWitness.Owned.Count, lateWitness.Unattributed.Count, lateWitness.Subscribed);
+            late["verdict"] = lateVerdict;
+            // The control's unit is accounted for by its owner: one destruction request, destroyed afterwards.
+            if (lateUnit != null) units.Destroy(lateUnit);
+            // Destruction completes after the call: read it once settled (bounded).
+            float destroyedBy = Time.realtimeSinceStartup + 5f;
+            while (lateUnit != null && Time.realtimeSinceStartup < destroyedBy && !(lateUnit.Destroyed || !Game.Instance.State.Units.Contains(lateUnit))) yield return null;
+            late["lateUnitDestroyRequested"] = lateUnit != null && units.WasRequested(lateUnit);
+            late["lateUnitDestroyed"] = lateUnit != null && (lateUnit.Destroyed || !Game.Instance.State.Units.Contains(lateUnit));
+            string[] expectedOrder = { "queued", "before-disposal", "cast-owner-disposed", "late-unit-registered", "late-result-delivered" };
+            bool ordered = order.Select(entry => (string)entry["step"]).SequenceEqual(expectedOrder) &&
+                order.Take(4).All(entry => (int)entry["witnessOwned"] == 0) && (int)order[4]["witnessOwned"] == 1;
+            late["ordered"] = ordered;
+            if (lateVerdict != "late-owned-summon" || !ordered || lateWitness.Owned.Count != 1 || !ReferenceEquals(lateWitness.Owned[0], lateUnit) ||
+                (string)lateWitness.Describe()["matchedBy"][0] != "ability-data" || !(bool)late["lateUnitOwnedBeforeDelivery"] || !(bool)late["lateUnitDestroyRequested"] ||
+                !(bool)late["lateUnitDestroyed"] || !(bool)late["commandReleased"] || !(bool)late["loanReleased"])
+                life.Problems.Add("lifecycle.pendingLate: the post-disposal late result was not rejected by the pending verdict as required: " + (lateVerdict ?? "verdict passed"));
             units.Destroy(foreignPending);
             foreach (object step in Frames(10)) yield return step;
 
@@ -736,14 +804,15 @@ namespace KmgLoaderCompatHarness
             //    execution) and before ordinary registration, with a foreign same-caster Ghaele from another execution.
             var spawned = new JObject(); cases["abandonedAfterSpawn"] = spawned;
             var spawnHandle = new CastHandle();
-            // The negative control of the pending verdict: the same witness on a cast whose Ghaele does spawn.
-            SummonWitness spawnWitness = Watch("spawn negative-control witness", main, null);
+            // The witness's real-time detection control: the same witness on a cast whose Ghaele does spawn.
+            SummonWitness spawnWitness = Watch("spawn detection witness", main, null);
             IEnumerator<object> spawnRun = CastOwned(main, ability, "spawned", spawned, spawnHandle, null, unit => units.Add(unit)).GetEnumerator();
             spawnRun.MoveNext();
-            spawnWitness.Command = spawnHandle.Command;
+            spawnWitness.Begin(spawnHandle.Command);
             float until = Time.realtimeSinceStartup + 30f;
             while (Time.realtimeSinceStartup < until && spawnRun.MoveNext())
             {
+                spawnWitness.Capture();
                 if (spawnHandle.Summoned != null) break;
                 yield return null;
             }
@@ -766,13 +835,10 @@ namespace KmgLoaderCompatHarness
             spawned["ownedCommandRemains"] = spawnHandle.Command != null && main.Commands.Contains(spawnHandle.Command) && !spawnHandle.Command.IsFinished;
             spawned["abilityGrantRemains"] = main.Descriptor.Abilities.GetAbility(ability) != null;
             spawned["bystanderCommandSurvived"] = (bool)spawned["bystanderBeforeAbandon"]["held"] && survived((JObject)spawned["bystanderAfterAbandon"]);
-            owned.ReleaseNow("spawn negative-control witness", null);
+            owned.ReleaseNow("spawn detection witness", null);
             spawned["witness"] = spawnWitness.Describe();
-            // With every other input taken as settled, a real owned spawn seen by the witness must fail the pending verdict.
-            string negative = GhaelePending.Verdict(true, true, false, false, true, spawnWitness.Owned.Count, spawnWitness.Unattributed.Count, spawnWitness.Subscribed);
-            spawned["pendingVerdictOnOwnedSpawn"] = negative;
-            if (negative != "late-owned-summon" || spawnWitness.Owned.Count != 1 || !ReferenceEquals(spawnWitness.Owned[0], early))
-                life.Problems.Add("lifecycle.spawned: the late-spawn witness did not detect the owned spawn, so the pending verdict's negative case does not hold: " + negative);
+            if (spawnWitness.Owned.Count != 1 || !ReferenceEquals(spawnWitness.Owned[0], early) || spawnWitness.Subscribed)
+                life.Problems.Add("lifecycle.spawned: the witness did not detect exactly the cast's own real spawn, or did not unsubscribe");
             if (!(bool)spawned["spawnSeenBeforeRegistration"] || !(bool)spawned["earlySummonDestroyed"] || !(bool)spawned["foreignPreserved"] ||
                 foreignSpawned == null || ReferenceEquals(foreignSpawned, early) || (bool)spawned["ownedCommandRemains"] || (bool)spawned["abilityGrantRemains"] ||
                 (int)spawned["lateSummonsDestroyed"] != 1 || !(bool)spawned["bystanderCommandSurvived"])
@@ -812,32 +878,107 @@ namespace KmgLoaderCompatHarness
         /// summon is the watched cast's when its rule's context is (or derives from) that command's execution; any other
         /// KMG Ghaele the same caster summons that is not a known unit is unattributed.
         /// </summary>
+        /// Owner amendment 3: the witness holds its own correlation (GhaeleWitness): the exact AbilityData taken from the
+        /// watched command when watching began, and every execution context of that command it has seen, retained.
         private sealed class SummonWitness : IGlobalRulebookHandler<RuleSummonUnit>
         {
-            internal UnitUseAbility Command;
+            private UnitUseAbility command;
+            private AbilityData data;
+            private readonly List<object> executions = new List<object>();
             internal UnitEntityData Caster;
             internal readonly List<UnitEntityData> Known = new List<UnitEntityData>();
             internal readonly List<UnitEntityData> Owned = new List<UnitEntityData>();
+            internal readonly List<string> MatchedBy = new List<string>();
             internal readonly List<UnitEntityData> Unattributed = new List<UnitEntityData>();
             internal bool Subscribed;
+
+            internal void Begin(UnitUseAbility watched)
+            {
+                command = watched;
+                data = watched == null ? null : watched.Spell;
+                Capture();
+            }
+
+            /// <summary>Retains the watched command's current execution context, if it has one.</summary>
+            internal void Capture()
+            {
+                AbilityExecutionContext execution = command == null || command.ExecutionProcess == null ? null : command.ExecutionProcess.Context;
+                if (execution != null && !executions.Any(value => ReferenceEquals(value, execution))) executions.Add(execution);
+            }
 
             public void OnEventAboutToTrigger(RuleSummonUnit evt) { }
 
             public void OnEventDidTrigger(RuleSummonUnit evt)
             {
                 if (evt == null || evt.SummonedUnit == null) return;
-                AbilityExecutionContext execution = Command == null || Command.ExecutionProcess == null ? null : Command.ExecutionProcess.Context;
-                if (execution != null && evt.Context != null && (ReferenceEquals(evt.Context, execution) || ReferenceEquals(evt.Context.SourceAbilityContext, execution)))
-                { Owned.Add(evt.SummonedUnit); return; }
+                Capture();
+                AbilityExecutionContext source = evt.Context == null ? null : evt.Context.SourceAbilityContext;
+                string matched = GhaeleWitness.Correlated(data, executions, evt.Context, source, evt.Context is AbilityExecutionContext ? ((AbilityExecutionContext)evt.Context).Ability : null,
+                    source == null ? null : source.Ability);
+                if (matched != null) { Owned.Add(evt.SummonedUnit); MatchedBy.Add(matched); return; }
                 if (IsKmgGhaele(evt.SummonedUnit) && (ReferenceEquals(evt.Initiator, Caster) || SummonedBy(evt.SummonedUnit, Caster)) && !Known.Contains(evt.SummonedUnit))
                     Unattributed.Add(evt.SummonedUnit);
             }
 
             internal JObject Describe()
             {
-                return new JObject { ["owned"] = new JArray(Owned.Select(u => (object)u.UniqueId).ToArray()), ["unattributed"] = new JArray(Unattributed.Select(u => (object)u.UniqueId).ToArray()),
-                    ["known"] = new JArray(Known.Select(u => (object)u.UniqueId).ToArray()), ["subscribed"] = Subscribed };
+                return new JObject { ["owned"] = new JArray(Owned.Select(u => (object)u.UniqueId).ToArray()), ["matchedBy"] = new JArray(MatchedBy.Cast<object>().ToArray()),
+                    ["unattributed"] = new JArray(Unattributed.Select(u => (object)u.UniqueId).ToArray()),
+                    ["known"] = new JArray(Known.Select(u => (object)u.UniqueId).ToArray()), ["retainedExecutions"] = executions.Count, ["subscribed"] = Subscribed };
             }
+        }
+
+        private static IEnumerable<object> Watching(SummonWitness witness, float seconds)
+        {
+            float end = Time.realtimeSinceStartup + seconds;
+            while (Time.realtimeSinceStartup < end) { witness.Capture(); yield return null; }
+        }
+
+        // ---------------------------------------------------------------- visibility (owner amendment 3, R5-F3)
+
+        /// <summary>
+        /// Mode "visibility": a short current capture of the repaired subject readback through the producer and the
+        /// verdict. The published summon is cast as one owned command (as in the timeline) and the native donor spawned;
+        /// after the appearance, the Ghaele's lighting row is taken with its own fader present and visible; the
+        /// disposable donor's fader is then set hidden by the probe (held, restored to its prior value) and its row taken.
+        /// The verdict must accept the first and refuse the second as fader-hidden. A missing component is exercised
+        /// offline through the same producer and verdict (removing a live view's fader is not attempted).
+        /// </summary>
+        private IEnumerable<object> Visibility(UnitEntityData main, BlueprintAbility ability, BlueprintUnit donorBlueprint)
+        {
+            var cast = new JObject(); result["cast"] = cast;
+            UnitEntityData ghaele = null;
+            var handle = new CastHandle();
+            foreach (object step in CastOwned(main, ability, "visibility", cast, handle, null, unit => { ghaele = unit; units.Add(unit); })) yield return step;
+            if (ghaele == null) yield break;
+            if (!LoanVerdict(main, ability, handle, cast)) life.Problems.Add("visibility: the summon ability loan was not released to its prior state: " + cast["loan"]["reason"]);
+            runner.GetMethod("SetExpandedSummoningBrainActive", Any).Invoke(null, new object[] { ghaele, false });
+            Vector3 forward = Quaternion.Euler(0, main.Orientation, 0) * Vector3.forward;
+            UnitEntityData donor = SpawnDisposable(donorBlueprint, ObstacleAnalyzer.TraceAlongNavmesh(main.Position, main.Position - forward * 3f));
+            foreach (object step in Seconds(5f)) yield return step;
+            var rows = new JArray(); result["visibility"] = rows;
+            JObject visible = Lighting(ghaele, "visibility-present-visible");
+            rows.Add(visible);
+            EntityFader fader = donor == null || donor.View == null ? null : donor.View.GetComponent<EntityFader>();
+            JObject hidden = null;
+            if (fader != null)
+            {
+                bool prior = fader.Visible;
+                EntityFader exact = fader;
+                owned.Hold("donor fader visibility", () => { if (exact != null) exact.Visible = prior; });
+                exact.Visible = false;
+                hidden = Lighting(donor, "visibility-present-hidden");
+                rows.Add(hidden);
+                owned.ReleaseNow("donor fader visibility", null);
+            }
+            foreach (JObject row in rows.OfType<JObject>())
+            {
+                string reason;
+                row["valid"] = GhaeleLighting.Valid(row, out reason); row["reason"] = reason;
+            }
+            result["visibilityVerdict"] = new JObject { ["presentVisible"] = visible["reason"], ["presentHidden"] = hidden == null ? "not-captured" : hidden["reason"] };
+            if (!(bool)visible["valid"]) life.Problems.Add("visibility: the Ghaele's present, visible fader row did not qualify: " + visible["reason"]);
+            if (hidden == null || (string)hidden["reason"] != "fader-hidden") life.Problems.Add("visibility: the hidden donor fader was not refused as fader-hidden: " + (hidden == null ? "not captured" : (string)hidden["reason"]));
         }
 
         private SummonWitness Watch(string name, UnitEntityData caster, UnitEntityData known)

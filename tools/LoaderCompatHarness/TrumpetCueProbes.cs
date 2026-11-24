@@ -68,8 +68,7 @@ namespace KmgLoaderCompatHarness
         private JObject nested;
         private int nestedOwnedControl;
         private float nestedFollowingControl;
-        private readonly OwnedDisposables<UnitEntityData> units =
-            new OwnedDisposables<UnitEntityData>(u => u.UniqueId, u => { if (!u.Destroyed) u.Destroy(); });
+        private readonly OwnedDisposables<UnitEntityData> units;
         private readonly List<UnitEntityData> awakeAdded = new List<UnitEntityData>();
         private readonly JArray ownedSaves = new JArray();
         private bool subscribed;
@@ -82,6 +81,8 @@ namespace KmgLoaderCompatHarness
         {
             this.mode = mode;
             result["mode"] = mode;
+            // One destruction-request owner per unit, recorded in the probe's cumulative outcome (R6-F1).
+            units = new OwnedDisposables<UnitEntityData>("disposable unit", u => u.UniqueId, u => { if (!u.Destroyed) u.Destroy(); }, owned.Outcome);
             life = new YieldedProbeLifecycle(owned, lifecycle => Run());
         }
 
@@ -103,7 +104,7 @@ namespace KmgLoaderCompatHarness
             // The "before" Trumpet must survive into the save; it is released by the "after" step (or by any failure).
             // Final unit releases are built after the iterator's cleanup, for units never requested (R5-F5).
             bool keep = mode == "before" && string.IsNullOrEmpty(testFailure) && life.Ended;
-            CleanupReport report = life.Release(() => keep ? releases : releases.Concat(units.Releases("disposable unit")).ToList());
+            CleanupReport report = life.Release(() => keep ? releases : releases.Concat(new[] { new KeyValuePair<string, Action>("disposable units", units.ReleaseRemaining) }).ToList());
             result["problems"] = new JArray(life.Problems.Cast<object>().ToArray());
             result["ownedSaves"] = ownedSaves;
             if (mode == "abandon") s_Abandoned = this;
