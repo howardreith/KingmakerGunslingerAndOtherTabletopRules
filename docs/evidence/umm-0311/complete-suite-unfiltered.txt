@@ -3198,5 +3198,5 @@ PASS generic.repair-loaded-available
 PASS generic.repair-missing-kit
 PASS generic.unknown-action
 PASS reload-profile.ammunition-identity
-Completed 3189 tests; failures=0. Registered 3189; elapsed 82.7s.
+Completed 3189 tests; failures=0. Registered 3189; elapsed 71.7s.
 Dependency-free domain/reflection tests passed.

@@ -1,12 +1,12 @@
 {
     "schema":  "kmg.pinned-loader-msbuild-tests.v1",
-    "commit":  "4f196b26d112640ace1eaa49dea355d16e210127",
+    "commit":  "49be3fd0e28c551a4a5fafb5e98d87daffb125d5",
     "baseline_commit":  "35763430acc9eefc306b861045526a444690bc77",
     "installed_loader_measured":  {
                                       "unityModManager":  "0.33.0.0",
                                       "sha256":  "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
                                   },
-    "product_dll_sha256":  "81353e04ca69c0d45911d3f2e247b4481bd4ba7226d5aa09dbe5e969a73d60ce",
+    "product_dll_sha256":  "b138380226b2f7d08dc55c0439865cfc0a6cbb0883f0596fab350aad4a33b514",
     "passed":  15,
     "total":  15,
     "cases":  [
@@ -63,7 +63,7 @@
                   {
                       "name":  "direct-msbuild-absent-cache-first-error-gives-the-bootstrap",
                       "passed":  true,
-                      "detail":  "error KMGPIN: Pinned loader reference missing: <temp>\\kmg-pinned-loader-153070422fc54f4e8947d55ba9a5e563\\clone with space\\src\\KingmakerGunslinger\\..\\..\\artifacts\\references\\loader\\UnityModManager\\UnityModManager.dll. Run scripts\\build.ps1 -Compile"
+                      "detail":  "error KMGPIN: Pinned loader reference missing: <temp>\\kmg-pinned-loader-45060ec9a6164b288a59e675ce7b5421\\clone with space\\src\\KingmakerGunslinger\\..\\..\\artifacts\\references\\loader\\UnityModManager\\UnityModManager.dll. Run scripts\\build.ps1 -Compile"
                   },
                   {
                       "name":  "direct-msbuild-mismatched-source-manifest-refused",
@@ -83,7 +83,7 @@
                   {
                       "name":  "stray-hintpath-to-unitymodmanager-copy-refused",
                       "passed":  true,
-                      "detail":  "Loader compiler references must be the verified pinned files in <temp>\\kmg-pinned-loader-153070422fc54f4e8947d55ba9a5e563\\clone with space\\artifacts\\references\\loader\\UnityModManager\\; resolved: <temp>\\kmg-"
+                      "detail":  "Loader compiler references must be the verified pinned files in <temp>\\kmg-pinned-loader-45060ec9a6164b288a59e675ce7b5421\\clone with space\\artifacts\\references\\loader\\UnityModManager\\; resolved: <temp>\\kmg-"
                   }
               ]
 }

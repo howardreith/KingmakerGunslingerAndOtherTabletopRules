@@ -1,0 +1,12 @@
+PASS wrapper-bound-dll-passes :: PASS loader.production-dll-references-pinned-loader
+PASS direct-substring-selection-without-a-dll-fails :: exit 1; FAIL loader.production-dll-references-pinned-loader: System.InvalidOperationException: This check inspects a verified production compiler output and was selected without one (test-domain.ps1 sets KMG_PRODUCTION_DLL and K
+PASS direct-test-prefix-selection-without-a-dll-fails :: exit 1; FAIL loader.production-dll-references-pinned-loader: System.InvalidOperationException: This check inspects a verified production compiler output and was selected without one (test-domain.ps1 sets KMG_PRODUCTION_DLL and K
+PASS direct-unfiltered-run-reports-the-case-not-applicable :: exit 0; NOT APPLICABLE loader.production-dll-references-pinned-loader: no production compiler output is bound to this unfiltered run (test-domain.ps1 binds one). / NOT APPLICABLE loader.production-dll-references-pinned-loader: no production compiler output is bound to this unfiltered run (test-domain.ps1 binds one). / Completed 3189 tests; failures=0. Registered 3189; elapsed 74.4s. / Not applicable (no assertion ran; not a pass): 1.
+PASS deferred-case-reports-not-applicable :: NOT APPLICABLE loader.production-dll-references-pinned-loader: deferred: Build-Local runs this case on its exact compiler output.
+Repository validation skipped: the caller runs it, or this is a focused run.
+Building dependency-free domain/reflection tests (Release) with <buildtools>\MSBuild\Current\Bin\MSBuild.exe
+PASS wrapper-removed-dll-refused :: The production DLL for loader.production-dll-references-pinned-loader is missing (<temp>\kmg-loader-selection-feae454a670c4b448c2ce943aa12ae8c\KingmakerGunslinger.dll); the case was not run.
+Repository validation skipped: the caller runs it, or this is a focused run.
+Building dependency-free domain/reflection tests (Release) with <buildtools>\MSBuild\Current\Bin\MSBuild.exe
+PASS digest-refusal-restores-bindings-and-removes-the-private-copy :: refusal: The production DLL changed after its compile (1111111111111111111111111111111111111111111111111111111111111111); the loader-reference case was not run.; bindings restored: True; private copies before 0, after 0
+RESULT 7/7 loader-case selection checks passed

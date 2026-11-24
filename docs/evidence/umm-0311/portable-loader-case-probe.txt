@@ -1,3 +1,3 @@
-net8 unbound, complete run: PASS (not applicable)
-net8 unbound, selected by name: REFUSED This check inspects a verified production compiler output (test-domain.ps1 sets KMG_PRODUCTION_DLL and KMG_PRODUCTION_DLL_SHA256).
+net8 unbound, unfiltered run: NOT APPLICABLE no production compiler output is bound to this unfiltered run (test-domain.ps1 binds one).
+net8 unbound, focused selection: REFUSED This check inspects a verified production compiler output and was selected without one (test-domain.ps1 sets KMG_PRODUCTION_DLL and KMG_PRODUCTION_DLL_SHA256).
 net8 bound: REFUSED The production DLL assertion runs on the .NET Framework domain runner (scripts/test-domain.ps1).

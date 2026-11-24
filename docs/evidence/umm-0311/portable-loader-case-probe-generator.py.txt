@@ -28,19 +28,21 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class Probe
     {
-        static string Run(string filter, string dll)
+        // RunSelection.Focused is what the runner sets when KMG_TEST_FILTER or --test-prefix chose the case.
+        static string Run(bool focused, string dll)
         {
-            Environment.SetEnvironmentVariable("KMG_TEST_FILTER", filter);
+            RunSelection.Focused = focused;
             Environment.SetEnvironmentVariable("KMG_PRODUCTION_DLL", dll);
             Environment.SetEnvironmentVariable("KMG_PRODUCTION_DLL_SHA256", dll == null ? null : new string('a', 64));
-            try { LoaderReferenceContractTests.ProductionDllReferencesExactlyThePinnedLoader(); return "PASS (not applicable)"; }
+            try { LoaderReferenceContractTests.ProductionDllReferencesExactlyThePinnedLoader(); return "PASS"; }
+            catch (NotApplicableException e) { return "NOT APPLICABLE " + e.Message; }
             catch (InvalidOperationException e) { return "REFUSED " + e.Message; }
         }
         static int Main()
         {
-            Console.WriteLine("net8 unbound, complete run: " + Run(null, null));
-            Console.WriteLine("net8 unbound, selected by name: " + Run("loader.production-dll-references-pinned-loader", null));
-            Console.WriteLine("net8 bound: " + Run(null, "bound-production.dll"));
+            Console.WriteLine("net8 unbound, unfiltered run: " + Run(false, null));
+            Console.WriteLine("net8 unbound, focused selection: " + Run(true, null));
+            Console.WriteLine("net8 bound: " + Run(false, "bound-production.dll"));
             return 0;
         }
     }
