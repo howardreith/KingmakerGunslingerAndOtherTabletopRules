@@ -1,0 +1,5807 @@
+{
+ "checks": [
+  {
+   "observed": {
+    "a": {
+     "appearEndedAt": 6.08,
+     "bodyRenderer": "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+     "controllers": [
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.1080382,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.100409746,
+            "PlayBackwards": false,
+            "StartTime": 53.83426,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "drivenMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -260292
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 4360,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -261942,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -261942,
+          "materials": [
+           {
+            "color": null,
+            "instance": -261944,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.1080382,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0331895,
+        "unityTime": 59.3695,
+        "unityUnscaledDeltaTime": 0.0331895,
+        "unityUnscaledTime": 82.36743
+       },
+       "t": 10.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.110839367,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.1028564,
+            "PlayBackwards": false,
+            "StartTime": 53.83426,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "drivenMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -260292
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 4663,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -261942,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -261942,
+          "materials": [
+           {
+            "color": null,
+            "instance": -261944,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.110839367,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0326327,
+        "unityTime": 69.38118,
+        "unityUnscaledDeltaTime": 0.0326327,
+        "unityUnscaledTime": 92.46766
+       },
+       "t": 20.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.105654493,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.09832287,
+            "PlayBackwards": false,
+            "StartTime": 53.83426,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "drivenMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -260292
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 4967,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -261942,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -261942,
+          "materials": [
+           {
+            "color": null,
+            "instance": -261944,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.105654493,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0336496,
+        "unityTime": 79.35952,
+        "unityUnscaledDeltaTime": 0.0336496,
+        "unityUnscaledTime": 102.535393
+       },
+       "t": 30.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.105183423,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.09790993,
+            "PlayBackwards": false,
+            "StartTime": 53.83426,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "drivenMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -260292
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 5581,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -261942,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -261942,
+          "materials": [
+           {
+            "color": null,
+            "instance": -261944,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.105183423,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.033617,
+        "unityTime": 99.35742,
+        "unityUnscaledDeltaTime": 0.033617,
+        "unityUnscaledTime": 122.836678
+       },
+       "t": 50.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.106685445,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.099226,
+            "PlayBackwards": false,
+            "StartTime": 53.83426,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "drivenMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -260292
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 5889,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -261942,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -261942,
+          "materials": [
+           {
+            "color": null,
+            "instance": -261944,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.106685445,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0339886,
+        "unityTime": 109.36438,
+        "unityUnscaledDeltaTime": 0.0339886,
+        "unityUnscaledTime": 132.9373
+       },
+       "t": 60.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.108208053,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.100558281,
+            "PlayBackwards": false,
+            "StartTime": 53.83426,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "drivenMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -260292
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 6199,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -261942,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -261942,
+          "materials": [
+           {
+            "color": null,
+            "instance": -261944,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.108208053,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0350567,
+        "unityTime": 119.372108,
+        "unityUnscaledDeltaTime": 0.0350567,
+        "unityUnscaledTime": 143.038879
+       },
+       "t": 70.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.11303477,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.104769707,
+            "PlayBackwards": false,
+            "StartTime": 53.83426,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "drivenMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -260292
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 6506,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -261942,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -261942,
+          "materials": [
+           {
+            "color": null,
+            "instance": -261944,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.11303477,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0324811,
+        "unityTime": 129.3906,
+        "unityUnscaledDeltaTime": 0.0324811,
+        "unityUnscaledTime": 153.338425
+       },
+       "t": 80.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.107304275,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.0997676849,
+            "PlayBackwards": false,
+            "StartTime": 53.83426,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "drivenMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -260292
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 6811,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -261942,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -261942,
+          "materials": [
+           {
+            "color": null,
+            "instance": -261944,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.107304275,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0337026,
+        "unityTime": 139.366791,
+        "unityUnscaledDeltaTime": 0.0337026,
+        "unityUnscaledTime": 163.405792
+       },
+       "t": 90.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.110248372,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.1023407,
+            "PlayBackwards": false,
+            "StartTime": 53.83426,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "drivenMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -260292
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 7114,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -261942,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -261942,
+          "materials": [
+           {
+            "color": null,
+            "instance": -261944,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.110248372,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0349433,
+        "unityTime": 149.3809,
+        "unityUnscaledDeltaTime": 0.0349433,
+        "unityUnscaledTime": 173.506912
+       },
+       "t": 100.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.108652048,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.100946426,
+            "PlayBackwards": false,
+            "StartTime": 53.83426,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "drivenMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -260292
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 7422,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -261942,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -261942,
+          "materials": [
+           {
+            "color": null,
+            "instance": -261944,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.108652048,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0332063,
+        "unityTime": 159.3722,
+        "unityUnscaledDeltaTime": 0.0332063,
+        "unityUnscaledTime": 183.77327
+       },
+       "t": 110.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.11168284,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.103591919,
+            "PlayBackwards": false,
+            "StartTime": 53.83426,
+            "UseUnscaledTime": false
+           },
+           {
+            "CurrentDissolve": 0.239696428,
+            "Delay": 0.0,
+            "DissolveCutout": true,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 1.8,
+            "LoopAnimation": false,
+            "NormalizedTime": 0.14813742,
+            "PlayBackwards": false,
+            "StartTime": 169.085571,
+            "UseUnscaledTime": false
+           },
+           {
+            "CurrentDissolve": 0.0,
+            "Delay": 1.8,
+            "DissolveCutout": true,
+            "FadeOut": 1.0,
+            "IsDelayed": true,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 1.0,
+            "LoopAnimation": true,
+            "NormalizedTime": -1.53335571,
+            "PlayBackwards": false,
+            "StartTime": 170.885574,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 3,
+          "cachedMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "drivenMaterials": [
+           -262688,
+           -262690,
+           -261944
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -260292
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 7726,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -261942,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -261942,
+          "materials": [
+           {
+            "color": null,
+            "instance": -261944,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.239696428,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0340242,
+        "unityTime": 169.386246,
+        "unityUnscaledDeltaTime": 0.0340242,
+        "unityUnscaledTime": 193.8746
+       },
+       "t": 120.0
+      }
+     ],
+     "endedAt": 121.57,
+     "firstSkinned": "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+     "label": "ghaele-a",
+     "lifetimeSeconds": 119.72,
+     "maxBodyCutoutDissolveAt": "life@7.1",
+     "maxBodyCutoutDissolveInLife": 0.0,
+     "maxDissolveAt": "life@74.5",
+     "maxDissolveInLife": 0.9996906,
+     "rendererCensus": [
+      {
+       "enabled": true,
+       "materials": [
+        "WP_LongswordHolyAzata_Azata (Instance)|PF/StandardDynamic|dissolveKeyword=True"
+       ],
+       "renderer": "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):"
+      },
+      {
+       "enabled": true,
+       "materials": [
+        "WP_LongswordHolyAzata_Azata (Instance)|PF/StandardDynamic|dissolveKeyword=True"
+       ],
+       "renderer": "MeshRenderer:OH_LongswordHolyAzata(Clone):"
+      },
+      {
+       "enabled": true,
+       "materials": [
+        "Standard (Instance)|Standard|dissolveKeyword=False"
+       ],
+       "renderer": "MeshRenderer:L_WeaponMarker:"
+      },
+      {
+       "enabled": true,
+       "materials": [
+        "Standard (Instance)|Standard|dissolveKeyword=False"
+       ],
+       "renderer": "MeshRenderer:R_WeaponMarker:"
+      },
+      {
+       "enabled": true,
+       "materials": [
+        "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)|PF/StandardDynamic|dissolveKeyword=True"
+       ],
+       "renderer": "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout"
+      },
+      {
+       "enabled": true,
+       "materials": [
+        "AttackLine (Instance)|PF/Particles|dissolveKeyword=False"
+       ],
+       "renderer": "LineRenderer:AttackLine:"
+      }
+     ],
+     "samples": [
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.372734249,
+       "bodyCutout": 0.0,
+       "dissolve": 0.372734249,
+       "firstSkinned": 0.372734249,
+       "position": [
+        20.3346,
+        19.0027924,
+        -3.96831131
+       ],
+       "remaining": 113.64,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.373,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.373,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.373
+       },
+       "stage": "life",
+       "t": 6.08
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.5081328,
+       "bodyCutout": 0.0,
+       "dissolve": 0.5081328,
+       "firstSkinned": 0.5081328,
+       "position": [
+        20.3346,
+        19.0027924,
+        -3.96831131
+       ],
+       "remaining": 113.11,
+       "renderers": null,
+       "stage": "life",
+       "t": 6.61
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.630842447,
+       "bodyCutout": 0.0,
+       "dissolve": 0.630842447,
+       "firstSkinned": 0.630842447,
+       "position": [
+        20.3346,
+        19.0027924,
+        -3.96831131
+       ],
+       "remaining": 112.6,
+       "renderers": null,
+       "stage": "life",
+       "t": 7.11
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.751355767,
+       "bodyCutout": 0.0,
+       "dissolve": 0.751355767,
+       "firstSkinned": 0.751355767,
+       "position": [
+        20.3346,
+        19.0027924,
+        -3.96831131
+       ],
+       "remaining": 112.07,
+       "renderers": null,
+       "stage": "life",
+       "t": 7.65
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.8494725,
+       "bodyCutout": 0.0,
+       "dissolve": 0.8494725,
+       "firstSkinned": 0.8494725,
+       "position": [
+        20.4825211,
+        19.0027924,
+        -3.86383653
+       ],
+       "remaining": 111.56,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.849,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.849,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.849
+       },
+       "stage": "life",
+       "t": 8.15
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.9296783,
+       "bodyCutout": 0.0,
+       "dissolve": 0.9296783,
+       "firstSkinned": 0.9296783,
+       "position": [
+        24.1065655,
+        2.22725344,
+        -6.976054
+       ],
+       "remaining": 111.05,
+       "renderers": null,
+       "stage": "life",
+       "t": 8.67
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.9838946,
+       "bodyCutout": 0.0,
+       "dissolve": 0.9838946,
+       "firstSkinned": 0.9838946,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 110.52,
+       "renderers": null,
+       "stage": "life",
+       "t": 9.2
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.0435017534,
+       "bodyCutout": 0.0,
+       "dissolve": 0.0435017534,
+       "firstSkinned": 0.0435017534,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 109.99,
+       "renderers": null,
+       "stage": "life",
+       "t": 9.73
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.158888787,
+       "bodyCutout": 0.0,
+       "dissolve": 0.158888787,
+       "firstSkinned": 0.158888787,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 109.49,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.159,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.159,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.159
+       },
+       "stage": "life",
+       "t": 10.23
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.28133586,
+       "bodyCutout": 0.0,
+       "dissolve": 0.28133586,
+       "firstSkinned": 0.28133586,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 108.99,
+       "renderers": null,
+       "stage": "life",
+       "t": 10.73
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.408966333,
+       "bodyCutout": 0.0,
+       "dissolve": 0.408966333,
+       "firstSkinned": 0.408966333,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 108.49,
+       "renderers": null,
+       "stage": "life",
+       "t": 11.23
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.5438679,
+       "bodyCutout": 0.0,
+       "dissolve": 0.5438679,
+       "firstSkinned": 0.5438679,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 107.96,
+       "renderers": null,
+       "stage": "life",
+       "t": 11.76
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.6679195,
+       "bodyCutout": 0.0,
+       "dissolve": 0.6679195,
+       "firstSkinned": 0.6679195,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 107.44,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.668,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.668,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.668
+       },
+       "stage": "life",
+       "t": 12.28
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.7774892,
+       "bodyCutout": 0.0,
+       "dissolve": 0.7774892,
+       "firstSkinned": 0.7774892,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 106.94,
+       "renderers": null,
+       "stage": "life",
+       "t": 12.78
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.8709626,
+       "bodyCutout": 0.0,
+       "dissolve": 0.8709626,
+       "firstSkinned": 0.8709626,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 106.44,
+       "renderers": null,
+       "stage": "life",
+       "t": 13.28
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.94692,
+       "bodyCutout": 0.0,
+       "dissolve": 0.94692,
+       "firstSkinned": 0.94692,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 105.91,
+       "renderers": null,
+       "stage": "life",
+       "t": 13.81
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.9918429,
+       "bodyCutout": 0.0,
+       "dissolve": 0.9918429,
+       "firstSkinned": 0.9918429,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 105.39,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.992,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.992,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.992
+       },
+       "stage": "life",
+       "t": 14.33
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.0660949945,
+       "bodyCutout": 0.0,
+       "dissolve": 0.0660949945,
+       "firstSkinned": 0.0660949945,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 104.89,
+       "renderers": null,
+       "stage": "life",
+       "t": 14.83
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.1816477,
+       "bodyCutout": 0.0,
+       "dissolve": 0.1816477,
+       "firstSkinned": 0.1816477,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 104.39,
+       "renderers": null,
+       "stage": "life",
+       "t": 15.33
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.305936933,
+       "bodyCutout": 0.0,
+       "dissolve": 0.305936933,
+       "firstSkinned": 0.305936933,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 103.89,
+       "renderers": null,
+       "stage": "life",
+       "t": 15.83
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.437613577,
+       "bodyCutout": 0.0,
+       "dissolve": 0.437613577,
+       "firstSkinned": 0.437613577,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 103.37,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.438,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.438,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.438
+       },
+       "stage": "life",
+       "t": 16.35
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.571959436,
+       "bodyCutout": 0.0,
+       "dissolve": 0.571959436,
+       "firstSkinned": 0.571959436,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 102.84,
+       "renderers": null,
+       "stage": "life",
+       "t": 16.88
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.6906134,
+       "bodyCutout": 0.0,
+       "dissolve": 0.6906134,
+       "firstSkinned": 0.6906134,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 102.34,
+       "renderers": null,
+       "stage": "life",
+       "t": 17.38
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.797353446,
+       "bodyCutout": 0.0,
+       "dissolve": 0.797353446,
+       "firstSkinned": 0.797353446,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 101.84,
+       "renderers": null,
+       "stage": "life",
+       "t": 17.88
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.8896134,
+       "bodyCutout": 0.0,
+       "dissolve": 0.8896134,
+       "firstSkinned": 0.8896134,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 101.32,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.89,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.89,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.89
+       },
+       "stage": "life",
+       "t": 18.4
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.959619462,
+       "bodyCutout": 0.0,
+       "dissolve": 0.959619462,
+       "firstSkinned": 0.959619462,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 100.79,
+       "renderers": null,
+       "stage": "life",
+       "t": 18.93
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.998142064,
+       "bodyCutout": 0.0,
+       "dissolve": 0.998142064,
+       "firstSkinned": 0.998142064,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 100.26,
+       "renderers": null,
+       "stage": "life",
+       "t": 19.46
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.103212975,
+       "bodyCutout": 0.0,
+       "dissolve": 0.103212975,
+       "firstSkinned": 0.103212975,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 99.73,
+       "renderers": null,
+       "stage": "life",
+       "t": 19.99
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.225763023,
+       "bodyCutout": 0.0,
+       "dissolve": 0.225763023,
+       "firstSkinned": 0.225763023,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 99.21,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.226,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.226,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.226
+       },
+       "stage": "life",
+       "t": 20.51
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.351935685,
+       "bodyCutout": 0.0,
+       "dissolve": 0.351935685,
+       "firstSkinned": 0.351935685,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 98.71,
+       "renderers": null,
+       "stage": "life",
+       "t": 21.01
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.479750544,
+       "bodyCutout": 0.0,
+       "dissolve": 0.479750544,
+       "firstSkinned": 0.479750544,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 98.21,
+       "renderers": null,
+       "stage": "life",
+       "t": 21.51
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.6121114,
+       "bodyCutout": 0.0,
+       "dissolve": 0.6121114,
+       "firstSkinned": 0.6121114,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 97.68,
+       "renderers": null,
+       "stage": "life",
+       "t": 22.04
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.731090546,
+       "bodyCutout": 0.0,
+       "dissolve": 0.731090546,
+       "firstSkinned": 0.731090546,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 97.16,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.731,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.731,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.731
+       },
+       "stage": "life",
+       "t": 22.56
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.8330046,
+       "bodyCutout": 0.0,
+       "dissolve": 0.8330046,
+       "firstSkinned": 0.8330046,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 96.66,
+       "renderers": null,
+       "stage": "life",
+       "t": 23.06
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.9146065,
+       "bodyCutout": 0.0,
+       "dissolve": 0.9146065,
+       "firstSkinned": 0.9146065,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 96.16,
+       "renderers": null,
+       "stage": "life",
+       "t": 23.56
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.975213945,
+       "bodyCutout": 0.0,
+       "dissolve": 0.975213945,
+       "firstSkinned": 0.975213945,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 95.62,
+       "renderers": null,
+       "stage": "life",
+       "t": 24.09
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.0181995071,
+       "bodyCutout": 0.0,
+       "dissolve": 0.0181995071,
+       "firstSkinned": 0.0181995071,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 95.11,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.018,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.018,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.018
+       },
+       "stage": "life",
+       "t": 24.61
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.12839596,
+       "bodyCutout": 0.0,
+       "dissolve": 0.12839596,
+       "firstSkinned": 0.12839596,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 94.61,
+       "renderers": null,
+       "stage": "life",
+       "t": 25.11
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.2571484,
+       "bodyCutout": 0.0,
+       "dissolve": 0.2571484,
+       "firstSkinned": 0.2571484,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 94.08,
+       "renderers": null,
+       "stage": "life",
+       "t": 25.64
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.384388477,
+       "bodyCutout": 0.0,
+       "dissolve": 0.384388477,
+       "firstSkinned": 0.384388477,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 93.58,
+       "renderers": null,
+       "stage": "life",
+       "t": 26.14
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.5166631,
+       "bodyCutout": 0.0,
+       "dissolve": 0.5166631,
+       "firstSkinned": 0.5166631,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 93.06,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.517,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.517,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.517
+       },
+       "stage": "life",
+       "t": 26.66
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.6391105,
+       "bodyCutout": 0.0,
+       "dissolve": 0.6391105,
+       "firstSkinned": 0.6391105,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 92.56,
+       "renderers": null,
+       "stage": "life",
+       "t": 27.16
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.7515919,
+       "bodyCutout": 0.0,
+       "dissolve": 0.7515919,
+       "firstSkinned": 0.7515919,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 92.06,
+       "renderers": null,
+       "stage": "life",
+       "t": 27.66
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.855056763,
+       "bodyCutout": 0.0,
+       "dissolve": 0.855056763,
+       "firstSkinned": 0.855056763,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 91.53,
+       "renderers": null,
+       "stage": "life",
+       "t": 28.19
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.9339303,
+       "bodyCutout": 0.0,
+       "dissolve": 0.9339303,
+       "firstSkinned": 0.9339303,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 91.01,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.934,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.934,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.934
+       },
+       "stage": "life",
+       "t": 28.71
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.986299753,
+       "bodyCutout": 0.0,
+       "dissolve": 0.986299753,
+       "firstSkinned": 0.986299753,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 90.48,
+       "renderers": null,
+       "stage": "life",
+       "t": 29.24
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.0467129163,
+       "bodyCutout": 0.0,
+       "dissolve": 0.0467129163,
+       "firstSkinned": 0.0467129163,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 89.98,
+       "renderers": null,
+       "stage": "life",
+       "t": 29.74
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.160312161,
+       "bodyCutout": 0.0,
+       "dissolve": 0.160312161,
+       "firstSkinned": 0.160312161,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 89.48,
+       "renderers": null,
+       "stage": "life",
+       "t": 30.24
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.2871606,
+       "bodyCutout": 0.0,
+       "dissolve": 0.2871606,
+       "firstSkinned": 0.2871606,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 88.96,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.287,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.287,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.287
+       },
+       "stage": "life",
+       "t": 30.76
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.423015445,
+       "bodyCutout": 0.0,
+       "dissolve": 0.423015445,
+       "firstSkinned": 0.423015445,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 88.43,
+       "renderers": null,
+       "stage": "life",
+       "t": 31.29
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.5523102,
+       "bodyCutout": 0.0,
+       "dissolve": 0.5523102,
+       "firstSkinned": 0.5523102,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 87.93,
+       "renderers": null,
+       "stage": "life",
+       "t": 31.79
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.6702288,
+       "bodyCutout": 0.0,
+       "dissolve": 0.6702288,
+       "firstSkinned": 0.6702288,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 87.42,
+       "renderers": null,
+       "stage": "life",
+       "t": 32.3
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.7826805,
+       "bodyCutout": 0.0,
+       "dissolve": 0.7826805,
+       "firstSkinned": 0.7826805,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 86.91,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.783,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.783,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.783
+       },
+       "stage": "life",
+       "t": 32.81
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.8749423,
+       "bodyCutout": 0.0,
+       "dissolve": 0.8749423,
+       "firstSkinned": 0.8749423,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 86.41,
+       "renderers": null,
+       "stage": "life",
+       "t": 33.31
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.9460662,
+       "bodyCutout": 0.0,
+       "dissolve": 0.9460662,
+       "firstSkinned": 0.9460662,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 85.91,
+       "renderers": null,
+       "stage": "life",
+       "t": 33.81
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.9904703,
+       "bodyCutout": 0.0,
+       "dissolve": 0.9904703,
+       "firstSkinned": 0.9904703,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 85.41,
+       "renderers": null,
+       "stage": "life",
+       "t": 34.31
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.0649338141,
+       "bodyCutout": 0.0,
+       "dissolve": 0.0649338141,
+       "firstSkinned": 0.0649338141,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 84.89,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.065,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.065,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.065
+       },
+       "stage": "life",
+       "t": 34.83
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.180204436,
+       "bodyCutout": 0.0,
+       "dissolve": 0.180204436,
+       "firstSkinned": 0.180204436,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 84.39,
+       "renderers": null,
+       "stage": "life",
+       "t": 35.33
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.304482579,
+       "bodyCutout": 0.0,
+       "dissolve": 0.304482579,
+       "firstSkinned": 0.304482579,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 83.89,
+       "renderers": null,
+       "stage": "life",
+       "t": 35.83
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.6339161,
+       "bodyCutout": 0.0,
+       "dissolve": 0.6339161,
+       "firstSkinned": 0.6339161,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 77.58,
+       "renderers": null,
+       "stage": "life",
+       "t": 42.14
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.748786032,
+       "bodyCutout": 0.0,
+       "dissolve": 0.748786032,
+       "firstSkinned": 0.748786032,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 77.08,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.749,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.749,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.749
+       },
+       "stage": "life",
+       "t": 42.64
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.8470028,
+       "bodyCutout": 0.0,
+       "dissolve": 0.8470028,
+       "firstSkinned": 0.8470028,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 76.58,
+       "renderers": null,
+       "stage": "life",
+       "t": 43.14
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.925570667,
+       "bodyCutout": 0.0,
+       "dissolve": 0.925570667,
+       "firstSkinned": 0.925570667,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 76.08,
+       "renderers": null,
+       "stage": "life",
+       "t": 43.64
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.981719851,
+       "bodyCutout": 0.0,
+       "dissolve": 0.981719851,
+       "firstSkinned": 0.981719851,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 75.54,
+       "renderers": null,
+       "stage": "life",
+       "t": 44.18
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.03588336,
+       "bodyCutout": 0.0,
+       "dissolve": 0.03588336,
+       "firstSkinned": 0.03588336,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 75.03,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.036,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.036,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.036
+       },
+       "stage": "life",
+       "t": 44.69
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.15129067,
+       "bodyCutout": 0.0,
+       "dissolve": 0.15129067,
+       "firstSkinned": 0.15129067,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 74.53,
+       "renderers": null,
+       "stage": "life",
+       "t": 45.19
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.278859854,
+       "bodyCutout": 0.0,
+       "dissolve": 0.278859854,
+       "firstSkinned": 0.278859854,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 74.0,
+       "renderers": null,
+       "stage": "life",
+       "t": 45.72
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.410954624,
+       "bodyCutout": 0.0,
+       "dissolve": 0.410954624,
+       "firstSkinned": 0.410954624,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 73.48,
+       "renderers": null,
+       "stage": "life",
+       "t": 46.24
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.5371583,
+       "bodyCutout": 0.0,
+       "dissolve": 0.5371583,
+       "firstSkinned": 0.5371583,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 72.98,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.537,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.537,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.537
+       },
+       "stage": "life",
+       "t": 46.74
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.666029,
+       "bodyCutout": 0.0,
+       "dissolve": 0.666029,
+       "firstSkinned": 0.666029,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 72.45,
+       "renderers": null,
+       "stage": "life",
+       "t": 47.27
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.7758783,
+       "bodyCutout": 0.0,
+       "dissolve": 0.7758783,
+       "firstSkinned": 0.7758783,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 71.95,
+       "renderers": null,
+       "stage": "life",
+       "t": 47.77
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.8749211,
+       "bodyCutout": 0.0,
+       "dissolve": 0.8749211,
+       "firstSkinned": 0.8749211,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 71.42,
+       "renderers": null,
+       "stage": "life",
+       "t": 48.3
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.949665844,
+       "bodyCutout": 0.0,
+       "dissolve": 0.949665844,
+       "firstSkinned": 0.949665844,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 70.88,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.95,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.95,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.95
+       },
+       "stage": "life",
+       "t": 48.84
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.992282152,
+       "bodyCutout": 0.0,
+       "dissolve": 0.992282152,
+       "firstSkinned": 0.992282152,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 70.38,
+       "renderers": null,
+       "stage": "life",
+       "t": 49.34
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.0676748455,
+       "bodyCutout": 0.0,
+       "dissolve": 0.0676748455,
+       "firstSkinned": 0.0676748455,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 69.88,
+       "renderers": null,
+       "stage": "life",
+       "t": 49.84
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.18745175,
+       "bodyCutout": 0.0,
+       "dissolve": 0.18745175,
+       "firstSkinned": 0.18745175,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 69.36,
+       "renderers": null,
+       "stage": "life",
+       "t": 50.35
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.320534945,
+       "bodyCutout": 0.0,
+       "dissolve": 0.320534945,
+       "firstSkinned": 0.320534945,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 68.83,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.321,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.321,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.321
+       },
+       "stage": "life",
+       "t": 50.88
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.4565226,
+       "bodyCutout": 0.0,
+       "dissolve": 0.4565226,
+       "firstSkinned": 0.4565226,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 68.3,
+       "renderers": null,
+       "stage": "life",
+       "t": 51.42
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.590226233,
+       "bodyCutout": 0.0,
+       "dissolve": 0.590226233,
+       "firstSkinned": 0.590226233,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 67.77,
+       "renderers": null,
+       "stage": "life",
+       "t": 51.95
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.710969,
+       "bodyCutout": 0.0,
+       "dissolve": 0.710969,
+       "firstSkinned": 0.710969,
+       "position": [
+        24.3051834,
+        2.23882341,
+        -7.151949
+       ],
+       "remaining": 67.25,
+       "renderers": null,
+       "stage": "life",
+       "t": 52.47
+      },
+      {
+       "truncated": 219
+      }
+     ]
+    },
+    "attack": {},
+    "move": {
+     "issuedAt": 8.01,
+     "travel": 17.5194683
+    }
+   },
+   "passed": true,
+   "predicate": "s7-ghaele-dim-visible-lifetime"
+  },
+  {
+   "observed": {
+    "compared": 159,
+    "examples": [
+     {
+      "donor": 0.0,
+      "renderer": "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):",
+      "summon": 0.373,
+      "t": 6.08
+     },
+     {
+      "donor": 0.0,
+      "renderer": "MeshRenderer:OH_LongswordHolyAzata(Clone):",
+      "summon": 0.373,
+      "t": 6.08
+     },
+     {
+      "donor": 1.0,
+      "renderer": "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+      "summon": 0.373,
+      "t": 6.08
+     },
+     {
+      "donor": 0.323,
+      "renderer": "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):",
+      "summon": 0.849,
+      "t": 8.15
+     },
+     {
+      "donor": 0.323,
+      "renderer": "MeshRenderer:OH_LongswordHolyAzata(Clone):",
+      "summon": 0.849,
+      "t": 8.15
+     },
+     {
+      "donor": 0.323,
+      "renderer": "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+      "summon": 0.849,
+      "t": 8.15
+     },
+     {
+      "donor": 0.0,
+      "renderer": "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):",
+      "summon": 0.159,
+      "t": 10.23
+     },
+     {
+      "donor": 0.0,
+      "renderer": "MeshRenderer:OH_LongswordHolyAzata(Clone):",
+      "summon": 0.159,
+      "t": 10.23
+     },
+     {
+      "donor": 0.0,
+      "renderer": "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+      "summon": 0.159,
+      "t": 10.23
+     },
+     {
+      "donor": 0.329,
+      "renderer": "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):",
+      "summon": 0.668,
+      "t": 12.28
+     },
+     {
+      "donor": 0.329,
+      "renderer": "MeshRenderer:OH_LongswordHolyAzata(Clone):",
+      "summon": 0.668,
+      "t": 12.28
+     },
+     {
+      "donor": 0.329,
+      "renderer": "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+      "summon": 0.668,
+      "t": 12.28
+     }
+    ],
+    "matchedDonor": 0
+   },
+   "passed": false,
+   "predicate": "s7-ghaele-dim-dissolve-attribution"
+  },
+  {
+   "observed": {
+    "donorClean": true,
+    "donorMaterialsDistinct": true,
+    "materialsDistinct": true,
+    "second": {
+     "appearEndedAt": 2.08,
+     "bodyRenderer": "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+     "controllers": [
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.8020513,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.6775467,
+            "PlayBackwards": false,
+            "StartTime": 95.93607,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "drivenMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -269058
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 5581,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -270708,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -270708,
+          "materials": [
+           {
+            "color": null,
+            "instance": -270710,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.8020513,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.033617,
+        "unityTime": 99.35742,
+        "unityUnscaledDeltaTime": 0.033617,
+        "unityUnscaledTime": 122.836678
+       },
+       "t": 50.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.8033421,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.6788635,
+            "PlayBackwards": false,
+            "StartTime": 95.93607,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "drivenMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -269058
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 5889,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -270708,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -270708,
+          "materials": [
+           {
+            "color": null,
+            "instance": -270710,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.8033421,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0339886,
+        "unityTime": 109.36438,
+        "unityUnscaledDeltaTime": 0.0339886,
+        "unityUnscaledTime": 132.9373
+       },
+       "t": 60.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.804645,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.6801958,
+            "PlayBackwards": false,
+            "StartTime": 95.93607,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "drivenMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -269058
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 6199,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -270708,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -270708,
+          "materials": [
+           {
+            "color": null,
+            "instance": -270710,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.804645,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0350567,
+        "unityTime": 119.372108,
+        "unityUnscaledDeltaTime": 0.0350567,
+        "unityUnscaledTime": 143.038879
+       },
+       "t": 70.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.8087431,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.684407234,
+            "PlayBackwards": false,
+            "StartTime": 95.93607,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "drivenMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -269058
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 6506,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -270708,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -270708,
+          "materials": [
+           {
+            "color": null,
+            "instance": -270710,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.8087431,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0324811,
+        "unityTime": 129.3906,
+        "unityUnscaledDeltaTime": 0.0324811,
+        "unityUnscaledTime": 153.338425
+       },
+       "t": 80.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.8038722,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.6794052,
+            "PlayBackwards": false,
+            "StartTime": 95.93607,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "drivenMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -269058
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 6811,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -270708,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -270708,
+          "materials": [
+           {
+            "color": null,
+            "instance": -270710,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.8038722,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0337026,
+        "unityTime": 139.366791,
+        "unityUnscaledDeltaTime": 0.0337026,
+        "unityUnscaledTime": 163.405792
+       },
+       "t": 90.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.8063833,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.6819782,
+            "PlayBackwards": false,
+            "StartTime": 95.93607,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "drivenMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -269058
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 7114,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -270708,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -270708,
+          "materials": [
+           {
+            "color": null,
+            "instance": -270710,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.8063833,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0349433,
+        "unityTime": 149.3809,
+        "unityUnscaledDeltaTime": 0.0349433,
+        "unityUnscaledTime": 173.506912
+       },
+       "t": 100.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.805023134,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.680583,
+            "PlayBackwards": false,
+            "StartTime": 95.93607,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "drivenMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -269058
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 7422,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -270708,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -270708,
+          "materials": [
+           {
+            "color": null,
+            "instance": -270710,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.805023134,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0332063,
+        "unityTime": 159.3722,
+        "unityUnscaledDeltaTime": 0.0332063,
+        "unityUnscaledTime": 183.77327
+       },
+       "t": 110.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.8076002,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.683229446,
+            "PlayBackwards": false,
+            "StartTime": 95.93607,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "drivenMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -269058
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 7726,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -270708,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -270708,
+          "materials": [
+           {
+            "color": null,
+            "instance": -270710,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.8076002,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0340242,
+        "unityTime": 169.386246,
+        "unityUnscaledDeltaTime": 0.0340242,
+        "unityUnscaledTime": 193.8746
+       },
+       "t": 120.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.8056269,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.681201935,
+            "PlayBackwards": false,
+            "StartTime": 95.93607,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "drivenMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -269058
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 8029,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -270708,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -270708,
+          "materials": [
+           {
+            "color": null,
+            "instance": -270710,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.8056269,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0224898,
+        "unityTime": 179.364578,
+        "unityUnscaledDeltaTime": 0.0224898,
+        "unityUnscaledTime": 203.87439
+       },
+       "t": 130.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.8037827,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.67931366,
+            "PlayBackwards": false,
+            "StartTime": 95.93607,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "drivenMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -269058
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 8339,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -270708,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -270708,
+          "materials": [
+           {
+            "color": null,
+            "instance": -270710,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.8037827,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0330188,
+        "unityTime": 189.365662,
+        "unityUnscaledDeltaTime": 0.0330188,
+        "unityUnscaledTime": 213.875977
+       },
+       "t": 140.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.8036987,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.6792278,
+            "PlayBackwards": false,
+            "StartTime": 95.93607,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "drivenMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -269058
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 8644,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -270708,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -270708,
+          "materials": [
+           {
+            "color": null,
+            "instance": -270710,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.8036987,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0340112,
+        "unityTime": 199.366226,
+        "unityUnscaledDeltaTime": 0.0340112,
+        "unityUnscaledTime": 223.876541
+       },
+       "t": 150.0
+      },
+      {
+       "state": {
+        "controllers": [
+         {
+          "active": true,
+          "animations": [
+           {
+            "CurrentDissolve": 0.7997919,
+            "Delay": 4.75,
+            "DissolveCutout": false,
+            "FadeOut": 1.0,
+            "IsDelayed": false,
+            "IsFinished": false,
+            "IsStarted": true,
+            "Layer": 0,
+            "Lifetime": 5.0,
+            "LoopAnimation": true,
+            "NormalizedTime": 0.6752491,
+            "PlayBackwards": false,
+            "StartTime": 95.93607,
+            "UseUnscaledTime": false
+           }
+          ],
+          "animationsCount": 1,
+          "cachedMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "drivenMaterials": [
+           -271424,
+           -271426,
+           -270710
+          ],
+          "driverPresent": true,
+          "enabled": true,
+          "id": -269058
+         }
+        ],
+        "controllersComplete": true,
+        "frame": 8954,
+        "nativeSize": {
+         "currentCorpulenceBase": 0.5,
+         "currentLocalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "currentOriginalScale": [
+          1.0,
+          1.0,
+          1.0
+         ],
+         "mechanicalSize": "Medium",
+         "nativeSizeContract": true,
+         "nativeSizeScale": 1.0,
+         "outcome": "giant:not-owned",
+         "ownerPresent": false,
+         "viewCorpulence": 0.5
+        },
+        "sampledRenderer": -270708,
+        "skins": [
+         {
+          "active": true,
+          "body": true,
+          "enabled": true,
+          "id": -270708,
+          "materials": [
+           {
+            "color": null,
+            "instance": -270710,
+            "localKeywords": [
+             "CUTOUT_ON",
+             "DISSOLVE_ON",
+             "FOG_OF_WAR_AFFECTED",
+             "FOG_OF_WAR_DISSOLVE_ON",
+             "RIM_LIGHTING_GLOBAL_SHADE_NDOTL",
+             "_ALPHATOMASK_OFF",
+             "_EMISSION",
+             "_RIMLIGHTING_OFF",
+             "_RIMSHADENDOTL_OFF",
+             "_VERTEXINTERACTION_OFF"
+            ],
+            "name": "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)",
+            "properties": {
+             "_Dissolve": 0.7997919,
+             "_DstBlend": 0.0,
+             "_Emission": 10.0,
+             "_Metallic": 1.0,
+             "_Roughness": 1.0,
+             "_SrcBlend": 1.0,
+             "_ZWrite": 1.0
+            },
+            "shader": "PF/StandardDynamic",
+            "texture": "GhaeleAzata_Diffuse_Atlas",
+            "textureInstance": 1371316
+           }
+          ],
+          "mesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+          "path": "Character.animator[0]/Renderer_Character_Diffuse_Cutout[2]"
+         }
+        ],
+        "skinsComplete": true,
+        "timeScale": 1.0,
+        "unityDeltaTime": 0.0345324,
+        "unityTime": 209.346848,
+        "unityUnscaledDeltaTime": 0.0345324,
+        "unityUnscaledTime": 234.077377
+       },
+       "t": 160.0
+      }
+     ],
+     "endedAt": 121.96,
+     "firstSkinned": "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+     "label": "ghaele-b",
+     "lifetimeSeconds": 119.73,
+     "maxBodyCutoutDissolveAt": "life@3.1",
+     "maxBodyCutoutDissolveInLife": 0.0,
+     "maxDissolveAt": "life@104.5",
+     "maxDissolveInLife": 0.9998686,
+     "rendererCensus": [
+      {
+       "enabled": true,
+       "materials": [
+        "WP_LongswordHolyAzata_Azata (Instance)|PF/StandardDynamic|dissolveKeyword=True"
+       ],
+       "renderer": "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):"
+      },
+      {
+       "enabled": true,
+       "materials": [
+        "WP_LongswordHolyAzata_Azata (Instance)|PF/StandardDynamic|dissolveKeyword=True"
+       ],
+       "renderer": "MeshRenderer:OH_LongswordHolyAzata(Clone):"
+      },
+      {
+       "enabled": true,
+       "materials": [
+        "Standard (Instance)|Standard|dissolveKeyword=False"
+       ],
+       "renderer": "MeshRenderer:L_WeaponMarker:"
+      },
+      {
+       "enabled": true,
+       "materials": [
+        "Standard (Instance)|Standard|dissolveKeyword=False"
+       ],
+       "renderer": "MeshRenderer:R_WeaponMarker:"
+      },
+      {
+       "enabled": true,
+       "materials": [
+        "GhaeleAzata_Renderer_Character_Diffuse_Cutout (Instance)|PF/StandardDynamic|dissolveKeyword=True"
+       ],
+       "renderer": "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout"
+      },
+      {
+       "enabled": true,
+       "materials": [
+        "AttackLine (Instance)|PF/Particles|dissolveKeyword=False"
+       ],
+       "renderer": "LineRenderer:AttackLine:"
+      }
+     ],
+     "samples": [
+      {
+       "alive": true,
+       "appear": true,
+       "body": 1.0,
+       "bodyCutout": 1.0,
+       "dissolve": 1.0,
+       "firstSkinned": 1.0,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 119.7,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 1.0,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 1.0,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 1.0
+       },
+       "stage": "life",
+       "t": 0.03
+      },
+      {
+       "alive": true,
+       "appear": true,
+       "body": 1.0,
+       "bodyCutout": 1.0,
+       "dissolve": 1.0,
+       "firstSkinned": 1.0,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 119.19,
+       "renderers": null,
+       "stage": "life",
+       "t": 0.54
+      },
+      {
+       "alive": true,
+       "appear": true,
+       "body": 0.9165548,
+       "bodyCutout": 0.9165548,
+       "dissolve": 0.9165548,
+       "firstSkinned": 0.9165548,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 118.69,
+       "renderers": null,
+       "stage": "life",
+       "t": 1.04
+      },
+      {
+       "alive": true,
+       "appear": true,
+       "body": 0.676896751,
+       "bodyCutout": 0.676896751,
+       "dissolve": 0.676896751,
+       "firstSkinned": 0.676896751,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 118.19,
+       "renderers": null,
+       "stage": "life",
+       "t": 1.54
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.363032758,
+       "bodyCutout": 0.363032758,
+       "dissolve": 0.363032758,
+       "firstSkinned": 0.363032758,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 117.65,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.363,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.363,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.363
+       },
+       "stage": "life",
+       "t": 2.08
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.7814307,
+       "bodyCutout": 0.0,
+       "dissolve": 0.7814307,
+       "firstSkinned": 0.7814307,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 117.15,
+       "renderers": null,
+       "stage": "life",
+       "t": 2.59
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.564904153,
+       "bodyCutout": 0.0,
+       "dissolve": 0.564904153,
+       "firstSkinned": 0.564904153,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 116.64,
+       "renderers": null,
+       "stage": "life",
+       "t": 3.09
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.280716836,
+       "bodyCutout": 0.0,
+       "dissolve": 0.280716836,
+       "firstSkinned": 0.280716836,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 116.11,
+       "renderers": null,
+       "stage": "life",
+       "t": 3.62
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.0561193824,
+       "bodyCutout": 0.0,
+       "dissolve": 0.0561193824,
+       "firstSkinned": 0.0561193824,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 115.6,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.056,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.056,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.056
+       },
+       "stage": "life",
+       "t": 4.14
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.0249015652,
+       "bodyCutout": 0.0,
+       "dissolve": 0.0249015652,
+       "firstSkinned": 0.0249015652,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 115.1,
+       "renderers": null,
+       "stage": "life",
+       "t": 4.64
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.143496037,
+       "bodyCutout": 0.0,
+       "dissolve": 0.143496037,
+       "firstSkinned": 0.143496037,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 114.56,
+       "renderers": null,
+       "stage": "life",
+       "t": 5.17
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.2656415,
+       "bodyCutout": 0.0,
+       "dissolve": 0.2656415,
+       "firstSkinned": 0.2656415,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 114.06,
+       "renderers": null,
+       "stage": "life",
+       "t": 5.67
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.4011036,
+       "bodyCutout": 0.0,
+       "dissolve": 0.4011036,
+       "firstSkinned": 0.4011036,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 113.53,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.401,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.401,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.401
+       },
+       "stage": "life",
+       "t": 6.2
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.5363422,
+       "bodyCutout": 0.0,
+       "dissolve": 0.5363422,
+       "firstSkinned": 0.5363422,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 113.0,
+       "renderers": null,
+       "stage": "life",
+       "t": 6.73
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.6576875,
+       "bodyCutout": 0.0,
+       "dissolve": 0.6576875,
+       "firstSkinned": 0.6576875,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 112.5,
+       "renderers": null,
+       "stage": "life",
+       "t": 7.23
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.7682322,
+       "bodyCutout": 0.0,
+       "dissolve": 0.7682322,
+       "firstSkinned": 0.7682322,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 112.0,
+       "renderers": null,
+       "stage": "life",
+       "t": 7.73
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.8660728,
+       "bodyCutout": 0.0,
+       "dissolve": 0.8660728,
+       "firstSkinned": 0.8660728,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 111.48,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.866,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.866,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.866
+       },
+       "stage": "life",
+       "t": 8.25
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.9436668,
+       "bodyCutout": 0.0,
+       "dissolve": 0.9436668,
+       "firstSkinned": 0.9436668,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 110.95,
+       "renderers": null,
+       "stage": "life",
+       "t": 8.78
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.991177738,
+       "bodyCutout": 0.0,
+       "dissolve": 0.991177738,
+       "firstSkinned": 0.991177738,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 110.42,
+       "renderers": null,
+       "stage": "life",
+       "t": 9.32
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.07092928,
+       "bodyCutout": 0.0,
+       "dissolve": 0.07092928,
+       "firstSkinned": 0.07092928,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 109.89,
+       "renderers": null,
+       "stage": "life",
+       "t": 9.85
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.190746784,
+       "bodyCutout": 0.0,
+       "dissolve": 0.190746784,
+       "firstSkinned": 0.190746784,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 109.37,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.191,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.191,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.191
+       },
+       "stage": "life",
+       "t": 10.36
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.315312177,
+       "bodyCutout": 0.0,
+       "dissolve": 0.315312177,
+       "firstSkinned": 0.315312177,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 108.87,
+       "renderers": null,
+       "stage": "life",
+       "t": 10.86
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.4429343,
+       "bodyCutout": 0.0,
+       "dissolve": 0.4429343,
+       "firstSkinned": 0.4429343,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 108.37,
+       "renderers": null,
+       "stage": "life",
+       "t": 11.36
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.5688834,
+       "bodyCutout": 0.0,
+       "dissolve": 0.5688834,
+       "firstSkinned": 0.5688834,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 107.87,
+       "renderers": null,
+       "stage": "life",
+       "t": 11.87
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.6912199,
+       "bodyCutout": 0.0,
+       "dissolve": 0.6912199,
+       "firstSkinned": 0.6912199,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 107.35,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.691,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.691,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.691
+       },
+       "stage": "life",
+       "t": 12.38
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.7977883,
+       "bodyCutout": 0.0,
+       "dissolve": 0.7977883,
+       "firstSkinned": 0.7977883,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 106.85,
+       "renderers": null,
+       "stage": "life",
+       "t": 12.88
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.887360632,
+       "bodyCutout": 0.0,
+       "dissolve": 0.887360632,
+       "firstSkinned": 0.887360632,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 106.35,
+       "renderers": null,
+       "stage": "life",
+       "t": 13.38
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.958204746,
+       "bodyCutout": 0.0,
+       "dissolve": 0.958204746,
+       "firstSkinned": 0.958204746,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 105.82,
+       "renderers": null,
+       "stage": "life",
+       "t": 13.91
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.9967589,
+       "bodyCutout": 0.0,
+       "dissolve": 0.9967589,
+       "firstSkinned": 0.9967589,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 105.31,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.997,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.997,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.997
+       },
+       "stage": "life",
+       "t": 14.43
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.09553994,
+       "bodyCutout": 0.0,
+       "dissolve": 0.09553994,
+       "firstSkinned": 0.09553994,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 104.78,
+       "renderers": null,
+       "stage": "life",
+       "t": 14.96
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.213914841,
+       "bodyCutout": 0.0,
+       "dissolve": 0.213914841,
+       "firstSkinned": 0.213914841,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 104.28,
+       "renderers": null,
+       "stage": "life",
+       "t": 15.46
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.33983,
+       "bodyCutout": 0.0,
+       "dissolve": 0.33983,
+       "firstSkinned": 0.33983,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 103.77,
+       "renderers": null,
+       "stage": "life",
+       "t": 15.96
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.470702857,
+       "bodyCutout": 0.0,
+       "dissolve": 0.470702857,
+       "firstSkinned": 0.470702857,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 103.26,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.471,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.471,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.471
+       },
+       "stage": "life",
+       "t": 16.47
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.603912652,
+       "bodyCutout": 0.0,
+       "dissolve": 0.603912652,
+       "firstSkinned": 0.603912652,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 102.73,
+       "renderers": null,
+       "stage": "life",
+       "t": 17.0
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.7271968,
+       "bodyCutout": 0.0,
+       "dissolve": 0.7271968,
+       "firstSkinned": 0.7271968,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 102.2,
+       "renderers": null,
+       "stage": "life",
+       "t": 17.54
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.8288553,
+       "bodyCutout": 0.0,
+       "dissolve": 0.8288553,
+       "firstSkinned": 0.8288553,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 101.69,
+       "renderers": null,
+       "stage": "life",
+       "t": 18.04
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.9136755,
+       "bodyCutout": 0.0,
+       "dissolve": 0.9136755,
+       "firstSkinned": 0.9136755,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 101.18,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.914,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.914,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.914
+       },
+       "stage": "life",
+       "t": 18.55
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.971981645,
+       "bodyCutout": 0.0,
+       "dissolve": 0.971981645,
+       "firstSkinned": 0.971981645,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 100.68,
+       "renderers": null,
+       "stage": "life",
+       "t": 19.05
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.008313298,
+       "bodyCutout": 0.0,
+       "dissolve": 0.008313298,
+       "firstSkinned": 0.008313298,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 100.18,
+       "renderers": null,
+       "stage": "life",
+       "t": 19.55
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.117206514,
+       "bodyCutout": 0.0,
+       "dissolve": 0.117206514,
+       "firstSkinned": 0.117206514,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 99.68,
+       "renderers": null,
+       "stage": "life",
+       "t": 20.05
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.240914583,
+       "bodyCutout": 0.0,
+       "dissolve": 0.240914583,
+       "firstSkinned": 0.240914583,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 99.17,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.241,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.241,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.241
+       },
+       "stage": "life",
+       "t": 20.56
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.3761036,
+       "bodyCutout": 0.0,
+       "dissolve": 0.3761036,
+       "firstSkinned": 0.3761036,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 98.64,
+       "renderers": null,
+       "stage": "life",
+       "t": 21.1
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.50356704,
+       "bodyCutout": 0.0,
+       "dissolve": 0.50356704,
+       "firstSkinned": 0.50356704,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 98.14,
+       "renderers": null,
+       "stage": "life",
+       "t": 21.6
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.626632631,
+       "bodyCutout": 0.0,
+       "dissolve": 0.626632631,
+       "firstSkinned": 0.626632631,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 97.64,
+       "renderers": null,
+       "stage": "life",
+       "t": 22.1
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.7441038,
+       "bodyCutout": 0.0,
+       "dissolve": 0.7441038,
+       "firstSkinned": 0.7441038,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 97.12,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.744,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.744,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.744
+       },
+       "stage": "life",
+       "t": 22.61
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.8432204,
+       "bodyCutout": 0.0,
+       "dissolve": 0.8432204,
+       "firstSkinned": 0.8432204,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 96.62,
+       "renderers": null,
+       "stage": "life",
+       "t": 23.11
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.9270962,
+       "bodyCutout": 0.0,
+       "dissolve": 0.9270962,
+       "firstSkinned": 0.9270962,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 96.08,
+       "renderers": null,
+       "stage": "life",
+       "t": 23.65
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.9826528,
+       "bodyCutout": 0.0,
+       "dissolve": 0.9826528,
+       "firstSkinned": 0.9826528,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 95.55,
+       "renderers": null,
+       "stage": "life",
+       "t": 24.18
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.03846202,
+       "bodyCutout": 0.0,
+       "dissolve": 0.03846202,
+       "firstSkinned": 0.03846202,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 95.04,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.038,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.038,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.038
+       },
+       "stage": "life",
+       "t": 24.69
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.158877149,
+       "bodyCutout": 0.0,
+       "dissolve": 0.158877149,
+       "firstSkinned": 0.158877149,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 94.51,
+       "renderers": null,
+       "stage": "life",
+       "t": 25.23
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.281901032,
+       "bodyCutout": 0.0,
+       "dissolve": 0.281901032,
+       "firstSkinned": 0.281901032,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 94.01,
+       "renderers": null,
+       "stage": "life",
+       "t": 25.73
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.409442753,
+       "bodyCutout": 0.0,
+       "dissolve": 0.409442753,
+       "firstSkinned": 0.409442753,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 93.51,
+       "renderers": null,
+       "stage": "life",
+       "t": 26.23
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.539851367,
+       "bodyCutout": 0.0,
+       "dissolve": 0.539851367,
+       "firstSkinned": 0.539851367,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 92.99,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.54,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.54,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.54
+       },
+       "stage": "life",
+       "t": 26.74
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.661108732,
+       "bodyCutout": 0.0,
+       "dissolve": 0.661108732,
+       "firstSkinned": 0.661108732,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 92.49,
+       "renderers": null,
+       "stage": "life",
+       "t": 27.24
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.771272361,
+       "bodyCutout": 0.0,
+       "dissolve": 0.771272361,
+       "firstSkinned": 0.771272361,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 91.99,
+       "renderers": null,
+       "stage": "life",
+       "t": 27.74
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.871332943,
+       "bodyCutout": 0.0,
+       "dissolve": 0.871332943,
+       "firstSkinned": 0.871332943,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 91.45,
+       "renderers": null,
+       "stage": "life",
+       "t": 28.28
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.9452071,
+       "bodyCutout": 0.0,
+       "dissolve": 0.9452071,
+       "firstSkinned": 0.9452071,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 90.94,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.945,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.945,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.945
+       },
+       "stage": "life",
+       "t": 28.79
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.991978467,
+       "bodyCutout": 0.0,
+       "dissolve": 0.991978467,
+       "firstSkinned": 0.991978467,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 90.41,
+       "renderers": null,
+       "stage": "life",
+       "t": 29.32
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.06665197,
+       "bodyCutout": 0.0,
+       "dissolve": 0.06665197,
+       "firstSkinned": 0.06665197,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 89.91,
+       "renderers": null,
+       "stage": "life",
+       "t": 29.82
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.186851814,
+       "bodyCutout": 0.0,
+       "dissolve": 0.186851814,
+       "firstSkinned": 0.186851814,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 89.39,
+       "renderers": null,
+       "stage": "life",
+       "t": 30.35
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.311754227,
+       "bodyCutout": 0.0,
+       "dissolve": 0.311754227,
+       "firstSkinned": 0.311754227,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 88.88,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.312,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.312,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.312
+       },
+       "stage": "life",
+       "t": 30.85
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.4480492,
+       "bodyCutout": 0.0,
+       "dissolve": 0.4480492,
+       "firstSkinned": 0.4480492,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 88.35,
+       "renderers": null,
+       "stage": "life",
+       "t": 31.38
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.5740344,
+       "bodyCutout": 0.0,
+       "dissolve": 0.5740344,
+       "firstSkinned": 0.5740344,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 87.85,
+       "renderers": null,
+       "stage": "life",
+       "t": 31.88
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.696272254,
+       "bodyCutout": 0.0,
+       "dissolve": 0.696272254,
+       "firstSkinned": 0.696272254,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 87.34,
+       "renderers": null,
+       "stage": "life",
+       "t": 32.4
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.802473545,
+       "bodyCutout": 0.0,
+       "dissolve": 0.802473545,
+       "firstSkinned": 0.802473545,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 86.83,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.802,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.802,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.802
+       },
+       "stage": "life",
+       "t": 32.9
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.8910706,
+       "bodyCutout": 0.0,
+       "dissolve": 0.8910706,
+       "firstSkinned": 0.8910706,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 86.33,
+       "renderers": null,
+       "stage": "life",
+       "t": 33.4
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.9604066,
+       "bodyCutout": 0.0,
+       "dissolve": 0.9604066,
+       "firstSkinned": 0.9604066,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 85.8,
+       "renderers": null,
+       "stage": "life",
+       "t": 33.93
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.997793734,
+       "bodyCutout": 0.0,
+       "dissolve": 0.997793734,
+       "firstSkinned": 0.997793734,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 85.29,
+       "renderers": null,
+       "stage": "life",
+       "t": 34.44
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.09362417,
+       "bodyCutout": 0.0,
+       "dissolve": 0.09362417,
+       "firstSkinned": 0.09362417,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 84.79,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.094,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.094,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.094
+       },
+       "stage": "life",
+       "t": 34.94
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.211794823,
+       "bodyCutout": 0.0,
+       "dissolve": 0.211794823,
+       "firstSkinned": 0.211794823,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 84.29,
+       "renderers": null,
+       "stage": "life",
+       "t": 35.45
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.34578234,
+       "bodyCutout": 0.0,
+       "dissolve": 0.34578234,
+       "firstSkinned": 0.34578234,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 83.75,
+       "renderers": null,
+       "stage": "life",
+       "t": 35.98
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.4774856,
+       "bodyCutout": 0.0,
+       "dissolve": 0.4774856,
+       "firstSkinned": 0.4774856,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 83.24,
+       "renderers": null,
+       "stage": "life",
+       "t": 36.5
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.6103558,
+       "bodyCutout": 0.0,
+       "dissolve": 0.6103558,
+       "firstSkinned": 0.6103558,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 82.7,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.61,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.61,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.61
+       },
+       "stage": "life",
+       "t": 37.03
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.7257323,
+       "bodyCutout": 0.0,
+       "dissolve": 0.7257323,
+       "firstSkinned": 0.7257323,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 82.2,
+       "renderers": null,
+       "stage": "life",
+       "t": 37.53
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.8337244,
+       "bodyCutout": 0.0,
+       "dissolve": 0.8337244,
+       "firstSkinned": 0.8337244,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 81.67,
+       "renderers": null,
+       "stage": "life",
+       "t": 38.06
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.917725742,
+       "bodyCutout": 0.0,
+       "dissolve": 0.917725742,
+       "firstSkinned": 0.917725742,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 81.16,
+       "renderers": null,
+       "stage": "life",
+       "t": 38.57
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.974461,
+       "bodyCutout": 0.0,
+       "dissolve": 0.974461,
+       "firstSkinned": 0.974461,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 80.66,
+       "renderers": {
+        "MeshRenderer:OH_LongswordHolyAzata(Clone):": 0.974,
+        "MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):": 0.974,
+        "SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout": 0.974
+       },
+       "stage": "life",
+       "t": 39.08
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.0212027784,
+       "bodyCutout": 0.0,
+       "dissolve": 0.0212027784,
+       "firstSkinned": 0.0212027784,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 80.12,
+       "renderers": null,
+       "stage": "life",
+       "t": 39.61
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.1392193,
+       "bodyCutout": 0.0,
+       "dissolve": 0.1392193,
+       "firstSkinned": 0.1392193,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 79.59,
+       "renderers": null,
+       "stage": "life",
+       "t": 40.15
+      },
+      {
+       "alive": true,
+       "appear": false,
+       "body": 0.264983237,
+       "bodyCutout": 0.0,
+       "dissolve": 0.264983237,
+       "firstSkinned": 0.264983237,
+       "position": [
+        20.1506062,
+        19.0027924,
+        -3.99563217
+       ],
+       "remaining": 79.08,
+       "renderers": null,
+       "stage": "life",
+       "t": 40.66
+      },
+      {
+       "truncated": 160
+      }
+     ]
+    }
+   },
+   "passed": true,
+   "predicate": "s7-ghaele-dim-isolation"
+  },
+  {
+   "observed": {
+    "error": null
+   },
+   "passed": true,
+   "predicate": "r6-s7-ghaele-dim-completed"
+  },
+  {
+   "observed": {
+    "errors": []
+   },
+   "passed": true,
+   "predicate": "s7-ghaele-owned-state-restored"
+  },
+  {
+   "observed": {
+    "cleanup": {
+     "areaChanges": [],
+     "casterAbsent": true,
+     "extraUnits": "",
+     "missingUnits": "",
+     "partyAfter": 1,
+     "partyBefore": 1,
+     "partyExact": true,
+     "unitsAfter": 23,
+     "unitsBefore": 23,
+     "unitsExact": true
+    },
+    "clockRestored": true,
+    "referencesRestored": true
+   },
+   "passed": true,
+   "predicate": "fixture-restored"
+  }
+ ],
+ "harness": {
+  "conditions": {},
+  "exitRequested": false,
+  "failure": null,
+  "finishedUtc": "2026-11-24T02:37:12.4467537Z",
+  "isolation": "saves=<lab>/Saved Games; areas=<lab>/Areas",
+  "isolationRestored": true,
+  "loggerExceptionHooks": 4,
+  "requestPath": "<lab>/harness-request.json",
+  "runId": "20261124T022637Z-owner-0.33.0-s7-cand-05-ghd",
+  "startedUtc": "2026-11-24T02:36:17.4454693Z",
+  "status": "passed",
+  "steps": []
+ },
+ "harnessEvents": [
+  {
+   "detail": {
+    "ummWindowOpen": true
+   },
+   "event": "mainMenu",
+   "t": 58.45064,
+   "utc": "2026-11-24T02:37:12.2737727Z"
+  }
+ ],
+ "launch": "05-ghd",
+ "launchSummary": {
+  "conditions": {},
+  "gameArguments": [
+   "locale=enGB"
+  ],
+  "harness": "passed",
+  "identity": {
+   "activeMods": [
+    "KingmakerGunslinger 0.0.195",
+    "KmgLoaderCompatHarness 0.1.0"
+   ],
+   "harmony12Sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+   "harmony2": [
+    "2.3.6.0 df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80"
+   ],
+   "productSha256": "6104d2bf739adc0acb04c3458a060fc2a740203f989c86ccf286252eb7194e26",
+   "umm": "0.33.0.0",
+   "ummReported": "0.33.0.0",
+   "ummSha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
+  },
+  "label": "05-ghd",
+  "pid": 13460,
+  "problems": [
+   "product disposable-expanded-summoning-sprint32-native-review: FAIL"
+  ],
+  "product": {
+   "failed": [
+    "sprint32-s7-ghaele-dim-dissolve-attribution: {\"compared\":159,\"matchedDonor\":0,\"examples\":[{\"t\":6.08,\"renderer\":\"MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):\",\"summon\":0.373,\"donor\":0.0},{\"t\":6.08,\"renderer\":\"MeshRenderer:OH_LongswordHolyAzata(Clone):\",\"summon\":0.373,\"donor\":0.0},{\"t\":6.08,\"renderer\":\"SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout\",\"summon\":0.373,\"donor\":1.0},{\"t\":8.15,\"renderer\":\"MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):\",\"summon\":0.849,\"donor\":0.323},{\"t\":8.15,\"renderer\":\"MeshRenderer:OH_LongswordHolyAzata(Clone):\",\"summon\":0.849,\"donor\":0.323},{\"t\":8.15,\"renderer\":\"SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout\",\"summon\":0.849,\"donor\":0.323},{\"t\":10.23,\"renderer\":\"MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):\",\"summon\":0.159,\"donor\":0.0},{\"t\":10.23,\"renderer\":\"MeshRenderer:OH_LongswordHolyAzata(Clone):\",\"summon\":0.159,\"donor\":0.0},{\"t\":10.23,\"renderer\":\"SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout\",\"summon\":0.159,\"donor\":0.0},{\"t\":12.28,\"renderer\":\"MeshRenderer:SC_LongswordHolyAzataScabbard(Clone):\",\"summon\":0.668,\"donor\":0.329},{\"t\":12.28,\"renderer\":\"MeshRenderer:OH_LongswordHolyAzata(Clone):\",\"summon\":0.668,\"donor\":0.329},{\"t\":12.28,\"renderer\":\"SkinnedMeshRenderer:Renderer_Character_Diffuse_Cutout:GhaeleAzata_Renderer_Character_Diffuse_Cutout\",\"summon\":0.668,\"donor\":0.329}],\"predicate\":\"s7-ghaele-dim-dissolve-attribution\",\"passed\":false,\"runId\":\"lc-20261124T022637Z-owner-0.33.0-s7-cand-05-ghd\"}"
+   ],
+   "scenario": "disposable-expanded-summoning-sprint32-native-review",
+   "status": "FAIL"
+  },
+  "seconds": 245,
+  "verdict": "FAIL"
+ },
+ "session": "20261124T022637Z-owner-0.33.0-s7-cand",
+ "sources": {
+  "harness-result.json": "920a50e9e2d71b196fe58e9686731063236294448fe16d4dcba0d1dacb9001a0",
+  "sprint32-review.json": "6aa17215c425bab92e8cb402daf56416c30668a90bf2a9564184f4402baa168f"
+ },
+ "summary": [
+  "Kingmaker Gunslinger runtime test",
+  "Run ID: lc-20261124T022637Z-owner-0.33.0-s7-cand-05-ghd",
+  "Scenario: disposable-expanded-summoning-sprint32-native-review",
+  "Status: FAIL",
+  "Loaded mod: 0.0.195",
+  "Runtime: KingmakerGunslinger, Version=0.0.195.0, Culture=neutral, PublicKeyToken=null",
+  "Started UTC: 2026-11-24T02:36:17.3241377Z",
+  "Ended UTC: 2026-11-24T02:40:15.2834268Z",
+  "Duration ms: 237959"
+ ]
+}

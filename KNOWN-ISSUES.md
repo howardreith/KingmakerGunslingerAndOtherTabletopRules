@@ -6,11 +6,14 @@
     azata body (also on an unsummoned native Ghaele), removes no surface and does not shorten the summon; the earlier
     "progressive dissolve" report measured this loop. No change.
   - The owned Trample/Overrun target row now reads "within twice this creature's speed" in the description and HUD
-    windows; the controller (gamepad) window shares the same text code but was not rendered.
+    windows; the controller (gamepad) window shares the same text code but was not rendered (no admitted observer
+    reaches a summon's abilities in controller mode).
   - The Ankylosaurus impact cue and the Trumpet Archon blast cue are provisional choices pending listening.
-  - The Dust Mephit's breath is a recoloured native cold cone, not a separately authored dust effect. The game only
-    spawns that cone effect when the breath's launch point differs from the previous one, so repeated breaths from
-    exactly one spot can show no cone; this native behavior applies to every cone breath and was not changed.
+  - The Dust Mephit's breath is a recoloured native cold cone, not a separately authored dust effect. Repeated breaths
+    from one spot each show their cone (the game skips a cone only for a second launch from the same point within one
+    frame).
+  - Mephit breaths roll their Reflex save for every creature in the cone, allies included; allies take no damage and no
+    condition, but the save appears in the combat log. Released behavior, not changed in Sprint 7.
 - A creature that died inside a summoned Purple Worm or Giant Flytrap stayed "swallowed" and kept that mouth shut
   (S6 VER-02 G3, D1; the repair is accepted for the demonstrated Purple Worm/Giant Flytrap scope on branch
   `codex/s6-ver02-c3a-swallow-engulf`; released in v0.0.195).

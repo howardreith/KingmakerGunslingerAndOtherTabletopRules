@@ -1,0 +1,560 @@
+{
+ "checks": [
+  {
+   "observed": {
+    "beforeVertices": 12402,
+    "clearOfOccluders": true,
+    "currentVertices": 11593,
+    "motionAfter": {
+     "movePeakVelocity": 4.063944,
+     "moveTravel": 2.969177,
+     "turnDegrees": 110.997444
+    },
+    "motionBefore": {
+     "movePeakVelocity": 4.063921,
+     "moveTravel": 2.95352221,
+     "turnDegrees": 110.997009
+    },
+    "settledDissolve": 0.0,
+    "stillsAfter": {
+     "detail-wing-root-left": true,
+     "detail-wing-root-right": true,
+     "detail-wing-roots-rear": true,
+     "dissolve": 0.0,
+     "front": true,
+     "occluders": {
+      "detail-wing-root-left": {
+       "distance": 9.91,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-wing-root-right": {
+       "distance": 9.91,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-wing-roots-rear": {
+       "distance": 11.28,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "front": {
+       "distance": 27.66,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "rear": {
+       "distance": 27.66,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 45.0
+      }
+     },
+     "party": "png=s7-nalfeshnee-dim-after-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=32.3;screenLit=true;rendererEnabled=false;faderVisible=true;mesh=_ammunition04;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+     "rear": true
+    },
+    "stillsBefore": {
+     "detail-wing-root-left": true,
+     "detail-wing-root-right": true,
+     "detail-wing-roots-rear": true,
+     "dissolve": 0.0,
+     "front": true,
+     "occluders": {
+      "detail-wing-root-left": {
+       "distance": 9.91,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-wing-root-right": {
+       "distance": 9.91,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-wing-roots-rear": {
+       "distance": 11.28,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "front": {
+       "distance": 27.72,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "rear": {
+       "distance": 27.72,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 45.0
+      }
+     },
+     "party": "png=s7-nalfeshnee-dim-before-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=32.2;screenLit=true;rendererEnabled=false;faderVisible=true;mesh=_ammunition04;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+     "rear": true
+    },
+    "unit": "KMG_Summoning_Unit_Nalfeshnee"
+   },
+   "passed": true,
+   "predicate": "s7-nalfeshnee-dim"
+  },
+  {
+   "observed": {
+    "error": null
+   },
+   "passed": true,
+   "predicate": "r6-s7-nalfeshnee-dim-completed"
+  },
+  {
+   "observed": {
+    "beforeVertices": 2198,
+    "clearOfOccluders": true,
+    "currentVertices": 2198,
+    "motionAfter": {
+     "movePeakVelocity": 2.0320003,
+     "moveTravel": 2.95724344,
+     "turnDegrees": 104.994858
+    },
+    "motionBefore": {
+     "movePeakVelocity": 2.032,
+     "moveTravel": 2.96948433,
+     "turnDegrees": 104.994713
+    },
+    "settledDissolve": 0.0,
+    "stillsAfter": {
+     "detail-left-hand": true,
+     "detail-right-hand": true,
+     "detail-waist-front": true,
+     "detail-waist-rear": true,
+     "dissolve": 0.0,
+     "front": true,
+     "occluders": {
+      "detail-left-hand": {
+       "distance": 1.57,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-right-hand": {
+       "distance": 1.57,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": -45.0
+      },
+      "detail-waist-front": {
+       "distance": 3.28,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-waist-rear": {
+       "distance": 3.28,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "front": {
+       "distance": 13.25,
+       "otherUnits": 1,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "rear": {
+       "distance": 13.25,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      }
+     },
+     "party": "png=s7-salamander-dim-after-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=33.4;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=KMG_SalamanderHuman_-263814_Mesh;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=not-attempted",
+     "rear": true
+    },
+    "stillsBefore": {
+     "detail-left-hand": true,
+     "detail-right-hand": true,
+     "detail-waist-front": true,
+     "detail-waist-rear": true,
+     "dissolve": 0.0,
+     "front": true,
+     "occluders": {
+      "detail-left-hand": {
+       "distance": 1.57,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-right-hand": {
+       "distance": 1.57,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": -45.0
+      },
+      "detail-waist-front": {
+       "distance": 3.28,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-waist-rear": {
+       "distance": 3.28,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "front": {
+       "distance": 13.48,
+       "otherUnits": 1,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "rear": {
+       "distance": 13.48,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      }
+     },
+     "party": "png=s7-salamander-dim-before-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=33.3;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=KMG_salamander_S7BeforeEvidence;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=not-attempted",
+     "rear": true
+    },
+    "unit": "KMG_Summoning_Unit_Salamander"
+   },
+   "passed": true,
+   "predicate": "s7-salamander-dim"
+  },
+  {
+   "observed": {
+    "error": null
+   },
+   "passed": true,
+   "predicate": "r6-s7-salamander-dim-completed"
+  },
+  {
+   "observed": {
+    "errors": []
+   },
+   "passed": true,
+   "predicate": "s7-models-owned-state-restored"
+  },
+  {
+   "observed": {
+    "cleanup": {
+     "areaChanges": [],
+     "casterAbsent": true,
+     "extraUnits": "",
+     "missingUnits": "",
+     "partyAfter": 1,
+     "partyBefore": 1,
+     "partyExact": true,
+     "unitsAfter": 23,
+     "unitsBefore": 23,
+     "unitsExact": true
+    },
+    "clockRestored": true,
+    "referencesRestored": true
+   },
+   "passed": true,
+   "predicate": "fixture-restored"
+  }
+ ],
+ "harness": {
+  "conditions": {},
+  "exitRequested": false,
+  "failure": null,
+  "finishedUtc": "2026-11-24T03:02:34.0291020Z",
+  "isolation": "saves=<lab>/Saved Games; areas=<lab>/Areas",
+  "isolationRestored": true,
+  "loggerExceptionHooks": 4,
+  "requestPath": "<lab>/harness-request.json",
+  "runId": "20261124T025726Z-owner-0.33.0-s7-cand-03-modd",
+  "startedUtc": "2026-11-24T03:01:35.7138461Z",
+  "status": "passed",
+  "steps": []
+ },
+ "harnessEvents": [
+  {
+   "detail": {
+    "ummWindowOpen": true
+   },
+   "event": "mainMenu",
+   "t": 63.0877533,
+   "utc": "2026-11-24T03:02:33.8478866Z"
+  }
+ ],
+ "launch": "03-modd",
+ "launchSummary": {
+  "conditions": {},
+  "gameArguments": [
+   "locale=enGB"
+  ],
+  "harness": "passed",
+  "identity": {
+   "activeMods": [
+    "KingmakerGunslinger 0.0.195",
+    "KmgLoaderCompatHarness 0.1.0"
+   ],
+   "harmony12Sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+   "harmony2": [
+    "2.3.6.0 df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80"
+   ],
+   "productSha256": "90c404ed2799a5060d2eb549229fd9da72964f10e99891f9a15606ba14dd3fce",
+   "umm": "0.33.0.0",
+   "ummReported": "0.33.0.0",
+   "ummSha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
+  },
+  "label": "03-modd",
+  "pid": 28840,
+  "problems": [],
+  "product": {
+   "failed": [],
+   "scenario": "disposable-expanded-summoning-sprint32-native-review",
+   "status": "PASS"
+  },
+  "seconds": 120,
+  "verdict": "PASS"
+ },
+ "records": {
+  "summon-s7-models-interior.json": {
+   "area": "JamandisMansionThroneroom",
+   "limits": "Summons come from the published spell through the fixture helper, which removes the arrival and appearance buffs and places the unit; captures begin after the arrival rim with every body material at _Dissolve 0. Commanded motion with brains inactive. Images are presentation evidence only; aesthetic approval is the owner's.",
+   "nalfeshnee": {
+    "beforeVertices": 12402,
+    "clearOfOccluders": true,
+    "currentVertices": 11593,
+    "motionAfter": {
+     "movePeakVelocity": 4.063944,
+     "moveTravel": 2.969177,
+     "turnDegrees": 110.997444
+    },
+    "motionBefore": {
+     "movePeakVelocity": 4.063921,
+     "moveTravel": 2.95352221,
+     "turnDegrees": 110.997009
+    },
+    "settledDissolve": 0.0,
+    "stillsAfter": {
+     "detail-wing-root-left": true,
+     "detail-wing-root-right": true,
+     "detail-wing-roots-rear": true,
+     "dissolve": 0.0,
+     "front": true,
+     "occluders": {
+      "detail-wing-root-left": {
+       "distance": 9.91,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-wing-root-right": {
+       "distance": 9.91,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-wing-roots-rear": {
+       "distance": 11.28,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "front": {
+       "distance": 27.66,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "rear": {
+       "distance": 27.66,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 45.0
+      }
+     },
+     "party": "png=s7-nalfeshnee-dim-after-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=32.3;screenLit=true;rendererEnabled=false;faderVisible=true;mesh=_ammunition04;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+     "rear": true
+    },
+    "stillsBefore": {
+     "detail-wing-root-left": true,
+     "detail-wing-root-right": true,
+     "detail-wing-roots-rear": true,
+     "dissolve": 0.0,
+     "front": true,
+     "occluders": {
+      "detail-wing-root-left": {
+       "distance": 9.91,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-wing-root-right": {
+       "distance": 9.91,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-wing-roots-rear": {
+       "distance": 11.28,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "front": {
+       "distance": 27.72,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "rear": {
+       "distance": 27.72,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 45.0
+      }
+     },
+     "party": "png=s7-nalfeshnee-dim-before-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=32.2;screenLit=true;rendererEnabled=false;faderVisible=true;mesh=_ammunition04;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+     "rear": true
+    },
+    "unit": "KMG_Summoning_Unit_Nalfeshnee"
+   },
+   "phase": "summon-s7-models-interior",
+   "restoreErrors": [],
+   "runId": "lc-20261124T025726Z-owner-0.33.0-s7-cand-03-modd",
+   "salamander": {
+    "beforeVertices": 2198,
+    "clearOfOccluders": true,
+    "currentVertices": 2198,
+    "motionAfter": {
+     "movePeakVelocity": 2.0320003,
+     "moveTravel": 2.95724344,
+     "turnDegrees": 104.994858
+    },
+    "motionBefore": {
+     "movePeakVelocity": 2.032,
+     "moveTravel": 2.96948433,
+     "turnDegrees": 104.994713
+    },
+    "settledDissolve": 0.0,
+    "stillsAfter": {
+     "detail-left-hand": true,
+     "detail-right-hand": true,
+     "detail-waist-front": true,
+     "detail-waist-rear": true,
+     "dissolve": 0.0,
+     "front": true,
+     "occluders": {
+      "detail-left-hand": {
+       "distance": 1.57,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-right-hand": {
+       "distance": 1.57,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": -45.0
+      },
+      "detail-waist-front": {
+       "distance": 3.28,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-waist-rear": {
+       "distance": 3.28,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "front": {
+       "distance": 13.25,
+       "otherUnits": 1,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "rear": {
+       "distance": 13.25,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      }
+     },
+     "party": "png=s7-salamander-dim-after-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=33.4;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=KMG_SalamanderHuman_-263814_Mesh;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=not-attempted",
+     "rear": true
+    },
+    "stillsBefore": {
+     "detail-left-hand": true,
+     "detail-right-hand": true,
+     "detail-waist-front": true,
+     "detail-waist-rear": true,
+     "dissolve": 0.0,
+     "front": true,
+     "occluders": {
+      "detail-left-hand": {
+       "distance": 1.57,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-right-hand": {
+       "distance": 1.57,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": -45.0
+      },
+      "detail-waist-front": {
+       "distance": 3.28,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "detail-waist-rear": {
+       "distance": 3.28,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "front": {
+       "distance": 13.48,
+       "otherUnits": 1,
+       "scenery": 0,
+       "yawOffset": 0.0
+      },
+      "rear": {
+       "distance": 13.48,
+       "otherUnits": 0,
+       "scenery": 0,
+       "yawOffset": 0.0
+      }
+     },
+     "party": "png=s7-salamander-dim-before-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=33.3;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=KMG_salamander_S7BeforeEvidence;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=not-attempted",
+     "rear": true
+    },
+    "unit": "KMG_Summoning_Unit_Salamander"
+   },
+   "scene": "dim"
+  }
+ },
+ "session": "20261124T025726Z-owner-0.33.0-s7-cand",
+ "sources": {
+  "harness-result.json": "125e1d3aff11a6e21ca289ecd0a500bc7a5ad2e224122be6fca265c963f31872",
+  "sprint32-review.json": "0c6b655cf0b2b90973508df051f2e26b30b8f6d37e75173eebeb9cac3b3ce158",
+  "summon-s7-models-interior.json": "9f71f0ec8d50b26bf5f751f888c279613da7a7ce346c93332c64bd76b09302c9"
+ },
+ "summary": [
+  "Kingmaker Gunslinger runtime test",
+  "Run ID: lc-20261124T025726Z-owner-0.33.0-s7-cand-03-modd",
+  "Scenario: disposable-expanded-summoning-sprint32-native-review",
+  "Status: PASS",
+  "Loaded mod: 0.0.195",
+  "Runtime: KingmakerGunslinger, Version=0.0.195.0, Culture=neutral, PublicKeyToken=null",
+  "Started UTC: 2026-11-24T03:01:35.5816895Z",
+  "Ended UTC: 2026-11-24T03:03:26.2710963Z",
+  "Duration ms: 110689"
+ ]
+}

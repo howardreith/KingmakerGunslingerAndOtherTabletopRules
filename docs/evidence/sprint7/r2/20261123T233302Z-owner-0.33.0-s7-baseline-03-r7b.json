@@ -1,0 +1,638 @@
+{
+ "checks": [
+  {
+   "observed": {
+    "actorBlueprintExact": true,
+    "actorNameExact": true,
+    "actorPresent": true,
+    "anchorCommandsEmpty": true,
+    "casterBrainDisabled": true,
+    "casterCommandsEmpty": true,
+    "originalDistinct": true,
+    "ownedPartyExact": true,
+    "presetExact": true,
+    "saveGuardOwned": true,
+    "scenesOwned": true
+   },
+   "passed": true,
+   "predicate": "summon-playtest-r7-models-group-quiet-anchor"
+  },
+  {
+   "observed": {
+    "alwaysEnemy": false,
+    "attackFaction": "Player",
+    "casterIsEnemy": true,
+    "intakeNonPlayerRelations": [],
+    "privateFaction": "KMG_Runtime_Sprint32Turn_HostileFaction",
+    "target": "8b8da790-a8b7-4153-9df6-8b4bcde97012",
+    "targetIsEnemy": true
+   },
+   "passed": true,
+   "predicate": "sprint32-turn-hostile-faction"
+  },
+  {
+   "observed": {
+    "controller": "Mouse",
+    "exactReview": true,
+    "frame": 3872,
+    "gameSeconds": 43200.68,
+    "immediateBoundary": true,
+    "inputModeAdmitted": true,
+    "mode": "Default",
+    "narrativeAbsent": true,
+    "nativeModeAdmitted": true,
+    "noSelectedAbility": true,
+    "ownedFixture": true,
+    "saveFree": true,
+    "utc": "2026-11-23T23:37:42.6044950Z"
+   },
+   "passed": true,
+   "predicate": "cleanup2-native-default-admission-summon-playtest-r7-models"
+  },
+  {
+   "observed": {
+    "activeModeCounts": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "closed": false,
+    "controllerReferences": [
+     {
+      "actualInstance": 1019209216,
+      "expectedInstance": 1019209216,
+      "name": "ClickEventsController",
+      "same": true
+     },
+     {
+      "actualInstance": 1413673472,
+      "expectedInstance": 1413673472,
+      "name": "SelectedAbilityHandler",
+      "same": true
+     },
+     {
+      "actualInstance": 1815781120,
+      "expectedInstance": 1815781120,
+      "name": "PlaceRestMarkerHandler",
+      "same": true
+     },
+     {
+      "actualInstance": -1889167872,
+      "expectedInstance": -1889167872,
+      "name": "InteractionHighlightController",
+      "same": true
+     },
+     {
+      "actualInstance": -2004587008,
+      "expectedInstance": -2004587008,
+      "name": "CombatEngagementController",
+      "same": true
+     },
+     {
+      "actualInstance": 383506432,
+      "expectedInstance": 383506432,
+      "name": "HandsEquipmentController",
+      "same": true
+     },
+     {
+      "actualInstance": 2124180864,
+      "expectedInstance": 2124180864,
+      "name": "CameraController",
+      "same": true
+     }
+    ],
+    "current": true,
+    "existingNativeDefaultBorrowed": true,
+    "expectedActiveModeCounts": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "frame": 3872,
+    "gameSeconds": 43200.68,
+    "manualClockSuspended": true,
+    "manualPulsesBefore": 0,
+    "manualPulsesCurrent": 0,
+    "mode": "Default",
+    "nativeFactoryModeOwned": false,
+    "originalStackCount": 1,
+    "ownershipPredicates": {
+     "exactActiveModeCounts": true,
+     "exactControllerReferences": true,
+     "exactModeStackReferences": true,
+     "factoryDefaultPointerExact": true,
+     "gameModeTicking": false,
+     "immediateBoundary": true,
+     "modeIsNativeDefault": true,
+     "notClosed": true,
+     "pendingBeforeTickActions": 0,
+     "selectedAbility": null,
+     "selectedAbilityAbsent": true,
+     "switchingModes": false
+    },
+    "pointerController": "Kingmaker.Controllers.Clicks.PointerController",
+    "purpose": "summon-playtest-r7-models",
+    "selectedAbilityHandler": "Kingmaker.Controllers.Clicks.Handlers.ClickWithSelectedAbilityHandler",
+    "stackCount": 1,
+    "tickGateBefore": {
+     "allowedAbilityExecutionTicks": 0,
+     "allowedActionTicks": 0,
+     "allowedCooldownTicks": 0,
+     "blockedAmbientActionTicks": 0,
+     "blockedAmbientCooldownTicks": 0,
+     "blockedDuplicateAbilityExecutionTicks": 0,
+     "brainTicks": 0,
+     "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+     "maximumActionTicksPerUnitPerUnityFrame": 0,
+     "nativeDefaultActions": 0,
+     "nativeDefaultCooldowns": 0,
+     "nativeDefaultExecutions": 0,
+     "nativeDefaultLeaseActive": false,
+     "refusedStaleNativeTicks": 0,
+     "scope": "exact request fixture/turn-clock actor set"
+    },
+    "tickGateCurrent": {
+     "allowedAbilityExecutionTicks": 0,
+     "allowedActionTicks": 0,
+     "allowedCooldownTicks": 0,
+     "blockedAmbientActionTicks": 0,
+     "blockedAmbientCooldownTicks": 0,
+     "blockedDuplicateAbilityExecutionTicks": 0,
+     "brainTicks": 0,
+     "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+     "maximumActionTicksPerUnitPerUnityFrame": 0,
+     "nativeDefaultActions": 0,
+     "nativeDefaultCooldowns": 0,
+     "nativeDefaultExecutions": 0,
+     "nativeDefaultLeaseActive": true,
+     "refusedStaleNativeTicks": 0,
+     "scope": "exact request fixture/turn-clock actor set"
+    },
+    "utc": "2026-11-23T23:37:42.6145330Z"
+   },
+   "passed": true,
+   "predicate": "cleanup2-native-default-enter-summon-playtest-r7-models"
+  },
+  {
+   "observed": {
+    "beforeVertices": 5424,
+    "corpulence": "Huge",
+    "currentVertices": 10770,
+    "motionAfter": {
+     "attackActed": true,
+     "attackClips": [
+      "Bite_Attack",
+      "Attack_01_1",
+      "Attack_01_2"
+     ],
+     "attackResult": "Success",
+     "moveFinished": true,
+     "movePeakVelocity": 4.064,
+     "moveTravel": 3.00062,
+     "primaryHand": "KMG_Summoning_Demon_Glabrezu_Bite"
+    },
+    "motionBefore": {
+     "attackActed": true,
+     "attackClips": [
+      "Bite_Attack",
+      "Attack_01_1",
+      "Attack_01_2"
+     ],
+     "attackResult": "Success",
+     "moveFinished": true,
+     "movePeakVelocity": 4.064,
+     "moveTravel": 2.98272848,
+     "primaryHand": "KMG_Summoning_Demon_Glabrezu_Bite"
+    },
+    "primaryHand": "KMG_Summoning_Demon_Glabrezu_Bite",
+    "rootScale": [
+     2.2,
+     2.2,
+     2.2
+    ],
+    "stills": {
+     "after": {
+      "detail-arm-roots": true,
+      "detail-head": true,
+      "front": true,
+      "party": "png=r7-glabrezu-bright-after-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=58.3;screenLit=true;rendererEnabled=false;faderVisible=true;mesh=_ammunition04;dissolve=0.059/listed=true;intact=false;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+      "rear": true
+     },
+     "before": {
+      "detail-arm-roots": true,
+      "detail-head": true,
+      "front": true,
+      "party": "png=r7-glabrezu-bright-before-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=58.8;screenLit=true;rendererEnabled=false;faderVisible=true;mesh=_ammunition04;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+      "rear": true
+     }
+    },
+    "unit": "KMG_Summoning_Unit_Glabrezu"
+   },
+   "passed": true,
+   "predicate": "r7-glabrezu-bright"
+  },
+  {
+   "observed": {
+    "error": null
+   },
+   "passed": true,
+   "predicate": "r6-r7-glabrezu-completed"
+  },
+  {
+   "observed": {
+    "beforeVertices": 5919,
+    "corpulence": "Huge",
+    "currentVertices": 12402,
+    "motionAfter": {
+     "attackActed": true,
+     "attackClips": [
+      "Bite_Attack",
+      "Attack_01_1",
+      "Attack_01_2"
+     ],
+     "attackResult": "Success",
+     "moveFinished": true,
+     "movePeakVelocity": 4.064,
+     "moveTravel": 2.992064,
+     "primaryHand": "KMG_Summoning_Demon_Nalfeshnee_Bite"
+    },
+    "motionBefore": {
+     "attackActed": true,
+     "attackClips": [
+      "Bite_Attack",
+      "Attack_01_1",
+      "Idle_on_Alert",
+      "Attack_01_2"
+     ],
+     "attackResult": "Success",
+     "moveFinished": true,
+     "movePeakVelocity": 4.064,
+     "moveTravel": 2.992064,
+     "primaryHand": "KMG_Summoning_Demon_Nalfeshnee_Bite"
+    },
+    "primaryHand": "KMG_Summoning_Demon_Nalfeshnee_Bite",
+    "rootScale": [
+     2.1,
+     2.1,
+     2.1
+    ],
+    "stills": {
+     "after": {
+      "detail-head": true,
+      "detail-wing-roots": true,
+      "front": true,
+      "party": "png=r7-nalfeshnee-bright-after-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=57.4;screenLit=true;rendererEnabled=false;faderVisible=true;mesh=_ammunition04;dissolve=0.059/listed=true;intact=false;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+      "rear": true
+     },
+     "before": {
+      "detail-head": true,
+      "detail-wing-roots": true,
+      "front": true,
+      "party": "png=r7-nalfeshnee-bright-before-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=58.4;screenLit=true;rendererEnabled=false;faderVisible=true;mesh=_ammunition04;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+      "rear": true
+     }
+    },
+    "unit": "KMG_Summoning_Unit_Nalfeshnee"
+   },
+   "passed": true,
+   "predicate": "r7-nalfeshnee-bright"
+  },
+  {
+   "observed": {
+    "error": null
+   },
+   "passed": true,
+   "predicate": "r6-r7-nalfeshnee-completed"
+  },
+  {
+   "observed": {
+    "beforeVertices": 4546,
+    "corpulence": "Large",
+    "currentVertices": 13741,
+    "motionAfter": {
+     "attackActed": true,
+     "attackClips": [
+      "Attack_01_3",
+      "Bite_Attack"
+     ],
+     "attackResult": "None",
+     "moveFinished": true,
+     "movePeakVelocity": 5.500236,
+     "moveTravel": 3.0019877,
+     "primaryHand": "KMG_Summoning_Infernal_IceDevil_Spear"
+    },
+    "motionBefore": {
+     "attackActed": true,
+     "attackClips": [
+      "Attack_01_3",
+      "Bite_Attack"
+     ],
+     "attackResult": "None",
+     "moveFinished": true,
+     "movePeakVelocity": 6.096,
+     "moveTravel": 3.00995,
+     "primaryHand": "KMG_Summoning_Infernal_IceDevil_Spear"
+    },
+    "primaryHand": "KMG_Summoning_Infernal_IceDevil_Spear",
+    "rootScale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "stills": {
+     "after": {
+      "detail-head": true,
+      "detail-shoulder-thorax": true,
+      "front": true,
+      "party": "png=r7-ice-devil-bright-after-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=59.9;screenLit=true;rendererEnabled=false;faderVisible=true;mesh=_ammunition04;dissolve=0.059/listed=true;intact=false;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+      "rear": true
+     },
+     "before": {
+      "detail-head": true,
+      "detail-shoulder-thorax": true,
+      "front": true,
+      "party": "png=r7-ice-devil-bright-before-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=59.8;screenLit=true;rendererEnabled=false;faderVisible=true;mesh=_ammunition04;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+      "rear": true
+     }
+    },
+    "unit": "KMG_Summoning_Unit_IceDevil"
+   },
+   "passed": true,
+   "predicate": "r7-ice-devil-bright"
+  },
+  {
+   "observed": {
+    "error": null
+   },
+   "passed": true,
+   "predicate": "r6-r7-ice-devil-completed"
+  },
+  {
+   "observed": {
+    "errors": []
+   },
+   "passed": true,
+   "predicate": "r7-owned-state-restored"
+  },
+  {
+   "observed": {
+    "activeModeCounts": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "closed": true,
+    "controllerReferences": [
+     {
+      "actualInstance": 1019209216,
+      "expectedInstance": 1019209216,
+      "name": "ClickEventsController",
+      "same": true
+     },
+     {
+      "actualInstance": 1413673472,
+      "expectedInstance": 1413673472,
+      "name": "SelectedAbilityHandler",
+      "same": true
+     },
+     {
+      "actualInstance": 1815781120,
+      "expectedInstance": 1815781120,
+      "name": "PlaceRestMarkerHandler",
+      "same": true
+     },
+     {
+      "actualInstance": -1889167872,
+      "expectedInstance": -1889167872,
+      "name": "InteractionHighlightController",
+      "same": true
+     },
+     {
+      "actualInstance": -2004587008,
+      "expectedInstance": -2004587008,
+      "name": "CombatEngagementController",
+      "same": true
+     },
+     {
+      "actualInstance": 383506432,
+      "expectedInstance": 383506432,
+      "name": "HandsEquipmentController",
+      "same": true
+     },
+     {
+      "actualInstance": 2124180864,
+      "expectedInstance": 2124180864,
+      "name": "CameraController",
+      "same": true
+     }
+    ],
+    "current": false,
+    "existingNativeDefaultBorrowed": true,
+    "expectedActiveModeCounts": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "frame": 5955,
+    "gameSeconds": 43269.312,
+    "manualClockSuspended": false,
+    "manualPulsesBefore": 0,
+    "manualPulsesCurrent": 0,
+    "mode": "Default",
+    "nativeFactoryModeOwned": false,
+    "originalStackCount": 1,
+    "ownershipPredicates": {
+     "exactActiveModeCounts": true,
+     "exactControllerReferences": true,
+     "exactModeStackReferences": true,
+     "factoryDefaultPointerExact": true,
+     "gameModeTicking": false,
+     "immediateBoundary": true,
+     "modeIsNativeDefault": true,
+     "notClosed": false,
+     "pendingBeforeTickActions": 0,
+     "selectedAbility": null,
+     "selectedAbilityAbsent": true,
+     "switchingModes": false
+    },
+    "pointerController": "Kingmaker.Controllers.Clicks.PointerController",
+    "purpose": "summon-playtest-r7-models",
+    "selectedAbilityHandler": "Kingmaker.Controllers.Clicks.Handlers.ClickWithSelectedAbilityHandler",
+    "stackCount": 1,
+    "tickGateBefore": {
+     "allowedAbilityExecutionTicks": 0,
+     "allowedActionTicks": 0,
+     "allowedCooldownTicks": 0,
+     "blockedAmbientActionTicks": 0,
+     "blockedAmbientCooldownTicks": 0,
+     "blockedDuplicateAbilityExecutionTicks": 0,
+     "brainTicks": 0,
+     "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+     "maximumActionTicksPerUnitPerUnityFrame": 0,
+     "nativeDefaultActions": 0,
+     "nativeDefaultCooldowns": 0,
+     "nativeDefaultExecutions": 0,
+     "nativeDefaultLeaseActive": false,
+     "refusedStaleNativeTicks": 0,
+     "scope": "exact request fixture/turn-clock actor set"
+    },
+    "tickGateCurrent": {
+     "allowedAbilityExecutionTicks": 0,
+     "allowedActionTicks": 0,
+     "allowedCooldownTicks": 0,
+     "blockedAmbientActionTicks": 0,
+     "blockedAmbientCooldownTicks": 0,
+     "blockedDuplicateAbilityExecutionTicks": 0,
+     "brainTicks": 0,
+     "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+     "maximumActionTicksPerUnitPerUnityFrame": 0,
+     "nativeDefaultActions": 8303,
+     "nativeDefaultCooldowns": 8301,
+     "nativeDefaultExecutions": 6,
+     "nativeDefaultLeaseActive": false,
+     "refusedStaleNativeTicks": 0,
+     "scope": "exact request fixture/turn-clock actor set"
+    },
+    "utc": "2026-11-23T23:38:52.0611608Z"
+   },
+   "passed": true,
+   "predicate": "cleanup2-native-default-restored-summon-playtest-r7-models"
+  },
+  {
+   "observed": {
+    "cleanup": {
+     "areaChanges": [],
+     "casterAbsent": true,
+     "extraUnits": "",
+     "missingUnits": "",
+     "partyAfter": 1,
+     "partyBefore": 1,
+     "partyExact": true,
+     "unitsAfter": 1,
+     "unitsBefore": 1,
+     "unitsExact": true
+    },
+    "clockRestored": true,
+    "referencesRestored": true
+   },
+   "passed": true,
+   "predicate": "fixture-restored"
+  }
+ ],
+ "harness": {
+  "conditions": {},
+  "exitRequested": false,
+  "failure": null,
+  "finishedUtc": "2026-11-23T23:37:35.9863533Z",
+  "isolation": "saves=<lab>/Saved Games; areas=<lab>/Areas",
+  "isolationRestored": true,
+  "loggerExceptionHooks": 4,
+  "requestPath": "<lab>/harness-request.json",
+  "runId": "20261123T233302Z-owner-0.33.0-s7-baseline-03-r7b",
+  "startedUtc": "2026-11-23T23:36:41.8483219Z",
+  "status": "passed",
+  "steps": []
+ },
+ "harnessEvents": [
+  {
+   "detail": {
+    "ummWindowOpen": true
+   },
+   "event": "mainMenu",
+   "t": 57.0297279,
+   "utc": "2026-11-23T23:37:35.8211690Z"
+  }
+ ],
+ "launch": "03-r7b",
+ "launchSummary": {
+  "conditions": {},
+  "gameArguments": [
+   "locale=enGB"
+  ],
+  "harness": "passed",
+  "identity": {
+   "activeMods": [
+    "KingmakerGunslinger 0.0.195",
+    "KmgLoaderCompatHarness 0.1.0"
+   ],
+   "harmony12Sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+   "harmony2": [
+    "2.3.6.0 df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80"
+   ],
+   "productSha256": "3ef052ea441af368381b1cea7d2ee7acaa813000986de8644430ff63ee1d6a6b",
+   "umm": "0.33.0.0",
+   "ummReported": "0.33.0.0",
+   "ummSha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
+  },
+  "label": "03-r7b",
+  "pid": 33168,
+  "problems": [],
+  "product": {
+   "failed": [],
+   "scenario": "disposable-expanded-summoning-sprint32-native-review",
+   "status": "PASS"
+  },
+  "seconds": 141,
+  "verdict": "PASS"
+ },
+ "session": "20261123T233302Z-owner-0.33.0-s7-baseline",
+ "sources": {
+  "harness-result.json": "f1d37ddfd31025256fe0423ffc52390c4bd1905edb0cff7f0cd97b02032cb211",
+  "sprint32-review.json": "5c0e7a92bef35f037dc866508984a27aaefb0446c7a86014b7560a5fbfb0e3d6"
+ },
+ "summary": [
+  "Kingmaker Gunslinger runtime test",
+  "Run ID: lc-20261123T233302Z-owner-0.33.0-s7-baseline-03-r7b",
+  "Scenario: disposable-expanded-summoning-sprint32-native-review",
+  "Status: PASS",
+  "Loaded mod: 0.0.195",
+  "Runtime: KingmakerGunslinger, Version=0.0.195.0, Culture=neutral, PublicKeyToken=null",
+  "Started UTC: 2026-11-23T23:36:41.7333855Z",
+  "Ended UTC: 2026-11-23T23:38:55.6333383Z",
+  "Duration ms: 133899"
+ ]
+}

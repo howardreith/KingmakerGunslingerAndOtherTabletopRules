@@ -1,0 +1,1251 @@
+{
+ "checks": [
+  {
+   "observed": {
+    "actorBlueprintExact": true,
+    "actorNameExact": true,
+    "actorPresent": true,
+    "anchorCommandsEmpty": true,
+    "casterBrainDisabled": true,
+    "casterCommandsEmpty": true,
+    "originalDistinct": true,
+    "ownedPartyExact": true,
+    "presetExact": true,
+    "saveGuardOwned": true,
+    "scenesOwned": true
+   },
+   "passed": true,
+   "predicate": "summon-playtest-r3-ui-group-quiet-anchor"
+  },
+  {
+   "observed": {
+    "alwaysEnemy": false,
+    "attackFaction": "Player",
+    "casterIsEnemy": true,
+    "intakeNonPlayerRelations": [],
+    "privateFaction": "KMG_Runtime_Sprint32Turn_HostileFaction",
+    "target": "90cf3ff2-bf9c-4212-b607-7b20d6a29764",
+    "targetIsEnemy": true
+   },
+   "passed": true,
+   "predicate": "sprint32-turn-hostile-faction"
+  },
+  {
+   "observed": {
+    "controller": "Mouse",
+    "exactReview": true,
+    "frame": 3940,
+    "gameSeconds": 43200.657,
+    "immediateBoundary": true,
+    "inputModeAdmitted": true,
+    "mode": "Default",
+    "narrativeAbsent": true,
+    "nativeModeAdmitted": true,
+    "noSelectedAbility": true,
+    "ownedFixture": true,
+    "saveFree": true,
+    "utc": "2026-11-23T23:34:21.4248198Z"
+   },
+   "passed": true,
+   "predicate": "cleanup2-native-default-admission-summon-playtest-r3-ui"
+  },
+  {
+   "observed": {
+    "activeModeCounts": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "closed": false,
+    "controllerReferences": [
+     {
+      "actualInstance": 2077024000,
+      "expectedInstance": 2077024000,
+      "name": "ClickEventsController",
+      "same": true
+     },
+     {
+      "actualInstance": -1109978368,
+      "expectedInstance": -1109978368,
+      "name": "SelectedAbilityHandler",
+      "same": true
+     },
+     {
+      "actualInstance": 14955264,
+      "expectedInstance": 14955264,
+      "name": "PlaceRestMarkerHandler",
+      "same": true
+     },
+     {
+      "actualInstance": -457546496,
+      "expectedInstance": -457546496,
+      "name": "InteractionHighlightController",
+      "same": true
+     },
+     {
+      "actualInstance": -1528990976,
+      "expectedInstance": -1528990976,
+      "name": "CombatEngagementController",
+      "same": true
+     },
+     {
+      "actualInstance": 844483328,
+      "expectedInstance": 844483328,
+      "name": "HandsEquipmentController",
+      "same": true
+     },
+     {
+      "actualInstance": 2108171776,
+      "expectedInstance": 2108171776,
+      "name": "CameraController",
+      "same": true
+     }
+    ],
+    "current": true,
+    "existingNativeDefaultBorrowed": true,
+    "expectedActiveModeCounts": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "frame": 3940,
+    "gameSeconds": 43200.657,
+    "manualClockSuspended": true,
+    "manualPulsesBefore": 0,
+    "manualPulsesCurrent": 0,
+    "mode": "Default",
+    "nativeFactoryModeOwned": false,
+    "originalStackCount": 1,
+    "ownershipPredicates": {
+     "exactActiveModeCounts": true,
+     "exactControllerReferences": true,
+     "exactModeStackReferences": true,
+     "factoryDefaultPointerExact": true,
+     "gameModeTicking": false,
+     "immediateBoundary": true,
+     "modeIsNativeDefault": true,
+     "notClosed": true,
+     "pendingBeforeTickActions": 0,
+     "selectedAbility": null,
+     "selectedAbilityAbsent": true,
+     "switchingModes": false
+    },
+    "pointerController": "Kingmaker.Controllers.Clicks.PointerController",
+    "purpose": "summon-playtest-r3-ui",
+    "selectedAbilityHandler": "Kingmaker.Controllers.Clicks.Handlers.ClickWithSelectedAbilityHandler",
+    "stackCount": 1,
+    "tickGateBefore": {
+     "allowedAbilityExecutionTicks": 0,
+     "allowedActionTicks": 0,
+     "allowedCooldownTicks": 0,
+     "blockedAmbientActionTicks": 0,
+     "blockedAmbientCooldownTicks": 0,
+     "blockedDuplicateAbilityExecutionTicks": 0,
+     "brainTicks": 0,
+     "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+     "maximumActionTicksPerUnitPerUnityFrame": 0,
+     "nativeDefaultActions": 0,
+     "nativeDefaultCooldowns": 0,
+     "nativeDefaultExecutions": 0,
+     "nativeDefaultLeaseActive": false,
+     "refusedStaleNativeTicks": 0,
+     "scope": "exact request fixture/turn-clock actor set"
+    },
+    "tickGateCurrent": {
+     "allowedAbilityExecutionTicks": 0,
+     "allowedActionTicks": 0,
+     "allowedCooldownTicks": 0,
+     "blockedAmbientActionTicks": 0,
+     "blockedAmbientCooldownTicks": 0,
+     "blockedDuplicateAbilityExecutionTicks": 0,
+     "brainTicks": 0,
+     "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+     "maximumActionTicksPerUnitPerUnityFrame": 0,
+     "nativeDefaultActions": 0,
+     "nativeDefaultCooldowns": 0,
+     "nativeDefaultExecutions": 0,
+     "nativeDefaultLeaseActive": true,
+     "refusedStaleNativeTicks": 0,
+     "scope": "exact request fixture/turn-clock actor set"
+    },
+    "utc": "2026-11-23T23:34:21.4363298Z"
+   },
+   "passed": true,
+   "predicate": "cleanup2-native-default-enter-summon-playtest-r3-ui"
+  },
+  {
+   "observed": {
+    "units": 134,
+    "wrong": 0
+   },
+   "passed": true,
+   "predicate": "r3-ui-portrait-roster"
+  },
+  {
+   "observed": {
+    "donors": 72,
+    "touched": 0
+   },
+   "passed": true,
+   "predicate": "r3-ui-donor-portraits-untouched"
+  },
+  {
+   "observed": {
+    "units": [
+     "KMG_SummonPortrait_dire-rat",
+     "KMG_SummonPortrait_lantern-archon",
+     "KMG_SummonPortrait_ghaele-azata",
+     "KMG_SummonPortrait_nalfeshnee",
+     "KMG_SummonPortrait_brachiosaurus",
+     "KMG_SummonPortrait_cheetah",
+     "KMG_SummonPortrait_trumpet-archon"
+    ]
+   },
+   "passed": true,
+   "predicate": "r3-ui-initiative-portraits-live"
+  },
+  {
+   "observed": {
+    "lightRay": {
+     "blueprint": "KMG_Summoning_Special_LanternArchon_LightRay",
+     "description": "Fires one ranged-touch ray to 30 feet for 1d6 direct light damage.",
+     "duration": "",
+     "durationObject": true,
+     "guid": "d4c2ce6c90094fdfb0fd908312372d72",
+     "icon": "SearingLight",
+     "iconTexture": "SearingLight",
+     "name": "Light Ray",
+     "savingThrow": "",
+     "savingThrowObject": true
+    },
+    "twinLightRay": {
+     "blueprint": "KMG_Summoning_Special_LanternArchon_LightRayFull",
+     "description": "Fires two ranged-touch rays to 30 feet as a full-round action. Each ray deals 1d6 direct light damage.",
+     "duration": "",
+     "durationObject": true,
+     "guid": "fe85344c9eaa4d6596293ff1e3b6b552",
+     "icon": "ScorchingRay",
+     "iconTexture": "ScorchingRay",
+     "name": "Twin Light Rays",
+     "savingThrow": "",
+     "savingThrowObject": true
+    }
+   },
+   "passed": true,
+   "predicate": "r3-ui-lantern-rays"
+  },
+  {
+   "observed": {
+    "blankActions": [],
+    "blueprintBrain": "KMG_Summoning_Special_GhaeleAzata_Brain",
+    "blueprintGrant": [
+     "c3224deccbd349fe833283e7cd3ed712"
+    ],
+    "clone": {
+     "blueprint": "KMG_Summoning_Special_GhaeleAzata_LightRay",
+     "description": "Fires 2 ranged-touch rays of light at one enemy within long range; each ray deals 2d12 damage. Spell resistance does not apply.",
+     "duration": "",
+     "durationObject": true,
+     "guid": "c3224deccbd349fe833283e7cd3ed712",
+     "icon": "SearingLight",
+     "iconTexture": "SearingLight",
+     "name": "Light Ray",
+     "savingThrow": "",
+     "savingThrowObject": true
+    },
+    "cloneFacts": 1,
+    "donorUnchanged": true,
+    "grant": "path=AddAbilityToCharacterComponent.Abilities;swaps=1;nativeBrain=AzataGhaelBrain;ownedBrainActions=5",
+    "liveBrainCastsClone": 1,
+    "liveBrainCastsNative": 0,
+    "nativeFacts": 0,
+    "ownedAiAbility": "c3224deccbd349fe833283e7cd3ed712"
+   },
+   "passed": true,
+   "predicate": "r3-ui-ghaele-ray-owned-grant"
+  },
+  {
+   "observed": {
+    "overrun": {
+     "blueprint": "KMG_Summoning_Special_Brachiosaurus_Overrun",
+     "description": "Move through an opponent's space, forcing a combat maneuver check. This is the ordinary overrun maneuver and is not the creature's trample.",
+     "duration": "",
+     "durationObject": true,
+     "guid": "b41f7d2a6c8e40539af1c2d5e7b30486",
+     "icon": "KMG_SummonIcon_brachiosaurus",
+     "iconTexture": "KMG_SummonIcon_Texture_brachiosaurus",
+     "name": "Overrun",
+     "savingThrow": "",
+     "savingThrowObject": true
+    },
+    "overrunTexture": "KMG_SummonIcon_Texture_brachiosaurus",
+    "trample": {
+     "blueprint": "KMG_Summoning_Special_Brachiosaurus_Trample",
+     "description": "As a full-round action, move up to twice speed through smaller enemies. Each target takes 2d6+19 bludgeoning damage at most once per round. On first contact, a target that can make a legal melee attack of opportunity automatically makes one at -4 before damage and receives no save. Otherwise it attempts a Reflex DC 32 save for half. An attack that stops the trampler prevents that contact's damage and ends the trample.",
+     "duration": "",
+     "durationObject": true,
+     "guid": "309ec3dedcf04c15b3011933f5eafef4",
+     "icon": "Longstrider",
+     "iconTexture": "Longstrider",
+     "name": "Trample",
+     "savingThrow": "Reflex DC 32 half; none for a target that makes its attack of opportunity instead",
+     "savingThrowObject": true
+    },
+    "trampleTexture": "Longstrider"
+   },
+   "passed": true,
+   "predicate": "r3-ui-overrun-trample-presentation"
+  },
+  {
+   "observed": {
+    "nimbus": {
+     "blueprint": "KMG_Summoning_Demon_Nalfeshnee_UnholyNimbus",
+     "description": "Three times per day as a free action, create a nimbus of unholy light. One round later it bursts in a 60-foot radius; any non-demon caught in the area must succeed on a Will save or be dazed for 1d10 rounds. At most one nimbus may be pending at a time: activating again while one is winding up is refused and costs no use. The burst catches allies as readily as enemies.",
+     "duration": "Bursts after 1 round; dazed 1d10 rounds",
+     "durationObject": true,
+     "guid": "8c70c7ca4f7b795a11c8aa80ccfee925",
+     "icon": "ProtectionFromGood",
+     "iconTexture": "ProtectionFromGood",
+     "name": "Unholy Nimbus",
+     "savingThrow": "Will negates (non-demons)",
+     "savingThrowObject": true
+    },
+    "sprint": {
+     "blueprint": "KMG_Summoning_Special_Cheetah_Sprint",
+     "description": "Once per summoning, as a swift action, the cheetah sprints: +30 feet of speed for one round.",
+     "duration": "1 round",
+     "durationObject": true,
+     "guid": "a2ae66e5a8ca4bd2bbb8fe7001bd66cd",
+     "icon": "KMG_SummonIcon_cheetah",
+     "iconTexture": "KMG_SummonIcon_Texture_cheetah",
+     "name": "Sprint",
+     "savingThrow": "None",
+     "savingThrowObject": true
+    },
+    "trumpetBlast": {
+     "blueprint": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+     "description": "At will as a standard action, sound this archon's own trumpet. All creatures except archons within 100 feet must make a Fortitude save or be paralyzed for 1d4 rounds. The live supernatural save DC is 10 + half racial Hit Dice + Charisma modifier (DC 20 at the adult profile). Spell resistance does not apply. Allies are eligible. This uses no cleric spell slot. The held trumpet and +4 sword are the same summon-owned instrument; it cannot become loot.",
+     "duration": "1d4 rounds",
+     "durationObject": true,
+     "guid": "3bc15285b09d4b4bb9c4cb0d5c2009fb",
+     "icon": "KMG_SummonIcon_trumpet-blast",
+     "iconTexture": "KMG_SummonIcon_Texture_trumpet-blast",
+     "name": "Trumpet Blast",
+     "savingThrow": "Fortitude negates",
+     "savingThrowObject": true
+    }
+   },
+   "passed": true,
+   "predicate": "r3-ui-metadata-rows"
+  },
+  {
+   "observed": {
+    "card": {
+     "blueprint": "d4c2ce6c90094fdfb0fd908312372d72",
+     "contentCorrect": true,
+     "contentTexts": [
+      "TARGET",
+      "One creature within 30 ft. feet.",
+      null,
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      null,
+      "CASTING TIME",
+      "Standard action",
+      null,
+      "Fires one ranged-touch ray to 30 feet for 1d6 direct light damage."
+     ],
+     "creature": "lantern-archon",
+     "description": true,
+     "duration": {
+      "clipped": false,
+      "correct": true,
+      "expected": "",
+      "present": false,
+      "shown": null,
+      "title": "Duration",
+      "titleBricks": 0,
+      "visible": true
+     },
+     "headerTexts": [
+      "Light Ray"
+     ],
+     "icon": "SearingLight",
+     "iconVisible": true,
+     "images": [
+      "SearingLight",
+      "CentredOnAllCreature"
+     ],
+     "label": "lantern-light-ray",
+     "name": "Light Ray",
+     "noNullOrInheritedText": true,
+     "rowsVisible": true,
+     "savingThrow": {
+      "clipped": false,
+      "correct": true,
+      "expected": "",
+      "present": false,
+      "shown": null,
+      "title": "Saving Throw",
+      "titleBricks": 0,
+      "visible": true
+     },
+     "surface": "Native DescriptionController.HandleOpenDescription(TooltipData{Type=Ability, Ability=live fact}) -> DescriptionBuilder.Ability -> DescriptionTemplatesAbility; rows read from the ContentBox TitleH2->SimpleText brick order.",
+     "title": true
+    },
+    "construction": {
+     "abilityData": false,
+     "blueprintAbility": null,
+     "contentBricks": 10,
+     "descriptionWindowType": "Default",
+     "fact": "d4c2ce6c90094fdfb0fd908312372d72",
+     "factName": "Light Ray",
+     "footerBricks": 0,
+     "headerBricks": 1,
+     "hudPanel": false,
+     "owner": "7afee5da-a7b4-48bd-a4bc-c001fecaa205",
+     "ownerBlueprint": "02f8e9c6c91549deaded9ef667399449",
+     "type": "Ability",
+     "unrelatedModal": false,
+     "windowDataIsRequest": true
+    },
+    "rowsVisibleInACapture": true,
+    "scrolled": null
+   },
+   "passed": true,
+   "predicate": "r3-ui-render-lantern-light-ray"
+  },
+  {
+   "observed": {
+    "card": {
+     "blueprint": "fe85344c9eaa4d6596293ff1e3b6b552",
+     "contentCorrect": true,
+     "contentTexts": [
+      "TARGET",
+      "One creature within 30 ft. feet.",
+      null,
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      null,
+      "CASTING TIME",
+      "Full round",
+      null,
+      "Fires two ranged-touch rays to 30 feet as a full-round action. Each ray deals 1d6 direct light damage."
+     ],
+     "creature": "lantern-archon",
+     "description": true,
+     "duration": {
+      "clipped": false,
+      "correct": true,
+      "expected": "",
+      "present": false,
+      "shown": null,
+      "title": "Duration",
+      "titleBricks": 0,
+      "visible": true
+     },
+     "headerTexts": [
+      "Twin Light Rays"
+     ],
+     "icon": "ScorchingRay",
+     "iconVisible": true,
+     "images": [
+      "ScorchingRay",
+      "CentredOnAllCreature"
+     ],
+     "label": "lantern-twin-rays",
+     "name": "Twin Light Rays",
+     "noNullOrInheritedText": true,
+     "rowsVisible": true,
+     "savingThrow": {
+      "clipped": false,
+      "correct": true,
+      "expected": "",
+      "present": false,
+      "shown": null,
+      "title": "Saving Throw",
+      "titleBricks": 0,
+      "visible": true
+     },
+     "surface": "Native DescriptionController.HandleOpenDescription(TooltipData{Type=Ability, Ability=live fact}) -> DescriptionBuilder.Ability -> DescriptionTemplatesAbility; rows read from the ContentBox TitleH2->SimpleText brick order.",
+     "title": true
+    },
+    "construction": {
+     "abilityData": false,
+     "blueprintAbility": null,
+     "contentBricks": 10,
+     "descriptionWindowType": "Default",
+     "fact": "fe85344c9eaa4d6596293ff1e3b6b552",
+     "factName": "Twin Light Rays",
+     "footerBricks": 0,
+     "headerBricks": 1,
+     "hudPanel": false,
+     "owner": "7afee5da-a7b4-48bd-a4bc-c001fecaa205",
+     "ownerBlueprint": "02f8e9c6c91549deaded9ef667399449",
+     "type": "Ability",
+     "unrelatedModal": false,
+     "windowDataIsRequest": true
+    },
+    "rowsVisibleInACapture": true,
+    "scrolled": null
+   },
+   "passed": true,
+   "predicate": "r3-ui-render-lantern-twin-rays"
+  },
+  {
+   "observed": {
+    "card": {
+     "blueprint": "c3224deccbd349fe833283e7cd3ed712",
+     "contentCorrect": true,
+     "contentTexts": [
+      "TARGET",
+      "One enemy creature within long range.",
+      null,
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      null,
+      "CASTING TIME",
+      "Standard action",
+      null,
+      "Fires 2 ranged-touch rays of light at one enemy within long range; each ray deals 2d12 damage. Spell resistance does not apply."
+     ],
+     "creature": "ghaele-azata",
+     "description": true,
+     "duration": {
+      "clipped": false,
+      "correct": true,
+      "expected": "",
+      "present": false,
+      "shown": null,
+      "title": "Duration",
+      "titleBricks": 0,
+      "visible": true
+     },
+     "headerTexts": [
+      "Light Ray"
+     ],
+     "icon": "SearingLight",
+     "iconVisible": true,
+     "images": [
+      "SearingLight",
+      "CentredOnCreature"
+     ],
+     "label": "ghaele-light-ray",
+     "name": "Light Ray",
+     "noNullOrInheritedText": true,
+     "rowsVisible": true,
+     "savingThrow": {
+      "clipped": false,
+      "correct": true,
+      "expected": "",
+      "present": false,
+      "shown": null,
+      "title": "Saving Throw",
+      "titleBricks": 0,
+      "visible": true
+     },
+     "surface": "Native DescriptionController.HandleOpenDescription(TooltipData{Type=Ability, Ability=live fact}) -> DescriptionBuilder.Ability -> DescriptionTemplatesAbility; rows read from the ContentBox TitleH2->SimpleText brick order.",
+     "title": true
+    },
+    "construction": {
+     "abilityData": false,
+     "blueprintAbility": null,
+     "contentBricks": 10,
+     "descriptionWindowType": "Default",
+     "fact": "c3224deccbd349fe833283e7cd3ed712",
+     "factName": "Light Ray",
+     "footerBricks": 0,
+     "headerBricks": 1,
+     "hudPanel": false,
+     "owner": "977676ef-3b07-4a14-87b3-0f7b153c43d2",
+     "ownerBlueprint": "e7eccabdc8cd474d86475586792c03c7",
+     "type": "Ability",
+     "unrelatedModal": false,
+     "windowDataIsRequest": true
+    },
+    "rowsVisibleInACapture": true,
+    "scrolled": null
+   },
+   "passed": true,
+   "predicate": "r3-ui-render-ghaele-light-ray"
+  },
+  {
+   "observed": {
+    "card": {
+     "blueprint": "8c70c7ca4f7b795a11c8aa80ccfee925",
+     "contentCorrect": true,
+     "contentTexts": [
+      "TARGET",
+      "Personal.",
+      null,
+      "DURATION",
+      "Bursts after 1 round; dazed 1d10 rounds",
+      null,
+      "SAVING THROW",
+      "Will negates (non-demons)",
+      null,
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      null,
+      "CASTING TIME",
+      "Free action",
+      null,
+      "Three times per day as a free action, create a nimbus of unholy light. One round later it bursts in a 60-foot radius; any non-demon caught in the area must succeed on a Will save or be dazed for 1d10 rounds. At most one nimbus may be pending at a time: activating again while one is winding up is refused and costs no use. The burst catches allies as readily as enemies."
+     ],
+     "creature": "nalfeshnee",
+     "description": true,
+     "duration": {
+      "clipped": false,
+      "correct": true,
+      "expected": "Bursts after 1 round; dazed 1d10 rounds",
+      "present": true,
+      "shown": "Bursts after 1 round; dazed 1d10 rounds",
+      "title": "Duration",
+      "titleBricks": 1,
+      "visible": true
+     },
+     "headerTexts": [
+      "Unholy Nimbus"
+     ],
+     "icon": "ProtectionFromGood",
+     "iconVisible": true,
+     "images": [
+      "ProtectionFromGood",
+      "CentredOnPersonal"
+     ],
+     "label": "nalfeshnee-nimbus",
+     "name": "Unholy Nimbus",
+     "noNullOrInheritedText": true,
+     "rowsVisible": true,
+     "savingThrow": {
+      "clipped": false,
+      "correct": true,
+      "expected": "Will negates (non-demons)",
+      "present": true,
+      "shown": "Will negates (non-demons)",
+      "title": "Saving Throw",
+      "titleBricks": 1,
+      "visible": true
+     },
+     "surface": "Native DescriptionController.HandleOpenDescription(TooltipData{Type=Ability, Ability=live fact}) -> DescriptionBuilder.Ability -> DescriptionTemplatesAbility; rows read from the ContentBox TitleH2->SimpleText brick order.",
+     "title": true
+    },
+    "construction": {
+     "abilityData": false,
+     "blueprintAbility": null,
+     "contentBricks": 16,
+     "descriptionWindowType": "Default",
+     "fact": "8c70c7ca4f7b795a11c8aa80ccfee925",
+     "factName": "Unholy Nimbus",
+     "footerBricks": 0,
+     "headerBricks": 1,
+     "hudPanel": false,
+     "owner": "a13259c1-b422-4827-b91b-791c8bae3842",
+     "ownerBlueprint": "9930f78084f0fe78d1de849aed58b753",
+     "type": "Ability",
+     "unrelatedModal": false,
+     "windowDataIsRequest": true
+    },
+    "rowsVisibleInACapture": true,
+    "scrolled": null
+   },
+   "passed": true,
+   "predicate": "r3-ui-render-nalfeshnee-nimbus"
+  },
+  {
+   "observed": {
+    "card": {
+     "blueprint": "b41f7d2a6c8e40539af1c2d5e7b30486",
+     "contentCorrect": true,
+     "contentTexts": [
+      "TARGET",
+      "Target point within 0 ft. feet.",
+      null,
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      null,
+      "CASTING TIME",
+      "Full round",
+      null,
+      "Move through an opponent's space, forcing a combat maneuver check. This is the ordinary overrun maneuver and is not the creature's trample."
+     ],
+     "creature": "brachiosaurus",
+     "description": true,
+     "duration": {
+      "clipped": false,
+      "correct": true,
+      "expected": "",
+      "present": false,
+      "shown": null,
+      "title": "Duration",
+      "titleBricks": 0,
+      "visible": true
+     },
+     "headerTexts": [
+      "Overrun"
+     ],
+     "icon": "KMG_SummonIcon_brachiosaurus",
+     "iconVisible": true,
+     "images": [
+      "KMG_SummonIcon_brachiosaurus",
+      "CentredOnPoint_Enemy"
+     ],
+     "label": "brachiosaurus-overrun",
+     "name": "Overrun",
+     "noNullOrInheritedText": true,
+     "rowsVisible": true,
+     "savingThrow": {
+      "clipped": false,
+      "correct": true,
+      "expected": "",
+      "present": false,
+      "shown": null,
+      "title": "Saving Throw",
+      "titleBricks": 0,
+      "visible": true
+     },
+     "surface": "Native DescriptionController.HandleOpenDescription(TooltipData{Type=Ability, Ability=live fact}) -> DescriptionBuilder.Ability -> DescriptionTemplatesAbility; rows read from the ContentBox TitleH2->SimpleText brick order.",
+     "title": true
+    },
+    "construction": {
+     "abilityData": false,
+     "blueprintAbility": null,
+     "contentBricks": 10,
+     "descriptionWindowType": "Default",
+     "fact": "b41f7d2a6c8e40539af1c2d5e7b30486",
+     "factName": "Overrun",
+     "footerBricks": 0,
+     "headerBricks": 1,
+     "hudPanel": false,
+     "owner": "1825e2db-5d54-4b29-821b-f56a7cea50df",
+     "ownerBlueprint": "9093aef39ecc416092ef68655a7e56fb",
+     "type": "Ability",
+     "unrelatedModal": false,
+     "windowDataIsRequest": true
+    },
+    "rowsVisibleInACapture": true,
+    "scrolled": null
+   },
+   "passed": true,
+   "predicate": "r3-ui-render-brachiosaurus-overrun"
+  },
+  {
+   "observed": {
+    "card": {
+     "blueprint": "309ec3dedcf04c15b3011933f5eafef4",
+     "contentCorrect": true,
+     "contentTexts": [
+      "TARGET",
+      "Target point within 0 ft. feet.",
+      null,
+      "SAVING THROW",
+      "Reflex DC 32 half; none for a target that makes its attack of opportunity instead",
+      null,
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      null,
+      "CASTING TIME",
+      "Full round",
+      null,
+      "As a full-round action, move up to twice speed through smaller enemies. Each target takes 2d6+19 bludgeoning damage at most once per round. On first contact, a target that can make a legal melee attack of opportunity automatically makes one at -4 before damage and receives no save. Otherwise it attempts a Reflex DC 32 save for half. An attack that stops the trampler prevents that contact's damage and ends the trample."
+     ],
+     "creature": "brachiosaurus",
+     "description": true,
+     "duration": {
+      "clipped": false,
+      "correct": true,
+      "expected": "",
+      "present": false,
+      "shown": null,
+      "title": "Duration",
+      "titleBricks": 0,
+      "visible": true
+     },
+     "headerTexts": [
+      "Trample"
+     ],
+     "icon": "Longstrider",
+     "iconVisible": true,
+     "images": [
+      "Longstrider",
+      "CentredOnPoint_Enemy"
+     ],
+     "label": "brachiosaurus-trample",
+     "name": "Trample",
+     "noNullOrInheritedText": true,
+     "rowsVisible": true,
+     "savingThrow": {
+      "clipped": false,
+      "correct": true,
+      "expected": "Reflex DC 32 half; none for a target that makes its attack of opportunity instead",
+      "present": true,
+      "shown": "Reflex DC 32 half; none for a target that makes its attack of opportunity instead",
+      "title": "Saving Throw",
+      "titleBricks": 1,
+      "visible": true
+     },
+     "surface": "Native DescriptionController.HandleOpenDescription(TooltipData{Type=Ability, Ability=live fact}) -> DescriptionBuilder.Ability -> DescriptionTemplatesAbility; rows read from the ContentBox TitleH2->SimpleText brick order.",
+     "title": true
+    },
+    "construction": {
+     "abilityData": false,
+     "blueprintAbility": null,
+     "contentBricks": 13,
+     "descriptionWindowType": "Default",
+     "fact": "309ec3dedcf04c15b3011933f5eafef4",
+     "factName": "Trample",
+     "footerBricks": 0,
+     "headerBricks": 1,
+     "hudPanel": false,
+     "owner": "1825e2db-5d54-4b29-821b-f56a7cea50df",
+     "ownerBlueprint": "9093aef39ecc416092ef68655a7e56fb",
+     "type": "Ability",
+     "unrelatedModal": false,
+     "windowDataIsRequest": true
+    },
+    "rowsVisibleInACapture": true,
+    "scrolled": null
+   },
+   "passed": true,
+   "predicate": "r3-ui-render-brachiosaurus-trample"
+  },
+  {
+   "observed": {
+    "card": {
+     "blueprint": "a2ae66e5a8ca4bd2bbb8fe7001bd66cd",
+     "contentCorrect": true,
+     "contentTexts": [
+      "TARGET",
+      "Personal.",
+      null,
+      "DURATION",
+      "1 round",
+      null,
+      "SAVING THROW",
+      "None",
+      null,
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      null,
+      "CASTING TIME",
+      "Swift action",
+      null,
+      "Once per summoning, as a swift action, the cheetah sprints: +30 feet of speed for one round."
+     ],
+     "creature": "cheetah",
+     "description": true,
+     "duration": {
+      "clipped": false,
+      "correct": true,
+      "expected": "1 round",
+      "present": true,
+      "shown": "1 round",
+      "title": "Duration",
+      "titleBricks": 1,
+      "visible": true
+     },
+     "headerTexts": [
+      "Sprint"
+     ],
+     "icon": "KMG_SummonIcon_cheetah",
+     "iconVisible": true,
+     "images": [
+      "KMG_SummonIcon_cheetah",
+      "CentredOnPersonal"
+     ],
+     "label": "cheetah-sprint",
+     "name": "Sprint",
+     "noNullOrInheritedText": true,
+     "rowsVisible": true,
+     "savingThrow": {
+      "clipped": false,
+      "correct": true,
+      "expected": "None",
+      "present": true,
+      "shown": "None",
+      "title": "Saving Throw",
+      "titleBricks": 1,
+      "visible": true
+     },
+     "surface": "Native DescriptionController.HandleOpenDescription(TooltipData{Type=Ability, Ability=live fact}) -> DescriptionBuilder.Ability -> DescriptionTemplatesAbility; rows read from the ContentBox TitleH2->SimpleText brick order.",
+     "title": true
+    },
+    "construction": {
+     "abilityData": false,
+     "blueprintAbility": null,
+     "contentBricks": 16,
+     "descriptionWindowType": "Default",
+     "fact": "a2ae66e5a8ca4bd2bbb8fe7001bd66cd",
+     "factName": "Sprint",
+     "footerBricks": 0,
+     "headerBricks": 1,
+     "hudPanel": false,
+     "owner": "1ccd27ae-cfaa-425f-a930-e2a19b074faa",
+     "ownerBlueprint": "6eb29e76792c41c5ab9e3812fe4b66e0",
+     "type": "Ability",
+     "unrelatedModal": false,
+     "windowDataIsRequest": true
+    },
+    "rowsVisibleInACapture": true,
+    "scrolled": null
+   },
+   "passed": true,
+   "predicate": "r3-ui-render-cheetah-sprint"
+  },
+  {
+   "observed": {
+    "card": {
+     "blueprint": "3bc15285b09d4b4bb9c4cb0d5c2009fb",
+     "contentCorrect": true,
+     "contentTexts": [
+      "TARGET",
+      "All creatures within a 100 foot burst, centered on caster.",
+      null,
+      "DURATION",
+      "1d4 rounds",
+      null,
+      "SAVING THROW",
+      "Fortitude negates",
+      null,
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      null,
+      "CASTING TIME",
+      "Standard action",
+      null,
+      "At will as a standard action, sound this archon's own trumpet. All creatures except archons within 100 feet must make a Fortitude save or be paralyzed for 1d4 rounds. The live supernatural save DC is 10 + half racial Hit Dice + Charisma modifier (DC 20 at the adult profile). Spell resistance does not apply. Allies are eligible. This uses no cleric spell slot. The held trumpet and +4 sword are the same summon-owned instrument; it cannot become loot."
+     ],
+     "creature": "trumpet-archon",
+     "description": true,
+     "duration": {
+      "clipped": false,
+      "correct": true,
+      "expected": "1d4 rounds",
+      "present": true,
+      "shown": "1d4 rounds",
+      "title": "Duration",
+      "titleBricks": 1,
+      "visible": true
+     },
+     "headerTexts": [
+      "Trumpet Blast"
+     ],
+     "icon": "KMG_SummonIcon_trumpet-blast",
+     "iconVisible": true,
+     "images": [
+      "KMG_SummonIcon_trumpet-blast",
+      "AoECentredOnPersonal_All"
+     ],
+     "label": "trumpet-blast",
+     "name": "Trumpet Blast",
+     "noNullOrInheritedText": true,
+     "rowsVisible": true,
+     "savingThrow": {
+      "clipped": false,
+      "correct": true,
+      "expected": "Fortitude negates",
+      "present": true,
+      "shown": "Fortitude negates",
+      "title": "Saving Throw",
+      "titleBricks": 1,
+      "visible": true
+     },
+     "surface": "Native DescriptionController.HandleOpenDescription(TooltipData{Type=Ability, Ability=live fact}) -> DescriptionBuilder.Ability -> DescriptionTemplatesAbility; rows read from the ContentBox TitleH2->SimpleText brick order.",
+     "title": true
+    },
+    "construction": {
+     "abilityData": false,
+     "blueprintAbility": null,
+     "contentBricks": 16,
+     "descriptionWindowType": "Default",
+     "fact": "3bc15285b09d4b4bb9c4cb0d5c2009fb",
+     "factName": "Trumpet Blast",
+     "footerBricks": 0,
+     "headerBricks": 1,
+     "hudPanel": false,
+     "owner": "73bbdd34-68c5-4cc0-bb7e-994b41db1538",
+     "ownerBlueprint": "b6359294f13a4adab626d14c5ededd50",
+     "type": "Ability",
+     "unrelatedModal": false,
+     "windowDataIsRequest": true
+    },
+    "rowsVisibleInACapture": true,
+    "scrolled": null
+   },
+   "passed": true,
+   "predicate": "r3-ui-render-trumpet-blast"
+  },
+  {
+   "observed": {
+    "anchorOutOfCombat": true,
+    "anchorUnchanged": true,
+    "errors": [],
+    "flagsRestored": true,
+    "selectionRestored": true,
+    "tutorialInitiallyLocked": true
+   },
+   "passed": true,
+   "predicate": "r3-ui-owned-ui-restored"
+  },
+  {
+   "observed": {
+    "activeModeCounts": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "closed": true,
+    "controllerReferences": [
+     {
+      "actualInstance": 2077024000,
+      "expectedInstance": 2077024000,
+      "name": "ClickEventsController",
+      "same": true
+     },
+     {
+      "actualInstance": -1109978368,
+      "expectedInstance": -1109978368,
+      "name": "SelectedAbilityHandler",
+      "same": true
+     },
+     {
+      "actualInstance": 14955264,
+      "expectedInstance": 14955264,
+      "name": "PlaceRestMarkerHandler",
+      "same": true
+     },
+     {
+      "actualInstance": -457546496,
+      "expectedInstance": -457546496,
+      "name": "InteractionHighlightController",
+      "same": true
+     },
+     {
+      "actualInstance": -1528990976,
+      "expectedInstance": -1528990976,
+      "name": "CombatEngagementController",
+      "same": true
+     },
+     {
+      "actualInstance": 844483328,
+      "expectedInstance": 844483328,
+      "name": "HandsEquipmentController",
+      "same": true
+     },
+     {
+      "actualInstance": 2108171776,
+      "expectedInstance": 2108171776,
+      "name": "CameraController",
+      "same": true
+     }
+    ],
+    "current": false,
+    "existingNativeDefaultBorrowed": true,
+    "expectedActiveModeCounts": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "frame": 4325,
+    "gameSeconds": 43211.685,
+    "manualClockSuspended": false,
+    "manualPulsesBefore": 0,
+    "manualPulsesCurrent": 0,
+    "mode": "Default",
+    "nativeFactoryModeOwned": false,
+    "originalStackCount": 1,
+    "ownershipPredicates": {
+     "exactActiveModeCounts": true,
+     "exactControllerReferences": true,
+     "exactModeStackReferences": true,
+     "factoryDefaultPointerExact": true,
+     "gameModeTicking": false,
+     "immediateBoundary": true,
+     "modeIsNativeDefault": true,
+     "notClosed": false,
+     "pendingBeforeTickActions": 0,
+     "selectedAbility": null,
+     "selectedAbilityAbsent": true,
+     "switchingModes": false
+    },
+    "pointerController": "Kingmaker.Controllers.Clicks.PointerController",
+    "purpose": "summon-playtest-r3-ui",
+    "selectedAbilityHandler": "Kingmaker.Controllers.Clicks.Handlers.ClickWithSelectedAbilityHandler",
+    "stackCount": 1,
+    "tickGateBefore": {
+     "allowedAbilityExecutionTicks": 0,
+     "allowedActionTicks": 0,
+     "allowedCooldownTicks": 0,
+     "blockedAmbientActionTicks": 0,
+     "blockedAmbientCooldownTicks": 0,
+     "blockedDuplicateAbilityExecutionTicks": 0,
+     "brainTicks": 0,
+     "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+     "maximumActionTicksPerUnitPerUnityFrame": 0,
+     "nativeDefaultActions": 0,
+     "nativeDefaultCooldowns": 0,
+     "nativeDefaultExecutions": 0,
+     "nativeDefaultLeaseActive": false,
+     "refusedStaleNativeTicks": 0,
+     "scope": "exact request fixture/turn-clock actor set"
+    },
+    "tickGateCurrent": {
+     "allowedAbilityExecutionTicks": 0,
+     "allowedActionTicks": 0,
+     "allowedCooldownTicks": 0,
+     "blockedAmbientActionTicks": 0,
+     "blockedAmbientCooldownTicks": 0,
+     "blockedDuplicateAbilityExecutionTicks": 0,
+     "brainTicks": 0,
+     "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+     "maximumActionTicksPerUnitPerUnityFrame": 0,
+     "nativeDefaultActions": 3466,
+     "nativeDefaultCooldowns": 0,
+     "nativeDefaultExecutions": 14,
+     "nativeDefaultLeaseActive": false,
+     "refusedStaleNativeTicks": 0,
+     "scope": "exact request fixture/turn-clock actor set"
+    },
+    "utc": "2026-11-23T23:34:34.4131942Z"
+   },
+   "passed": true,
+   "predicate": "cleanup2-native-default-restored-summon-playtest-r3-ui"
+  },
+  {
+   "observed": {
+    "cleanup": {
+     "areaChanges": [],
+     "casterAbsent": true,
+     "extraUnits": "",
+     "missingUnits": "",
+     "partyAfter": 1,
+     "partyBefore": 1,
+     "partyExact": true,
+     "unitsAfter": 1,
+     "unitsBefore": 1,
+     "unitsExact": true
+    },
+    "clockRestored": true,
+    "referencesRestored": true
+   },
+   "passed": true,
+   "predicate": "fixture-restored"
+  }
+ ],
+ "harness": {
+  "conditions": {},
+  "exitRequested": false,
+  "failure": null,
+  "finishedUtc": "2026-11-23T23:34:14.0737228Z",
+  "isolation": "saves=<lab>/Saved Games; areas=<lab>/Areas",
+  "isolationRestored": true,
+  "loggerExceptionHooks": 4,
+  "requestPath": "<lab>/harness-request.json",
+  "runId": "20261123T233302Z-owner-0.33.0-s7-baseline-01-r3",
+  "startedUtc": "2026-11-23T23:33:17.8258893Z",
+  "status": "passed",
+  "steps": []
+ },
+ "harnessEvents": [
+  {
+   "detail": {
+    "ummWindowOpen": true
+   },
+   "event": "mainMenu",
+   "t": 59.5403,
+   "utc": "2026-11-23T23:34:13.8956100Z"
+  }
+ ],
+ "launch": "01-r3",
+ "launchSummary": {
+  "conditions": {},
+  "gameArguments": [
+   "locale=enGB"
+  ],
+  "harness": "passed",
+  "identity": {
+   "activeMods": [
+    "KingmakerGunslinger 0.0.195",
+    "KmgLoaderCompatHarness 0.1.0"
+   ],
+   "harmony12Sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+   "harmony2": [
+    "2.3.6.0 df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80"
+   ],
+   "productSha256": "3ef052ea441af368381b1cea7d2ee7acaa813000986de8644430ff63ee1d6a6b",
+   "umm": "0.33.0.0",
+   "ummReported": "0.33.0.0",
+   "ummSha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
+  },
+  "label": "01-r3",
+  "pid": 31780,
+  "problems": [],
+  "product": {
+   "failed": [],
+   "scenario": "disposable-expanded-summoning-sprint32-native-review",
+   "status": "PASS"
+  },
+  "seconds": 88,
+  "verdict": "PASS"
+ },
+ "session": "20261123T233302Z-owner-0.33.0-s7-baseline",
+ "sources": {
+  "harness-result.json": "59ff607860fb91a9b8c453d06aac4b2cb3b0b34de649bdb8dabec31a36399553",
+  "sprint32-review.json": "d693d68355d1217ce1c01c0628b272ee5aad0dc01f98b82dadf5fe400f18d6cd"
+ },
+ "summary": [
+  "Kingmaker Gunslinger runtime test",
+  "Run ID: lc-20261123T233302Z-owner-0.33.0-s7-baseline-01-r3",
+  "Scenario: disposable-expanded-summoning-sprint32-native-review",
+  "Status: PASS",
+  "Loaded mod: 0.0.195",
+  "Runtime: KingmakerGunslinger, Version=0.0.195.0, Culture=neutral, PublicKeyToken=null",
+  "Started UTC: 2026-11-23T23:33:17.4527791Z",
+  "Ended UTC: 2026-11-23T23:34:38.0443260Z",
+  "Duration ms: 80590"
+ ]
+}

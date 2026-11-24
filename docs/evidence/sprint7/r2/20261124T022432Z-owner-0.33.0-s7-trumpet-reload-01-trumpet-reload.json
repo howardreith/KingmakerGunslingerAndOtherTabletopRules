@@ -1,0 +1,401 @@
+{
+ "harness": {
+  "conditions": {},
+  "exitRequested": true,
+  "failure": null,
+  "finishedUtc": "2026-11-24T02:26:21.7807056Z",
+  "isolation": "saves=<lab>/Saved Games; areas=<lab>/Areas",
+  "isolationRestored": true,
+  "kmgInitialization_create": {
+   "blueprintsFailed": false,
+   "blueprintsInitialized": true,
+   "contextFailed": false,
+   "environment": {
+    "conditions": {
+     "blankResolutions": 0,
+     "events": [],
+     "gritUiPass": {
+      "firstPassStillOpen": false,
+      "firstPassStoppedOnDescriptionOf": null,
+      "installed": false,
+      "passesCompleted": 0,
+      "passesOpened": 0,
+      "projectAbilitiesRead": 0,
+      "projectAbilityDescriptionReads": 0,
+      "substituted": [],
+      "thrown": []
+     },
+     "libraryPrepared": false,
+     "nativeDescriptions": [],
+     "nullResolutions": 0
+    },
+    "currentLocale": "enGB",
+    "currentPackLocale": "enGB",
+    "currentPackStrings": 41552,
+    "emptyKeyResolvesTo": "",
+    "unassignedStringResolvesTo": "<null>",
+    "unknownKeyResolvesTo": "[unknown key: KmgLoaderCompatHarness.UnknownKeyProbe]"
+   },
+   "failureChain": [],
+   "loaderEntryActive": true,
+   "mainState": "Loaded"
+  },
+  "kmgModules_all-on": {
+   "active": {
+    "AcadamaeGraduate": true,
+    "BodyguardFeats": true,
+    "BrownFurTransmuter": true,
+    "EasternWeapons": true,
+    "ElementalRaces": true,
+    "ElvenBranchedSpears": true,
+    "ExpandedSummoning": true,
+    "Gunslinger": true,
+    "MagicCircleSpells": true,
+    "ProtectionFromAlignmentControlImmunity": true,
+    "ShieldOther": true,
+    "TeleportationSpells": true,
+    "UrbanBarbarian": true
+   },
+   "file": null,
+   "fileSha256": null,
+   "pending": {
+    "AcadamaeGraduate": true,
+    "BodyguardFeats": true,
+    "BrownFurTransmuter": true,
+    "EasternWeapons": true,
+    "ElementalRaces": true,
+    "ElvenBranchedSpears": true,
+    "ExpandedSummoning": true,
+    "Gunslinger": true,
+    "MagicCircleSpells": true,
+    "ProtectionFromAlignmentControlImmunity": true,
+    "ShieldOther": true,
+    "TeleportationSpells": true,
+    "UrbanBarbarian": true
+   },
+   "restartRequired": false
+  },
+  "kmgTrumpetCue_after": {
+   "afterStartedUtc": "2026-11-24T02:26:10.4487651Z",
+   "area": "JamandisMansionThroneroom",
+   "fresh": {
+    "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+    "available": true,
+    "canTarget": true,
+    "cues": [
+     {
+      "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+      "caster": "5358834a-fdd9-4874-9305-ee44b172e535",
+      "endUtc": "2026-11-24T02:26:21.7166835Z",
+      "event": "InspireCourage",
+      "frame": 4494,
+      "playingId": 326,
+      "seconds": 3.9013606999999997,
+      "stopReason": null,
+      "stopRequestedUtc": null,
+      "stopResult": null,
+      "utc": "2026-11-24T02:26:17.8153228Z"
+     }
+    ],
+    "executionEnded": true,
+    "finished": true,
+    "result": "Success"
+   },
+   "mode": "after",
+   "postLoadCuesBeforeFreshBlast": [],
+   "problems": [],
+   "savedCue": {
+    "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+    "caster": "5358834a-fdd9-4874-9305-ee44b172e535",
+    "endUtc": "2026-11-24T02:26:06.1331152Z",
+    "endedBeforeAfterStep": true,
+    "endedBy": "natural",
+    "event": "InspireCourage",
+    "frame": 4184,
+    "playingId": 159,
+    "seconds": 3.9854068999999996,
+    "stopReason": null,
+    "stopRequestedUtc": null,
+    "stopResult": null,
+    "utc": "2026-11-24T02:26:02.1477083Z"
+   },
+   "termination": {
+    "cleanupAttempted": [
+     "save seeding",
+     "awake registrations",
+     "disposable units"
+    ],
+    "cleanupFailures": [],
+    "isolationRestored": true,
+    "passed": true,
+    "step": "5|kmgTrumpetCue_after",
+    "testFailure": ""
+   },
+   "trumpetLoaded": true
+  },
+  "kmgTrumpetCue_before": {
+   "area": "JamandisMansionThroneroom",
+   "beforeEndedUtc": "2026-11-24T02:26:02.6471385Z",
+   "first": {
+    "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+    "available": true,
+    "canTarget": true,
+    "cues": [
+     {
+      "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+      "caster": "5358834a-fdd9-4874-9305-ee44b172e535",
+      "endUtc": "2026-11-24T02:25:59.7821564Z",
+      "event": "InspireCourage",
+      "frame": 3995,
+      "playingId": 68,
+      "seconds": 3.8992606999999997,
+      "stopReason": null,
+      "stopRequestedUtc": null,
+      "stopResult": null,
+      "utc": "2026-11-24T02:25:55.8828957Z"
+     }
+    ],
+    "executionEnded": true,
+    "finished": true,
+    "result": "Success"
+   },
+   "mode": "before",
+   "problems": [],
+   "second": {
+    "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+    "available": true,
+    "canTarget": true,
+    "cues": [
+     {
+      "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+      "caster": "5358834a-fdd9-4874-9305-ee44b172e535",
+      "endUtc": null,
+      "event": "InspireCourage",
+      "frame": 4184,
+      "playingId": 159,
+      "seconds": null,
+      "stopReason": null,
+      "stopRequestedUtc": null,
+      "stopResult": null,
+      "utc": "2026-11-24T02:26:02.1477083Z"
+     }
+    ],
+    "executionEnded": true,
+    "finished": true,
+    "playingAtStepEnd": true,
+    "result": "Success"
+   },
+   "termination": {
+    "cleanupAttempted": [
+     "save seeding",
+     "awake registrations"
+    ],
+    "cleanupFailures": [],
+    "isolationRestored": true,
+    "passed": true,
+    "step": "2|kmgTrumpetCue_before",
+    "testFailure": ""
+   },
+   "trumpet": {
+    "blueprint": "KMG_Summoning_Unit_TrumpetArchon",
+    "id": "5358834a-fdd9-4874-9305-ee44b172e535"
+   }
+  },
+  "load_4": {
+   "began": true,
+   "money": 0,
+   "playerReplaced": true,
+   "verdict": "Complete"
+  },
+  "loggerExceptionHooks": 4,
+  "requestPath": "<lab>/harness-request.json",
+  "runId": "20261124T022432Z-owner-0.33.0-s7-trumpet-reload-01-trumpet-reload",
+  "savedGame": null,
+  "startedUtc": "2026-11-24T02:24:48.5134928Z",
+  "status": "passed",
+  "steps": [
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgModules[all-on]()"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgInitialization[create]"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgTrumpetCue[before](before)"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "saveGame[s7trumpet]"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "loadLastSave[same-process-load]"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgTrumpetCue[after](after)"
+   }
+  ]
+ },
+ "harnessEvents": [
+  {
+   "detail": {
+    "ummWindowOpen": true
+   },
+   "event": "mainMenu",
+   "t": 56.6620369,
+   "utc": "2026-11-24T02:25:42.0222199Z"
+  },
+  {
+   "detail": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+   "event": "loadSave",
+   "t": 56.6674576,
+   "utc": "2026-11-24T02:25:42.0277356Z"
+  },
+  {
+   "detail": "JamandisMansionThroneroom",
+   "event": "saveLoaded",
+   "t": 63.94401,
+   "utc": "2026-11-24T02:25:49.3034452Z"
+  },
+  {
+   "detail": "kmgModules[all-on]()",
+   "event": "stepBegin",
+   "t": 65.98729,
+   "utc": "2026-11-24T02:25:51.3471562Z"
+  },
+  {
+   "detail": "kmgModules[all-on]()",
+   "event": "stepDone",
+   "t": 66.0025253,
+   "utc": "2026-11-24T02:25:51.3626672Z"
+  },
+  {
+   "detail": "kmgInitialization[create]",
+   "event": "stepBegin",
+   "t": 66.0192261,
+   "utc": "2026-11-24T02:25:51.3791921Z"
+  },
+  {
+   "detail": "kmgInitialization[create]",
+   "event": "stepDone",
+   "t": 66.02395,
+   "utc": "2026-11-24T02:25:51.3841913Z"
+  },
+  {
+   "detail": "kmgTrumpetCue[before](before)",
+   "event": "stepBegin",
+   "t": 66.0530548,
+   "utc": "2026-11-24T02:25:51.4128071Z"
+  },
+  {
+   "detail": "kmgTrumpetCue[before](before)",
+   "event": "stepDone",
+   "t": 77.29036,
+   "utc": "2026-11-24T02:26:02.6501413Z"
+  },
+  {
+   "detail": "saveGame[s7trumpet]",
+   "event": "stepBegin",
+   "t": 77.320076,
+   "utc": "2026-11-24T02:26:02.6801691Z"
+  },
+  {
+   "detail": "saveGame[s7trumpet]",
+   "event": "stepDone",
+   "t": 79.38515,
+   "utc": "2026-11-24T02:26:04.7455083Z"
+  },
+  {
+   "detail": "loadLastSave[same-process-load]",
+   "event": "stepBegin",
+   "t": 79.41926,
+   "utc": "2026-11-24T02:26:04.7794138Z"
+  },
+  {
+   "detail": "Manual_1_s7trumpet.zks",
+   "event": "loadLastSave",
+   "t": 79.42179,
+   "utc": "2026-11-24T02:26:04.7814121Z"
+  },
+  {
+   "detail": "loadLastSave[same-process-load]",
+   "event": "stepDone",
+   "t": 85.05369,
+   "utc": "2026-11-24T02:26:10.4131804Z"
+  },
+  {
+   "detail": "kmgTrumpetCue[after](after)",
+   "event": "stepBegin",
+   "t": 85.0869751,
+   "utc": "2026-11-24T02:26:10.4467672Z"
+  },
+  {
+   "detail": "kmgTrumpetCue[after](after)",
+   "event": "stepDone",
+   "t": 96.38785,
+   "utc": "2026-11-24T02:26:21.7476489Z"
+  }
+ ],
+ "launch": "01-trumpet-reload",
+ "launchSummary": {
+  "conditions": {},
+  "gameArguments": [
+   "locale=enGB"
+  ],
+  "harness": "passed",
+  "identity": {
+   "activeMods": [
+    "KingmakerGunslinger 0.0.195",
+    "KmgLoaderCompatHarness 0.1.0"
+   ],
+   "harmony12Sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+   "harmony2": [
+    "2.3.6.0 df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80"
+   ],
+   "productSha256": "6104d2bf739adc0acb04c3458a060fc2a740203f989c86ccf286252eb7194e26",
+   "umm": "0.33.0.0",
+   "ummReported": "0.33.0.0",
+   "ummSha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
+  },
+  "label": "01-trumpet-reload",
+  "log": {
+   "absent": [
+    "[initialize.failed] x0"
+   ],
+   "once": [],
+   "present": [
+    "[blueprints][initialize.complete] x1"
+   ]
+  },
+  "pid": 39088,
+  "problems": [],
+  "seconds": 101,
+  "verdict": "PASS"
+ },
+ "session": "20261124T022432Z-owner-0.33.0-s7-trumpet-reload",
+ "sources": {
+  "harness-result.json": "af608edda501976794168e2de29555b7b09d3a1c8ca0bc8241152859064ae6ce"
+ }
+}
