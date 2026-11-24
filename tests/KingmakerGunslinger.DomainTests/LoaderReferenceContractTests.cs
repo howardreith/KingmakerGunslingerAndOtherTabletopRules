@@ -14,21 +14,24 @@ namespace KingmakerGunslinger.DomainTests
     internal static class LoaderReferenceContractTests
     {
         // The case runs for real wherever a production compiler output is bound (test-domain.ps1 always binds one when the
-        // case is selected: the DLL build.ps1, the focused gate or Build-Local just produced, or one it compiles itself).
-        // A runner started without that binding (the portable net8 runner, a direct runner invocation) has no artifact
-        // to inspect: the case is not applicable there, unless the case is selected by name (KMG_TEST_FILTER), which
-        // still refuses without a binding.
+        // case is selected and not deferred: the DLL build.ps1, the focused gate or Build-Local just produced, or one it
+        // compiles itself). An unfiltered runner started without a binding (the portable net8 runner, a direct runner
+        // call) has no artifact to inspect: the case reports NOT APPLICABLE there. A focused selection without a binding
+        // fails, and a Build-Local deferral reports NOT APPLICABLE until Build-Local runs it on its exact output.
         internal static void ProductionDllReferencesExactlyThePinnedLoader()
         {
             string dll = Environment.GetEnvironmentVariable("KMG_PRODUCTION_DLL");
             string expectedSha = Environment.GetEnvironmentVariable("KMG_PRODUCTION_DLL_SHA256");
             bool bound = !string.IsNullOrEmpty(dll) && !string.IsNullOrEmpty(expectedSha);
-            string filter = Environment.GetEnvironmentVariable("KMG_TEST_FILTER") ?? string.Empty;
-            bool selectedByName = filter.IndexOf("loader.production-dll-references-pinned-loader", StringComparison.OrdinalIgnoreCase) >= 0;
             bool deferred = string.Equals(Environment.GetEnvironmentVariable("KMG_LOADER_CASE_DEFERRED"), "1", StringComparison.Ordinal);
-            if (!bound && (deferred || !selectedByName)) return;
-            Assertions.True(bound,
-                "This check inspects a verified production compiler output (test-domain.ps1 sets KMG_PRODUCTION_DLL and KMG_PRODUCTION_DLL_SHA256).");
+            if (!bound)
+            {
+                if (deferred) throw new NotApplicableException("deferred: Build-Local runs this case on its exact compiler output.");
+                // Any focused selection (KMG_TEST_FILTER substring or --test-prefix) that chose this case requires the artifact.
+                Assertions.True(!RunSelection.Focused,
+                    "This check inspects a verified production compiler output and was selected without one (test-domain.ps1 sets KMG_PRODUCTION_DLL and KMG_PRODUCTION_DLL_SHA256).");
+                throw new NotApplicableException("no production compiler output is bound to this unfiltered run (test-domain.ps1 binds one).");
+            }
 #if NET5_0_OR_GREATER
             Assertions.True(false, "The production DLL assertion runs on the .NET Framework domain runner (scripts/test-domain.ps1).");
 #else

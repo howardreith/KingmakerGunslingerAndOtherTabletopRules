@@ -27,7 +27,7 @@ try {
     $extracted = Expand-KmgAdmittedPackage -Admission $admission -AdmittedCopy $copy -Destination $extractionRoot
 }
 catch { Remove-Item -LiteralPath $AdmittedCopyDirectory -Recurse -Force -ErrorAction SilentlyContinue; throw }
-[ordered]@{ admissionMode = $(if ($HistoricalReleaseVersion) { 'historical-release' } else { 'development' })
+[ordered]@{ admissionMode = (Get-KmgAdmissionMode -HistoricalReleaseVersion $HistoricalReleaseVersion -DevelopmentPurpose $DevelopmentPurpose)
     packagePath = [string]$admission.packagePath; packageSha256 = [string]$admission.packageSha256
     dllSha256 = [string]$admission.dllSha256; dllMvid = [string]$admission.dllMvid; producerCommit = [string]$admission.commit
     releaseTag = $(if ($HistoricalReleaseVersion) { [string]$admission.releaseTag } else { $null })

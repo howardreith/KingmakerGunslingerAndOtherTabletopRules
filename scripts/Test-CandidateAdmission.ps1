@@ -54,7 +54,8 @@ $temp = Join-Path $lab ('worktrees\candidate-admission-' + [Guid]::NewGuid().ToS
 $clone = Join-Path $temp 'clone with space'
 try {
     & git clone -q --no-hardlinks $source $clone
-    & git -C $clone checkout -q -B candidate-admission $commit
+    # A detached checkout (round 5): Build-Local records the empty branch of a detached build in the receipt.
+    & git -C $clone checkout -q --detach $commit
     if ((& git -C $clone rev-parse HEAD).Trim() -cne $commit) { throw 'The clone did not select the commit under test.' }
     Copy-Item -LiteralPath (Join-Path $source 'GamePath.props') -Destination $clone
     New-Item -ItemType Directory -Path (Join-Path $clone 'artifacts\references\loader\UnityModManager') -Force | Out-Null
@@ -103,6 +104,39 @@ try {
         Add-Case "receipt-with-another-builds-$($edit[0])-refused" ($r.ExitCode -ne 0 -and $r.Output -match 'not the build its receipt names') (Get-Reason $r.Output)
         [IO.File]::WriteAllText($receiptPath, $receiptOriginal)
     }
+    # A receipt carrying only a compiler MVID (no compiler hash) that is not the packaged DLL's: refused. The earlier
+    # receipt format (no compiler or packaged-DLL fields, the stamp field kept) with the genuine DLL: admitted.
+    $j = $receiptOriginal | ConvertFrom-Json; [void]$j.PSObject.Properties.Remove('compilerDllSha256'); $j.compilerDllMvid = [Guid]::NewGuid().ToString()
+    [IO.File]::WriteAllText($receiptPath, ($j | ConvertTo-Json -Depth 12))
+    $r = & $admit $package
+    [IO.File]::WriteAllText($receiptPath, $receiptOriginal)
+    Add-Case 'receipt-with-only-an-inconsistent-compiler-mvid-refused' ($r.ExitCode -ne 0 -and $r.Output -match 'not the exact compiler output its receipt records \(MVID') (Get-Reason $r.Output)
+    $j = $receiptOriginal | ConvertFrom-Json; foreach ($field in @('compilerDllSha256', 'compilerDllMvid', 'packagedDllSha256')) { [void]$j.PSObject.Properties.Remove($field) }
+    [IO.File]::WriteAllText($receiptPath, ($j | ConvertTo-Json -Depth 12))
+    $r = & $admit $package
+    [IO.File]::WriteAllText($receiptPath, $receiptOriginal)
+    Add-Case 'earlier-format-receipt-with-the-genuine-dll-admitted' ($r.ExitCode -eq 0 -and $r.Output -match 'ADMITTED [0-9a-f]{64}') "exit $($r.ExitCode)"
+    # R1-F4: the producer's recorded source state must be an exactly clean checkout of its commit. An inconsistent
+    # fingerprint is refused; so is the fingerprint a build records with a modified shipped input (computed by the
+    # production fingerprint function in that modified state), after that input was restored.
+    $j = $receiptOriginal | ConvertFrom-Json; $j.sourceStateSha256 = ('ab' * 32)
+    [IO.File]::WriteAllText($receiptPath, ($j | ConvertTo-Json -Depth 12))
+    $r = & $admit $package
+    [IO.File]::WriteAllText($receiptPath, $receiptOriginal)
+    Add-Case 'receipt-with-an-inconsistent-producer-fingerprint-refused' ($r.ExitCode -ne 0 -and $r.Output -match 'is not an exactly clean checkout of its commit') (Get-Reason $r.Output)
+    $shippedForFingerprint = Join-Path $clone 'README.md'
+    $shippedForFingerprintText = [IO.File]::ReadAllText($shippedForFingerprint)
+    [IO.File]::WriteAllText($shippedForFingerprint, $shippedForFingerprintText + "`r`n<!-- modified while building -->`r`n")
+    $dirtyFingerprint = [regex]::Match((Invoke-PS @('-Command', ". '$($harness.Replace("'", "''"))'; 'FINGERPRINT ' + (Get-KmgSourceStateFingerprint -RepositoryRoot '$($clone.Replace("'", "''"))')")).Output, 'FINGERPRINT ([0-9a-f]{64})').Groups[1].Value
+    [IO.File]::WriteAllText($shippedForFingerprint, $shippedForFingerprintText)
+    $j = $receiptOriginal | ConvertFrom-Json; $j.sourceStateSha256 = $dirtyFingerprint
+    [IO.File]::WriteAllText($receiptPath, ($j | ConvertTo-Json -Depth 12))
+    $r = & $admit $package
+    [IO.File]::WriteAllText($receiptPath, $receiptOriginal)
+    Add-Case 'package-from-a-modified-then-restored-shipped-input-refused' ($dirtyFingerprint -cmatch '^[0-9a-f]{64}$' -and $r.ExitCode -ne 0 -and $r.Output -match 'is not an exactly clean checkout of its commit') ("modified-state fingerprint $dirtyFingerprint; " + (Get-Reason $r.Output))
+    $r = & $admit $package
+    Add-Case 'clean-producer-receipt-admitted' ($r.ExitCode -eq 0 -and $r.Output -match 'ADMITTED [0-9a-f]{64}' -and ($receiptOriginal | ConvertFrom-Json).branch -ceq '') "exit $($r.ExitCode); receipt branch '$(($receiptOriginal | ConvertFrom-Json).branch)' (detached)"
+
     # The receipt's other recorded identities: a different packaged-DLL digest or source stamp (the primary DLL fields
     # unchanged) is refused.
     foreach ($edit in @(@('packaged-dll-hash', 'packagedDllSha256', ('cd' * 32), 'not the packaged DLL its receipt records'), @('source-stamp', 'embeddedGitCommit', ('0' * 40), 'recorded source stamp 0{40} is not the packaged DLL'))) {
@@ -280,18 +314,25 @@ $mod = Expand-KmgAdmittedPackage -Admission $hist -AdmittedCopy $copy -Destinati
 $fm = Get-KmgSha256 -Path (Join-Path $mod 'assets\soundbanks\firearm-soundbank-manifest.json')
 $fb = Get-KmgSha256 -Path (Join-Path $mod 'assets\soundbanks\KMG_Firearms.bnk')
 $e = Get-KmgDeploymentExpectations -Admission $hist -HistoricalRelease -PackagedFirearmManifestSha256 $fm -PackagedFirearmSoundBankSha256 $fb
-'HISTORICAL-EXPECTATIONS ' + $e.branch + ' | ' + $e.sourceStateSha256 + ' | ' + ($e.firearmManifestSha256 -ceq $fm) + ' ' + ($e.firearmSoundBankSha256 -ceq $fb)
+'HISTORICAL-EXPECTATIONS branch=' + ($null -eq $e.branch) + ' sourceState=' + ($null -eq $e.sourceStateSha256) + ' available=' + $e.sourceStateAvailable + ' kind=' + $e.candidateKind + ' tag=' + $e.releaseTag + ' | ' + ($e.firearmManifestSha256 -ceq $fm) + ' ' + ($e.firearmSoundBankSha256 -ceq $fb)
+'HISTORICAL-RECORD ' + ((New-KmgDeploymentRecordIdentity -Admission $hist -Expectations $e) | ConvertTo-Json -Compress)
 try { Get-KmgDeploymentExpectations -Admission $hist -PackagedFirearmManifestSha256 $fm -PackagedFirearmSoundBankSha256 $fb | Out-Null; 'MODE-ACCEPTED' } catch { 'MODE-REFUSED ' + $_.Exception.Message }
 $d = Get-KmgDeploymentExpectations -Admission $dev -PackagedFirearmManifestSha256 ([string]$dev.firearmManifestSha256) -PackagedFirearmSoundBankSha256 ([string]$dev.firearmSoundBankSha256)
-'DEVELOPMENT-EXPECTATIONS ' + ($d.branch -ceq [string]$dev.branch) + ' ' + ($d.sourceStateSha256 -ceq [string]$dev.sourceStateSha256)
+'DEVELOPMENT-EXPECTATIONS ' + ($d.branch -ceq [string]$dev.branch) + ' ' + ($d.sourceStateSha256 -ceq [string]$dev.sourceStateSha256) + ' detached=' + ($dev.branch -ceq '')
+$devRecord = New-KmgDeploymentRecordIdentity -Admission $dev -Expectations $d
+'DETACHED-RECORD branch=[' + $devRecord.branch + '] sourceState=' + ($devRecord.sourceStateSha256 -ceq [string]$dev.sourceStateSha256) + ' commit=' + $devRecord.commit + ' available=' + $devRecord.sourceStateAvailable
+$named = $dev | ConvertTo-Json -Depth 12 | ConvertFrom-Json; $named.branch = 'candidate-admission'
+$n = Get-KmgDeploymentExpectations -Admission $named -PackagedFirearmManifestSha256 ([string]$dev.firearmManifestSha256) -PackagedFirearmSoundBankSha256 ([string]$dev.firearmSoundBankSha256)
+'NAMED-RECORD branch=[' + (New-KmgDeploymentRecordIdentity -Admission $named -Expectations $n).branch + ']'
 try { Get-KmgDeploymentExpectations -Admission $dev -PackagedFirearmManifestSha256 ('e' * 64) -PackagedFirearmSoundBankSha256 ([string]$dev.firearmSoundBankSha256) | Out-Null; 'AUDIO-ACCEPTED' } catch { 'AUDIO-REFUSED ' + $_.Exception.Message }
-$noBranch = $dev | ConvertTo-Json -Depth 12 | ConvertFrom-Json; $noBranch.branch = ''
+$noBranch = $dev | ConvertTo-Json -Depth 12 | ConvertFrom-Json; [void]$noBranch.PSObject.Properties.Remove('branch')
 try { Get-KmgDeploymentExpectations -Admission $noBranch -PackagedFirearmManifestSha256 ([string]$dev.firearmManifestSha256) -PackagedFirearmSoundBankSha256 ([string]$dev.firearmSoundBankSha256) | Out-Null; 'FIELD-ACCEPTED' } catch { 'FIELD-REFUSED ' + $_.Exception.Message }
 '@)
     $dp = Invoke-PS @('-File', $deployProbe, '-Harness', $harness, '-Clone', $clone, '-Package', $package, '-Purpose', $purpose, '-Historical', $HistoricalReleaseZip, '-Work', (Join-Path $temp 'deploy-work'))
     Add-Case 'deploy-under-lease-admission-must-be-the-first-candidate' ($dp.Output -match 'SAME-ACCEPTED' -and $dp.Output -match 'CHANGED-REFUSED The candidate changed between admission and the deployment lease \(packageSha256\)' -and $dp.Output -match 'MVID-REFUSED The candidate changed between admission and the deployment lease \(dllMvid\)') ([regex]::Matches($dp.Output, '(SAME|CHANGED|MVID)-\w+') -join ', ')
-    Add-Case 'deploy-historical-release-expectations-from-its-package-and-tag' ($dp.Output -match 'HISTORICAL-EXPECTATIONS tag:v0\.0\.188 \| historical-release v0\.0\.188 \| True True' -and $dp.Output -match 'MODE-REFUSED The deployment mode does not match the admission') ([regex]::Match($dp.Output, 'HISTORICAL-EXPECTATIONS [^|]+\|[^|]+\| \w+ \w+').Value)
-    Add-Case 'deploy-development-expectations-from-its-receipt' ($dp.Output -match 'DEVELOPMENT-EXPECTATIONS True True' -and $dp.Output -match 'AUDIO-REFUSED Extracted package firearm audio differs' -and $dp.Output -match 'FIELD-REFUSED A deployment-record field is missing for this admission \(branch\)') ([regex]::Matches($dp.Output, '(DEVELOPMENT-EXPECTATIONS \w+ \w+|AUDIO-\w+|FIELD-\w+)') -join ', ')
+    Add-Case 'deploy-historical-release-expectations-from-its-package-and-tag' ($dp.Output -match 'HISTORICAL-EXPECTATIONS branch=True sourceState=True available=False kind=historical-release tag=v0\.0\.188 \| True True' -and $dp.Output -match 'HISTORICAL-RECORD \{[^}]*"branch":null,"sourceStateSha256":null,"sourceStateAvailable":false[^}]*"candidateKind":"historical-release","releaseTag":"v0\.0\.188"' -and $dp.Output -match 'MODE-REFUSED The deployment mode does not match the admission') ([regex]::Match($dp.Output, 'HISTORICAL-EXPECTATIONS [^|]+\| \w+ \w+').Value)
+    Add-Case 'deploy-detached-receipt-expectations-and-record' ($dp.Output -match 'DEVELOPMENT-EXPECTATIONS True True detached=True' -and $dp.Output -match ('DETACHED-RECORD branch=\[\] sourceState=True commit=' + $commit + ' available=True') -and $dp.Output -match 'NAMED-RECORD branch=\[candidate-admission\]') ([regex]::Matches($dp.Output, '(DEVELOPMENT-EXPECTATIONS [^ ]+ [^ ]+ [^ ]+|DETACHED-RECORD [^ ]+|NAMED-RECORD [^ ]+)') -join ', ')
+    Add-Case 'deploy-development-expectations-from-its-receipt' ($dp.Output -match 'AUDIO-REFUSED Extracted package firearm audio differs' -and $dp.Output -match 'FIELD-REFUSED A deployment-record field is missing for this admission \(branch\)') ([regex]::Matches($dp.Output, '(AUDIO-\w+|FIELD-\w+)') -join ', ')
 
     # --- The checked extractor: directory records carry no data, appear once, and never share a destination with a file.
     $extractProbe = Join-Path $temp 'extract-probe.ps1'
@@ -316,6 +357,15 @@ try { $m = Expand-KmgPackageEntries -ZipPath $Zip -Destination $destination -Mod
         $x = Invoke-PS @('-File', $extractProbe, '-Common', $common, '-Zip', $variantZip, '-Work', $extractWork)
         Add-Case "extractor-$($variantCase[0])-refused" ($x.Output -match ('REFUSED Package contains a ' + $variantCase[2])) ([regex]::Match($x.Output, '(REFUSED|EXTRACTED) .{0,200}').Value)
     }
+    $belowFileZip = Join-Path $variants 'directory-record-below-a-file.zip'
+    New-ZipVariant $package $belowFileZip @{} @{ 'KingmakerGunslinger/Info.json/sub/' = $emptyDirectory }
+    $x = Invoke-PS @('-File', $extractProbe, '-Common', $common, '-Zip', $belowFileZip, '-Work', $extractWork)
+    $v = Invoke-PS @('-File', $validator, '-PackagePath', $belowFileZip)
+    Add-Case 'extractor-and-validator-directory-record-below-a-file-refused' ($x.Output -match 'REFUSED Package contains a file that is also the parent of other entries: KingmakerGunslinger/Info\.json' -and $v.ExitCode -ne 0 -and $v.Output -match 'file that is also the parent of other entries') ("probe: " + [regex]::Match($x.Output, '(REFUSED|EXTRACTED) .{0,120}').Value + "; validator exit $($v.ExitCode)")
+    $ordinaryDirZip = Join-Path $variants 'ordinary-directory-record.zip'
+    New-ZipVariant $package $ordinaryDirZip @{} @{ 'KingmakerGunslinger/docs/' = $emptyDirectory }
+    $v = Invoke-PS @('-File', $validator, '-PackagePath', $ordinaryDirZip)
+    Add-Case 'validator-ordinary-directory-record-accepted' ($v.ExitCode -eq 0 -and $v.Output -match 'Strict standalone UMM package validation passed') "exit $($v.ExitCode)"
     $emptyDirZip = Join-Path $variants 'extract-empty-directory-record.zip'
     New-ZipVariant $package $emptyDirZip @{} @{ 'KingmakerGunslinger/notes/' = $emptyDirectory }
     $x = Invoke-PS @('-File', $extractProbe, '-Common', $common, '-Zip', $emptyDirZip, '-Work', $extractWork)
@@ -389,6 +439,74 @@ finally { [IO.File]::WriteAllBytes($Package, $original) }
     }
     $r = & $admit $package
     Add-Case 'candidate-admitted-again-after-the-unstamped-case' ($r.ExitCode -eq 0 -and $r.Output -match 'ADMITTED [0-9a-f]{64}') "exit $($r.ExitCode)"
+
+    # --- Loader staging verifies the whole admitted tree before Mods changes (R2-F3). A disposable target whose Mods
+    #     holds a sentinel: a changed non-DLL file, and separately a removed Info.json, in the extracted tree after
+    #     admission are refused with the sentinel and the supplied ZIP intact; the genuine tree then stages completely.
+    $treeProbe = Join-Path $temp 'tree-probe.ps1'
+    [IO.File]::WriteAllText($treeProbe, @'
+param([string]$Lc, [string]$Package, [string]$HarnessDir, [string]$Purpose, [string]$Work)
+$ErrorActionPreference = 'Stop'
+. (Join-Path $Lc 'LoaderCompat.Common.ps1')
+$paths = [pscustomobject]@{ ModsDir = (Join-Path $Work 'copy\Mods'); Pristine = (Join-Path $Work 'pristine') }
+[void][IO.Directory]::CreateDirectory($paths.ModsDir); [void][IO.Directory]::CreateDirectory((Join-Path $paths.Pristine 'Mods'))
+[IO.File]::WriteAllText((Join-Path $paths.ModsDir 'sentinel.txt'), 'previous Mods')
+$zipBefore = Get-LcSha256 $Package
+function Show-State([string]$Label) {
+    $label + ' sentinel=' + (Test-Path -LiteralPath (Join-Path $paths.ModsDir 'sentinel.txt')) + ' modsEntries=' + @(Get-ChildItem -LiteralPath $paths.ModsDir -Force).Count +
+        ' zipIntact=' + ((Get-LcSha256 $Package) -ceq $zipBefore) + ' leftovers=' + @(Get-ChildItem -LiteralPath (Split-Path $paths.ModsDir) -Directory -Filter 'Mods.kmg-*').Count
+}
+$a = Assert-LcSessionInputs $Package $HarnessDir $Purpose
+[IO.File]::AppendAllText((Join-Path $a.extractedModDirectory 'README.md'), "`nchanged after admission`n")
+try { $null = Set-LcGameCopyMods $paths @() $a $HarnessDir; 'CHANGED-FILE STAGED' } catch { 'CHANGED-FILE REFUSED ' + $_.Exception.Message }
+Show-State 'AFTER-CHANGED-FILE'
+$a = Assert-LcSessionInputs $Package $HarnessDir $Purpose
+Remove-Item -LiteralPath (Join-Path $a.extractedModDirectory 'Info.json')
+try { $null = Set-LcGameCopyMods $paths @() $a $HarnessDir; 'REMOVED-INFO STAGED' } catch { 'REMOVED-INFO REFUSED ' + $_.Exception.Message }
+Show-State 'AFTER-REMOVED-INFO'
+$a = Assert-LcSessionInputs $Package $HarnessDir $Purpose
+$expected = (Get-LcArchiveTreeManifest ([string]$a.privateCopy) 'KingmakerGunslinger') -join "`n"
+$staged = Set-LcGameCopyMods $paths @() $a $HarnessDir
+'GENUINE STAGED tree=' + ((Get-LcTreeManifest (Join-Path $paths.ModsDir 'KingmakerGunslinger')) -join "`n" -ceq $expected) + ' dll=' + ($staged['KingmakerGunslinger'].dllSha256 -ceq [string]$a.dllSha256) + ' harness=' + (Test-Path -LiteralPath (Join-Path $paths.ModsDir 'KmgLoaderCompatHarness\Info.json'))
+Show-State 'AFTER-GENUINE'
+'@)
+    $tp = Invoke-PS @('-File', $treeProbe, '-Lc', $lc, '-Package', $package, '-HarnessDir', $harnessDir, '-Purpose', $purpose, '-Work', (Join-Path $temp 'tree-work'))
+    Add-Case 'loader-staging-refuses-a-changed-non-dll-file-with-the-previous-mods-intact' ($tp.Output -match 'CHANGED-FILE REFUSED The extracted candidate tree is not the admitted archive' -and $tp.Output -match 'AFTER-CHANGED-FILE sentinel=True modsEntries=1 zipIntact=True leftovers=0') ([regex]::Match($tp.Output, 'AFTER-CHANGED-FILE [^A]+').Value)
+    Add-Case 'loader-staging-refuses-a-removed-info-json-with-the-previous-mods-intact' ($tp.Output -match 'REMOVED-INFO REFUSED The extracted candidate tree is not the admitted archive' -and $tp.Output -match 'AFTER-REMOVED-INFO sentinel=True modsEntries=1 zipIntact=True leftovers=0') ([regex]::Match($tp.Output, 'AFTER-REMOVED-INFO [^A]+').Value)
+    Add-Case 'loader-staging-stages-the-genuine-tree-completely' ($tp.ExitCode -eq 0 -and $tp.Output -match 'GENUINE STAGED tree=True dll=True harness=True' -and $tp.Output -match 'AFTER-GENUINE sentinel=False modsEntries=2 zipIntact=True leftovers=0') (([regex]::Match($tp.Output, 'GENUINE STAGED [^A]+').Value) + ' ' + [regex]::Match($tp.Output, 'AFTER-GENUINE .*').Value)
+
+    # --- The admission mode for each route (R4-F3): the child result for the development and historical routes, the
+    #     mode function for all three (an ordinary Build-Local release receipt cannot be produced on this development
+    #     branch), and the report projection of offline summaries for the three modes and an older summary.
+    $modeProbe = Join-Path $temp 'mode-probe.ps1'
+    [IO.File]::WriteAllText($modeProbe, @'
+param([string]$Lc, [string]$Package, [string]$Historical, [string]$HarnessDir, [string]$Purpose)
+$ErrorActionPreference = 'Stop'
+. (Join-Path $Lc 'LoaderCompat.Common.ps1')
+. (Join-Path (Split-Path (Split-Path $Lc)) 'RuntimeHarness.Common.ps1')
+$d = Assert-LcSessionInputs $Package $HarnessDir $Purpose; 'CHILD development=' + $d.admissionMode + ' tag=[' + $d.releaseTag + ']'; Remove-LcAdmittedCopy $d
+$h = Assert-LcSessionInputs $Historical $HarnessDir '' -HistoricalReleaseControl -HistoricalReleaseVersion 0.0.188; 'CHILD historical=' + $h.admissionMode + ' tag=[' + $h.releaseTag + ']'; Remove-LcAdmittedCopy $h
+'MODES ' + (Get-KmgAdmissionMode -DevelopmentPurpose $Purpose) + ' ' + (Get-KmgAdmissionMode -HistoricalReleaseVersion '0.0.188') + ' ' + (Get-KmgAdmissionMode)
+foreach ($mode in @('build-local', 'development', 'historical-release')) {
+    $summary = ('{"sessionId":"x","admission":{"mode":"' + $mode + '","version":"0.0.195"}}') | ConvertFrom-Json
+    'REPORT ' + $mode + ' -> ' + (Get-LcReportHead $summary).admission.mode
+}
+'REPORT older -> ' + (Get-LcReportHead ('{"sessionId":"x"}' | ConvertFrom-Json)).admission.mode
+'@)
+    $mp = Invoke-PS @('-File', $modeProbe, '-Lc', $lc, '-Package', $package, '-Historical', $HistoricalReleaseZip, '-HarnessDir', $harnessDir, '-Purpose', $purpose)
+    Add-Case 'admission-mode-recorded-for-each-route-and-projected-by-the-report' ($mp.Output -match 'CHILD development=development tag=\[\]' -and $mp.Output -match 'CHILD historical=historical-release tag=\[v0\.0\.188\]' -and $mp.Output -match 'MODES development historical-release build-local' -and
+        $mp.Output -match 'REPORT build-local -> build-local' -and $mp.Output -match 'REPORT development -> development' -and $mp.Output -match 'REPORT historical-release -> historical-release' -and $mp.Output -match 'REPORT older -> not recorded') ([regex]::Matches($mp.Output, '(CHILD \S+ \S+|MODES [a-z\- ]+|REPORT \S+ -> \S+)') -join '; ')
+
+    # --- Package measurement is an opt-in structured return (R4-F4): with it, the object's digest is the final ZIP's and
+    #     its checksum file's; without it, the default output is still the package path.
+    $packageScript = Join-Path $clone 'scripts\package.ps1'
+    $measuredZip = Join-Path $variants 'measured-package.zip'
+    $pm = Invoke-PS @('-Command', "`$o = @(& '$($packageScript.Replace("'", "''"))' -Configuration Release -PackagePath '$($measuredZip.Replace("'", "''"))' -PassThruMeasurement) | Select-Object -Last 1; 'MEASUREMENT ' + `$o.packageSha256 + ' ' + `$o.dll.sha256 + ' ' + (`$o.packagePath -ceq '$($measuredZip.Replace("'", "''"))')")
+    $pmMatch = [regex]::Match($pm.Output, 'MEASUREMENT ([0-9a-f]{64}) ([0-9a-f]{64}) True')
+    $checksumText = if (Test-Path -LiteralPath "$measuredZip.sha256") { [IO.File]::ReadAllText("$measuredZip.sha256") } else { '' }
+    $defaultZip = Join-Path $variants 'default-package.zip'
+    $pd = Invoke-PS @('-Command', "`$o = @(& '$($packageScript.Replace("'", "''"))' -Configuration Release -PackagePath '$($defaultZip.Replace("'", "''"))') | Select-Object -Last 1; 'DEFAULT-OUTPUT ' + (`$o -is [string]) + ' ' + (`$o -ceq '$($defaultZip.Replace("'", "''"))')")
+    Add-Case 'package-measurement-return-leaves-the-zip-equal-to-its-checksum' ($pm.ExitCode -eq 0 -and $pmMatch.Success -and $pmMatch.Groups[1].Value -ceq (Get-Sha $measuredZip) -and $checksumText -match ('^' + $pmMatch.Groups[1].Value) -and $pd.Output -match 'DEFAULT-OUTPUT True True') ("measured $($pmMatch.Groups[1].Value); file $(Get-Sha $measuredZip); checksum file '$($checksumText.Trim())'; " + [regex]::Match($pd.Output, 'DEFAULT-OUTPUT \w+ \w+').Value)
 
     # --- The development purpose is data: an apostrophe gets the ordinary purpose-validation error before any child runs.
     $badPurpose = "umm-0311-admission'"

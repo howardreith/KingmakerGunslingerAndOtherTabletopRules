@@ -150,7 +150,9 @@ function Expand-KmgPackageEntries {
         # No destination may be both a file and a directory (a directory record, or the parent of another file).
         foreach ($file in $files) {
             if ($directories.Contains($file.Target)) { throw "Package contains a directory record and a file at the same destination: $($file.Entry.FullName)" }
-            if (@($files | Where-Object { $_.Target.StartsWith($file.Target + '\', [StringComparison]::OrdinalIgnoreCase) }).Count -ne 0) { throw "Package contains a file that is also the parent of other entries: $($file.Entry.FullName)" }
+            # Any entry below a file (another file or a directory record) makes that file a parent.
+            if (@($files | Where-Object { $_.Target.StartsWith($file.Target + '\', [StringComparison]::OrdinalIgnoreCase) }).Count -ne 0 -or
+                @($directories | Where-Object { $_.StartsWith($file.Target + '\', [StringComparison]::OrdinalIgnoreCase) }).Count -ne 0) { throw "Package contains a file that is also the parent of other entries: $($file.Entry.FullName)" }
         }
         foreach ($file in $files) {
             [void][IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($file.Target))

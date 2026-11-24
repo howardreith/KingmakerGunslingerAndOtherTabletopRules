@@ -220,47 +220,117 @@ function Install-LcLoaderProfile($Paths, [string]$ProfileName) {
 # the candidate exactly as a user installs it (the ZIP's single mod folder),
 # and the test-only harness.
 # $Admitted: the admitted identity from Assert-LcSessionInputs (private copy, package and DLL digests).
+# The mod tree inside an archive: '<relative path>|<SHA-256>' for every file entry under the mod root, in ordinal order.
+function Get-LcArchiveTreeManifest([string]$Zip, [string]$ModId) {
+    Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
+    $archive = [IO.Compression.ZipFile]::OpenRead($Zip)
+    $lines = [Collections.Generic.List[string]]::new()
+    try {
+        foreach ($entry in $archive.Entries) {
+            $name = $entry.FullName.Replace('\', '/')
+            if ($name.EndsWith('/')) { continue }
+            if (-not $name.StartsWith($ModId + '/', [StringComparison]::Ordinal)) { throw "The admitted archive has an entry outside the mod root: $name" }
+            $stream = $entry.Open(); $sha = [Security.Cryptography.SHA256]::Create()
+            try { $hash = ([BitConverter]::ToString($sha.ComputeHash($stream)) -replace '-', '').ToLowerInvariant() } finally { $sha.Dispose(); $stream.Dispose() }
+            $lines.Add($name.Substring($ModId.Length + 1) + '|' + $hash)
+        }
+    }
+    finally { $archive.Dispose() }
+    $result = $lines.ToArray(); [Array]::Sort($result, [StringComparer]::Ordinal)
+    return , $result
+}
+
+# The same manifest for a directory tree on disk.
+function Get-LcTreeManifest([string]$Directory) {
+    $rootPath = [IO.Path]::GetFullPath($Directory).TrimEnd('\') + '\'
+    $result = [string[]]@(Get-ChildItem -LiteralPath $rootPath -Recurse -File -Force | ForEach-Object {
+        $_.FullName.Substring($rootPath.Length).Replace('\', '/') + '|' + (Get-LcSha256 $_.FullName) })
+    [Array]::Sort($result, [StringComparer]::Ordinal)
+    return , $result
+}
+
+# Stages the copy's Mods: the owner set from the pristine copy, the admitted product tree and the harness. The complete
+# replacement is prepared and verified beside Mods (every product file, Info.json and the non-DLL files included, must be
+# the admitted archive's), then swapped in; any failure before the swap leaves the previous Mods untouched, and a failed
+# swap restores it. The admitted private copy is removed in every outcome.
 function Set-LcGameCopyMods($Paths, [string[]]$OwnerMods, $Admitted, [string]$HarnessDir) {
-    # The owner set is checked before anything is replaced: the product never comes from it, and every named mod exists.
+    # The owner set is checked before anything is prepared: the product never comes from it, and every named mod exists.
     foreach ($name in @($OwnerMods | Where-Object { $_ })) {
         if ($name -eq 'KingmakerGunslinger') { throw 'The product comes from the candidate ZIP, never the owner set.' }
         if (-not (Test-Path -LiteralPath (Join-Path $Paths.Pristine "Mods\$name"))) { throw "Mod not found in the pristine set: $name" }
     }
-    # The private staging tree (extracted with the checked extractor by the admission child) is verified against the
-    # admission before Mods is replaced: the private copy's digest and the extracted DLL's digest.
-    $extractedMod = [string]$Admitted.extractedModDirectory
-    $extractedDll = Join-Path $extractedMod 'KingmakerGunslinger.dll'
-    if ((Get-LcSha256 ([string]$Admitted.privateCopy)) -cne [string]$Admitted.packageSha256) { throw 'The admitted candidate copy changed; nothing was staged.' }
-    if (-not (Test-Path -LiteralPath $extractedDll -PathType Leaf) -or (Get-LcSha256 $extractedDll) -cne [string]$Admitted.dllSha256) { throw 'The extracted candidate DLL is not the admitted DLL; nothing was staged.' }
-    if (Test-Path -LiteralPath $Paths.ModsDir) { Remove-Item -LiteralPath $Paths.ModsDir -Recurse -Force }
-    New-Item -ItemType Directory -Path $Paths.ModsDir | Out-Null
     $staged = [ordered]@{}
-    foreach ($name in @($OwnerMods | Where-Object { $_ })) {
-        if ($name -eq 'KingmakerGunslinger') { throw 'The product comes from the candidate ZIP, never the owner set.' }
-        $source = Join-Path $Paths.Pristine "Mods\$name"
-        if (-not (Test-Path -LiteralPath $source)) { throw "Mod not found in the pristine set: $name" }
-        Copy-Item -LiteralPath $source -Destination $Paths.ModsDir -Recurse
-        $info = Get-Content -LiteralPath (Join-Path $source 'Info.json') -Raw | ConvertFrom-Json
-        $dll = Get-ChildItem -LiteralPath $source -Filter '*.dll' -File | Where-Object { $_.Name -eq $(if ($info.PSObject.Properties['AssemblyName'] -and $info.AssemblyName) { $info.AssemblyName } else { "$name.dll" }) }
-        # ManagerVersion is optional in a mod's Info.json.
-        $staged[$name] = [ordered]@{ version = $info.Version
-            managerVersion = $(if ($info.PSObject.Properties['ManagerVersion']) { $info.ManagerVersion })
-            dllSha256 = $(if ($dll) { Get-LcSha256 $dll.FullName }) }
+    try {
+        if ((Get-LcSha256 ([string]$Admitted.privateCopy)) -cne [string]$Admitted.packageSha256) { throw 'The admitted candidate copy changed; nothing was staged.' }
+        $expectedTree = (Get-LcArchiveTreeManifest ([string]$Admitted.privateCopy) 'KingmakerGunslinger') -join "`n"
+        $extractedMod = [string]$Admitted.extractedModDirectory
+        if (-not (Test-Path -LiteralPath $extractedMod -PathType Container) -or (Get-LcTreeManifest $extractedMod) -join "`n" -cne $expectedTree) {
+            throw 'The extracted candidate tree is not the admitted archive (a file differs, is missing or was added); nothing was staged.'
+        }
+        $extractedDll = Join-Path $extractedMod 'KingmakerGunslinger.dll'
+        if ((Get-LcSha256 $extractedDll) -cne [string]$Admitted.dllSha256) { throw 'The extracted candidate DLL is not the admitted DLL; nothing was staged.' }
+        $modsParent = Split-Path -Parent ([IO.Path]::GetFullPath($Paths.ModsDir))
+        $preparing = Join-Path $modsParent ('Mods.kmg-staging-' + [Guid]::NewGuid().ToString('N'))
+        New-Item -ItemType Directory -Path $preparing | Out-Null
+        try {
+            foreach ($name in @($OwnerMods | Where-Object { $_ })) {
+                $source = Join-Path $Paths.Pristine "Mods\$name"
+                Copy-Item -LiteralPath $source -Destination $preparing -Recurse
+                $info = Get-Content -LiteralPath (Join-Path $source 'Info.json') -Raw | ConvertFrom-Json
+                $dll = Get-ChildItem -LiteralPath $source -Filter '*.dll' -File | Where-Object { $_.Name -eq $(if ($info.PSObject.Properties['AssemblyName'] -and $info.AssemblyName) { $info.AssemblyName } else { "$name.dll" }) }
+                # ManagerVersion is optional in a mod's Info.json.
+                $staged[$name] = [ordered]@{ version = $info.Version
+                    managerVersion = $(if ($info.PSObject.Properties['ManagerVersion']) { $info.ManagerVersion })
+                    dllSha256 = $(if ($dll) { Get-LcSha256 $dll.FullName }) }
+            }
+            $product = Join-Path $preparing 'KingmakerGunslinger'
+            Copy-Item -LiteralPath $extractedMod -Destination $product -Recurse
+            if ((Get-LcTreeManifest $product) -join "`n" -cne $expectedTree) { throw 'The prepared product tree is not the admitted archive; nothing was staged.' }
+            $harnessTarget = Join-Path $preparing 'KmgLoaderCompatHarness'
+            New-Item -ItemType Directory -Path $harnessTarget | Out-Null
+            Copy-Item -LiteralPath (Join-Path $HarnessDir 'KmgLoaderCompatHarness.dll') -Destination $harnessTarget
+            Copy-Item -LiteralPath (Join-Path $HarnessDir 'Info.json') -Destination $harnessTarget
+            $previous = $null
+            if (Test-Path -LiteralPath $Paths.ModsDir) {
+                $previous = Join-Path $modsParent ('Mods.kmg-previous-' + [Guid]::NewGuid().ToString('N'))
+                Move-Item -LiteralPath $Paths.ModsDir -Destination $previous
+            }
+            try { Move-Item -LiteralPath $preparing -Destination $Paths.ModsDir }
+            catch { if ($previous -and -not (Test-Path -LiteralPath $Paths.ModsDir)) { Move-Item -LiteralPath $previous -Destination $Paths.ModsDir }; throw }
+            if ($previous) { Remove-Item -LiteralPath $previous -Recurse -Force }
+        }
+        catch { if (Test-Path -LiteralPath $preparing) { Remove-Item -LiteralPath $preparing -Recurse -Force }; throw }
     }
-    # Only the verified private staging tree enters Mods; the staged DLL is compared directly with the admitted digest.
-    try { Move-Item -LiteralPath $extractedMod -Destination (Join-Path $Paths.ModsDir 'KingmakerGunslinger') }
     finally { Remove-LcAdmittedCopy $Admitted }
     $stagedDllSha256 = Get-LcSha256 (Join-Path $Paths.ModsDir 'KingmakerGunslinger\KingmakerGunslinger.dll')
     if ($stagedDllSha256 -cne [string]$Admitted.dllSha256) { throw 'The staged candidate DLL is not the admitted DLL.' }
     $staged['KingmakerGunslinger'] = [ordered]@{ zipSha256 = [string]$Admitted.packageSha256
         dllSha256 = [string]$Admitted.dllSha256
         managerVersion = (Get-Content -LiteralPath (Join-Path $Paths.ModsDir 'KingmakerGunslinger\Info.json') -Raw | ConvertFrom-Json).ManagerVersion }
-    $harnessTarget = Join-Path $Paths.ModsDir 'KmgLoaderCompatHarness'
-    New-Item -ItemType Directory -Path $harnessTarget | Out-Null
-    Copy-Item -LiteralPath (Join-Path $HarnessDir 'KmgLoaderCompatHarness.dll') -Destination $harnessTarget
-    Copy-Item -LiteralPath (Join-Path $HarnessDir 'Info.json') -Destination $harnessTarget
-    $staged['KmgLoaderCompatHarness'] = [ordered]@{ dllSha256 = Get-LcSha256 (Join-Path $harnessTarget 'KmgLoaderCompatHarness.dll') }
+    $staged['KmgLoaderCompatHarness'] = [ordered]@{ dllSha256 = Get-LcSha256 (Join-Path $Paths.ModsDir 'KmgLoaderCompatHarness\KmgLoaderCompatHarness.dll') }
     return $staged
+}
+
+# The report's head fields from a session summary. A summary written before admission records existed has no admission
+# block; its admission is reported as not recorded.
+function Get-LcReportValue($Object, [string]$Name) {
+    if ($null -eq $Object) { return $null }
+    $property = $Object.PSObject.Properties[$Name]
+    if ($null -eq $property) { return $null }
+    # The unary comma keeps an array (empty and single-element included) as one value through the function
+    # pipeline, so the report preserves each field's JSON type and cardinality.
+    return , $property.Value
+}
+function Get-LcReportHead($SummaryData) {
+    $head = [ordered]@{}
+    foreach ($name in @('sessionId', 'session', 'loaderProfile', 'candidateZip', 'candidateZipSha256', 'candidateDllSha256', 'git', 'candidateVersion', 'status',
+            'ownerSaveFiles', 'registryRestored', 'registryRestore', 'registryVerification', 'transactionSucceeded', 'scenarioPassed', 'ownerSavesUnchanged',
+            'ownerInstallUnchanged', 'ownerIntegrity', 'ownership', 'transactionId', 'runtimeLease', 'hostConflict', 'retained', 'failure', 'integrityFailures', 'stagedMods')) {
+        $head[$name] = Get-LcReportValue $SummaryData $name
+    }
+    $admission = Get-LcReportValue $SummaryData 'admission'
+    $head['admission'] = if ($null -ne $admission) { $admission } else { [ordered]@{ mode = 'not recorded (the summary predates admission records)' } }
+    return $head
 }
 
 function Start-LcKingmakerCopy($Paths, [string[]]$Arguments) {

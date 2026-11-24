@@ -144,6 +144,12 @@ function Read-KmgDomainTestEvidence {
     $passed = [string[]]@($lines | Where-Object { $_ -cmatch '^PASS \S' } |
         ForEach-Object { $_.Substring(5) })
     $failed = @($lines | Where-Object { $_ -cmatch '^FAIL ' })
+    # A case the runner reports NOT APPLICABLE ran no assertion: it is never counted as passed, and only the loader
+    # reference case (deferred to Build-Local's exact compiler output) may be not applicable in selected evidence.
+    $notApplicable = [string[]]@($lines | Where-Object { $_ -cmatch '^NOT APPLICABLE \S+: ' } | ForEach-Object { ($_.Substring(15) -split ':', 2)[0] })
+    if (@($notApplicable | Where-Object { $_ -cne 'loader.production-dll-references-pinned-loader' }).Count -ne 0) {
+        throw "Selected domain-test evidence has a case that ran no assertion: $($notApplicable -join ', ')."
+    }
     $unique = New-Object 'Collections.Generic.HashSet[string]' ([StringComparer]::Ordinal)
     foreach ($name in $passed) { [void]$unique.Add($name) }
     if (-not $CompleteSuite -and $observedFilter -cne $Filter) {
@@ -151,7 +157,7 @@ function Read-KmgDomainTestEvidence {
     }
     if ($selected -lt 1 -or $selected -gt $registered -or $completed -ne $selected -or
         $completedRegistered -ne $registered -or $failures -ne 0 -or $failed.Count -ne 0 -or
-        $passed.Count -ne $selected -or $unique.Count -ne $selected -or
+        ($passed.Count + $notApplicable.Count) -ne $selected -or $unique.Count -ne $passed.Count -or
         ($CompleteSuite -and $completed -ne $registered)) {
         throw 'Selected domain-test evidence is empty, failed or inconsistent.'
     }
@@ -162,6 +168,7 @@ function Read-KmgDomainTestEvidence {
         registered = $registered
         failures = 0
         passedNamesSha256 = Get-KmgUtf8Sha256 ($passed -join "`n")
+        notApplicable = @($notApplicable)
         logSha256 = Get-KmgSha256 -Path $LogPath
     }
     if ($CompleteSuite) { $result.completeSuite = $true }

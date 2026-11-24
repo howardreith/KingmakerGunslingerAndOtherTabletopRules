@@ -450,8 +450,10 @@ foreach ($part in @('griffon-mesh.json','griffon-albedo.png')) {
 $packagePath = if ($development) { $developmentLayout.PackagePath } else {
     Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.zip"
 }
-$measuredIdentityPath = Join-Path ([IO.Path]::GetTempPath()) ('kmg-package-identity-' + [Guid]::NewGuid().ToString('N') + '.json')
-& (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release -PackagePath $packagePath -MeasuredIdentityPath $measuredIdentityPath
+$packageMeasurement = @(& (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release -PackagePath $packagePath -PassThruMeasurement) |
+    Where-Object { $_ -is [psobject] -and $_.PSObject.Properties['packageSha256'] -and $_.PSObject.Properties['dll'] } | Select-Object -Last 1
+if ($null -eq $packageMeasurement) { throw 'Package assembly returned no measurement.' }
+Write-Output $packagePath
 if ($LASTEXITCODE -ne 0 -and $null -ne $LASTEXITCODE) {
     throw "Package assembly failed with exit code $LASTEXITCODE."
 }
@@ -481,8 +483,6 @@ $firearmSoundBankPath = Join-Path $stagedMod `
 # The DLL inside the finished ZIP must be the exact compiler output (and the loose copy in the shared output folder must
 # be it too) before either receipt is written; the receipt records all of them.
 # The strict validation package.ps1 already ran (one per package) supplies the measured identities.
-$packageMeasurement = Get-Content -LiteralPath $measuredIdentityPath -Raw | ConvertFrom-Json
-Remove-Item -LiteralPath $measuredIdentityPath -Force
 $measuredPackageSha256 = [string]$packageMeasurement.packageSha256
 $packagedDllIdentity = $packageMeasurement.dll
 if ((Get-KmgSha256 -Path $packagePath) -cne $measuredPackageSha256) { throw 'The package changed after its validation.' }

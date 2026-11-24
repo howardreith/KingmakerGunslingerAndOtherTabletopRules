@@ -399,6 +399,7 @@ function Read-KmgBuildLocalManifest {
         Assert-KmgReceiptDescribesPackagedDll -Receipt $receipt -Measured $measured
         if ($RequireCurrentMaterialInputs) {
             Assert-KmgStampedByReceiptCommit -Receipt $receipt -Measured $measured
+            Assert-KmgProducedFromCleanCommit -Receipt $receipt
             Assert-KmgCandidateMaterialInputsCurrent -RepositoryRoot $RepositoryRoot -Commit ([string]$receipt.commit)
         }
         $receipt | Add-Member -NotePropertyName measuredDll -NotePropertyValue $measured -Force
@@ -433,6 +434,7 @@ function Read-KmgBuildLocalManifest {
     Assert-KmgReceiptDescribesPackagedDll -Receipt $manifest -Measured $measured
     if ($RequireCurrentMaterialInputs) {
         Assert-KmgStampedByReceiptCommit -Receipt $manifest -Measured $measured
+        Assert-KmgProducedFromCleanCommit -Receipt $manifest
         Assert-KmgCandidateMaterialInputsCurrent -RepositoryRoot $RepositoryRoot -Commit ([string]$manifest.commit)
     }
     $manifest | Add-Member -NotePropertyName measuredDll -NotePropertyValue $measured -Force
@@ -475,9 +477,12 @@ function Assert-KmgReceiptDescribesPackagedDll {
         }
     }
     # A receipt that records the exact compiler output must name that same DLL.
-    if ($Receipt.PSObject.Properties['compilerDllSha256'] -and
-        ([string]$Receipt.compilerDllSha256 -cne [string]$Measured.sha256 -or [string]$Receipt.compilerDllMvid -cne [string]$Measured.mvid)) {
+    # Each recorded compiler field is checked on its own (a receipt may carry either without the other).
+    if ($Receipt.PSObject.Properties['compilerDllSha256'] -and [string]$Receipt.compilerDllSha256 -cne [string]$Measured.sha256) {
         throw "The DLL inside the package is not the exact compiler output its receipt records ($($Receipt.compilerDllSha256))."
+    }
+    if ($Receipt.PSObject.Properties['compilerDllMvid'] -and [string]$Receipt.compilerDllMvid -cne [string]$Measured.mvid) {
+        throw "The DLL inside the package is not the exact compiler output its receipt records (MVID $($Receipt.compilerDllMvid))."
     }
 }
 
@@ -530,6 +535,16 @@ function Read-KmgHistoricalReleasePackage {
         packagePath = $package; packageSha256 = $packageSha; dllSha256 = [string]$identity.sha256; dllMvid = [string]$identity.mvid; measuredDll = $identity }
 }
 
+# The admission mode a caller's arguments select: a recorded historical release, a purpose-bound development
+# candidate, or an ordinary Build-Local package.
+function Get-KmgAdmissionMode {
+    param([string]$HistoricalReleaseVersion, [string]$DevelopmentPurpose)
+    if ($HistoricalReleaseVersion -and $DevelopmentPurpose) { throw 'Historical release control and a development purpose are mutually exclusive admission modes.' }
+    if ($HistoricalReleaseVersion) { return 'historical-release' }
+    if ($DevelopmentPurpose) { return 'development' }
+    return 'build-local'
+}
+
 # Deploy-Local admits the candidate again under the runtime lease; it must be the candidate the first admission accepted.
 function Assert-KmgSameAdmission {
     param([Parameter(Mandatory = $true)]$First, [Parameter(Mandatory = $true)]$Second)
@@ -553,23 +568,42 @@ function Get-KmgDeploymentExpectations {
     )
     $isHistorical = [bool]($Admission.PSObject.Properties['historicalRelease'] -and $Admission.historicalRelease)
     if ([bool]$HistoricalRelease -ne $isHistorical) { throw 'The deployment mode does not match the admission.' }
+    foreach ($field in @('packagePath', 'packageSha256', 'commit', 'version', 'dllSha256', 'dllMvid')) {
+        if (-not $Admission.PSObject.Properties[$field] -or [string]::IsNullOrEmpty([string]$Admission.$field)) { throw "A deployment-record field is missing for this admission ($field); nothing was deployed." }
+    }
     if ($isHistorical) {
+        # A historical release has no build receipt: no branch or source-state fingerprint exists for it (recorded as
+        # null, with sourceStateAvailable false); the release tag is its own field.
+        if (-not $Admission.PSObject.Properties['releaseTag'] -or [string]::IsNullOrEmpty([string]$Admission.releaseTag)) { throw 'A deployment-record field is missing for this admission (releaseTag); nothing was deployed.' }
         $expected = [ordered]@{ firearmManifestSha256 = $PackagedFirearmManifestSha256; firearmSoundBankSha256 = $PackagedFirearmSoundBankSha256
-            branch = 'tag:' + [string]$Admission.releaseTag; sourceStateSha256 = 'historical-release ' + [string]$Admission.releaseTag }
-        if ([string]::IsNullOrEmpty([string]$Admission.releaseTag)) { throw 'A deployment-record field is missing for this admission (releaseTag); nothing was deployed.' }
+            branch = $null; sourceStateSha256 = $null; sourceStateAvailable = $false; candidateKind = 'historical-release'; releaseTag = [string]$Admission.releaseTag }
     }
     else {
+        # A Build-Local receipt records its branch (empty for a detached checkout, which is valid) and its source-state
+        # fingerprint; an absent property is a missing field, an empty branch is not.
+        foreach ($field in @('branch', 'sourceStateSha256', 'firearmManifestSha256', 'firearmSoundBankSha256')) {
+            if (-not $Admission.PSObject.Properties[$field] -or $null -eq $Admission.$field) { throw "A deployment-record field is missing for this admission ($field); nothing was deployed." }
+        }
+        if ([string]$Admission.sourceStateSha256 -cnotmatch '^[0-9a-f]{64}$') { throw 'A deployment-record field is missing for this admission (sourceStateSha256); nothing was deployed.' }
         $expected = [ordered]@{ firearmManifestSha256 = [string]$Admission.firearmManifestSha256; firearmSoundBankSha256 = [string]$Admission.firearmSoundBankSha256
-            branch = [string]$Admission.branch; sourceStateSha256 = [string]$Admission.sourceStateSha256 }
+            branch = [string]$Admission.branch; sourceStateSha256 = [string]$Admission.sourceStateSha256; sourceStateAvailable = $true; candidateKind = $null; releaseTag = $null }
     }
     if ($PackagedFirearmManifestSha256 -cne $expected.firearmManifestSha256 -or $PackagedFirearmSoundBankSha256 -cne $expected.firearmSoundBankSha256) {
         throw 'Extracted package firearm audio differs from its immutable build manifest.'
     }
-    foreach ($field in @('branch', 'sourceStateSha256')) { if ([string]::IsNullOrEmpty([string]$expected[$field])) { throw "A deployment-record field is missing for this admission ($field); nothing was deployed." } }
-    foreach ($field in @('packagePath', 'packageSha256', 'commit', 'version', 'dllSha256', 'dllMvid')) {
-        if (-not $Admission.PSObject.Properties[$field] -or [string]::IsNullOrEmpty([string]$Admission.$field)) { throw "A deployment-record field is missing for this admission ($field); nothing was deployed." }
-    }
     return [pscustomobject]$expected
+}
+
+# The identity fields of a deployment record, from the admission and its expectations (Deploy-Local writes exactly
+# these; a historical control adds candidateKind and releaseTag).
+function New-KmgDeploymentRecordIdentity {
+    param([Parameter(Mandatory = $true)]$Admission, [Parameter(Mandatory = $true)]$Expectations)
+    $identity = [ordered]@{ packagePath = [string]$Admission.packagePath; packageSha256 = [string]$Admission.packageSha256
+        commit = [string]$Admission.commit; branch = $Expectations.branch; sourceStateSha256 = $Expectations.sourceStateSha256
+        sourceStateAvailable = [bool]$Expectations.sourceStateAvailable; version = [string]$Admission.version
+        dllSha256 = [string]$Admission.dllSha256; dllMvid = [string]$Admission.dllMvid }
+    if ($Expectations.candidateKind) { $identity.candidateKind = [string]$Expectations.candidateKind; $identity.releaseTag = [string]$Expectations.releaseTag }
+    return $identity
 }
 
 # Staging takes an admitted package from a private copy: the copy must have the admitted package digest, so bytes that
@@ -672,6 +706,28 @@ function Get-KmgGitState {
     $status = @(& git -C $RepositoryRoot status --porcelain)
     if ($LASTEXITCODE -ne 0) { throw 'Unable to read Git status.' }
     return [ordered]@{ Commit = $commit; Branch = $branch; Status = @($status) }
+}
+
+# The fingerprint a build records for an exactly clean checkout of a commit: the commit, with an empty status, tracked
+# diff and untracked list (the same payload Get-KmgSourceStateFingerprint builds for that state).
+function Get-KmgCleanSourceStateFingerprint {
+    param([Parameter(Mandatory = $true)][string]$Commit)
+    $payload = $Commit + "`nstatus`n" + "tracked-diff`n" + "untracked`n"
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try { return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($payload))) -replace '-', '').ToLowerInvariant() }
+    finally { $sha.Dispose() }
+}
+
+# Current-candidate admission compares material inputs with the receipt's commit, so the receipt must also show that
+# its producer built exactly that commit, clean: its recorded source-state fingerprint must be the clean-state
+# fingerprint of the commit. A build from modified inputs (even inputs restored afterwards) records another fingerprint.
+function Assert-KmgProducedFromCleanCommit {
+    param([Parameter(Mandatory = $true)]$Receipt)
+    $recorded = if ($Receipt.PSObject.Properties['sourceStateSha256']) { [string]$Receipt.sourceStateSha256 } else { '' }
+    $clean = Get-KmgCleanSourceStateFingerprint -Commit ([string]$Receipt.commit)
+    if ($recorded -cne $clean) {
+        throw "The receipt's producer source state ($recorded) is not an exactly clean checkout of its commit $($Receipt.commit) (expected $clean); the candidate was not produced from that commit's inputs."
+    }
 }
 
 function Get-KmgSourceStateFingerprint {

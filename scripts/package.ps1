@@ -6,9 +6,10 @@ param(
     [switch]$IncludeSymbols,
     [switch]$AllowMissingFirearmSoundBank,
     [string]$PackagePath,
-    # Writes the strict validation's measured DLL identity and the package digest here (JSON), for a caller that must
-    # not validate the same ZIP twice (Build-Local).
-    [string]$MeasuredIdentityPath
+    # Returns the package path with the strict validation's measured DLL identity and the package digest (one object)
+    # instead of the path alone, for a caller that must not validate the same ZIP twice (Build-Local). Nothing else
+    # is written.
+    [switch]$PassThruMeasurement
 )
 
 Set-StrictMode -Version Latest
@@ -363,12 +364,13 @@ $measuredIdentity = & (Join-Path $PSScriptRoot 'validate-package.ps1') `
 
 $checksum = Get-KmgSha256 -Path $packagePath
 if ($checksum -cne $packageSha256BeforeValidation) { throw 'The package changed while it was being validated.' }
-if ($MeasuredIdentityPath) {
-    if ($null -eq $measuredIdentity) { throw 'Package validation returned no measured DLL identity.' }
-    [ordered]@{ packageSha256 = $checksum; dll = $measuredIdentity } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $MeasuredIdentityPath -Encoding UTF8
-}
+
 Set-Content -LiteralPath $checksumPath -Value "$checksum  $([IO.Path]::GetFileName($packagePath))" -Encoding ASCII
 
 Write-Host "Created standalone UMM package: $packagePath"
 Write-Host "Created checksum: $checksumPath"
-Write-Output $packagePath
+if ($PassThruMeasurement) {
+    if ($null -eq $measuredIdentity) { throw 'Package validation returned no measured DLL identity.' }
+    Write-Output ([pscustomobject]@{ packagePath = $packagePath; packageSha256 = $checksum; dll = $measuredIdentity })
+}
+else { Write-Output $packagePath }

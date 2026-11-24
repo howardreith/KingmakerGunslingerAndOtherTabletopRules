@@ -103,8 +103,7 @@ $packagedFirearmSoundBankSha256 = Get-KmgSha256 -Path $packagedFirearmSoundBank
 # The expected audio and every deployment-record field are established before the target is replaced.
 $expectations = Get-KmgDeploymentExpectations -Admission $manifest -HistoricalRelease:$HistoricalReleaseControl `
     -PackagedFirearmManifestSha256 $packagedFirearmManifestSha256 -PackagedFirearmSoundBankSha256 $packagedFirearmSoundBankSha256
-$recordBranch = $expectations.branch
-$recordSourceState = $expectations.sourceStateSha256
+$recordIdentity = New-KmgDeploymentRecordIdentity -Admission $manifest -Expectations $expectations
 
 $deployedDll = Join-Path $live 'KingmakerGunslinger.dll'
 $deployedFirearmBundle = Join-Path $live 'assets\bundles\kingmakergunslinger.firearms'
@@ -151,14 +150,15 @@ New-Item -ItemType Directory -Path $deploymentDirectory | Out-Null
 $deploymentRecord = [ordered]@{
     schemaVersion = 2
     deployedAtUtc = [DateTime]::UtcNow.ToString('o')
-    packagePath = $manifest.packagePath
-    packageSha256 = $manifest.packageSha256
-    commit = $manifest.commit
-    branch = $recordBranch
-    sourceStateSha256 = $recordSourceState
-    version = $manifest.version
-    dllSha256 = $manifest.dllSha256
-    dllMvid = $manifest.dllMvid
+    packagePath = $recordIdentity.packagePath
+    packageSha256 = $recordIdentity.packageSha256
+    commit = $recordIdentity.commit
+    branch = $recordIdentity.branch
+    sourceStateSha256 = $recordIdentity.sourceStateSha256
+    sourceStateAvailable = $recordIdentity.sourceStateAvailable
+    version = $recordIdentity.version
+    dllSha256 = $recordIdentity.dllSha256
+    dllMvid = $recordIdentity.dllMvid
     deployedDllSha256 = Get-KmgSha256 -Path $deployedDll
     firearmBundleSha256 = Get-KmgSha256 -Path $deployedFirearmBundle
     firearmManifestSha256 = $packagedFirearmManifestSha256
@@ -174,9 +174,9 @@ $deploymentRecord = [ordered]@{
     backupWasEmpty = [bool]$backup.EmptySource
     files = $actualFiles
 }
-if ($HistoricalReleaseControl) {
-    $deploymentRecord.candidateKind = 'historical-release'
-    $deploymentRecord.releaseTag = [string]$manifest.releaseTag
+if ($recordIdentity.Contains('candidateKind')) {
+    $deploymentRecord.candidateKind = $recordIdentity.candidateKind
+    $deploymentRecord.releaseTag = $recordIdentity.releaseTag
 }
 if ($developmentDeployment) {
     $deploymentRecord.candidateKind = 'development'

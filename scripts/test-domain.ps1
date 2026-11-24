@@ -73,39 +73,43 @@ if (-not (Test-Path -LiteralPath $testExecutable -PathType Leaf)) {
 $loaderCase = 'loader.production-dll-references-pinned-loader'
 $filterTerms = @(([string]$env:KMG_TEST_FILTER).Split(@(';', ','), [StringSplitOptions]::RemoveEmptyEntries) | ForEach-Object { $_.Trim() } | Where-Object { $_ })
 $selectsLoaderCase = $filterTerms.Count -eq 0 -or @($filterTerms | Where-Object { $loaderCase.IndexOf($_, [StringComparison]::OrdinalIgnoreCase) -ge 0 }).Count -gt 0
-$bindingNames = @('KMG_PRODUCTION_DLL', 'KMG_PRODUCTION_DLL_SHA256', 'KMG_EXPECTED_LOADER_REFERENCES')
+$bindingNames = @('KMG_PRODUCTION_DLL', 'KMG_PRODUCTION_DLL_SHA256', 'KMG_EXPECTED_LOADER_REFERENCES', 'KMG_LOADER_CASE_DEFERRED')
 $previousBinding = @{}; foreach ($name in $bindingNames) { $previousBinding[$name] = [Environment]::GetEnvironmentVariable($name, 'Process') }
-if ($LoaderCaseAfterExactBuild) { $previousBinding['KMG_LOADER_CASE_DEFERRED'] = [Environment]::GetEnvironmentVariable('KMG_LOADER_CASE_DEFERRED', 'Process'); $bindingNames += 'KMG_LOADER_CASE_DEFERRED'; [Environment]::SetEnvironmentVariable('KMG_LOADER_CASE_DEFERRED', '1', 'Process') }
-if ($selectsLoaderCase -and -not $LoaderCaseAfterExactBuild) {
-    if (-not $PSBoundParameters.ContainsKey('ProductionDll')) {
-        $compileArguments = @{ Configuration = $Configuration; CompileOnly = $true }
-        if ($MSBuildPath) { $compileArguments.MSBuildPath = $MSBuildPath }
-        & (Join-Path $PSScriptRoot 'build.ps1') @compileArguments
-        $ProductionDll = Join-Path $repositoryRoot "artifacts\bin\$Configuration\KingmakerGunslinger\KingmakerGunslinger.dll"
-        $ProductionDllSha256 = if (Test-Path -LiteralPath $ProductionDll -PathType Leaf) { (Get-FileHash -LiteralPath $ProductionDll -Algorithm SHA256).Hash.ToLowerInvariant() } else { '' }
-    }
-    . (Join-Path $PSScriptRoot 'ReferenceProvenance.Common.ps1')
-    $expectedLoaderReferences = @((Get-KmgLoaderReferencePins).References | ForEach-Object {
-        '{0}, Version={1}, Culture=neutral, PublicKeyToken=null' -f [IO.Path]::GetFileNameWithoutExtension([string]$_.relativePath), [string]$_.assemblyVersion })
+$privateProduction = $null
+# Every binding change, the private copy and its digest check, and the runner share this cleanup scope: the caller's
+# variables are restored and the private copy is removed whatever happens.
+try {
     foreach ($name in $bindingNames) { [Environment]::SetEnvironmentVariable($name, $null, 'Process') }
-    if ($ProductionDll -and (Test-Path -LiteralPath $ProductionDll -PathType Leaf)) {
+    if ($LoaderCaseAfterExactBuild) { [Environment]::SetEnvironmentVariable('KMG_LOADER_CASE_DEFERRED', '1', 'Process') }
+    if ($selectsLoaderCase -and -not $LoaderCaseAfterExactBuild) {
+        if (-not $PSBoundParameters.ContainsKey('ProductionDll')) {
+            $compileArguments = @{ Configuration = $Configuration; CompileOnly = $true }
+            if ($MSBuildPath) { $compileArguments.MSBuildPath = $MSBuildPath }
+            & (Join-Path $PSScriptRoot 'build.ps1') @compileArguments
+            $ProductionDll = Join-Path $repositoryRoot "artifacts\bin\$Configuration\KingmakerGunslinger\KingmakerGunslinger.dll"
+            $ProductionDllSha256 = if (Test-Path -LiteralPath $ProductionDll -PathType Leaf) { (Get-FileHash -LiteralPath $ProductionDll -Algorithm SHA256).Hash.ToLowerInvariant() } else { '' }
+        }
+        # A selected, non-deferred loader case always inspects a production DLL: a missing one is refused here.
+        if (-not $ProductionDll -or -not (Test-Path -LiteralPath $ProductionDll -PathType Leaf)) {
+            throw "The production DLL for $loaderCase is missing ($ProductionDll); the case was not run."
+        }
         if ([string]::IsNullOrEmpty($ProductionDllSha256) -or $ProductionDllSha256 -cnotmatch '^[0-9a-f]{64}$') { throw 'The production DLL needs the SHA-256 its compile measured (-ProductionDllSha256).' }
+        . (Join-Path $PSScriptRoot 'ReferenceProvenance.Common.ps1')
+        $expectedLoaderReferences = @((Get-KmgLoaderReferencePins).References | ForEach-Object {
+            '{0}, Version={1}, Culture=neutral, PublicKeyToken=null' -f [IO.Path]::GetFileNameWithoutExtension([string]$_.relativePath), [string]$_.assemblyVersion })
         $privateProduction = Join-Path ([IO.Path]::GetTempPath()) ('kmg-production-dll-' + [Guid]::NewGuid().ToString('N'))
         [void][IO.Directory]::CreateDirectory($privateProduction)
         $privateDll = Join-Path $privateProduction 'KingmakerGunslinger.dll'
         [IO.File]::Copy($ProductionDll, $privateDll)
         if ((Get-FileHash -LiteralPath $privateDll -Algorithm SHA256).Hash.ToLowerInvariant() -cne $ProductionDllSha256) {
-            Remove-Item -LiteralPath $privateProduction -Recurse -Force
             throw "The production DLL changed after its compile ($ProductionDllSha256); the loader-reference case was not run."
         }
         [Environment]::SetEnvironmentVariable('KMG_PRODUCTION_DLL', $privateDll, 'Process')
         [Environment]::SetEnvironmentVariable('KMG_PRODUCTION_DLL_SHA256', $ProductionDllSha256, 'Process')
         [Environment]::SetEnvironmentVariable('KMG_EXPECTED_LOADER_REFERENCES', ($expectedLoaderReferences -join ';'), 'Process')
     }
-}
 
-Write-Host "Running dependency-free domain/reflection tests: $testExecutable"
-try {
+    Write-Host "Running dependency-free domain/reflection tests: $testExecutable"
     if ($RunnerLogPath) {
         $runnerErrorPath = "$RunnerLogPath.stderr"
         $runner = Start-Process -FilePath $testExecutable -NoNewWindow -Wait -PassThru `
@@ -123,7 +127,7 @@ try {
 }
 finally {
     foreach ($name in $bindingNames) { [Environment]::SetEnvironmentVariable($name, $previousBinding[$name], 'Process') }
-    if ((Get-Variable -Name privateProduction -ValueOnly -ErrorAction SilentlyContinue) -and (Test-Path -LiteralPath $privateProduction)) { Remove-Item -LiteralPath $privateProduction -Recurse -Force }
+    if ($privateProduction -and (Test-Path -LiteralPath $privateProduction)) { Remove-Item -LiteralPath $privateProduction -Recurse -Force }
 }
 
 Write-Host 'Dependency-free domain/reflection tests passed.'

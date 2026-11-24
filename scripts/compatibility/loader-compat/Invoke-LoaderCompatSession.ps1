@@ -68,14 +68,6 @@ if ($Report) {
     $reportDir = Join-Path $script:LcEvidenceRoot $Report
     $summaryPath = Join-Path $reportDir 'session-summary.json'
     if (-not (Test-Path -LiteralPath $summaryPath)) { throw "No session summary at $summaryPath" }
-    function Get-LcReportValue($Object, [string]$Name) {
-        if ($null -eq $Object) { return $null }
-        $property = $Object.PSObject.Properties[$Name]
-        if ($null -eq $property) { return $null }
-        # The unary comma keeps an array (empty and single-element included) as one value through the function
-        # pipeline, so the report preserves each field's JSON type and cardinality.
-        return , $property.Value
-    }
     # Shape self-check, before any evidence is printed: empty and single-element arrays must survive the projection.
     $shapeProbe = '{"problems":[],"activeMods":["only"],"steps":[{"step":"a"}]}' | ConvertFrom-Json
     $shapeText = ([ordered]@{ problems = (Get-LcReportValue $shapeProbe 'problems'); activeMods = (Get-LcReportValue $shapeProbe 'activeMods')
@@ -85,12 +77,7 @@ if ($Report) {
     $summaryData = Get-Content -LiteralPath $summaryPath -Raw | ConvertFrom-Json
     if (-not $ReportLaunch) {
         Write-Host "READ-ONLY REPORT $summaryPath sha256=$(Get-LcSha256 $summaryPath)"
-        $head = [ordered]@{}
-        foreach ($name in @('sessionId', 'session', 'loaderProfile', 'candidateZip', 'candidateZipSha256', 'git', 'candidateVersion', 'status',
-                'ownerSaveFiles', 'registryRestored', 'registryRestore', 'registryVerification', 'transactionSucceeded', 'scenarioPassed', 'ownerSavesUnchanged',
-                'ownerInstallUnchanged', 'ownerIntegrity', 'ownership', 'transactionId', 'runtimeLease', 'hostConflict', 'retained', 'failure', 'integrityFailures', 'stagedMods')) {
-            $head[$name] = Get-LcReportValue $summaryData $name
-        }
+        $head = Get-LcReportHead $summaryData
         # The session's shared runtime lease as it stands now: its journal status and whether the shared lock is free.
         $leaseId = Get-LcReportValue $summaryData 'runtimeLease'
         if ($leaseId) {
