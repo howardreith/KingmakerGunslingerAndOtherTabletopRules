@@ -1482,6 +1482,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.cs" />
     <Compile Include="RuntimeTesting\BoundaryObservationPolicy.cs" />
     <Compile Include="RuntimeTesting\ExpandedSummoningNativeProfilePolicy.cs" />
+    <Compile Include="RuntimeTesting\Sprint7ObserverPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningNativeProfile.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.BoundaryDiagnostics.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonViewObservation.cs" />

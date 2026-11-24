@@ -48,7 +48,8 @@ namespace KingmakerGunslinger.Summoning
             bool first=Events.TryMark(attack);
             if(first) AnkylosaurusTailImpactVisual.Observe(owner,victim);
             // VIS-04: one owned cue per resolved strike, before the save.
-            if (AnkylosaurusTailImpactPolicy.QualifiesForCue(exactOwner, exactTail, hit, first, victim != null))
+            if (AnkylosaurusTailImpactPolicy.QualifiesForCue(exactOwner, exactTail, hit, first,
+                    victim != null && !victim.Destroyed, ReferenceEquals(attack.Target, victim)))
             {
                 try
                 {

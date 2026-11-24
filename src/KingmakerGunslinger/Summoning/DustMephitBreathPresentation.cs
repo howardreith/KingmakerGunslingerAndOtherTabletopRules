@@ -9,41 +9,85 @@ namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
     /// VIS-05: the Dust Mephit breath keeps the shared native cold cone for
-    /// delivery, area, orientation and timing, and only the cone the exact
-    /// owned Dust Mephit launches is presented as dust. The visible cone is
-    /// the projectile blueprint's cast effect, which native
+    /// delivery, area, orientation and timing; only the cone the owned Dust
+    /// breath itself launches is presented as dust. The visible cone is the
+    /// projectile blueprint's cast effect, which native
     /// <c>ProjectileController.CreateView</c> spawns through
-    /// <c>FxHelper.SpawnFxOnPoint</c> beside the (renderer-less) projectile
-    /// view. While CreateView runs for that exact projectile, the instance
-    /// spawned from its own cast-effect prefab gets an owned component which
-    /// clones its renderers' materials and recolours the clones and its
-    /// particle colours from ice to dust. When the instance is released to the
-    /// native pool (deactivated) or destroyed, the component puts back the
-    /// original shared materials and colours, destroys its clones and removes
-    /// itself, so the next consumer sees the native ice cone. No shared prefab,
-    /// projectile blueprint or material is written.
+    /// <c>FxHelper.SpawnFxOnPoint</c> beside the renderer-less projectile
+    /// view. The executing ability is read from the native
+    /// <c>AbilityExecutionProcess.Tick</c> that delivers the projectile (the
+    /// launch, CreateView and the spawn run synchronously inside it), so the
+    /// recolour requires the owned Dust breath execution, not merely the Dust
+    /// unit. The instance spawned from that projectile's own cast-effect prefab
+    /// in that CreateView gets an owned component which clones its materials
+    /// and recolours the clones and its particle colours from ice to dust; when
+    /// the instance is released to the native pool or destroyed, the component
+    /// restores the originals, destroys its clones and removes itself. Native
+    /// CreateView skips a cast effect only for a second launch from the same
+    /// point within one frame (the controller clears its previous launch point
+    /// at the end of every tick), so separate executions are never suppressed
+    /// and nothing is spawned here. No shared prefab, projectile blueprint or
+    /// material is written.
     /// </summary>
+    [HarmonyPatch(typeof(Kingmaker.Controllers.AbilityExecutionProcess), "Tick")]
+    internal static class DustMephitBreathExecutionScope
+    {
+        internal static Kingmaker.Controllers.AbilityExecutionProcess Current;
+        internal static int Frame = -1;
+
+        // A nested execution tick restores the enclosing one when it returns.
+        private static void Prefix(Kingmaker.Controllers.AbilityExecutionProcess __instance, out object __state)
+        {
+            __state = new KeyValuePair<Kingmaker.Controllers.AbilityExecutionProcess, int>(Current, Frame);
+            Current = __instance; Frame = Time.frameCount;
+        }
+
+        private static void Postfix(object __state)
+        {
+            var previous = (KeyValuePair<Kingmaker.Controllers.AbilityExecutionProcess, int>)__state;
+            Current = previous.Key; Frame = previous.Value;
+        }
+
+        /// <summary>The ability blueprint executing this frame for this launcher, if any.</summary>
+        internal static string ExecutingAbility(Kingmaker.EntitySystem.Entities.UnitEntityData launcher)
+        {
+            var process = Current;
+            if (process == null || Frame != Time.frameCount || process.Context == null ||
+                !ReferenceEquals(process.Context.MaybeCaster, launcher) || process.Context.AbilityBlueprint == null)
+                return null;
+            return process.Context.AbilityBlueprint.AssetGuid;
+        }
+    }
+
     [HarmonyPatch(typeof(ProjectileController), "CreateView", new[] { typeof(Projectile), typeof(Vector3?) })]
     internal static class DustMephitBreathPresentation
     {
-        // The exact Dust projectile whose cast effect is being spawned now;
-        // set only inside its own CreateView and cleared after one adoption.
-        internal static Projectile Pending;
+        // The Dust projectile whose cast effect may be spawned in this
+        // CreateView; bound to one frame and adopted at most once.
+        internal static readonly DustCastFxAssociation Association = new DustCastFxAssociation();
+        internal static int Unadopted;
 
         private static void Prefix(Projectile projectile)
         {
-            Pending = null;
+            Association.Reset();
             try
             {
-                if (projectile != null && projectile.Launcher != null && projectile.Launcher.Blueprint != null &&
-                    projectile.Blueprint != null && MephitBreathPolicy.PresentsDustBreath(
-                        projectile.Launcher.Blueprint.AssetGuid, projectile.Blueprint.AssetGuid))
-                    Pending = projectile;
+                if (projectile == null || projectile.Launcher == null || projectile.Launcher.Blueprint == null ||
+                    projectile.Blueprint == null) return;
+                string ability = DustMephitBreathExecutionScope.ExecutingAbility(projectile.Launcher);
+                if (MephitBreathPolicy.PresentsDustBreath(projectile.Launcher.Blueprint.AssetGuid, ability,
+                        projectile.Blueprint.AssetGuid))
+                    Association.Begin(projectile, Time.frameCount);
             }
             catch (Exception error) { Debug.LogException(error); }
         }
 
-        private static void Postfix() { Pending = null; }
+        // Ends the association; a creation whose cast effect was not adopted
+        // (native skipped it or the blueprint has none) is only counted.
+        private static void Postfix()
+        {
+            if (Association.End(Time.frameCount) != null) Unadopted++;
+        }
     }
 
     [HarmonyPatch(typeof(Kingmaker.Visual.Particles.FxHelper), "SpawnFxOnPoint",
@@ -54,14 +98,11 @@ namespace KingmakerGunslinger.Summoning
         {
             try
             {
-                Projectile projectile = DustMephitBreathPresentation.Pending;
-                if (projectile == null || __result == null || prefab == null) return;
-                GameObject castFx = projectile.Blueprint.CastFx.Load();
-                if (!ReferenceEquals(prefab, castFx)) return;
-                DustMephitBreathPresentation.Pending = null;
-                DustMephitBreathTint existing = __result.GetComponent<DustMephitBreathTint>();
-                if (existing != null) existing.Restore();
-                __result.AddComponent<DustMephitBreathTint>().Apply(projectile.Launcher.UniqueId);
+                if (__result == null || prefab == null) return;
+                var projectile = DustMephitBreathPresentation.Association.Peek(Time.frameCount) as Projectile;
+                if (projectile == null || !ReferenceEquals(prefab, projectile.Blueprint.CastFx.Load())) return;
+                if (DustMephitBreathPresentation.Association.Adopt(Time.frameCount) == null) return;
+                DustMephitBreathTint.Adopt(__result, projectile.Launcher.UniqueId);
             }
             catch (Exception error)
             {
@@ -112,6 +153,13 @@ namespace KingmakerGunslinger.Summoning
         internal static string LastLauncher;
         internal static string[] LastRenderers = new string[0];
         internal int RecolouredMaterials, RecolouredParticleColours;
+
+        internal static void Adopt(GameObject instance, string launcher)
+        {
+            DustMephitBreathTint existing = instance.GetComponent<DustMephitBreathTint>();
+            if (existing != null) existing.Restore();
+            instance.AddComponent<DustMephitBreathTint>().Apply(launcher);
+        }
 
         internal void Apply(string launcher)
         {

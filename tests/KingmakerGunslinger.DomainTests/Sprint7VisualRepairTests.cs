@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using KingmakerGunslinger.RuntimeTesting;
 using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
@@ -314,44 +315,74 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         // VIS-04: the owned impact cue fires for exactly one resolved tail hit
-        // and for nothing else; the later save plays no part in the decision.
+        // on the roll's own present target and for nothing else; the later save
+        // plays no part in the decision.
         internal static void Vis04ImpactCueQualification()
         {
             int qualifying = 0;
-            for (int mask = 0; mask < 32; mask++)
+            for (int mask = 0; mask < 64; mask++)
             {
                 bool exactOwner = (mask & 1) != 0, exactTail = (mask & 2) != 0, hit = (mask & 4) != 0,
-                    first = (mask & 8) != 0, victim = (mask & 16) != 0;
-                bool cue = Summoning.AnkylosaurusTailImpactPolicy.QualifiesForCue(exactOwner, exactTail, hit, first, victim);
+                    first = (mask & 8) != 0, victim = (mask & 16) != 0, rollTarget = (mask & 32) != 0;
+                bool cue = Summoning.AnkylosaurusTailImpactPolicy.QualifiesForCue(exactOwner, exactTail, hit, first, victim, rollTarget);
                 if (cue) qualifying++;
-                Assertions.Equal(exactOwner && exactTail && hit && first && victim, cue,
-                    "Only the exact owner's resolved first tail hit on a creature plays the cue (mask " + mask + ").");
+                Assertions.Equal(exactOwner && exactTail && hit && first && victim && rollTarget, cue,
+                    "Only the exact owner's resolved first tail hit on the roll's own present target plays the cue (mask " + mask + ").");
             }
-            Assertions.Equal(1, qualifying, "A miss, a foreign owner or weapon, a repeated observation or no target never plays it.");
+            Assertions.Equal(1, qualifying,
+                "A miss, a foreign owner or weapon, a repeated observation, a missing or destroyed creature or a creature other than the roll's target never plays it.");
             Assertions.Equal("Sweetener_Low_06_Quake", Summoning.AnkylosaurusTailImpactPolicy.ImpactCue,
                 "The provisional cue is the installed VFX-bank quake sweetener.");
             Assertions.Equal("VFX", Summoning.SummonPlaytestR6Policy.CueBank, "It plays from the bank the cue helper already loads.");
         }
 
-        // VIS-05: only the exact owned Dust Mephit's launch of the shared cold
-        // cone is presented as dust; the shared mapping is unchanged.
+        // VIS-05: only the owned Dust breath executed by the exact owned Dust
+        // Mephit presents the shared cold cone as dust; the mapping is unchanged.
         internal static void Vis05DustBreathIdentityIsExact()
         {
             string cold = Summoning.MephitBreathPolicy.ColdConeProjectileGuid;
             string dust = Summoning.MephitBreathPolicy.DustMephitUnitGuid;
+            string breath = Summoning.MephitBreathPolicy.DustMephitBreathGuid;
             Assertions.Equal(cold, Summoning.MephitBreathPolicy.ProjectileFor(Summoning.MephitBreathDamageKind.Slashing),
                 "The Dust breath still delivers through the shared cold cone.");
             Assertions.Equal(cold, Summoning.MephitBreathPolicy.ProjectileFor(Summoning.MephitBreathDamageKind.Cold),
                 "The shared cold-cone mapping for other mephits is unchanged.");
-            Assertions.True(Summoning.MephitBreathPolicy.PresentsDustBreath(dust, cold), "The Dust Mephit's cone is presented as dust.");
+            Assertions.True(Summoning.MephitBreathPolicy.PresentsDustBreath(dust, breath, cold), "The Dust Mephit's own breath is presented as dust.");
             JObject ledger = JObject.Parse(File.ReadAllText("blueprints/blueprints.json"));
             Func<string, string> guid = symbol => (string)ledger["entries"].Single(entry => (string)entry["symbol"] == symbol)["guid"];
-            Assertions.Equal(dust, guid("KMG.Summoning.Unit.DustMephit"), "The identity is the ledger's owned Dust Mephit unit.");
+            Assertions.Equal(dust, guid("KMG.Summoning.Unit.DustMephit"), "The unit is the ledger's owned Dust Mephit.");
+            Assertions.Equal(breath, guid("KMG.Summoning.Special.DustMephit.Breath"), "The ability is the ledger's owned Dust breath.");
             foreach (string other in new[] { "KMG.Summoning.Unit.AirMephit", "KMG.Summoning.Unit.IceMephit", "KMG.Summoning.Unit.SaltMephit", "KMG.Summoning.Unit.EarthMephit" })
-                Assertions.False(Summoning.MephitBreathPolicy.PresentsDustBreath(guid(other), cold), other + " keeps the native cold cone.");
-            Assertions.False(Summoning.MephitBreathPolicy.PresentsDustBreath(dust, Summoning.MephitBreathPolicy.AcidConeProjectileGuid),
-                "Another projectile from the Dust Mephit is not recoloured.");
-            Assertions.False(Summoning.MephitBreathPolicy.PresentsDustBreath(null, cold), "A launcher without identity is not recoloured.");
+                Assertions.False(Summoning.MephitBreathPolicy.PresentsDustBreath(guid(other), breath, cold), other + " keeps the native cold cone.");
+            Assertions.False(Summoning.MephitBreathPolicy.PresentsDustBreath(dust, guid("KMG.Summoning.Special.IceMephit.Breath"), cold),
+                "Another ability executed by the Dust Mephit keeps the native cold cone.");
+            Assertions.False(Summoning.MephitBreathPolicy.PresentsDustBreath(dust, null, cold), "A launch outside an ability execution keeps the native cone.");
+            Assertions.False(Summoning.MephitBreathPolicy.PresentsDustBreath(dust, breath, Summoning.MephitBreathPolicy.AcidConeProjectileGuid),
+                "Another projectile is not recoloured.");
+            Assertions.False(Summoning.MephitBreathPolicy.PresentsDustBreath(null, breath, cold), "A launcher without identity is not recoloured.");
+        }
+
+        // VIS-05: the projectile-to-effect association lives for one frame and
+        // one adoption; an interrupted creation cannot bind a later spawn.
+        internal static void Vis05CastFxAssociationIsBounded()
+        {
+            var association = new Summoning.DustCastFxAssociation();
+            object dust = new object();
+            association.Begin(dust, 10);
+            Assertions.True(ReferenceEquals(dust, association.Peek(10)), "The pending projectile is visible in its own frame.");
+            Assertions.True(ReferenceEquals(dust, association.Adopt(10)), "The first spawn of its cast effect adopts it.");
+            Assertions.True(association.Adopt(10) == null, "A second spawn in the same creation does not adopt it again.");
+            Assertions.True(association.End(10) == null, "An adopted creation ends with nothing outstanding.");
+            association.Begin(dust, 11);
+            Assertions.True(ReferenceEquals(dust, association.End(11)), "A creation whose native effect was skipped is reported as unadopted.");
+            Assertions.True(association.Peek(11) == null, "Ending clears the association.");
+            association.Begin(dust, 12);
+            // The creation threw before its end: nothing in a later frame can use it.
+            Assertions.True(association.Peek(13) == null && association.Adopt(13) == null && association.End(13) == null,
+                "An interrupted creation leaves no association for a later frame.");
+            association.Begin(dust, 14);
+            association.Reset();
+            Assertions.True(association.Adopt(14) == null, "The next creation's reset clears a stale association.");
         }
 
         // VIS-05: the recolour keeps each colour's alpha and brightness and
@@ -375,6 +406,70 @@ namespace KingmakerGunslinger.DomainTests
                 !Summoning.MephitBreathPolicy.IsSubtractiveMaterial("Glow00_32_Add_Hdr_Offset_00"), "Subtractive layers are recognised by their native names.");
             float[] invalid = Summoning.MephitBreathPolicy.DustTint(float.NaN, 0, 0, .3f);
             Assertions.True(invalid.Take(3).All(value => !float.IsNaN(value)) && invalid[3] == .3f, "Non-finite input yields a finite dust tone.");
+        }
+
+        // F13: the six Sprint 7 review phases are exact fresh, save-free phases
+        // of the Sprint 32 review scenario only; outdoor ones use the native
+        // Default fixture, interior ones the static interior; none grants
+        // player input, Wall preparation or host restriction; only the UI phase
+        // may capture screens (enforced in NativeIconScreenEvidence.Supports).
+        internal static void Sprint7AdmissionBoundaries()
+        {
+            string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview;
+            string[] outdoor = { ExpandedSummoningNativeProfilePolicy.Sprint39S7GhaelePhase, ExpandedSummoningNativeProfilePolicy.Sprint39S7ModelsPhase,
+                ExpandedSummoningNativeProfilePolicy.Sprint39S7UiPhase, ExpandedSummoningNativeProfilePolicy.Sprint39S7EffectsPhase };
+            string[] interior = { ExpandedSummoningNativeProfilePolicy.Sprint39S7GhaeleInteriorPhase, ExpandedSummoningNativeProfilePolicy.Sprint39S7ModelsInteriorPhase };
+            foreach (string phase in outdoor.Concat(interior))
+            {
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint7Phase(phase), phase + " is a Sprint 7 phase.");
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), phase + " admitted fresh and save-free.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), phase + " requires automatic exit.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 1, 0, 0, false, false, false, false, true), phase + " cannot replace a live world.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 1, 0, false, false, false, false, true), phase + " cannot start with a party.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, true, false, false, false, true), phase + " cannot start in a loaded area.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, true, false, true), phase + " cannot import a save.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, false), phase + " requires the idle menu.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 2, phase), phase + " refuses an extra parameter.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 0, phase), phase + " refuses a missing parameter.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 1, phase + " "), phase + " refuses a malformed name.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 1, phase.ToUpperInvariant()), phase + " refuses a case variant.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview, 1, phase, 0, 0, 0, false, false, false, false, true),
+                    phase + " is refused under another scenario.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview, phase), phase + " lends no outdoor admission to another scenario.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase(phase), phase + " grants no player input.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.WallFixturePhase(phase), phase + " never acquires Wall preparation.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint40Phase(phase), phase + " is not host-restricted.");
+            }
+            foreach (string phase in outdoor)
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, phase) && ExpandedSummoningNativeProfilePolicy.Sprint7OutdoorPhase(phase), phase + " uses the outdoor native Default fixture.");
+            foreach (string phase in interior)
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, phase) || ExpandedSummoningNativeProfilePolicy.Sprint7OutdoorPhase(phase), phase + " stays in the static interior.");
+            foreach (string near in new[] { "summon-s7", "summon-s7-", "summon-s7-fx", "summon-s7-ghaele-dim", "summon-s7-trumpet" })
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint7Phase(near) || ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 1, near), near + " is not admitted.");
+            string screen = File.ReadAllText("src/KingmakerGunslinger/RuntimeTesting/NativeIconScreenEvidence.cs");
+            Assertions.True(screen.Contains("ExpandedSummoningNativeProfilePolicy.Sprint39S7UiPhase"), "The UI phase is the Sprint 7 phase admitted to screen capture.");
+            foreach (string name in new[] { "Sprint39S7GhaelePhase", "Sprint39S7GhaeleInteriorPhase", "Sprint39S7ModelsPhase", "Sprint39S7ModelsInteriorPhase", "Sprint39S7EffectsPhase" })
+                Assertions.False(screen.Contains("ExpandedSummoningNativeProfilePolicy." + name), name + " is not admitted to screen capture.");
+        }
+
+        // F4: the tooltip observer acts only on what it acquired.
+        internal static void Sprint7ObserverOwnsOnlyItsAcquisitions()
+        {
+            Assertions.True(RuntimeTesting.Sprint7ObserverPolicy.CanOpenWindow(false, false, false), "A clear screen admits the observer's window.");
+            Assertions.False(RuntimeTesting.Sprint7ObserverPolicy.CanOpenWindow(true, false, false), "An initially open description window refuses the phase.");
+            Assertions.False(RuntimeTesting.Sprint7ObserverPolicy.CanOpenWindow(false, true, false), "An open hover tooltip refuses the phase.");
+            Assertions.False(RuntimeTesting.Sprint7ObserverPolicy.CanOpenWindow(false, false, true), "An unrelated modal refuses the phase.");
+            object opened = new object(), foreign = new object();
+            Assertions.True(RuntimeTesting.Sprint7ObserverPolicy.OwnsWindow(opened, opened), "The window showing the observer's own data is its own.");
+            Assertions.False(RuntimeTesting.Sprint7ObserverPolicy.OwnsWindow(foreign, opened), "A replaced or foreign window is never closed by the observer.");
+            Assertions.False(RuntimeTesting.Sprint7ObserverPolicy.OwnsWindow(null, null), "With nothing opened the observer owns nothing.");
+            Assertions.False(RuntimeTesting.Sprint7ObserverPolicy.OwnsWindow(foreign, null), "After its own close the observer owns no window.");
+            Assertions.True(RuntimeTesting.Sprint7ObserverPolicy.OwnsFact(false, true), "A fact the observer's grant created is removed.");
+            Assertions.False(RuntimeTesting.Sprint7ObserverPolicy.OwnsFact(true, true), "A pre-existing control fact is left in place.");
+            Assertions.False(RuntimeTesting.Sprint7ObserverPolicy.OwnsFact(false, false), "A refused grant leaves nothing to remove.");
+            string source = File.ReadAllText("src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.Sprint7Presentation.cs");
+            Assertions.False(source.Contains("catch (Exception error) { windows["), "No per-window catch swallows an unexpected UI or ownership loss.");
+            Assertions.True(source.Contains("screens.Dispose()"), "The screen capture session is disposed.");
         }
     }
 }

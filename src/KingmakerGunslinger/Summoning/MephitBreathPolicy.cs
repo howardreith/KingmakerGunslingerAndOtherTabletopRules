@@ -187,15 +187,20 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         internal const string DustMephitUnitGuid = "30f6615badf14d21b41d6468d5c93ac3";
 
+        /// <summary>The owned Dust Mephit breath ability (KMG.Summoning.Special.DustMephit.Breath).</summary>
+        internal const string DustMephitBreathGuid = "9bf56be04a0c452fa628136a7a454b22";
+
         /// <summary>
-        /// An instance of the shared cold cone is dust only when this exact
-        /// owned unit launched it. Every other launcher of the same native cone
-        /// (Air, Earth, Salt and Ice Mephits, native spells and monsters) and
-        /// every other projectile the Dust Mephit launches keep the native look.
+        /// The shared cold cone is dust only when the exact owned Dust Mephit
+        /// launches it while executing its own breath. Every other launcher of
+        /// the same native cone (Air, Earth, Salt and Ice Mephits, native spells
+        /// and monsters), any other ability the Dust Mephit executes and any
+        /// launch outside an ability execution keep the native look.
         /// </summary>
-        internal static bool PresentsDustBreath(string launcherBlueprintGuid, string projectileGuid)
+        internal static bool PresentsDustBreath(string launcherBlueprintGuid, string executingAbilityGuid, string projectileGuid)
         {
             return string.Equals(launcherBlueprintGuid, DustMephitUnitGuid, StringComparison.Ordinal) &&
+                string.Equals(executingAbilityGuid, DustMephitBreathGuid, StringComparison.Ordinal) &&
                 string.Equals(projectileGuid, ColdConeProjectileGuid, StringComparison.Ordinal);
         }
 
@@ -256,6 +261,43 @@ namespace KingmakerGunslinger.Summoning
             if (dice <= 0 || sides <= 0) throw new ArgumentOutOfRangeException("dice");
             return row.Description + " Only the mephit's enemies in the cone are affected: " + dice + "d" + sides + " " +
                 DamageWord(row.Required) + " damage; a Reflex save halves it.";
+        }
+    }
+
+    /// <summary>
+    /// VIS-05: carries one Dust projectile from its own CreateView to the cast
+    /// effect spawned inside it. Bound to the frame it began in and adopted at
+    /// most once; a CreateView that throws before its end leaves an
+    /// association that a later frame cannot use, and the next CreateView
+    /// resets it.
+    /// </summary>
+    internal sealed class DustCastFxAssociation
+    {
+        private object _token;
+        private int _frame = -1;
+        private bool _adopted;
+
+        internal void Reset() { _token = null; _frame = -1; _adopted = false; }
+
+        internal void Begin(object token, int frame) { _token = token; _frame = frame; _adopted = false; }
+
+        /// <summary>The pending token for this frame, without consuming it.</summary>
+        internal object Peek(int frame) { return _token != null && frame == _frame && !_adopted ? _token : null; }
+
+        /// <summary>Consumes the pending token for this frame once.</summary>
+        internal object Adopt(int frame)
+        {
+            object token = Peek(frame);
+            if (token != null) _adopted = true;
+            return token;
+        }
+
+        /// <summary>Ends the association; returns the token if no effect was adopted (reported, never supplied).</summary>
+        internal object End(int frame)
+        {
+            object pending = Peek(frame);
+            Reset();
+            return pending;
         }
     }
 }

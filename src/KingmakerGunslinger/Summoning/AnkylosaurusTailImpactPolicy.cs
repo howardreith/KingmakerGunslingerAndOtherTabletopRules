@@ -22,14 +22,16 @@ namespace KingmakerGunslinger.Summoning
 
         /// <summary>
         /// A qualifying impact is the exact owner's exact tail weapon, a
-        /// resolved native hit, its first observation and a struck creature.
-        /// The later Fortitude save, its result and the target's survival do
-        /// not change whether the club landed.
+        /// resolved native hit, its first observation, and a struck creature
+        /// that is the attack roll's own target and still in the game (a
+        /// killing hit still qualifies: death is resolved later). The later
+        /// Fortitude save, its result and the target's survival do not change
+        /// whether the club landed.
         /// </summary>
         internal static bool QualifiesForCue(bool exactOwner, bool exactTail, bool hit,
-            bool firstObservation, bool victimPresent)
+            bool firstObservation, bool victimPresent, bool victimIsRollTarget)
         {
-            return exactOwner && exactTail && hit && firstObservation && victimPresent;
+            return exactOwner && exactTail && hit && firstObservation && victimPresent && victimIsRollTarget;
         }
 
         internal static float Weight(float elapsed)
