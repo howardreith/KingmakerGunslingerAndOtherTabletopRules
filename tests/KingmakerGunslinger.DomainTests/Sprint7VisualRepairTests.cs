@@ -1102,6 +1102,44 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("intervention-not-restored", loss(playing, playing, 1, true, 0, 1, false, true, false, true, true, true, false, 0, 1), "The observer's hook must be gone.");
             Assertions.Equal("survivor-stopped-by-other-retirement", loss(playing, playing, 1, true, 1, 1, false, true, false, true, true, true, false, 0, 0), "A stop for the survivor from the other retirement fails.");
             Assertions.Equal("other-not-stopped-by-own-id", loss(playing, playing, 0, false, 0, 1, false, true, false, true, true, true, false, 0, 0), "The other source must request its own stop.");
+
+            // The settled retirement predicate: the product's stop is requested in the retired view's destroy callback.
+            DateTime retire = new DateTime(2026, 11, 24, 20, 29, 2, 326, DateTimeKind.Utc);
+            Assertions.True(Sprint7ObserverPolicy.RetiredByOwnId(1, "stop-requested", "stop-requested", retire.AddMilliseconds(4), retire.AddMilliseconds(53), retire), "A stop requested just after the call, then the native end, is its own retirement.");
+            Assertions.False(Sprint7ObserverPolicy.RetiredByOwnId(0, null, "stop-requested", null, null, retire), "Read in the retirement frame (nothing yet) it is not established.");
+            Assertions.False(Sprint7ObserverPolicy.RetiredByOwnId(1, "stop-requested", "stop-requested", retire.AddMilliseconds(4), null, retire), "Without the native end it is a request only.");
+            Assertions.False(Sprint7ObserverPolicy.RetiredByOwnId(1, "stop-requested", "stop-requested", retire.AddSeconds(-1), retire.AddMilliseconds(53), retire), "A stop before the retirement is not caused by it.");
+            Assertions.False(Sprint7ObserverPolicy.RetiredByOwnId(1, "failed:X", "stop-requested", retire.AddMilliseconds(4), retire.AddMilliseconds(53), retire), "A failed stop is not a retirement.");
+
+            // Round 6, offline re-evaluation of the retained native records (the in-run verdicts are kept as recorded):
+            // 202648Z (candidate 740d94a995) read the other source's stop in the retirement frame; its own records, read
+            // once settled, are judged by the same predicate. 200320Z (candidate f3bfab1303) selected a cue that had
+            // already ended and must stay unestablished.
+            foreach (var retained in new[] {
+                new { Name = "20261124T202648Z-owner-0.33.0-s7-fx-01-fx.json", Recorded = "other-not-stopped-by-own-id", Settled = (string)null },
+                new { Name = "20261124T200320Z-owner-0.33.0-s7-fx-01-fx.json", Recorded = "not-both-playing", Settled = "not-both-playing" } })
+            {
+                JObject phase = (JObject)JObject.Parse(File.ReadAllText(Path.Combine("docs/evidence/sprint7/r6", retained.Name)))["records"]["summon-s7-effects.json"];
+                JObject row = (JObject)phase["ankylosaurus"]["callbackLoss"];
+                Assertions.Equal(retained.Recorded, (string)row["verdict"], retained.Name + ": the in-run verdict is retained as recorded.");
+                Func<JToken, DateTime?> utc = token => token == null || token.Type == JTokenType.Null ? (DateTime?)null : ((DateTime)token).ToUniversalTime();
+                DateTime retiredAt = ((DateTime)phase["timeline"].First(mark => (string)mark["mark"] == "anky-loss-retire-other")["utc"]).ToUniversalTime();
+                uint otherId = (uint)row["before"]["other"]["playingId"], keptId = (uint)row["before"]["survivor"]["playingId"];
+                JObject other = phase["cuesAtEnd"].OfType<JObject>().First(cue => (uint)cue["playingId"] == otherId);
+                JObject keptAtWindowEnd = (JObject)row["survivorAtWindowEnd"]["cue"];
+                JObject afterDisposal = (JObject)row["survivorAfterDisposal"];
+                var window = row["window"].OfType<JObject>().ToList();
+                bool retiredByOwnId = Sprint7ObserverPolicy.RetiredByOwnId((int)other["stopAttempts"], (string)other["stopResult"], "stop-requested", utc(other["stopRequestedUtc"]), utc(other["endUtc"]), retiredAt);
+                string settled = Sprint7ObserverPolicy.CallbackLossVerdict((string)row["before"]["survivorPlayback"], (string)row["before"]["otherPlayback"], (int)other["stopAttempts"], retiredByOwnId,
+                    keptAtWindowEnd["stopResult"].Type == JTokenType.Null ? 0 : 1, ((JArray)row["survivorAtWindowEnd"]["callbacksWithheld"]).Count, keptAtWindowEnd["endUtc"].Type != JTokenType.Null,
+                    window.Any(sample => (string)sample["survivorPlayback"] == inactive), window.Any(sample => (string)sample["survivorPlayback"] == unknown), (bool)row["survivorAtWindowEnd"]["tracked"],
+                    (bool)afterDisposal["viewDestroyed"], (bool)afterDisposal["playbackComponentDestroyed"], afterDisposal["cue"]["endUtc"].Type != JTokenType.Null,
+                    (int)afterDisposal["unrelatedRecordsChanged"], (int)row["interventionHooksAfter"] + ((JArray)row["interventionDisposeFailures"]).Count);
+                Console.WriteLine("ANKY-CALLBACK-LOSS-REEVALUATION " + retained.Name + " recorded=" + row["verdict"] + " settled=" + (settled ?? "characterized") +
+                    " otherId=" + otherId + " otherStopRequested=" + other["stopRequestedUtc"] + " otherEnd=" + other["endUtc"] + " survivorId=" + keptId +
+                    " withheld=" + row["survivorAtWindowEnd"]["callbacksWithheld"].ToString(Newtonsoft.Json.Formatting.None) + " firstInactive=" + row["survivorFirstInactiveUtc"]);
+                Assertions.Equal(retained.Settled, settled, retained.Name + ": the settled re-evaluation of the retained records.");
+            }
         }
 
         private static IEnumerable<object> Body(KmgLoaderCompatHarness.OwnedProbeResources owned, Action unpause, Action subscribe, Action seed,

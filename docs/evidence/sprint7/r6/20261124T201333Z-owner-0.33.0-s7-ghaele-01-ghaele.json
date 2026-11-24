@@ -1,0 +1,2901 @@
+{
+ "harness": {
+  "conditions": {},
+  "exitRequested": true,
+  "failure": null,
+  "finishedUtc": "2026-11-24T20:17:38.5855416Z",
+  "isolation": "saves=<lab>/Saved Games; areas=<lab>/Areas",
+  "isolationRestored": true,
+  "kmgGhaeleLifetime_lifecycle": {
+   "area": "JamandisMansionThroneroom",
+   "cases": {
+    "abandonedAfterSpawn": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+     "abilityGrantRemains": false,
+     "borrowed": false,
+     "bystanderAfterAbandon": {
+      "finished": false,
+      "held": true,
+      "result": null
+     },
+     "bystanderBeforeAbandon": {
+      "finished": false,
+      "held": true,
+      "result": null
+     },
+     "bystanderCommandSurvived": true,
+     "commandReleased": true,
+     "earlySummonDestroyed": true,
+     "foreignGhaele": "26000ba3-3745-486d-9545-35824f43fc62",
+     "foreignPreserved": true,
+     "granted": true,
+     "lateSummonsDestroyed": 1,
+     "loanReleased": true,
+     "ownedCommandRemains": false,
+     "ownedSummon": "31e1fb69-5aee-46ca-b487-56438f9a9bcc",
+     "pendingVerdictOnOwnedSpawn": "late-owned-summon",
+     "spawnSeenBeforeRegistration": true,
+     "witness": {
+      "known": [
+       "26000ba3-3745-486d-9545-35824f43fc62"
+      ],
+      "owned": [
+       "31e1fb69-5aee-46ca-b487-56438f9a9bcc"
+      ],
+      "subscribed": false,
+      "unattributed": [
+       "26000ba3-3745-486d-9545-35824f43fc62"
+      ]
+     }
+    },
+    "abandonedPending": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+     "abilityGrantRemains": false,
+     "beforeDispose": {
+      "commandPending": true,
+      "grantIsCastInstance": true,
+      "loanHeld": true,
+      "overrideCasterLevel": 20
+     },
+     "borrowed": false,
+     "bystanderAfterAbandon": {
+      "finished": false,
+      "held": true,
+      "result": null
+     },
+     "bystanderBeforeAbandon": {
+      "finished": false,
+      "held": true,
+      "result": null
+     },
+     "bystanderCommandSurvived": true,
+     "commandReleased": true,
+     "foreignGhaele": "c71c4360-1b13-4aaa-96da-de650ef16be1",
+     "foreignPreserved": true,
+     "granted": true,
+     "lateSummonsDestroyed": 0,
+     "loanReleased": true,
+     "ownedCommandRemains": false,
+     "verdict": null,
+     "witness": {
+      "known": [
+       "c71c4360-1b13-4aaa-96da-de650ef16be1"
+      ],
+      "owned": [],
+      "subscribed": false,
+      "unattributed": []
+     }
+    },
+    "borrowedCl20Override": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+     "borrowed": true,
+     "commandReleased": true,
+     "finished": true,
+     "granted": false,
+     "injectedWrongRestore": {
+      "abilityPresent": true,
+      "grantRetained": null,
+      "overrideParams": {
+       "casterLevel": 20,
+       "spellLevel": 9
+      },
+      "reason": "parameters-not-restored",
+      "released": false,
+      "sameInstance": true
+     },
+     "lateSummonsDestroyed": 0,
+     "loan": {
+      "abilityPresent": true,
+      "grantRetained": null,
+      "overrideParams": {
+       "casterLevel": 20,
+       "spellLevel": 9
+      },
+      "reason": null,
+      "released": true,
+      "sameInstance": true
+     },
+     "loanReleased": true,
+     "overrideDuringCast": {
+      "casterLevel": 20,
+      "spellLevel": 9
+     },
+     "result": "Success",
+     "spawned": "KMG_Summoning_Unit_GhaeleAzata",
+     "summonedId": "cacf371a-76d0-46e5-9171-9d13dbd8445d",
+     "verdictHeld": true
+    },
+    "borrowedMissing": {
+     "loan": {
+      "abilityPresent": false,
+      "grantRetained": null,
+      "overrideParams": null,
+      "reason": "borrowed-missing",
+      "released": false,
+      "sameInstance": false
+     },
+     "refused": true
+    },
+    "borrowedNonDefault": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+     "borrowed": true,
+     "commandReleased": true,
+     "finished": true,
+     "granted": false,
+     "injectedWrongRestore": {
+      "abilityPresent": true,
+      "grantRetained": null,
+      "overrideParams": {
+       "casterLevel": 7,
+       "spellLevel": 3
+      },
+      "reason": "parameters-not-restored",
+      "released": false,
+      "sameInstance": true
+     },
+     "lateSummonsDestroyed": 0,
+     "loan": {
+      "abilityPresent": true,
+      "grantRetained": null,
+      "overrideParams": {
+       "casterLevel": 7,
+       "spellLevel": 3
+      },
+      "reason": null,
+      "released": true,
+      "sameInstance": true
+     },
+     "loanReleased": true,
+     "overrideDuringCast": {
+      "casterLevel": 20,
+      "spellLevel": 9
+     },
+     "result": "Success",
+     "spawned": "KMG_Summoning_Unit_GhaeleAzata",
+     "summonedId": "8bbcddc5-8db8-40d7-96d2-1bca05e504f1",
+     "verdictHeld": true
+    },
+    "replacedGrant": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+     "borrowed": false,
+     "commandReleased": true,
+     "finished": true,
+     "granted": true,
+     "lateSummonsDestroyed": 0,
+     "loan": {
+      "abilityPresent": true,
+      "grantRetained": false,
+      "overrideParams": null,
+      "reason": null,
+      "released": true,
+      "sameInstance": null
+     },
+     "loanReleased": true,
+     "overrideDuringCast": {
+      "casterLevel": 20,
+      "spellLevel": 9
+     },
+     "replacementSurvived": true,
+     "replacementUntouched": true,
+     "result": "Success",
+     "spawned": "KMG_Summoning_Unit_GhaeleAzata",
+     "summonedId": "3347a895-2fb5-4f81-a178-d81a347122c3"
+    }
+   },
+   "mode": "lifecycle",
+   "pauseRestored": true,
+   "problems": [],
+   "productVersion": "0.0.195",
+   "termination": {
+    "cleanupAttempted": [
+     "probe iterator",
+     "borrowedNonDefault: summon ability loan",
+     "borrowedNonDefault: summon command",
+     "borrowedNonDefault: unregistered summons",
+     "borrowedNonDefault setup",
+     "borrowedCl20Override: summon ability loan",
+     "borrowedCl20Override: summon command",
+     "borrowedCl20Override: unregistered summons",
+     "borrowedCl20Override setup",
+     "replaced: summon ability loan",
+     "replaced: summon command",
+     "replaced: unregistered summons",
+     "replacement setup",
+     "pending: summon command",
+     "pending: summon ability loan",
+     "pending: unregistered summons",
+     "pending late-spawn witness",
+     "spawned: summon command",
+     "spawned: summon ability loan",
+     "spawned: unregistered summons",
+     "spawn negative-control witness",
+     "rule subscription",
+     "pause",
+     "disposable unit 6cc62c4d-6b5f-449b-8651-23566d70fc98"
+    ],
+    "cleanupFailures": [],
+    "isolationRestored": true,
+    "passed": true,
+    "step": "2|kmgGhaeleLifetime_lifecycle",
+    "testFailure": ""
+   }
+  },
+  "kmgGhaeleLifetime_timeline": {
+   "area": "JamandisMansionThroneroom",
+   "cast": {
+    "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+    "borrowed": false,
+    "commandReleased": true,
+    "finished": true,
+    "granted": true,
+    "lateSummonsDestroyed": 0,
+    "loan": {
+     "abilityPresent": false,
+     "grantRetained": false,
+     "overrideParams": null,
+     "reason": null,
+     "released": true,
+     "sameInstance": null
+    },
+    "loanReleased": true,
+    "overrideDuringCast": {
+     "casterLevel": 20,
+     "spellLevel": 9
+    },
+    "result": "Success",
+    "spawned": "KMG_Summoning_Unit_GhaeleAzata",
+    "summonedId": "98031cc4-0d73-4eec-b08d-f7b58e00bcac"
+   },
+   "combat": {
+    "attackRollCount": 3,
+    "attackRolls": [
+     {
+      "gameTime": 43298.16,
+      "hit": false,
+      "target": "5d454eb9-190e-4532-9335-e3ef1b1b7555"
+     },
+     {
+      "gameTime": 43299.79,
+      "hit": true,
+      "target": "d73a06f2-b4cd-4026-b01a-5912bcefd3ca"
+     },
+     {
+      "gameTime": 43299.98,
+      "hit": true,
+      "target": "5d454eb9-190e-4532-9335-e3ef1b1b7555"
+     }
+    ],
+    "control": "d73a06f2-b4cd-4026-b01a-5912bcefd3ca",
+    "controlAfterTeardown": {
+     "ghaeleInCombat": true,
+     "inCombat": true,
+     "preserved": true
+    },
+    "controlDestroyed": true,
+    "controlReleasedAt": 26.32,
+    "controlStartedAt": 24.49,
+    "endedAt": 26.32,
+    "factionsTried": 6,
+    "hostileFaction": "StagFort_AuchDovan",
+    "hostileFactionGuid": "0f25803ef1ef96d4ea272059b8e50ed0",
+    "inCombatAfterTeardown": [
+     "98031cc4-0d73-4eec-b08d-f7b58e00bcac",
+     "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae"
+    ],
+    "intakeInCombat": [],
+    "nativeLeaveSeconds": 3.04,
+    "ownedAttacks": 2,
+    "ownedAttacksLeft": 0,
+    "releaseFailures": [],
+    "startedAt": 20.02,
+    "targetDestroyRequested": true,
+    "targetDestroyed": true,
+    "teardownFailures": [],
+    "unownedEngagements": [],
+    "verdict": null,
+    "witnessAfterTeardown": {
+     "finished": false,
+     "held": true,
+     "result": null
+    },
+    "witnessBefore": {
+     "finished": false,
+     "held": true,
+     "result": null
+    },
+    "witnessSettled": true
+   },
+   "controllers": [
+    {
+     "bodyMaterials": [
+      -281954
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.899503052,
+         "Delay": 0.0,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 3.0,
+         "LoopAnimation": false,
+         "PlayBackwards": false
+        },
+        {
+         "CurrentDissolve": 0.0,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": true,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        },
+        {
+         "CurrentDissolve": 1.0,
+         "Delay": 0.0,
+         "DissolveCutout": true,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 3.0,
+         "LoopAnimation": false,
+         "PlayBackwards": false
+        },
+        {
+         "CurrentDissolve": 0.0,
+         "Delay": 2.75,
+         "DissolveCutout": false,
+         "IsDelayed": true,
+         "IsStarted": true,
+         "Lifetime": 2.0,
+         "LoopAnimation": false,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -280302,
+       "driven": [
+        {
+         "dissolve": 1.0,
+         "material": -282258
+        },
+        {
+         "dissolve": 1.0,
+         "material": -282260
+        },
+        {
+         "dissolve": 1.0,
+         "material": -281954
+        }
+       ]
+      }
+     ],
+     "phase": "idle",
+     "t": 0.0
+    },
+    {
+     "bodyMaterials": [
+      -281954
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.123048119,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -280302,
+       "driven": [
+        {
+         "dissolve": 0.123048119,
+         "material": -282258
+        },
+        {
+         "dissolve": 0.123048119,
+         "material": -282260
+        },
+        {
+         "dissolve": 0.123048119,
+         "material": -281954
+        }
+       ]
+      }
+     ],
+     "phase": "idle",
+     "t": 10.0
+    },
+    {
+     "bodyMaterials": [
+      -281954
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.125271857,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -280302,
+       "driven": [
+        {
+         "dissolve": 0.125271857,
+         "material": -282258
+        },
+        {
+         "dissolve": 0.125271857,
+         "material": -282260
+        },
+        {
+         "dissolve": 0.125271857,
+         "material": -281954
+        }
+       ]
+      }
+     ],
+     "phase": "combat",
+     "t": 20.0
+    },
+    {
+     "bodyMaterials": [
+      -281954
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.135704443,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -280302,
+       "driven": [
+        {
+         "dissolve": 0.135704443,
+         "material": -282258
+        },
+        {
+         "dissolve": 0.135704443,
+         "material": -282260
+        },
+        {
+         "dissolve": 0.135704443,
+         "material": -281954
+        }
+       ]
+      },
+      {
+       "animations": [],
+       "controller": -293316,
+       "driven": [
+        {
+         "dissolve": 0.135704443,
+         "material": -282260
+        }
+       ]
+      }
+     ],
+     "phase": "idle",
+     "t": 30.1
+    },
+    {
+     "bodyMaterials": [
+      -281954
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.143909082,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -280302,
+       "driven": [
+        {
+         "dissolve": 0.143909082,
+         "material": -282258
+        },
+        {
+         "dissolve": 0.143909082,
+         "material": -282260
+        },
+        {
+         "dissolve": 0.143909082,
+         "material": -296788
+        },
+        {
+         "dissolve": 0.143909082,
+         "material": -296790
+        },
+        {
+         "dissolve": 0.143909082,
+         "material": -296792
+        },
+        {
+         "dissolve": 0.143909082,
+         "material": -296794
+        },
+        {
+         "dissolve": 0.143909082,
+         "material": -281954
+        }
+       ]
+      }
+     ],
+     "phase": "idle",
+     "t": 40.1
+    },
+    {
+     "bodyMaterials": [
+      -281954
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.143817559,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -280302,
+       "driven": [
+        {
+         "dissolve": 0.143817559,
+         "material": -282258
+        },
+        {
+         "dissolve": 0.143817559,
+         "material": -282260
+        },
+        {
+         "dissolve": 0.143817559,
+         "material": -296788
+        },
+        {
+         "dissolve": 0.143817559,
+         "material": -296790
+        },
+        {
+         "dissolve": 0.143817559,
+         "material": -296792
+        },
+        {
+         "dissolve": 0.143817559,
+         "material": -296794
+        },
+        {
+         "dissolve": 0.143817559,
+         "material": -281954
+        }
+       ]
+      }
+     ],
+     "phase": "idle",
+     "t": 50.1
+    },
+    {
+     "bodyMaterials": [
+      -281954
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.143814191,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -280302,
+       "driven": [
+        {
+         "dissolve": 0.143814191,
+         "material": -282258
+        },
+        {
+         "dissolve": 0.143814191,
+         "material": -282260
+        },
+        {
+         "dissolve": 0.143814191,
+         "material": -296788
+        },
+        {
+         "dissolve": 0.143814191,
+         "material": -296790
+        },
+        {
+         "dissolve": 0.143814191,
+         "material": -296792
+        },
+        {
+         "dissolve": 0.143814191,
+         "material": -296794
+        },
+        {
+         "dissolve": 0.143814191,
+         "material": -281954
+        }
+       ]
+      }
+     ],
+     "phase": "idle",
+     "t": 60.1
+    },
+    {
+     "bodyMaterials": [
+      -281954
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.151877791,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -280302,
+       "driven": [
+        {
+         "dissolve": 0.151877791,
+         "material": -282258
+        },
+        {
+         "dissolve": 0.151877791,
+         "material": -282260
+        },
+        {
+         "dissolve": 0.151877791,
+         "material": -296788
+        },
+        {
+         "dissolve": 0.151877791,
+         "material": -296790
+        },
+        {
+         "dissolve": 0.151877791,
+         "material": -296792
+        },
+        {
+         "dissolve": 0.151877791,
+         "material": -296794
+        },
+        {
+         "dissolve": 0.151877791,
+         "material": -281954
+        }
+       ]
+      }
+     ],
+     "phase": "idle",
+     "t": 70.1
+    },
+    {
+     "bodyMaterials": [
+      -281954
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.152160138,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -280302,
+       "driven": [
+        {
+         "dissolve": 0.152160138,
+         "material": -282258
+        },
+        {
+         "dissolve": 0.152160138,
+         "material": -282260
+        },
+        {
+         "dissolve": 0.152160138,
+         "material": -296788
+        },
+        {
+         "dissolve": 0.152160138,
+         "material": -296790
+        },
+        {
+         "dissolve": 0.152160138,
+         "material": -296792
+        },
+        {
+         "dissolve": 0.152160138,
+         "material": -296794
+        },
+        {
+         "dissolve": 0.152160138,
+         "material": -281954
+        }
+       ]
+      }
+     ],
+     "phase": "idle",
+     "t": 80.1
+    },
+    {
+     "bodyMaterials": [
+      -281954
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.1522008,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -280302,
+       "driven": [
+        {
+         "dissolve": 0.1522008,
+         "material": -282258
+        },
+        {
+         "dissolve": 0.1522008,
+         "material": -282260
+        },
+        {
+         "dissolve": 0.1522008,
+         "material": -296788
+        },
+        {
+         "dissolve": 0.1522008,
+         "material": -296790
+        },
+        {
+         "dissolve": 0.1522008,
+         "material": -296792
+        },
+        {
+         "dissolve": 0.1522008,
+         "material": -296794
+        },
+        {
+         "dissolve": 0.1522008,
+         "material": -281954
+        }
+       ]
+      }
+     ],
+     "phase": "idle",
+     "t": 90.1
+    },
+    {
+     "bodyMaterials": [
+      -281954
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.1600498,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -280302,
+       "driven": [
+        {
+         "dissolve": 0.1600498,
+         "material": -282258
+        },
+        {
+         "dissolve": 0.1600498,
+         "material": -282260
+        },
+        {
+         "dissolve": 0.1600498,
+         "material": -296788
+        },
+        {
+         "dissolve": 0.1600498,
+         "material": -296790
+        },
+        {
+         "dissolve": 0.1600498,
+         "material": -296792
+        },
+        {
+         "dissolve": 0.1600498,
+         "material": -296794
+        },
+        {
+         "dissolve": 0.1600498,
+         "material": -281954
+        }
+       ]
+      }
+     ],
+     "phase": "idle",
+     "t": 100.1
+    },
+    {
+     "bodyMaterials": [
+      -281954
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.1682851,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -280302,
+       "driven": [
+        {
+         "dissolve": 0.1682851,
+         "material": -282258
+        },
+        {
+         "dissolve": 0.1682851,
+         "material": -282260
+        },
+        {
+         "dissolve": 0.1682851,
+         "material": -296788
+        },
+        {
+         "dissolve": 0.1682851,
+         "material": -296790
+        },
+        {
+         "dissolve": 0.1682851,
+         "material": -296792
+        },
+        {
+         "dissolve": 0.1682851,
+         "material": -296794
+        },
+        {
+         "dissolve": 0.1682851,
+         "material": -281954
+        }
+       ]
+      }
+     ],
+     "phase": "idle",
+     "t": 110.2
+    },
+    {
+     "bodyMaterials": [
+      -281954
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.170741856,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        },
+        {
+         "CurrentDissolve": 0.4104766,
+         "Delay": 0.0,
+         "DissolveCutout": true,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 1.8,
+         "LoopAnimation": false,
+         "PlayBackwards": false
+        },
+        {
+         "CurrentDissolve": 0.0,
+         "Delay": 1.8,
+         "DissolveCutout": true,
+         "IsDelayed": true,
+         "IsStarted": true,
+         "Lifetime": 1.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -280302,
+       "driven": [
+        {
+         "dissolve": 0.4104766,
+         "material": -282258
+        },
+        {
+         "dissolve": 0.4104766,
+         "material": -282260
+        },
+        {
+         "dissolve": 0.4104766,
+         "material": -296788
+        },
+        {
+         "dissolve": 0.4104766,
+         "material": -296790
+        },
+        {
+         "dissolve": 0.4104766,
+         "material": -296792
+        },
+        {
+         "dissolve": 0.4104766,
+         "material": -296794
+        },
+        {
+         "dissolve": 0.4104766,
+         "material": -281954
+        }
+       ]
+      }
+     ],
+     "phase": "idle",
+     "t": 120.2
+    }
+   ],
+   "donorControllers": [
+    {
+     "bodyMaterials": null,
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 1.0,
+         "Delay": 0.0,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 3.0,
+         "LoopAnimation": false,
+         "PlayBackwards": false
+        },
+        {
+         "CurrentDissolve": 0.0,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": true,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -282390,
+       "driven": [
+        {
+         "dissolve": 1.0,
+         "material": -284042
+        }
+       ]
+      }
+     ],
+     "t": 0.0
+    },
+    {
+     "bodyMaterials": [
+      -284042
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.04842192,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -282390,
+       "driven": [
+        {
+         "dissolve": 0.04842192,
+         "material": -284336
+        },
+        {
+         "dissolve": 0.04842192,
+         "material": -284338
+        },
+        {
+         "dissolve": 0.04842192,
+         "material": -284042
+        }
+       ]
+      }
+     ],
+     "t": 10.0
+    },
+    {
+     "bodyMaterials": [
+      -284042
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.05048258,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -282390,
+       "driven": [
+        {
+         "dissolve": 0.05048258,
+         "material": -284336
+        },
+        {
+         "dissolve": 0.05048258,
+         "material": -284338
+        },
+        {
+         "dissolve": 0.05048258,
+         "material": -284042
+        }
+       ]
+      }
+     ],
+     "t": 20.0
+    },
+    {
+     "bodyMaterials": [
+      -284042
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.06017064,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -282390,
+       "driven": [
+        {
+         "dissolve": 0.06017064,
+         "material": -284336
+        },
+        {
+         "dissolve": 0.06017064,
+         "material": -284338
+        },
+        {
+         "dissolve": 0.06017064,
+         "material": -284042
+        }
+       ]
+      }
+     ],
+     "t": 30.1
+    },
+    {
+     "bodyMaterials": [
+      -284042
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.06781254,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -282390,
+       "driven": [
+        {
+         "dissolve": 0.06781254,
+         "material": -284336
+        },
+        {
+         "dissolve": 0.06781254,
+         "material": -284338
+        },
+        {
+         "dissolve": 0.06781254,
+         "material": -284042
+        }
+       ]
+      }
+     ],
+     "t": 40.1
+    },
+    {
+     "bodyMaterials": [
+      -284042
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.0677272,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -282390,
+       "driven": [
+        {
+         "dissolve": 0.0677272,
+         "material": -284336
+        },
+        {
+         "dissolve": 0.0677272,
+         "material": -284338
+        },
+        {
+         "dissolve": 0.0677272,
+         "material": -284042
+        }
+       ]
+      }
+     ],
+     "t": 50.1
+    },
+    {
+     "bodyMaterials": [
+      -284042
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.06772406,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -282390,
+       "driven": [
+        {
+         "dissolve": 0.06772406,
+         "material": -284336
+        },
+        {
+         "dissolve": 0.06772406,
+         "material": -284338
+        },
+        {
+         "dissolve": 0.06772406,
+         "material": -284042
+        }
+       ]
+      }
+     ],
+     "t": 60.1
+    },
+    {
+     "bodyMaterials": [
+      -284042
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.07525357,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -282390,
+       "driven": [
+        {
+         "dissolve": 0.07525357,
+         "material": -284336
+        },
+        {
+         "dissolve": 0.07525357,
+         "material": -284338
+        },
+        {
+         "dissolve": 0.07525357,
+         "material": -284042
+        }
+       ]
+      }
+     ],
+     "t": 70.1
+    },
+    {
+     "bodyMaterials": [
+      -284042
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.07551756,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -282390,
+       "driven": [
+        {
+         "dissolve": 0.07551756,
+         "material": -284336
+        },
+        {
+         "dissolve": 0.07551756,
+         "material": -284338
+        },
+        {
+         "dissolve": 0.07551756,
+         "material": -284042
+        }
+       ]
+      }
+     ],
+     "t": 80.1
+    },
+    {
+     "bodyMaterials": [
+      -284042
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.07555451,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -282390,
+       "driven": [
+        {
+         "dissolve": 0.07555451,
+         "material": -284336
+        },
+        {
+         "dissolve": 0.07555451,
+         "material": -284338
+        },
+        {
+         "dissolve": 0.07555451,
+         "material": -284042
+        }
+       ]
+      }
+     ],
+     "t": 90.1
+    },
+    {
+     "bodyMaterials": [
+      -284042
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.08290435,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -282390,
+       "driven": [
+        {
+         "dissolve": 0.08290435,
+         "material": -284336
+        },
+        {
+         "dissolve": 0.08290435,
+         "material": -284338
+        },
+        {
+         "dissolve": 0.08290435,
+         "material": -284042
+        }
+       ]
+      }
+     ],
+     "t": 100.1
+    },
+    {
+     "bodyMaterials": [
+      -284042
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.09063223,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -282390,
+       "driven": [
+        {
+         "dissolve": 0.09063223,
+         "material": -284336
+        },
+        {
+         "dissolve": 0.09063223,
+         "material": -284338
+        },
+        {
+         "dissolve": 0.09063223,
+         "material": -284042
+        }
+       ]
+      }
+     ],
+     "t": 110.2
+    },
+    {
+     "bodyMaterials": [
+      -284042
+     ],
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.09294122,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -282390,
+       "driven": [
+        {
+         "dissolve": 0.09294122,
+         "material": -284336
+        },
+        {
+         "dissolve": 0.09294122,
+         "material": -284338
+        },
+        {
+         "dissolve": 0.09294122,
+         "material": -284042
+        }
+       ]
+      }
+     ],
+     "t": 120.2
+    }
+   ],
+   "lighting": [
+    {
+     "ambientIntensity": 1.0,
+     "ambientLight": "0.375,0.329,0.270",
+     "ambientMode": "Trilight",
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "bodyDissolve": 0.08007622,
+     "bodyDissolveCutout": 0.0,
+     "bodyMesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+     "gameTime": 43277.67,
+     "label": "idle",
+     "lights": [
+      {
+       "colour": "1.000,0.733,0.427",
+       "distance": 1.57,
+       "intensity": 0.546,
+       "name": "Point Light (5)",
+       "type": "Point"
+      },
+      {
+       "colour": "0.529,0.686,1.000",
+       "distance": 1.16,
+       "intensity": 0.0,
+       "name": "Point light",
+       "type": "Point"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 18.58,
+       "intensity": 2.5,
+       "name": "Spotlight (14)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 11.87,
+       "intensity": 2.5,
+       "name": "Spotlight (12)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 21.03,
+       "intensity": 3.0,
+       "name": "Spotlight (5)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 15.02,
+       "intensity": 3.0,
+       "name": "Spotlight (7)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 9.27,
+       "intensity": 3.0,
+       "name": "Spotlight (9)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": null,
+       "intensity": 8.0,
+       "name": "SunLight (1)",
+       "type": "Directional"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 15.87,
+       "intensity": 3.0,
+       "name": "Spotlight (6)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 23.79,
+       "intensity": 4.0,
+       "name": "Spotlight (10)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 20.47,
+       "intensity": 3.0,
+       "name": "Spotlight (4)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 26.55,
+       "intensity": 3.0,
+       "name": "Spotlight (2)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 14.25,
+       "intensity": 2.5,
+       "name": "Spotlight (11)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 13.69,
+       "intensity": 2.5,
+       "name": "Spotlight (13)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 24.76,
+       "intensity": 2.5,
+       "name": "Spotlight (15)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 11.3,
+       "intensity": 3.0,
+       "name": "Spotlight (8)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "1.000,0.671,0.333",
+       "distance": 6.71,
+       "intensity": 10.0,
+       "name": "Candler (8)",
+       "type": "Point"
+      },
+      {
+       "colour": "1.000,0.671,0.333",
+       "distance": 12.22,
+       "intensity": 1.0,
+       "name": "Light Candle (10)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 31.86,
+       "intensity": 3.0,
+       "name": "Spotlight (1)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 22.52,
+       "intensity": 3.0,
+       "name": "Spotlight (3)",
+       "type": "Rectangle"
+      }
+     ],
+     "partyCapture": "png=s7-ghaele-idle.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=36;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=GhaeleAzata_Renderer_Character_Diffuse_Cutout;dissolve=0.08/listed=true;intact=false;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=not-attempted",
+     "probeDcLuminance": 0.2405,
+     "reason": null,
+     "valid": true
+    },
+    {
+     "ambientIntensity": 1.0,
+     "ambientLight": "0.375,0.329,0.270",
+     "ambientMode": "Trilight",
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "bodyDissolve": 0.0126252025,
+     "bodyDissolveCutout": 0.0,
+     "bodyMesh": "GhaeleAzata_Renderer_Character_Diffuse_Cutout",
+     "gameTime": 43298.16,
+     "label": "combat",
+     "lights": [
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 16.82,
+       "intensity": 2.5,
+       "name": "Spotlight (14)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 13.83,
+       "intensity": 2.5,
+       "name": "Spotlight (12)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 21.05,
+       "intensity": 3.0,
+       "name": "Spotlight (5)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 18.95,
+       "intensity": 3.0,
+       "name": "Spotlight (7)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 13.07,
+       "intensity": 3.0,
+       "name": "Spotlight (9)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": null,
+       "intensity": 8.0,
+       "name": "SunLight (1)",
+       "type": "Directional"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 18.49,
+       "intensity": 3.0,
+       "name": "Spotlight (6)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 20.11,
+       "intensity": 4.0,
+       "name": "Spotlight (10)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 19.06,
+       "intensity": 3.0,
+       "name": "Spotlight (4)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 23.18,
+       "intensity": 3.0,
+       "name": "Spotlight (2)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 17.54,
+       "intensity": 2.5,
+       "name": "Spotlight (11)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 13.47,
+       "intensity": 2.5,
+       "name": "Spotlight (13)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 22.25,
+       "intensity": 2.5,
+       "name": "Spotlight (15)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 15.03,
+       "intensity": 3.0,
+       "name": "Spotlight (8)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "1.000,0.671,0.333",
+       "distance": 7.03,
+       "intensity": 10.0,
+       "name": "Candler (8)",
+       "type": "Point"
+      },
+      {
+       "colour": "1.000,0.671,0.333",
+       "distance": 8.66,
+       "intensity": 1.0,
+       "name": "Light Candle (10)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 28.14,
+       "intensity": 3.0,
+       "name": "Spotlight (1)",
+       "type": "Rectangle"
+      },
+      {
+       "colour": "0.495,0.711,1.000",
+       "distance": 19.89,
+       "intensity": 3.0,
+       "name": "Spotlight (3)",
+       "type": "Rectangle"
+      }
+     ],
+     "partyCapture": "png=s7-ghaele-combat.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=38;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=GhaeleAzata_Renderer_Character_Diffuse_Cutout;dissolve=0.013/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=not-attempted",
+     "probeDcLuminance": 0.2072,
+     "reason": null,
+     "valid": true
+    }
+   ],
+   "mode": "timeline",
+   "pauseRestored": true,
+   "problems": [],
+   "productVersion": "0.0.195",
+   "samples": [
+    {
+     "appear": true,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 1.0,
+     "dissolveCutout": 1.0,
+     "phase": "idle",
+     "remaining": 119.7,
+     "t": 0.0,
+     "visible": true
+    },
+    {
+     "appear": true,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 1.0,
+     "dissolveCutout": 1.0,
+     "phase": "idle",
+     "remaining": 119.17,
+     "t": 0.53,
+     "visible": true
+    },
+    {
+     "appear": true,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.88,
+     "dissolveCutout": 1.0,
+     "phase": "idle",
+     "remaining": 118.63,
+     "t": 1.07,
+     "visible": true
+    },
+    {
+     "appear": true,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.606,
+     "dissolveCutout": 1.0,
+     "phase": "idle",
+     "remaining": 118.1,
+     "t": 1.6,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.309,
+     "dissolveCutout": 1.0,
+     "phase": "idle",
+     "remaining": 117.6,
+     "t": 2.1,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.757,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 117.1,
+     "t": 2.6,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.513,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 116.57,
+     "t": 3.13,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.24,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 116.06,
+     "t": 3.64,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.035,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 115.55,
+     "t": 4.15,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.041,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 115.05,
+     "t": 4.65,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.154,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 114.55,
+     "t": 5.15,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.285,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 114.02,
+     "t": 5.68,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.413,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 113.51,
+     "t": 6.19,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.54,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 113.01,
+     "t": 6.69,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.669,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 112.48,
+     "t": 7.22,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.778,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 111.98,
+     "t": 7.72,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.877,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 111.45,
+     "t": 8.25,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.947,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 110.95,
+     "t": 8.75,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.993,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 110.41,
+     "t": 9.29,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.071,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 109.91,
+     "t": 9.79,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.194,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 109.38,
+     "t": 10.32,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.319,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 108.88,
+     "t": 10.82,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.447,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 108.38,
+     "t": 11.32,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.581,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 107.85,
+     "t": 11.85,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.699,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 107.35,
+     "t": 12.35,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.811,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 106.81,
+     "t": 12.89,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.898,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 106.31,
+     "t": 13.39,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.965,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 105.78,
+     "t": 13.92,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.0,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 105.25,
+     "t": 14.45,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.11,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 104.74,
+     "t": 14.96,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.236,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 104.21,
+     "t": 15.49,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.362,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 103.71,
+     "t": 15.99,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.49,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 103.21,
+     "t": 16.49,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.621,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 102.68,
+     "t": 17.02,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.736,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 102.18,
+     "t": 17.52,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.842,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 101.65,
+     "t": 18.05,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.926,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 101.12,
+     "t": 18.58,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.982,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 100.59,
+     "t": 19.11,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.034,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 100.08,
+     "t": 19.61,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.153,
+     "dissolveCutout": 0.0,
+     "phase": "combat",
+     "remaining": 99.57,
+     "t": 20.13,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.276,
+     "dissolveCutout": 0.0,
+     "phase": "combat",
+     "remaining": 99.07,
+     "t": 20.63,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.403,
+     "dissolveCutout": 0.0,
+     "phase": "combat",
+     "remaining": 98.57,
+     "t": 21.13,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.538,
+     "dissolveCutout": 0.0,
+     "phase": "combat",
+     "remaining": 98.04,
+     "t": 21.66,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.66,
+     "dissolveCutout": 0.0,
+     "phase": "combat",
+     "remaining": 97.54,
+     "t": 22.16,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.777,
+     "dissolveCutout": 0.0,
+     "phase": "combat",
+     "remaining": 97.01,
+     "t": 22.69,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.87,
+     "dissolveCutout": 0.0,
+     "phase": "combat",
+     "remaining": 96.51,
+     "t": 23.19,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.943,
+     "dissolveCutout": 0.0,
+     "phase": "combat",
+     "remaining": 96.01,
+     "t": 23.69,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.991,
+     "dissolveCutout": 0.0,
+     "phase": "combat",
+     "remaining": 95.48,
+     "t": 24.22,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.068,
+     "dissolveCutout": 0.0,
+     "phase": "combat",
+     "remaining": 94.95,
+     "t": 24.75,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.183,
+     "dissolveCutout": 0.0,
+     "phase": "combat",
+     "remaining": 94.45,
+     "t": 25.25,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.316,
+     "dissolveCutout": 0.0,
+     "phase": "combat",
+     "remaining": 93.92,
+     "t": 25.78,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.444,
+     "dissolveCutout": 0.0,
+     "phase": "combat",
+     "remaining": 93.42,
+     "t": 26.28,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.57,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 92.91,
+     "t": 26.79,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.689,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 92.41,
+     "t": 27.29,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.796,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 91.91,
+     "t": 27.79,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.891,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 91.38,
+     "t": 28.32,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.96,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 90.85,
+     "t": 28.85,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.997,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 90.35,
+     "t": 29.35,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.097,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 89.82,
+     "t": 29.88,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.216,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 89.31,
+     "t": 30.39,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.342,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 88.81,
+     "t": 30.89,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.478,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 88.28,
+     "t": 31.42,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.61,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 87.75,
+     "t": 31.95,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.733,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 87.21,
+     "t": 32.49,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.84,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 86.68,
+     "t": 33.02,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.92,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 86.18,
+     "t": 33.52,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.976,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 85.68,
+     "t": 34.02,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.025,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 85.15,
+     "t": 34.55,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.144,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 84.62,
+     "t": 35.08,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.266,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 84.12,
+     "t": 35.58,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.401,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 83.59,
+     "t": 36.11,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.529,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 83.08,
+     "t": 36.62,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.658,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 82.55,
+     "t": 37.15,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.769,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 82.05,
+     "t": 37.65,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.864,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 81.55,
+     "t": 38.15,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.942,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 81.02,
+     "t": 38.68,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.99,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 80.49,
+     "t": 39.21,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.061,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 79.99,
+     "t": 39.71,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.183,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 79.46,
+     "t": 40.24,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.308,
+     "dissolveCutout": 0.0,
+     "phase": "idle",
+     "remaining": 78.95,
+     "t": 40.75,
+     "visible": true
+    },
+    {
+     "truncated": 157
+    }
+   ],
+   "termination": {
+    "cleanupAttempted": [
+     "probe iterator",
+     "timeline: summon ability loan",
+     "timeline: summon command",
+     "timeline: unregistered summons",
+     "combat state",
+     "witness move",
+     "independent engagement control",
+     "rule subscription",
+     "pause",
+     "disposable unit 98031cc4-0d73-4eec-b08d-f7b58e00bcac",
+     "disposable unit 54a69761-dc3b-4ecd-82e8-a6e0c46f8191",
+     "disposable blueprint KMG_Harness_S7_GhaeleHostileTarget#-284618",
+     "disposable blueprint KMG_Harness_S7_GhaeleHostileTarget#-285860",
+     "disposable blueprint KMG_Harness_S7_GhaeleHostileTarget#-287084",
+     "disposable blueprint KMG_Harness_S7_GhaeleHostileTarget#-288308",
+     "disposable blueprint KMG_Harness_S7_GhaeleHostileTarget#-289532",
+     "disposable blueprint KMG_Harness_S7_GhaeleHostileTarget#-290756"
+    ],
+    "cleanupFailures": [],
+    "isolationRestored": true,
+    "passed": true,
+    "step": "3|kmgGhaeleLifetime_timeline",
+    "testFailure": ""
+   },
+   "timeline": {
+    "appearanceEndedAt": 1.7,
+    "attribution": {
+     "attributed": true,
+     "bodyMaterialIdentity": "recorded",
+     "classes": [
+      "positive",
+      "positive",
+      "positive",
+      "positive",
+      "positive",
+      "positive",
+      "positive",
+      "positive",
+      "positive",
+      "positive",
+      "positive"
+     ],
+     "contradicting": 0,
+     "donorConfigured": [
+      "delay=0.00 lifetime=3.00 loop=False cutout=False backwards=False",
+      "delay=4.75 lifetime=5.00 loop=True cutout=False backwards=False"
+     ],
+     "donorQualifying": [
+      "delay=4.75 lifetime=5.00 loop=True cutout=False backwards=False"
+     ],
+     "inconclusive": 0,
+     "positive": 11,
+     "snapshots": 11
+    },
+    "autoPausesCleared": 1,
+    "lifetimeEndsAt": 119.7,
+    "maxBodyDissolveCutoutInLife": 0.0,
+    "maxBodyDissolveInLife": 0.9999712705612183,
+    "moveTravel": 4.0,
+    "removedAt": 121.54
+   }
+  },
+  "kmgInitialization_create": {
+   "blueprintsFailed": false,
+   "blueprintsInitialized": true,
+   "contextFailed": false,
+   "environment": {
+    "conditions": {
+     "blankResolutions": 0,
+     "events": [],
+     "gritUiPass": {
+      "firstPassStillOpen": false,
+      "firstPassStoppedOnDescriptionOf": null,
+      "installed": false,
+      "passesCompleted": 0,
+      "passesOpened": 0,
+      "projectAbilitiesRead": 0,
+      "projectAbilityDescriptionReads": 0,
+      "substituted": [],
+      "thrown": []
+     },
+     "libraryPrepared": false,
+     "nativeDescriptions": [],
+     "nullResolutions": 0
+    },
+    "currentLocale": "enGB",
+    "currentPackLocale": "enGB",
+    "currentPackStrings": 41552,
+    "emptyKeyResolvesTo": "",
+    "unassignedStringResolvesTo": "<null>",
+    "unknownKeyResolvesTo": "[unknown key: KmgLoaderCompatHarness.UnknownKeyProbe]"
+   },
+   "failureChain": [],
+   "loaderEntryActive": true,
+   "mainState": "Loaded"
+  },
+  "kmgModules_all-on": {
+   "active": {
+    "AcadamaeGraduate": true,
+    "BodyguardFeats": true,
+    "BrownFurTransmuter": true,
+    "EasternWeapons": true,
+    "ElementalRaces": true,
+    "ElvenBranchedSpears": true,
+    "ExpandedSummoning": true,
+    "Gunslinger": true,
+    "MagicCircleSpells": true,
+    "ProtectionFromAlignmentControlImmunity": true,
+    "ShieldOther": true,
+    "TeleportationSpells": true,
+    "UrbanBarbarian": true
+   },
+   "file": null,
+   "fileSha256": null,
+   "pending": {
+    "AcadamaeGraduate": true,
+    "BodyguardFeats": true,
+    "BrownFurTransmuter": true,
+    "EasternWeapons": true,
+    "ElementalRaces": true,
+    "ElvenBranchedSpears": true,
+    "ExpandedSummoning": true,
+    "Gunslinger": true,
+    "MagicCircleSpells": true,
+    "ProtectionFromAlignmentControlImmunity": true,
+    "ShieldOther": true,
+    "TeleportationSpells": true,
+    "UrbanBarbarian": true
+   },
+   "restartRequired": false
+  },
+  "loggerExceptionHooks": 4,
+  "requestPath": "<lab>/harness-request.json",
+  "runId": "20261124T201333Z-owner-0.33.0-s7-ghaele-01-ghaele",
+  "startedUtc": "2026-11-24T20:13:49.8579955Z",
+  "status": "passed",
+  "steps": [
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgModules[all-on]()"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgInitialization[create]"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgGhaeleLifetime[lifecycle](lifecycle)"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgGhaeleLifetime[timeline](timeline)"
+   }
+  ]
+ },
+ "harnessEvents": [
+  {
+   "detail": {
+    "ummWindowOpen": true
+   },
+   "event": "mainMenu",
+   "t": 57.1496277,
+   "utc": "2026-11-24T20:14:43.6152815Z"
+  },
+  {
+   "detail": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+   "event": "loadSave",
+   "t": 57.15388,
+   "utc": "2026-11-24T20:14:43.6192821Z"
+  },
+  {
+   "detail": "JamandisMansionThroneroom",
+   "event": "saveLoaded",
+   "t": 64.26602,
+   "utc": "2026-11-24T20:14:50.7311763Z"
+  },
+  {
+   "detail": "kmgModules[all-on]()",
+   "event": "stepBegin",
+   "t": 66.31114,
+   "utc": "2026-11-24T20:14:52.7760947Z"
+  },
+  {
+   "detail": "kmgModules[all-on]()",
+   "event": "stepDone",
+   "t": 66.323494,
+   "utc": "2026-11-24T20:14:52.7890911Z"
+  },
+  {
+   "detail": "kmgInitialization[create]",
+   "event": "stepBegin",
+   "t": 66.34319,
+   "utc": "2026-11-24T20:14:52.8086662Z"
+  },
+  {
+   "detail": "kmgInitialization[create]",
+   "event": "stepDone",
+   "t": 66.34927,
+   "utc": "2026-11-24T20:14:52.8146661Z"
+  },
+  {
+   "detail": "kmgGhaeleLifetime[lifecycle](lifecycle)",
+   "event": "stepBegin",
+   "t": 66.37677,
+   "utc": "2026-11-24T20:14:52.8418770Z"
+  },
+  {
+   "detail": "kmgGhaeleLifetime[lifecycle](lifecycle)",
+   "event": "stepDone",
+   "t": 103.318924,
+   "utc": "2026-11-24T20:15:29.7843733Z"
+  },
+  {
+   "detail": "kmgGhaeleLifetime[timeline](timeline)",
+   "event": "stepBegin",
+   "t": 103.346443,
+   "utc": "2026-11-24T20:15:29.8119267Z"
+  },
+  {
+   "detail": "kmgGhaeleLifetime[timeline](timeline)",
+   "event": "stepDone",
+   "t": 232.0981,
+   "utc": "2026-11-24T20:17:38.5637430Z"
+  }
+ ],
+ "launch": "01-ghaele",
+ "launchSummary": {
+  "conditions": {},
+  "gameArguments": [
+   "locale=enGB"
+  ],
+  "harness": "passed",
+  "identity": {
+   "activeMods": [
+    "KingmakerGunslinger 0.0.195",
+    "KmgLoaderCompatHarness 0.1.0"
+   ],
+   "harmony12Sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+   "harmony2": [
+    "2.3.6.0 df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80"
+   ],
+   "productSha256": "270f7aa4d897274808c4523e654a0c468f354cac37c250f60a30eefc7975c355",
+   "umm": "0.33.0.0",
+   "ummReported": "0.33.0.0",
+   "ummSha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
+  },
+  "label": "01-ghaele",
+  "log": {
+   "absent": [
+    "[initialize.failed] x0"
+   ],
+   "once": [],
+   "present": [
+    "[blueprints][initialize.complete] x1"
+   ]
+  },
+  "pid": 5524,
+  "problems": [],
+  "seconds": 237,
+  "verdict": "PASS"
+ },
+ "session": "20261124T201333Z-owner-0.33.0-s7-ghaele",
+ "sources": {
+  "harness-result.json": "cc356b4dbc223f833b67c477715480333d82a2ee892bb1094a4ae15e80a05d28"
+ }
+}

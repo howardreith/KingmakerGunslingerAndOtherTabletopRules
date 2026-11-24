@@ -1304,9 +1304,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DateTime retiredAt = DateTime.UtcNow;
                     mark("anky-loss-retire-other");
                     DisposeExpandedSummoningUnits(fixture.Created, new[] { other });
-                    otherStopAttempts = retired.StopAttempts; otherStopRequested = retired.StopResult == SummonCastCueLifecycle.StopRequested;
-                    keptStopAttemptsAfterOther = kept.StopAttempts;
-                    row["afterOtherRetired"] = new JObject { ["other"] = S7Cue(retired), ["otherStopAttempts"] = otherStopAttempts, ["survivorStopAttempts"] = keptStopAttemptsAfterOther };
+                    // Same frame as the call: the product's stop runs later, in the retired view's own destroy callback.
+                    row["afterOtherRetired"] = new JObject { ["other"] = S7Cue(retired), ["otherStopAttempts"] = retired.StopAttempts, ["survivorStopAttempts"] = kept.StopAttempts,
+                        ["note"] = "read in the retirement frame, before the product's stop runs; the verdict reads the settled values at the window end" };
                     DateTime windowEnd = retiredAt.AddSeconds(WindowSeconds), next = DateTime.UtcNow;
                     while (DateTime.UtcNow < windowEnd)
                     {
@@ -1323,6 +1323,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         yield return 0;
                     }
                     keptTrackedAtWindowEnd = S7CueTracked(keeper, kept);
+                    // R4-F5 (round 6): the other source's retirement, read once settled (its own stop request and native
+                    // end within a second of the retirement), and the survivor's stop attempts over the whole window.
+                    otherStopAttempts = retired.StopAttempts;
+                    otherStopRequested = Sprint7ObserverPolicy.RetiredByOwnId(retired.StopAttempts, retired.StopResult, SummonCastCueLifecycle.StopRequested, retired.StopRequestedUtc, retired.EndUtc, retiredAt);
+                    keptStopAttemptsAfterOther = kept.StopAttempts;
+                    row["otherRetirementSettled"] = new JObject { ["other"] = S7Cue(retired), ["stopAttempts"] = otherStopAttempts, ["retiredByOwnId"] = otherStopRequested,
+                        ["survivorStopAttemptsThroughWindow"] = keptStopAttemptsAfterOther };
                     row["survivorAtWindowEnd"] = new JObject { ["cue"] = S7Cue(kept), ["playback"] = S7Playback(kept), ["tracked"] = keptTrackedAtWindowEnd,
                         ["callbacksWithheld"] = new JArray(withhold.Withheld.Select(value => value.ToString("o"))), ["callbacksPassedThrough"] = withhold.PassedThrough };
                     // The survivor's own source retires; its view and playback component must actually be destroyed.

@@ -137,6 +137,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
+        /// R4-F5: a retired source's cue was stopped by its own playing ID: one stop attempt, the product's recorded
+        /// stop-requested result no earlier than the retirement and within a second of it, and the native end-of-event
+        /// callback after the request and within a second of it. Read once settled: the product requests the stop in the
+        /// retired view's own destroy callback, after the retirement call returns.
+        /// </summary>
+        internal static bool RetiredByOwnId(int stopAttempts, string stopResult, string productStopRequested, DateTime? stopRequestedUtc, DateTime? endUtc, DateTime retiredUtc)
+        {
+            return stopAttempts == 1 && !string.IsNullOrEmpty(productStopRequested) && stopResult == productStopRequested && stopRequestedUtc.HasValue &&
+                stopRequestedUtc.Value >= retiredUtc && stopRequestedUtc.Value <= retiredUtc.AddSeconds(1) && endUtc.HasValue &&
+                endUtc.Value >= stopRequestedUtc.Value && endUtc.Value <= stopRequestedUtc.Value.AddSeconds(1);
+        }
+
+        /// <summary>
         /// R4-F5, synthetic callback loss: null only when the survivor's playback ended normally while its callback was
         /// withheld, the other source's retirement stopped only its own ID, the residual was the survivor's tracking on
         /// its own source, that source's view and playback component were actually destroyed, no other record changed, no
