@@ -1827,6 +1827,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             Buff foreignSickened = null;
             var releaseFailures = new JArray();
             Action clearSickened = () => { foreach (string failure in conditions.Release()) releaseFailures.Add(failure); };
+            Func<UnitEntityData, int, int, JObject> laterCast = (caster, savesFrom, damageFrom) => new JObject {
+                ["caster"] = caster.UniqueId, ["casterAlive"] = !caster.Destroyed, ["casterIsEnemyOfHostile"] = caster.IsEnemy(hostile), ["hostileIsEnemyOfCaster"] = hostile.IsEnemy(caster),
+                ["hostileSaves"] = new JArray(saveLog.Rows.Skip(savesFrom).Where(value => (string)value.Key["unit"] == hostile.UniqueId).Select(value => { var copy = (JObject)value.Key.DeepClone();
+                    var context = value.Value; copy["contextAbility"] = context == null ? null : (context.SourceAbilityContext ?? context as AbilityExecutionContext)?.AbilityBlueprint?.name;
+                    copy["contextCaster"] = context == null || context.MaybeCaster == null ? null : context.MaybeCaster.UniqueId; return copy; })),
+                ["hostileDamage"] = new JArray(recorder.Damage.Skip(damageFrom).Where(value => ReferenceEquals(value.Target, hostile)).Select(value => new JObject {
+                    ["initiator"] = value.Initiator == null ? null : value.Initiator.UniqueId, ["total"] = value.Damage })),
+                ["sickened"] = new JArray(Game.Instance.State.Units.Where(unit => unit != null && !unit.Destroyed).SelectMany(unit => unit.Descriptor.Buffs.Enumerable
+                    .Where(buff => ReferenceEquals(buff.Blueprint, sickened)).Select(buff => new JObject { ["unit"] = label(unit),
+                        ["contextAbility"] = buff.Context == null ? null : (buff.Context.SourceAbilityContext ?? buff.Context as AbilityExecutionContext)?.AbilityBlueprint?.name,
+                        ["contextCaster"] = buff.Context == null || buff.Context.MaybeCaster == null ? null : buff.Context.MaybeCaster.UniqueId,
+                        ["secondsLeft"] = Math.Round(buff.TimeLeft.TotalSeconds, 2), ["foreignControl"] = ReferenceEquals(buff, foreignSickened) }))) };
             try
             {
                 Vector3 spot = ground(hostile.Position + Vector3.back * 2.6f);
@@ -2147,12 +2159,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["laterCastsUnit"] = late.UniqueId;
                 var nested = new JObject(); row["nestedInterruption"] = nested;
                 var nestedCast = new JObject(); nested["cast"] = nestedCast;
-                int nestedFrom = trace.Creations.Count, nestedApplied = DustMephitBreathTint.Applied;
+                int nestedFrom = trace.Creations.Count, nestedApplied = DustMephitBreathTint.Applied, nestedSaves = saveLog.Rows.Count, nestedDamage = recorder.Damage.Count;
                 mark("dust-nested-start");
                 S7ProjectileTrace.NestedProbeLauncher = late.UniqueId; S7ProjectileTrace.NestedProbe = nested;
                 try { foreach (int step in R6RunPassive(late, abilityData(late, breath), new TargetWrapper(hostile), nestedCast, null)) yield return step; }
                 finally { S7ProjectileTrace.NestedProbe = null; S7ProjectileTrace.NestedProbeLauncher = null; }
                 conditions.Observe();
+                nested["diagnostics"] = laterCast(late, nestedSaves, nestedDamage);
                 var nestedCreations = trace.Creations.Skip(nestedFrom).OfType<JObject>().Where(value => (string)value["launcher"] == late.UniqueId).ToList();
                 nested["creations"] = new JArray(nestedCreations.Select(value => value.DeepClone()));
                 nested["tintsApplied"] = DustMephitBreathTint.Applied - nestedApplied;
@@ -2179,6 +2192,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 hostileSaves.DesiredRoll = 1;
                 clearSickened();
                 var earlyLedger = new S7DustConditions(sickened, breath, late);
+                int earlySaves = saveLog.Rows.Count, earlyDamage = recorder.Damage.Count;
                 early["preexistingCellOwned"] = earlyLedger.Remaining();
                 mark("dust-early-exit-start");
                 IEnumerator<int> earlyRun = S7DustCastOwningConditions(late, abilityData(late, breath), hostile, earlyLedger, early).GetEnumerator();
@@ -2192,6 +2206,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     yield return 0;
                 }
                 early["appliedBeforeExit"] = earlyApplied;
+                early["diagnostics"] = laterCast(late, earlySaves, earlyDamage);
                 early["acquiredBeforeExit"] = earlyLedger.Acquired.Count;
                 earlyRun.Dispose();
                 early["remainingAfterExit"] = earlyLedger.Remaining();
@@ -2206,7 +2221,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // 7. A native-look comparison of the same Dust cast: the
                 // observer restores the recolour as soon as it is applied.
                 var nativeLook = new JObject(); row["nativeLook"] = nativeLook;
-                int lookApplied = DustMephitBreathTint.Applied;
+                int lookApplied = DustMephitBreathTint.Applied, lookSaves = saveLog.Rows.Count, lookDamage = recorder.Damage.Count;
                 mark("dust-native-look-start");
                 using (var clip = new R6Clip(_request.EvidenceDirectory, "s7-dust-native-look", () => R6RenderBounds(late, hostile), null))
                 {
@@ -2231,6 +2246,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         yield return 0;
                     }
                     nativeLook["restoredByObserver"] = restored; nativeLook["sceneryHitsOnBearing"] = clip.Occluded;
+                    nativeLook["diagnostics"] = laterCast(late, lookSaves, lookDamage);
                 }
                 mark("dust-native-look-end");
             }
