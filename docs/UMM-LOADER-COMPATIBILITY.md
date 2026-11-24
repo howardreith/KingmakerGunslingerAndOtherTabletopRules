@@ -12,6 +12,44 @@ Each package contains exactly one DLL (the mod's), and its bundled `INSTALLATION
 minimum. The DLL references were read from the AssemblyRef table of the packaged file. The newer loaders remain separate
 compatibility targets; the in-game matrix below was run once, on the development candidate that became v0.0.188.
 
+## Current development candidate: pinned-loader build change (2026-11-24)
+
+This candidate checks the pinned-loader build change (PR #220). It is a development receipt, not a release.
+
+| Item | Value |
+|---|---|
+| Producing commit | `04b9384ed1` |
+| Command | `scripts\Build-Local.ps1 -DevelopmentPurpose umm-0311-baseline -DevelopmentTestFilter model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged -ReferenceBundleDir <private bundle>`, 410 s, 1 of 3189 registered domain tests selected. Build-Local runs its domain tests before the exact build, so the loader-reference check of this DLL is `validate-package.ps1` after the build (below); the domain check `loader.production-dll-references-pinned-loader` runs in the focused gate on the DLL that gate compiles |
+| Compiler loader references | `UnityModManager.dll` 0.31.1.0 `2e038ff2…c2c4` and `0Harmony12.dll` 1.2.0.1 `aa1cd483…1292` from `artifacts\references\loader` (pins file `b13bed40…`) |
+| Package | `KingmakerGunslinger-0.0.195-development-umm-0311-baseline-04b9384ed1fe.zip`, SHA-256 `7275c768cfd9755ff7d8ba210549b1eb80acdabf64fec4e7f62dc32e2d4f6171` |
+| Packaged DLL | SHA-256 `4cbc662565de3c5608c6cb18dfc075b13fd6f574d98af0058ced2e02395ea446`, MVID `bd268aa9-7524-4559-b580-9918f1fded45` |
+| DLL loader references (AssemblyRef table) | `UnityModManager, Version=0.31.1.0, Culture=neutral, PublicKeyToken=null`, `0Harmony12, Version=1.2.0.1, Culture=neutral, PublicKeyToken=null` |
+| Standalone validation | `scripts\validate-package.ps1 -PassThru`: passed (one binary, complete archive entry set, packaged DLL references equal the pins) |
+| Candidate admission | `scripts\Test-CandidateAdmission.ps1`: 13/13 passed on a development candidate that Build-Local built in a temporary clone of `04b9384ed1`. The matching candidate is admitted. Refused before staging: a newer-compiled DLL (the released v0.0.187 DLL, which references UnityModManager 0.33.0.0); an extra runtime DLL at the archive root or in the mod tree; a receipt naming another build's MVID or DLL hash while the ZIP digest matches; and a candidate whose project file or reference helper changed at the same version. The loader preflight admits the matching candidate and refuses a mismatched ZIP. |
+
+**Static loader audit of this DLL.** The frozen packaged DLL was checked against four deduplicated targets. Each target is
+a UnityModManager build plus the Harmony 2 it references and 0Harmony12 1.2.0.1:
+- UMM 0.31.1 (the declared minimum);
+- UMM 0.32.4;
+- the owner's installed 0.33.0;
+- 0.33.4, the newest stable release (author NuGet package dated 2026-11-19; GitHub HEAD `3d14bf0d`, project version
+  0.33.4).
+
+Identities and provenance are in the fleet profile record (`docs/evidence/umm-0311/loader-profiles.md`). Each bound
+UnityModManager, 0Harmony12 and 0Harmony member (23 types, 67 members) resolves by name and decoded signature on all
+four: **RESOLVED** on each. Tool: `loader-api-audit-Program.cs.txt` (.NET 8), invoked as
+`LoaderApiAudit.exe --mod <dll> --json <out> --assemblies UnityModManager,0Harmony12,0Harmony --profile "<id>=<UnityModManager.dll>;<0Harmony.dll>;<0Harmony12.dll>"`
+per profile. This is static evidence, not a native run.
+
+**Native rows for this candidate: NOT RUN.**
+
+| Loader | Reason |
+|---|---|
+| 0.31.1, 0.32.4, 0.33.0 | This repository's guarded harness runs in the disposable game copy `game-copies\loader-compat`. Another enrollment (`kmg-codex-s7-visual-audio-remediation`) was launching games from that copy repeatedly on 2026-11-24, so this candidate was not run there. The owner installation is not used for these runs. |
+| 0.33.4 | No reviewed `umm-0.33.4` harness profile exists (only `umm-0.31.1`, `umm-0.32.4`, `owner033`). |
+
+No combined-stack check ran for this candidate. The rows below describe the 2026-11-14 candidate.
+
 The rest of this record is the historical account of that development candidate (`b9400333`, built as version 0.0.187
 before v0.0.188 was opened). Its identities, results and gaps are kept as they were recorded.
 
@@ -95,12 +133,27 @@ No compatibility adapter was needed and none was added.
   source state, which invalidates earlier receipts.
 * **Package validation.** The packaged `ManagerVersion` must equal the pinned floor. The package must contain exactly one
   binary, the mod, and no loader, Harmony, dnlib, game or Unity assembly.
-* **Tests.** `scripts/Test-LoaderReferencePins.ps1` (36 checks) and `tools/test_loader_reference_pins.py` (5) run inside
-  `validate-repository.ps1`. `scripts/Test-PinnedLoaderMsBuild.ps1` runs MSBuild on a temporary clone: the previous
-  defaults compile against the installed loader, `build.ps1` and a direct MSBuild compile against the pinned files, and
-  the installed loader, an altered copy, a folder not named `UnityModManager` and a stray HintPath to a copy of the
-  pinned UnityModManager outside the verified folder are refused before compilation. `Test-DevelopmentCandidate.ps1` now also proves that the compiler receives the pinned
-  directory and that a tampered loader is refused before any child step.
+* **Packaged DLL and admission (added 2026-11-24).** `validate-package.ps1` reads the AssemblyRef table of the DLL inside
+  the ZIP (isolated reflection-only load) and requires exactly the pinned `UnityModManager` and `0Harmony12` identities.
+  It checks the complete archive entry set, so a binary at the archive root or anywhere in the mod tree is refused.
+  Candidate admission in `Deploy-Local.ps1` and the loader harness preflight requires that DLL's SHA-256 and MVID to equal
+  the build receipt's, and the candidate's material inputs to be unchanged since its producing commit. Released packages
+  are admitted only as an explicit `-HistoricalReleaseControl`. Direct MSBuild checks `Info.json` `ManagerVersion`
+  against the pins.
+* **Tests.**
+  - `scripts/Test-LoaderReferencePins.ps1` (35 checks: fixture pins, and stub assemblies of known identity for the
+    package reference cases) and `tools/test_loader_reference_pins.py` (5) run inside `validate-repository.ps1`.
+  - `scripts/Test-PinnedLoaderMsBuild.ps1` (9 checks) runs MSBuild on a temporary clone. The historical control is the
+    pinned commit `35763430ac`; its checkout is verified, and the installed-loader case applies only when the installed
+    loader differs from the pins. `build.ps1` and a direct MSBuild compile against the pinned files. Refused before
+    compilation: the installed or a mismatched loader set, an altered copy, a folder not named `UnityModManager`, a
+    mismatched `Info.json` minimum, and a stray HintPath to a copy outside the verified folder.
+  - `scripts/Test-CandidateAdmission.ps1` (13 checks) runs on a real Build-Local development candidate in a temporary
+    clone (see the current development candidate above).
+  - The domain check `loader.production-dll-references-pinned-loader` runs in the focused gate on the production DLL that
+    gate compiled (bound by path and SHA-256); without that binding it refuses.
+  - `Test-DevelopmentCandidate.ps1` proves that the compiler receives the pinned directory and that a tampered loader is
+    refused before any child step.
 
 ## How the runtime matrix was run
 
