@@ -1500,6 +1500,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     cast["damage"] = new JArray(recorder.Damage.Skip(damageFrom).Where(value => value.Reason != null && mine(value.Reason.Context)).Select(value => new JObject {
                         ["target"] = label(value.Target), ["total"] = value.Damage, ["halfBecauseSave"] = value.HalfBecauseSavingThrow,
                         ["parts"] = new JArray(value.DamageBundle.Select(part => new JObject { ["type"] = part.Type.ToString(),
+                            ["form"] = part is Kingmaker.RuleSystem.Rules.Damage.PhysicalDamage ? ((Kingmaker.RuleSystem.Rules.Damage.PhysicalDamage)part).Form.ToString() : null,
                             ["dice"] = part.Dice.Rolls + "d" + part.Dice.Dice.ToString(), ["bonus"] = part.Bonus })) }));
                     cast["otherDamage"] = recorder.Damage.Skip(damageFrom).Count(value => ReferenceEquals(value.Initiator, dust) && !(value.Reason != null && mine(value.Reason.Context)));
                     cast["saves"] = new JArray(saveLog.Rows.Skip(savesFrom).Where(value => mine(value.Value)).Select(value => { var copy = (JObject)value.Key.DeepClone(); copy["unit"] = label(new[] { hostile, ice, outside, fixture.Caster }.FirstOrDefault(unit => unit != null && unit.UniqueId == (string)value.Key["unit"])) ?? (string)value.Key["unit"]; return copy; }));
@@ -1539,14 +1540,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     bool failed = (int)cast["desiredReflexD20"] == 1;
                     JObject[] hits = damageTo(cast, "enemy-inside"); JObject[] rolled = savesBy(cast, "enemy-inside");
-                    bool hit = hits.Length == 1 && ((JArray)hits[0]["parts"]).Count == 1 && (string)hits[0]["parts"][0]["type"] == "Slashing" &&
+                    bool hit = hits.Length == 1 && ((JArray)hits[0]["parts"]).Count == 1 && (string)hits[0]["parts"][0]["type"] == "Physical" &&
+                        ((string)hits[0]["parts"][0]["form"] ?? "").Contains("Slashing") &&
                         ((string)hits[0]["parts"][0]["dice"]).EndsWith("D4", StringComparison.OrdinalIgnoreCase) && (string)hits[0]["parts"][0]["dice"] != null &&
                         (failed ? (int)hits[0]["total"] >= 1 && (int)hits[0]["total"] <= 4 && !(bool)hits[0]["halfBecauseSave"]
                                 : (int)hits[0]["total"] >= 0 && (int)hits[0]["total"] <= 2 && (bool)hits[0]["halfBecauseSave"]);
                     bool save = rolled.Length == 1 && (string)rolled[0]["stat"] == "SaveReflex" && (int)rolled[0]["d20"] == (int)cast["desiredReflexD20"] && (bool)rolled[0]["passed"] == !failed;
                     bool condition = sickenedOn(cast, "enemy-inside") == failed && !sickenedOn(cast, "ally-inside") && !sickenedOn(cast, "enemy-outside") && !sickenedOn(cast, "caster-behind");
+                    // Released behaviour, unchanged here: the breath's Reflex save is rolled for every creature
+                    // the cone selects, allies included; damage and the condition apply to enemies only.
                     bool others = damageTo(cast, "ally-inside").Length == 0 && damageTo(cast, "enemy-outside").Length == 0 && damageTo(cast, "caster-behind").Length == 0 &&
-                        savesBy(cast, "ally-inside").Length == 0 && savesBy(cast, "enemy-outside").Length == 0 && (int)cast["otherDamage"] == 0 &&
+                        savesBy(cast, "enemy-outside").Length == 0 && savesBy(cast, "caster-behind").Length == 0 && (int)cast["otherDamage"] == 0 &&
                         !((JArray)cast["selected"]).Values<string>().Contains("enemy-outside") && !((JArray)cast["selected"]).Values<string>().Contains("caster-behind");
                     return hit && save && condition && others;
                 });
@@ -1556,7 +1560,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25Check("s7-dust-mechanics", layout && mechanics, new JObject { ["layout"] = row["layout"].DeepClone(),
                         ["casts"] = new JArray(castRows.Select(cast => new JObject { ["desiredReflexD20"] = cast["desiredReflexD20"], ["selected"] = cast["selected"].DeepClone(),
                             ["damage"] = cast["damage"].DeepClone(), ["saves"] = cast["saves"].DeepClone(), ["sickened"] = cast["sickened"].DeepClone(), ["otherDamage"] = cast["otherDamage"] })) },
-                    "Correlated to each breath's own execution context: the enemy inside the cone rolls one Reflex save; on a natural 1 it takes full 1d4 slashing and is Sickened (3 rounds), on a natural 20 half damage and no condition; the ally inside the cone, the enemy outside it and the caster behind take nothing, roll nothing and gain no condition; the enemy outside is never selected.");
+                    "Correlated to each breath's own execution context: the enemy inside the cone rolls one Reflex save; on a natural 1 it takes full 1d4 slashing and is Sickened (3 rounds), on a natural 20 half damage and no condition; the ally inside the cone takes no damage and gains no condition (its Reflex save, rolled by the released breath for every selected creature, is recorded); the enemy outside and the caster behind are never selected, roll nothing and take nothing.");
                 Sprint25Check("s7-dust-action", castRows.All(cast => (string)cast["actionType"] == breath.ActionType.ToString() &&
                         (resource == null ? (bool)cast["availableAfter"] : (int?)cast["resourceAfter"] == (int?)cast["resourceBefore"] - resource.Amount)),
                     new JObject { ["blueprint"] = row["breathBlueprint"].DeepClone(), ["casts"] = new JArray(castRows.Select(cast => new JObject { ["actionType"] = cast["actionType"],
