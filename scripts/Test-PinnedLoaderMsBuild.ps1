@@ -92,13 +92,18 @@ try {
     $o = & $msbuildDirect @("/p:UnityModManagerDir=$odd")
     Add-Case 'direct-msbuild-folder-not-named-unitymodmanager-refused' ($o.ExitCode -ne 0 -and $o.Output -match 'UnityModManagerDir must be the UnityModManager folder') "exit $($o.ExitCode)"
 
-    # A second UnityModManager reference injected by a Directory.Build.targets (pointing at the installed loader):
-    # refused by the resolved-input check before compilation.
+    # A stray HintPath: a Directory.Build.targets replaces the project's UnityModManager reference with a byte-identical
+    # copy of the pinned file in another folder. The folder check passes (the pinned folder is unchanged), so only the
+    # resolved-input check can refuse it, before compilation.
+    $strayDir = Join-Path $temp 'stray copy'
+    New-Item -ItemType Directory -Path $strayDir -Force | Out-Null
+    Copy-Item -LiteralPath (Join-Path $clone 'artifacts\references\loader\UnityModManager\UnityModManager.dll') -Destination $strayDir
     $extraTargets = Join-Path $clone 'src\Directory.Build.targets'
-    [IO.File]::WriteAllText($extraTargets, "<Project><ItemGroup><Reference Include=`"UnityModManagerExtra`"><HintPath>$([Security.SecurityElement]::Escape((Join-Path $installedLoader 'UnityModManager.dll')))</HintPath><Private>False</Private></Reference></ItemGroup></Project>")
+    [IO.File]::WriteAllText($extraTargets, "<Project><ItemGroup><Reference Remove=`"UnityModManager`" /><Reference Include=`"UnityModManager`"><HintPath>$([Security.SecurityElement]::Escape((Join-Path $strayDir 'UnityModManager.dll')))</HintPath><Private>False</Private></Reference></ItemGroup></Project>")
+    $dllBeforeStray = Get-Sha $dll
     $x = & $msbuildDirect @()
     Remove-Item -LiteralPath $extraTargets
-    Add-Case 'stray-second-unitymodmanager-reference-refused' ($x.ExitCode -ne 0 -and $x.Output -match 'Exactly one UnityModManager compiler input is required|Loader compiler references must be the verified pinned files' -and $x.Output -notmatch 'KingmakerGunslinger -> ') ([regex]::Match($x.Output, '(Exactly one UnityModManager compiler input is required|Loader compiler references must be the verified pinned files)[^\n]{0,160}').Value)
+    Add-Case 'stray-hintpath-to-unitymodmanager-copy-refused' ($x.ExitCode -ne 0 -and $x.Output -match 'Loader compiler references must be the verified pinned files' -and $x.Output -match [regex]::Escape((Join-Path $strayDir 'UnityModManager.dll')) -and $x.Output -notmatch 'KingmakerGunslinger -> ' -and (Get-Sha $dll) -ceq $dllBeforeStray) ([regex]::Match($x.Output, 'Loader compiler references must be the verified pinned files[^\n]{0,200}').Value)
 
     $failed = @($cases | Where-Object { -not $_.passed })
     $summary = [ordered]@{

@@ -96,8 +96,8 @@ No compatibility adapter was needed and none was added.
 * **Tests.** `scripts/Test-LoaderReferencePins.ps1` (36 checks) and `tools/test_loader_reference_pins.py` (5) run inside
   `validate-repository.ps1`. `scripts/Test-PinnedLoaderMsBuild.ps1` runs MSBuild on a temporary clone: the previous
   defaults compile against the installed loader, `build.ps1` and a direct MSBuild compile against the pinned files, and
-  the installed loader, an altered copy, a folder not named `UnityModManager` and a second injected UnityModManager
-  reference are refused before compilation. `Test-DevelopmentCandidate.ps1` now also proves that the compiler receives the pinned
+  the installed loader, an altered copy, a folder not named `UnityModManager` and a stray HintPath to a copy of the
+  pinned UnityModManager outside the verified folder are refused before compilation. `Test-DevelopmentCandidate.ps1` now also proves that the compiler receives the pinned
   directory and that a tampered loader is refused before any child step.
 
 ## How the runtime matrix was run
