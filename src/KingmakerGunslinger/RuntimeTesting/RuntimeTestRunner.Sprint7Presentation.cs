@@ -1724,22 +1724,43 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         // R3-F3: the cell's Sickened ledger over every unit in the area.
-        private sealed class S7DustConditions
+        // R3-F3: the cell's Sickened ledger over every unit in the area. A
+        // condition is the cell's when its context is (or derives from) an
+        // ability execution the cell's own units delivered. Native Sickened does
+        // not stack: a later application refreshes an existing instance, which
+        // keeps its first context, so every delivering execution of the cell's
+        // units counts (the Ice breaths the cell commands too), each captured at
+        // delivery, while its caster is alive (an expired summon's context later
+        // reads no caster).
+        private sealed class S7DustConditions : IApplyAbilityEffectHandler, IDisposable
         {
             private readonly BlueprintBuff _sickened;
-            private readonly BlueprintAbility _breath;
             private readonly List<UnitEntityData> _casters;
+            private readonly List<AbilityExecutionContext> _executions = new List<AbilityExecutionContext>();
             private readonly AcquisitionLedger<Buff> _ledger;
+            private bool _subscribed;
 
-            internal S7DustConditions(BlueprintBuff sickened, BlueprintAbility breath, params UnitEntityData[] casters)
+            internal S7DustConditions(BlueprintBuff sickened, params UnitEntityData[] casters)
             {
-                _sickened = sickened; _breath = breath; _casters = casters.Where(value => value != null).ToList();
+                _sickened = sickened; _casters = casters.Where(value => value != null).ToList();
                 _ledger = new AcquisitionLedger<Buff>(Present());
+                EventBus.Subscribe(this); _subscribed = true;
             }
 
             internal List<Buff> Acquired { get { return _ledger.Acquired; } }
             internal int LastRemoved { get { return _ledger.LastRemoved; } }
+            internal int OwnedExecutions { get { return _executions.Count; } }
             internal void AddCaster(UnitEntityData caster) { if (caster != null) _casters.Add(caster); }
+
+            public void OnTryToApplyAbilityEffect(AbilityExecutionContext context, TargetWrapper target)
+            {
+                if (context != null && _casters.Any(caster => ReferenceEquals(caster, context.MaybeCaster)) && !_executions.Any(value => ReferenceEquals(value, context)))
+                    _executions.Add(context);
+            }
+            public void OnAbilityEffectAppliedToTarget(AbilityExecutionContext context, TargetWrapper target) { }
+            public void OnAbilityEffectApplied(AbilityExecutionContext context) { OnTryToApplyAbilityEffect(context, null); }
+
+            public void Dispose() { if (_subscribed) { EventBus.Unsubscribe(this); _subscribed = false; } }
 
             private IEnumerable<Buff> Present()
             {
@@ -1747,12 +1768,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .SelectMany(unit => unit.Descriptor.Buffs.Enumerable.Where(buff => ReferenceEquals(buff.Blueprint, _sickened))).ToList();
             }
 
-            // A Dust breath execution by one of the cell's own Dust units.
             private bool Owned(Buff buff)
             {
                 Kingmaker.UnitLogic.Mechanics.MechanicsContext context = buff.Context;
                 AbilityExecutionContext execution = context as AbilityExecutionContext ?? (context == null ? null : context.SourceAbilityContext);
-                return execution != null && ReferenceEquals(execution.AbilityBlueprint, _breath) && _casters.Any(caster => ReferenceEquals(caster, execution.MaybeCaster));
+                return execution != null && _executions.Any(value => ReferenceEquals(value, execution));
             }
 
             internal int Observe() { return _ledger.Observe(Present(), Owned); }
@@ -1823,7 +1843,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             // cell's own Dust units introduced, however that cast ended, is
             // acquired by the cell's ledger; only those (and, at the very end,
             // the observer's own control) are removed.
-            var conditions = new S7DustConditions(sickened, breath, dust, spare);
+            var conditions = new S7DustConditions(sickened, dust, spare, ice);
+            S7DustConditions earlyLedger = null;
             Buff foreignSickened = null;
             var releaseFailures = new JArray();
             Action clearSickened = () => { foreach (string failure in conditions.Release()) releaseFailures.Add(failure); };
@@ -2191,7 +2212,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var early = new JObject(); row["earlyExit"] = early;
                 hostileSaves.DesiredRoll = 1;
                 clearSickened();
-                var earlyLedger = new S7DustConditions(sickened, breath, late);
+                earlyLedger = new S7DustConditions(sickened, late);
                 int earlySaves = saveLog.Rows.Count, earlyDamage = recorder.Damage.Count;
                 early["preexistingCellOwned"] = earlyLedger.Remaining();
                 mark("dust-early-exit-start");
@@ -2209,6 +2230,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 early["diagnostics"] = laterCast(late, earlySaves, earlyDamage);
                 early["acquiredBeforeExit"] = earlyLedger.Acquired.Count;
                 earlyRun.Dispose();
+                earlyLedger.Dispose();
                 early["remainingAfterExit"] = earlyLedger.Remaining();
                 early["foreignKept"] = foreignSickened != null && fixture.Caster.Descriptor.Buffs.Enumerable.Contains(foreignSickened);
                 early["commandsLeft"] = (late.Commands.HasUnfinished() ? 1 : 0);
@@ -2265,7 +2287,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int liveBeforeCleanup = conditions.Remaining();
                 clearSickened();
                 int remainingOwned = conditions.Remaining();
-                row["conditions"] = new JObject { ["acquired"] = conditions.Acquired.Count, ["liveBeforeCleanup"] = liveBeforeCleanup, ["removedAtCleanup"] = conditions.LastRemoved,
+                conditions.Dispose();
+                if (earlyLedger != null) earlyLedger.Dispose();
+                row["conditions"] = new JObject { ["acquired"] = conditions.Acquired.Count, ["ownedExecutions"] = conditions.OwnedExecutions,
+                    ["liveBeforeCleanup"] = liveBeforeCleanup, ["removedAtCleanup"] = conditions.LastRemoved,
                     ["remainingAfterCleanup"] = remainingOwned, ["releaseFailures"] = releaseFailures,
                     ["note"] = "Sickened lasts 3 rounds; an instance that expired before cleanup is gone natively and is not counted as live." };
                 bool foreignKept = foreignSickened != null && !fixture.Caster.Destroyed && fixture.Caster.Descriptor.Buffs.Enumerable.Contains(foreignSickened);
@@ -2273,7 +2298,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25Check("s7-dust-cell-conditions-released", remainingOwned == 0 && releaseFailures.Count == 0 && liveBeforeCleanup >= 1 && conditions.LastRemoved >= 1 &&
                         conditions.Acquired.Count >= 2 && foreignKept,
                     (JObject)row["conditions"].DeepClone(),
-                    "Cleanup after the cell's last (native-look) cast removes the Sickened instances any Dust execution of this cell introduced and that are still live (at least the last cast's): none remains, and the foreign control is still present at that moment.");
+                    "Cleanup after the cell's last (native-look) cast removes the Sickened instances that executions delivered by this cell's own units introduced (the Dust breaths and the Ice breaths the cell commands; native Sickened refreshes an existing instance, keeping its first context) and that are still live (at least the last cast's): none remains, and the foreign control is still present at that moment.");
                 if (foreignSickened != null && foreignKept) foreignSickened.Remove();
                 Sprint25Check("s7-dust-foreign-sickened-kept", foreignSickened != null && (bool?)row["foreignSickenedAfterResets"] == true && foreignKept,
                     new JObject { ["afterResets"] = row["foreignSickenedAfterResets"], ["afterCleanup"] = foreignKept },
@@ -2367,6 +2392,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new JObject { ["errors"] = errors, ["liveRecolours"] = DustMephitBreathTint.Live, ["traceReleased"] = traceReleased, ["remainingCellConditions"] = remainingConditions },
                     "Readers, combat, positions, recolours, the projectile trace's hooks and the cell's conditions restore.");
                 record["restoreErrors"] = errors;
+                // Every cue record at the end of the phase, so a late or missing native end is visible.
+                record["cuesAtEnd"] = R6Cues(); record["cuesAtEndUtc"] = DateTime.UtcNow.ToString("o");
                 RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory, phase + ".json"), record.ToString(Formatting.Indented));
             }
         }
