@@ -81,8 +81,10 @@ No compatibility adapter was needed and none was added.
   re-verifies the pins.
 * **Every MSBuild compile (added 2026-11-24).** Until then the project's default `UnityModManagerDir` was the installed
   loader (`<KingmakerInstallDir>\Kingmaker_Data\Managed\UnityModManager`), so a direct MSBuild and the development
-  compiles of `scripts\build.ps1` and `Invoke-KmgGate.ps1` were compiled against whichever loader was installed (the
-  packaged DLL was never affected: it comes from the exact-reference compiler). The default is now the pinned cache
+  compiles of `scripts\build.ps1` and `Invoke-KmgGate.ps1` were compiled against whichever loader was installed.
+  Release packages come from the exact-reference compiler. The verified assurance is limited to v0.0.188 and v0.0.195,
+  whose packaged DLLs reference UnityModManager 0.31.1.0 and 0Harmony12 1.2.0.1 (status table); this record makes no
+  claim about other builds. The default is now the pinned cache
   `artifacts\references\loader\UnityModManager`, which `scripts\build.ps1` fetches and verifies first. Before
   references resolve, the project verifies the folder it is given against the pins (`scripts\Assert-PinnedLoaderReferences.ps1`),
   so a direct MSBuild pointed at the installed loader or at altered files is refused; after reference selection, the

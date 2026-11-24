@@ -86,6 +86,24 @@ For milestone qualification, run the full suite three times and require byte-ide
 .\scripts\build.ps1 -Configuration Release -Clean
 ```
 
+Compile-only bootstrap (fetches and verifies the pinned loader files, then compiles; no aggregate tests, package or
+release gate):
+
+```powershell
+.\scripts\build.ps1 -Configuration Release -CompileOnly
+```
+
+Clean development package (exact-reference compile, the named tests, package validation and a development receipt
+under `artifacts\development-candidates\<purpose>\<commit12>\`; one immutable candidate per purpose and commit):
+
+```powershell
+.\scripts\Build-Local.ps1 -DevelopmentPurpose <purpose> -DevelopmentTestFilter <test names> [-ReferenceBundleDir <private bundle>]
+```
+
+Without `-ReferenceBundleDir` it looks for `private\extracted-references\KingmakerGunslinger-private-build-references`
+in the checkout or up to five parent folders. The repository validator it runs includes source-only persistence tests
+that refuse to start while a Kingmaker process exists.
+
 External references remain `Private=False`. Any copied game, Unity, Harmony, UMM, or Newtonsoft binary fails output validation.
 
 ## Build from the supplied private reference bundle
@@ -108,9 +126,12 @@ This path compiles against the same exact private game and Unity assemblies with
 
 Loader references are pinned separately. `UnityModManager.dll` and `0Harmony12.dll` come from
 `scripts/loader-reference-pins.json` (UMM 0.31.1, the declared minimum), never from the installed loader:
-`Build-Local.ps1` fetches each absent file from its pinned upstream URL into `artifacts/references/loader`,
-verifies its SHA-256, refuses a present file with different bytes, and records role, assembly version, source
-and the pins hash in the build receipt. The compiler re-verifies the pins itself. Game and Unity references keep
+`build.ps1` and `Build-Local.ps1` fetch each **absent** file from its pinned upstream URL into
+`artifacts/references/loader` and verify its SHA-256 (and, for an archive source, the archive hash and entry). A file
+that is **present with different bytes** is not a cache miss: the build stops with `Pinned loader reference differs from
+its pin: <path>; pinnedSha256=…; actualSha256=…` and the file is left untouched. Inspect it, move or delete that one file
+yourself, then rerun to fetch the pinned copy. Build-Local records role, assembly version, source and the pins hash in
+the build receipt. The compiler re-verifies the pins itself. Game and Unity references keep
 their exact bundle-equals-installation check. `Info.json` `ManagerVersion` must equal the pinned floor, which
 package validation enforces. See [UMM-LOADER-COMPATIBILITY.md](UMM-LOADER-COMPATIBILITY.md).
 
