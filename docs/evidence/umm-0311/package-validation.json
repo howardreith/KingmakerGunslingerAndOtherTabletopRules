@@ -1,0 +1,24 @@
+{
+    "name":  "KingmakerGunslinger",
+    "sha256":  "4cbc662565de3c5608c6cb18dfc075b13fd6f574d98af0058ced2e02395ea446",
+    "mvid":  "bd268aa9-7524-4559-b580-9918f1fded45",
+    "references":  [
+                       "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                       "UnityModManager, Version=0.31.1.0, Culture=neutral, PublicKeyToken=null",
+                       "Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                       "0Harmony12, Version=1.2.0.1, Culture=neutral, PublicKeyToken=null",
+                       "Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UnityEngine.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                       "Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UnityEngine.ClothModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UniRx, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                   ]
+}

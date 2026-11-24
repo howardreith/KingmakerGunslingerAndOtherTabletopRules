@@ -1,0 +1,76 @@
+{
+    "schema":  "kmg.candidate-admission-tests.v1",
+    "commit":  "04b9384ed1feba02ed13f1dea0a71c384c076da5",
+    "purpose":  "umm-0311-admission",
+    "package_sha256":  "96f93c409e9593a17d8fa1e54f086911e9612cea3f6f5472583b02eaa1ba51e5",
+    "newer_compiled_dll_sha256":  "7b23241c3a219153e688041c905f8485ea70a7f36abb6f6a94e8beb7bbafc368",
+    "passed":  13,
+    "total":  13,
+    "cases":  [
+                  {
+                      "name":  "development-candidate-built",
+                      "passed":  true,
+                      "detail":  "exit 0; <dev>\\KingmakerGunslingerLab\\worktrees\\candidate-admission-9b0f8516c9f0476d8c5ae780af6f7987\\clone with space\\artifacts\\development-candidates\\umm-0311-admission\\04b9384ed1fe\\KingmakerGunslinger-0.0.195-development-umm-0311-admission-04b9384ed1fe.zip"
+                  },
+                  {
+                      "name":  "matching-candidate-admitted",
+                      "passed":  true,
+                      "detail":  "exit 0"
+                  },
+                  {
+                      "name":  "validator-genuine-baseline-zip-accepted",
+                      "passed":  true,
+                      "detail":  "exit 0"
+                  },
+                  {
+                      "name":  "validator-newer-compiled-tre-dll-refused-for-its-assemblyref",
+                      "passed":  true,
+                      "detail":  "not exactly the pinned loader assemblies [0Harmony12, Version=1"
+                  },
+                  {
+                      "name":  "validator-extra-runtime-dll-at-archive-root-refused",
+                      "passed":  true,
+                      "detail":  "outside the \u0027KingmakerGunslinger\u0027 mod root: 0Harmony"
+                  },
+                  {
+                      "name":  "validator-extra-runtime-dll-at-mod-tree-refused",
+                      "passed":  true,
+                      "detail":  "not match the strict release allowlist"
+                  },
+                  {
+                      "name":  "receipt-with-another-builds-mvid-refused",
+                      "passed":  true,
+                      "detail":  "not the build its receipt names (receipt 73edb372907dbb05a8e82a27941a9032de4e90bf6cb25e7e93db5a233f9d97d9/8e5f8dfe-8df8-4a08-8e4c-086032c286e3, packaged 73edb372907dbb05a8e82a27941a9032de4e90bf6cb25e7e93db5a233f9d97d9/0b664acf-7f98-4"
+                  },
+                  {
+                      "name":  "receipt-with-another-builds-dll-hash-refused",
+                      "passed":  true,
+                      "detail":  "not the build its receipt names (receipt abababababababababababababababababababababababababababababababab/0b664acf-7f98-42d8-a626-07e2bbd14b56, packaged 73edb372907dbb05a8e82a27941a9032de4e90bf6cb25e7e93db5a233f9d97d9/0b664acf-7f98-4"
+                  },
+                  {
+                      "name":  "candidate-after-project-change-refused",
+                      "passed":  true,
+                      "detail":  "stale: material inputs changed since its producing commit 04b9384ed1: src/KingmakerGunslinger/KingmakerGunslinger"
+                  },
+                  {
+                      "name":  "candidate-after-reference-helper-change-refused",
+                      "passed":  true,
+                      "detail":  "stale: material inputs changed since its producing commit 04b9384ed1: scripts/ReferenceProvenance"
+                  },
+                  {
+                      "name":  "candidate-admitted-again-after-reverts",
+                      "passed":  true,
+                      "detail":  "exit 0"
+                  },
+                  {
+                      "name":  "loader-preflight-admits-matching-candidate",
+                      "passed":  true,
+                      "detail":  "exit 0"
+                  },
+                  {
+                      "name":  "loader-preflight-refuses-mismatched-zip",
+                      "passed":  true,
+                      "detail":  "refused <dev>\\KingmakerGunslingerLab\\worktrees\\candidate-admission-9b0f8516c9f0476d8c5ae780af6f798 7\\variants\\newer-compiled-dll"
+                  }
+              ]
+}

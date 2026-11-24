@@ -1,14 +1,14 @@
 {
     "schema":  "kmg.pinned-loader-msbuild-tests.v1",
-    "commit":  "8dfe6d08b5b5dc1fb68408297765ece6357ce7f6",
+    "commit":  "45b9b77097976c9b2c90594b2c5bcaa0928781ed",
     "baseline_commit":  "35763430acc9eefc306b861045526a444690bc77",
     "installed_loader_measured":  {
                                       "unityModManager":  "0.33.0.0",
                                       "sha256":  "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
                                   },
-    "product_dll_sha256":  "3738d43696bfdfd8f12338a5a0151be8a1a0dbe613635e80b022173302815074",
-    "passed":  8,
-    "total":  8,
+    "product_dll_sha256":  "40acc06fe131acfe108dff1c5493b4fa5f1491ae091fe4f372d5bbcb5029ec9e",
+    "passed":  9,
+    "total":  9,
     "cases":  [
                   {
                       "name":  "before-change-defaults-compile-against-installed-loader",
@@ -36,6 +36,11 @@
                       "detail":  "KMGPIN: Pinned loader reference differs from its pin: UnityModManager/0Harmony12.dll"
                   },
                   {
+                      "name":  "direct-msbuild-mismatched-source-manifest-refused",
+                      "passed":  true,
+                      "detail":  "Info.json ManagerVersion \u00270"
+                  },
+                  {
                       "name":  "direct-msbuild-verified-copy-accepted",
                       "passed":  true,
                       "detail":  "exit 0"
@@ -48,7 +53,7 @@
                   {
                       "name":  "stray-hintpath-to-unitymodmanager-copy-refused",
                       "passed":  true,
-                      "detail":  "Loader compiler references must be the verified pinned files in <temp>\\kmg-pinned-loader-2b64e1f0c3b94a1784f8738b806a15c3\\clone with space\\artifacts\\references\\loader\\UnityModManager\\; resolved: <temp>\\kmg-"
+                      "detail":  "Loader compiler references must be the verified pinned files in <temp>\\kmg-pinned-loader-f6499c63e4614d5dbe39a061a6f41a6a\\clone with space\\artifacts\\references\\loader\\UnityModManager\\; resolved: <temp>\\kmg-"
                   }
               ]
 }

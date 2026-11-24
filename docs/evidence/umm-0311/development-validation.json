@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "validator": "tools/validate_development_candidate.py",
-  "purpose": "umm-0311-pinned-build",
+  "purpose": "umm-0311-baseline",
   "releaseQualification": false,
   "baselineTag": "v0.0.195",
   "baselineCommit": "ef0e1fe15d59fc6f04ef4956337690f14de3c528",
