@@ -502,8 +502,10 @@ if ($development) {
         informationalVersion = [string]$developmentProps.Project.PropertyGroup.KmgInformationalVersion
         packagePath = $packagePath
         packageSha256 = Get-KmgSha256 -Path $packagePath
-        dllSha256 = [string]$packagedDllIdentity.sha256
-        dllMvid = [string]$packagedDllIdentity.mvid
+        # Equal to the packaged and compiler identities (checked above).
+        dllSha256 = Get-KmgSha256 -Path $dllPath
+        dllMvid = Get-KmgDllMvid -Path $dllPath
+        packagedDllSha256 = [string]$packagedDllIdentity.sha256
         compilerDllSha256 = [string]$compilerDllIdentity.sha256
         compilerDllMvid = [string]$compilerDllIdentity.mvid
         embeddedGitCommit = [string]$packagedDllIdentity.gitCommit
@@ -557,8 +559,10 @@ $manifest = [ordered]@{
     version = $info.Version
     packagePath = $packagePath
     packageSha256 = Get-KmgSha256 -Path $packagePath
-    dllSha256 = [string]$packagedDllIdentity.sha256
-    dllMvid = [string]$packagedDllIdentity.mvid
+    # Equal to the packaged and compiler identities (checked above).
+    dllSha256 = Get-KmgSha256 -Path $dllPath
+    dllMvid = Get-KmgDllMvid -Path $dllPath
+    packagedDllSha256 = [string]$packagedDllIdentity.sha256
     compilerDllSha256 = [string]$compilerDllIdentity.sha256
     compilerDllMvid = [string]$compilerDllIdentity.mvid
     embeddedGitCommit = [string]$packagedDllIdentity.gitCommit
