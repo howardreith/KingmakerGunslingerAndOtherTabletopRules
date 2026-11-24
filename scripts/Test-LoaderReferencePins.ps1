@@ -15,7 +15,7 @@ function Assert-That([bool]$Condition, [string]$Name) {
     if (-not $Condition) { $failures.Add($Name) }
 }
 function Get-Refusal([scriptblock]$Action) {
-    try { & $Action; return $null } catch { return $_.Exception.Message }
+    try { & $Action | Out-Null; return $null } catch { return $_.Exception.Message }
 }
 function Get-Sha([string]$Path) { (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant() }
 
@@ -30,22 +30,6 @@ $umm = @($realPins.References | Where-Object relativePath -ceq 'UnityModManager/
 Assert-That ($umm.Count -eq 1 -and $umm[0].assemblyVersion -ceq '0.31.1.0' -and
     $umm[0].sha256 -ceq '2e038ff23ab01d538dfef792096e1f5c04802d1edac3660db20d0d54c167c2c4') 'umm-pin-is-the-verified-0.31.1-nuget-build'
 
-# Every MSBuild compile of the product uses the pinned files: the project's default loader folder is the pinned cache
-# (never the installed Unity Mod Manager), the folder is verified against the pins before references resolve, and the
-# resolved compiler inputs must be exactly those files. (scripts/Test-PinnedLoaderMsBuild.ps1 exercises this in MSBuild.)
-[xml]$productProject = Get-Content -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\KingmakerGunslinger.csproj') -Raw
-$ummDefaults = @($productProject.Project.PropertyGroup | ForEach-Object { $_.ChildNodes } | Where-Object { $_.LocalName -ceq 'UnityModManagerDir' })
-Assert-That ($ummDefaults.Count -eq 1 -and $ummDefaults[0].InnerText -ceq '$(MSBuildThisFileDirectory)..\..\artifacts\references\loader\UnityModManager' -and
-    $ummDefaults[0].GetAttribute('Condition') -match "'\`$\(UnityModManagerDir\)' == ''" -and $ummDefaults[0].InnerText -notmatch 'KingmakerManagedDir|KingmakerInstallDir') 'project-default-loader-folder-is-the-pinned-cache'
-$targets = @($productProject.Project.Target)
-$verifyTarget = @($targets | Where-Object { $_.Name -ceq 'VerifyPinnedLoaderReferences' })
-Assert-That ($verifyTarget.Count -eq 1 -and $verifyTarget[0].BeforeTargets -ceq 'ResolveAssemblyReferences' -and
-    @($verifyTarget[0].Exec).Count -eq 1 -and $verifyTarget[0].Exec.Command -match 'Assert-PinnedLoaderReferences\.ps1') 'project-verifies-loader-folder-before-resolution'
-$resolvedTarget = @($targets | Where-Object { $_.Name -ceq 'AssertPinnedLoaderReferencesResolved' })
-Assert-That ($resolvedTarget.Count -eq 1 -and $resolvedTarget[0].BeforeTargets -ceq 'CoreCompile' -and $resolvedTarget[0].AfterTargets -ceq 'FindReferenceAssembliesForReferences') 'project-checks-resolved-loader-inputs-before-compile'
-$buildScript = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'build.ps1') -Raw
-Assert-That ($buildScript.IndexOf('Initialize-KmgPinnedLoaderReferences') -gt 0 -and $buildScript.IndexOf('Initialize-KmgPinnedLoaderReferences') -lt $buildScript.IndexOf('& $msbuild @arguments')) 'build-script-fetches-pins-before-msbuild'
-
 $fixture = Join-Path ([IO.Path]::GetTempPath()) ('KmgLoaderPins-' + [Guid]::NewGuid().ToString('N'))
 try {
     $loader = Join-Path $fixture 'loader'
@@ -56,7 +40,7 @@ try {
         $path = Join-Path $loader $relative
         New-Item -ItemType Directory -Path (Split-Path $path) -Force | Out-Null
         [IO.File]::WriteAllText($path, "pinned 0.31.1 $relative")
-        $rows.Add([ordered]@{ relativePath = $relative.Replace('\', '/'); assemblyVersion = 'fixture-0.31.1.0'
+        $rows.Add([ordered]@{ relativePath = $relative.Replace('\', '/'); assemblyVersion = $(if ($relative -like '*0Harmony12.dll') { '1.2.0.1' } else { '0.31.1.0' })
             url = 'https://fixture.invalid/never-fetched'; archiveSha256 = $null; archiveEntry = $null
             sha256 = Get-Sha $path })
     }
@@ -83,7 +67,7 @@ try {
     $installedUmm = Join-Path $install 'Kingmaker_Data\Managed\UnityModManager\UnityModManager.dll'
     Assert-That ($ummRow.sha256 -ceq (Get-Sha (Join-Path $loader 'UnityModManager\UnityModManager.dll')) -and
         $ummRow.sha256 -cne (Get-Sha $installedUmm) -and $ummRow.role -ceq 'pinned-loader' -and
-        $ummRow.assemblyVersion -ceq 'fixture-0.31.1.0' -and $ummRow.pinsSha256 -ceq (Get-Sha $pinsPath)) 'receipt-names-the-pinned-loader-not-the-installed-one'
+        $ummRow.assemblyVersion -ceq '0.31.1.0' -and $ummRow.pinsSha256 -ceq (Get-Sha $pinsPath)) 'receipt-names-the-pinned-loader-not-the-installed-one'
     Assert-That (@($matched | Where-Object { $_.relativePath -ceq 'Assembly-CSharp.dll' -and $_.role -ceq 'installed-game' }).Count -eq 1) 'game-references-keep-their-install-identity'
 
     # A newer local loader cannot change the baseline.
@@ -141,7 +125,24 @@ try {
     # Package: declared floor equals the pin; no copied runtime dependency.
     $mod = Join-Path $fixture 'package\KingmakerGunslinger'
     New-Item -ItemType Directory -Path (Join-Path $mod 'assets') -Force | Out-Null
-    [IO.File]::WriteAllText((Join-Path $mod 'KingmakerGunslinger.dll'), 'mod')
+    # Real fixture assemblies (the .NET Framework compiler): stub loaders of known identity and product DLLs compiled
+    # against them, so the package check reads actual AssemblyRefs.
+    $csc = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
+    $stubs = Join-Path $fixture 'stubs'; New-Item -ItemType Directory -Path $stubs | Out-Null
+    function New-FixtureAssembly([string]$Out, [string]$Code, [string[]]$References = @()) {
+        $source = $Out + '.cs'; [IO.File]::WriteAllText($source, $Code)
+        $o = & $csc /nologo /target:library "/out:$Out" @($References | ForEach-Object { "/reference:$_" }) $source 2>&1
+        if ($LASTEXITCODE -ne 0) { throw "Fixture compile failed: $($o -join ' ')" }
+    }
+    New-Item -ItemType Directory -Path (Join-Path $stubs 'pinned'), (Join-Path $stubs 'newer') | Out-Null
+    New-FixtureAssembly (Join-Path $stubs 'pinned\UnityModManager.dll') '[assembly: System.Reflection.AssemblyVersion("0.31.1.0")] namespace UnityModManagerNet { public class UnityModManager { } }'
+    New-FixtureAssembly (Join-Path $stubs 'pinned\0Harmony12.dll') '[assembly: System.Reflection.AssemblyVersion("1.2.0.1")] namespace Harmony12 { public class HarmonyInstance { } }'
+    New-FixtureAssembly (Join-Path $stubs 'newer\UnityModManager.dll') '[assembly: System.Reflection.AssemblyVersion("0.33.0.0")] namespace UnityModManagerNet { public class UnityModManager { } }'
+    $probe = 'public static class Probe { public static System.Type[] Types = { typeof(UnityModManagerNet.UnityModManager), typeof(Harmony12.HarmonyInstance) }; }'
+    New-Item -ItemType Directory -Path (Join-Path $stubs 'product-pinned'), (Join-Path $stubs 'product-newer') | Out-Null
+    New-FixtureAssembly (Join-Path $stubs 'product-pinned\KingmakerGunslinger.dll') $probe @((Join-Path $stubs 'pinned\UnityModManager.dll'), (Join-Path $stubs 'pinned\0Harmony12.dll'))
+    New-FixtureAssembly (Join-Path $stubs 'product-newer\KingmakerGunslinger.dll') $probe @((Join-Path $stubs 'newer\UnityModManager.dll'), (Join-Path $stubs 'pinned\0Harmony12.dll'))
+    Copy-Item -LiteralPath (Join-Path $stubs 'product-pinned\KingmakerGunslinger.dll') -Destination (Join-Path $mod 'KingmakerGunslinger.dll')
     $infoPath = Join-Path $mod 'Info.json'
     function Set-FixtureManager([string]$Version) {
         ([ordered]@{ Id = 'KingmakerGunslinger'; Version = '0.0.187'; ManagerVersion = $Version
@@ -162,6 +163,13 @@ try {
         Remove-Item -LiteralPath $copied
     }
     Assert-That ($null -eq (Get-Refusal { Assert-KmgPackagedLoaderContract -ModDirectory $mod -PinsPath $pinsPath })) 'package-accepted-again-after-removal'
+    # The packaged DLL's actual references: compiled against a newer loader, or unreadable, it is refused.
+    Copy-Item -LiteralPath (Join-Path $stubs 'product-newer\KingmakerGunslinger.dll') -Destination (Join-Path $mod 'KingmakerGunslinger.dll') -Force
+    Assert-That ((Get-Refusal { Assert-KmgPackagedLoaderContract -ModDirectory $mod -PinsPath $pinsPath }) -like '*UnityModManager, Version=0.33.0.0*not exactly the pinned loader assemblies*') 'package-dll-compiled-against-newer-loader-refused'
+    [IO.File]::WriteAllText((Join-Path $mod 'KingmakerGunslinger.dll'), 'not an assembly')
+    Assert-That ((Get-Refusal { Assert-KmgPackagedLoaderContract -ModDirectory $mod -PinsPath $pinsPath }) -like '*could not be read*') 'package-dll-unreadable-refused'
+    Copy-Item -LiteralPath (Join-Path $stubs 'product-pinned\KingmakerGunslinger.dll') -Destination (Join-Path $mod 'KingmakerGunslinger.dll') -Force
+    Assert-That ($null -eq (Get-Refusal { Assert-KmgPackagedLoaderContract -ModDirectory $mod -PinsPath $pinsPath })) 'package-dll-with-pinned-references-accepted'
 }
 finally {
     if (Test-Path -LiteralPath $fixture) { Remove-Item -LiteralPath $fixture -Recurse -Force }

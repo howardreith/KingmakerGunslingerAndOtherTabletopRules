@@ -2236,7 +2236,7 @@
       <_KmgLoaderReferenceRoot>$([System.IO.Path]::GetDirectoryName('$(_KmgUnityModManagerDir)'))</_KmgLoaderReferenceRoot>
     </PropertyGroup>
     <Error Condition=" '$([System.IO.Path]::GetFileName($(_KmgUnityModManagerDir)))' != 'UnityModManager' " Text="UnityModManagerDir must be the UnityModManager folder of the pinned loader references: $(UnityModManagerDir)" />
-    <Exec Command="powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)..\..\scripts\Assert-PinnedLoaderReferences.ps1&quot; -LoaderReferenceDir &quot;$(_KmgLoaderReferenceRoot)&quot;" />
+    <Exec Command="powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)..\..\scripts\Assert-PinnedLoaderReferences.ps1&quot; -LoaderReferenceDir &quot;$(_KmgLoaderReferenceRoot)&quot; -InfoPath &quot;$(MSBuildThisFileDirectory)..\..\Info.json&quot;" />
   </Target>
 
   <!-- After reference-assembly selection, immediately before compilation: the UnityModManager and 0Harmony12 inputs Csc

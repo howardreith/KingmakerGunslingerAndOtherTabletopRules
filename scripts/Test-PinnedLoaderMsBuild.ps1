@@ -1,8 +1,8 @@
 [CmdletBinding()]
 param(
-    # The commit before this change (default: origin/master), built once to record the loader the old project defaults
-    # compiled against on this machine.
-    [string]$BaselineCommit = 'origin/master',
+    # The recorded commit before this change (master at 35763430ac, release 0.0.195 records), an immutable control built
+    # once to record the loader the old project defaults compiled against on this machine.
+    [ValidatePattern('^[0-9a-f]{40}$')][string]$BaselineCommit = '35763430acc9eefc306b861045526a444690bc77',
     [string]$ReportPath
 )
 
@@ -14,7 +14,9 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'common.ps1')
 $source = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $commit = (& git -C $source rev-parse HEAD).Trim()
-$baseline = (& git -C $source rev-parse $BaselineCommit).Trim()
+$baseline = $BaselineCommit
+& git -C $source cat-file -e ($baseline + '^{commit}')
+if ($LASTEXITCODE -ne 0) { throw "Baseline commit $baseline is not in this repository." }
 $msbuild = Resolve-KmgMsBuild
 [xml]$gamePath = Get-Content -LiteralPath (Join-Path $source 'GamePath.props') -Raw
 $installDir = [string](@($gamePath.Project.PropertyGroup) | Where-Object { $_.PSObject.Properties['KingmakerInstallDir'] } | Select-Object -First 1).KingmakerInstallDir
@@ -48,6 +50,7 @@ try {
 
     # Before: the commit preceding this change, compiled with the project's own defaults.
     & git -C $clone checkout -q --detach $baseline
+    if ($LASTEXITCODE -ne 0 -or (& git -C $clone rev-parse HEAD).Trim() -cne $baseline) { throw 'The clone did not select the baseline commit.' }
     $before = Invoke-Native 'powershell.exe' @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $build, '-Configuration', 'Release', '-CompileOnly')
     $beforeRefs = if (Test-Path -LiteralPath $dll) { Get-LoaderRefs $dll } else { 'no DLL' }
     $installedUmm = [Reflection.AssemblyName]::GetAssemblyName((Join-Path $installedLoader 'UnityModManager.dll')).Version.ToString()
@@ -56,6 +59,7 @@ try {
 
     # After: this commit. build.ps1 fetches and verifies the pins; the DLL references the pinned versions.
     & git -C $clone checkout -q --detach $commit
+    if ($LASTEXITCODE -ne 0 -or (& git -C $clone rev-parse HEAD).Trim() -cne $commit) { throw 'The clone did not select the commit under test.' }
     $after = Invoke-Native 'powershell.exe' @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $build, '-Configuration', 'Release', '-CompileOnly')
     $afterRefs = if (Test-Path -LiteralPath $dll) { Get-LoaderRefs $dll } else { 'no DLL' }
     Add-Case 'build-ps1-compiles-against-pinned-loader' ($after.ExitCode -eq 0 -and $after.Output -match 'Pinned loader references verified' -and $afterRefs -ceq '0Harmony12 1.2.0.1, UnityModManager 0.31.1.0') "exit $($after.ExitCode); DLL references $afterRefs"
@@ -65,9 +69,17 @@ try {
     $direct = & $msbuildDirect @()
     Add-Case 'direct-msbuild-default-uses-pinned-cache' ($direct.ExitCode -eq 0 -and $direct.Output -match 'Pinned loader references verified') "exit $($direct.ExitCode)"
 
-    # Direct MSBuild pointed at the installed loader: refused before compilation; the DLL is not rebuilt.
+    # Direct MSBuild pointed at the installed loader: judged by its bytes, never by its location. Byte-identical to the
+    # pins it is valid; otherwise (UMM 0.33.0 on the development machine) it is refused before compilation.
+    $pinnedUmm = Join-Path $clone 'artifacts\references\loader\UnityModManager\UnityModManager.dll'
+    $pinnedHarmony = Join-Path $clone 'artifacts\references\loader\UnityModManager\0Harmony12.dll'
+    $installedMatchesPins = (Get-Sha (Join-Path $installedLoader 'UnityModManager.dll')) -ceq (Get-Sha $pinnedUmm) -and (Get-Sha (Join-Path $installedLoader '0Harmony12.dll')) -ceq (Get-Sha $pinnedHarmony)
     $installed = & $msbuildDirect @("/p:UnityModManagerDir=$installedLoader")
-    Add-Case 'direct-msbuild-installed-loader-refused' ($installed.ExitCode -ne 0 -and $installed.Output -match 'KMGPIN: Pinned loader reference differs from its pin: UnityModManager/UnityModManager\.dll' -and $installed.Output -notmatch 'KingmakerGunslinger -> ' -and (Get-Sha $dll) -ceq $dllSha) ([regex]::Match($installed.Output, 'KMGPIN: [^;]*').Value)
+    if ($installedMatchesPins) {
+        Add-Case 'direct-msbuild-installed-loader-byte-identical-accepted' ($installed.ExitCode -eq 0) "installed loader is byte-identical to the pins; exit $($installed.ExitCode)"
+    } else {
+        Add-Case 'direct-msbuild-installed-loader-refused' ($installed.ExitCode -ne 0 -and $installed.Output -match 'KMGPIN: Pinned loader reference differs from its pin: UnityModManager/UnityModManager\.dll' -and $installed.Output -notmatch 'KingmakerGunslinger -> ' -and (Get-Sha $dll) -ceq $dllSha) ([regex]::Match($installed.Output, 'KMGPIN: [^;]*').Value)
+    }
 
     # A copy of the pinned files with one byte changed in 0Harmony12: refused.
     $tampered = Join-Path $temp 'tampered loader\UnityModManager'
@@ -77,6 +89,14 @@ try {
     [IO.File]::WriteAllBytes((Join-Path $tampered '0Harmony12.dll'), $bytes)
     $t = & $msbuildDirect @("/p:UnityModManagerDir=$tampered")
     Add-Case 'direct-msbuild-altered-pinned-copy-refused' ($t.ExitCode -ne 0 -and $t.Output -match 'KMGPIN: Pinned loader reference differs from its pin: UnityModManager/0Harmony12\.dll') ([regex]::Match($t.Output, 'KMGPIN: [^;]*').Value)
+
+    # A source manifest that does not declare the pinned floor: a direct build is refused before compilation.
+    $infoFile = Join-Path $clone 'Info.json'
+    $infoOriginal = [IO.File]::ReadAllText($infoFile)
+    [IO.File]::WriteAllText($infoFile, ($infoOriginal -replace '"ManagerVersion":\s*"0\.31\.1"', '"ManagerVersion": "0.33.0"'))
+    $mf = & $msbuildDirect @()
+    [IO.File]::WriteAllText($infoFile, $infoOriginal)
+    Add-Case 'direct-msbuild-mismatched-source-manifest-refused' ($mf.ExitCode -ne 0 -and $mf.Output -match "Info\.json ManagerVersion '0\.33\.0' must equal the pinned loader floor 0\.31\.1" -and $mf.Output -notmatch 'KingmakerGunslinger -> ') ([regex]::Match($mf.Output, 'Info\.json ManagerVersion[^.]*').Value)
 
     # An exact copy of the pinned files in another folder named UnityModManager: accepted (identity is by content).
     $copy = Join-Path $temp 'verified copy\UnityModManager'

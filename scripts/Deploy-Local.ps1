@@ -9,7 +9,10 @@ param(
     [switch]$PassThru,
     # The one development purpose this deployment may stage. Without it a
     # development candidate is refused; with it only that purpose's candidate.
-    [string]$DevelopmentPurpose
+    [string]$DevelopmentPurpose,
+    # An explicitly identified historical release control: admitted by its own package identity without requiring the
+    # current material inputs (every other candidate must be current).
+    [switch]$HistoricalReleaseControl
 )
 
 Set-StrictMode -Version Latest
@@ -24,7 +27,8 @@ if (-not [IO.Path]::GetFullPath($EvidenceRoot).TrimEnd('\').Equals($requiredEvid
     throw "Evidence root must be exactly: $requiredEvidenceRoot"
 }
 $manifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root `
-    -DevelopmentPurpose $DevelopmentPurpose
+    -DevelopmentPurpose $DevelopmentPurpose -RequireCurrentMaterialInputs:(-not $HistoricalReleaseControl)
+if ($HistoricalReleaseControl) { Write-Host "Historical release control (material inputs not required to be current): $($manifest.packagePath) $($manifest.packageSha256)" }
 $developmentDeployment = -not [string]::IsNullOrEmpty($DevelopmentPurpose)
 $candidateLabel = if ($developmentDeployment) {
     "development candidate '$DevelopmentPurpose' (never a release)"
@@ -56,7 +60,7 @@ $runtimeScope = Enter-KmgRuntimeLease -ParentLease $RuntimeLease -Purpose 'deplo
 try {
 Assert-KmgNotRunning
 $manifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root `
-    -DevelopmentPurpose $DevelopmentPurpose
+    -DevelopmentPurpose $DevelopmentPurpose -RequireCurrentMaterialInputs:(-not $HistoricalReleaseControl)
 $backup = & (Join-Path $PSScriptRoot 'Backup-Live-Mod.ps1') `
     -LiveModDirectory $live -BackupRoot $BackupRoot `
     -AllowEmptySource:$AllowEmptyFirstInstall -Confirm:$false

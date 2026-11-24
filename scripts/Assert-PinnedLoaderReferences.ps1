@@ -1,7 +1,9 @@
 [CmdletBinding()]
 param(
     # The loader reference root (the folder holding UnityModManager\UnityModManager.dll and UnityModManager\0Harmony12.dll).
-    [Parameter(Mandatory = $true)][string]$LoaderReferenceDir
+    [Parameter(Mandatory = $true)][string]$LoaderReferenceDir,
+    # The source Info.json; its ManagerVersion must equal the pinned floor.
+    [string]$InfoPath
 )
 
 # Called by the product project before references resolve (every MSBuild compile: direct, build.ps1 and the gates).
@@ -12,6 +14,11 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'ReferenceProvenance.Common.ps1')
 try {
     $verified = @(Assert-KmgPinnedLoaderReferences -LoaderReferenceDir $LoaderReferenceDir)
+    if ($InfoPath) {
+        $info = Get-Content -LiteralPath $InfoPath -Raw | ConvertFrom-Json
+        $floor = (Get-KmgLoaderReferencePins).MinimumManagerVersion
+        if (-not ($info.ManagerVersion -is [string]) -or $info.ManagerVersion -cne $floor) { throw "Info.json ManagerVersion '$($info.ManagerVersion)' must equal the pinned loader floor $floor." }
+    }
     Write-Host ('Pinned loader references verified: ' + (($verified | ForEach-Object { $_.relativePath + ' ' + $_.assemblyVersion }) -join ', '))
 }
 catch {

@@ -40,6 +40,10 @@ param(
     [string]$SessionFile,
     [ValidateSet('umm-0.31.1', 'umm-0.32.4', 'owner-0.33.0')][string]$LoaderProfile,
     [string]$CandidateZip,
+    # The development purpose the candidate was built for (development candidates), and the explicit marker for a
+    # historical release control (package contract only).
+    [string]$CandidateDevelopmentPurpose,
+    [switch]$HistoricalReleaseControl,
     [string]$HarnessDir,
     [string]$GameCopy = 'C:\Dev\KingmakerGunslingerLab\game-copies\loader-compat',
     [string]$FixtureDir = 'C:\Dev\KingmakerSkipCinematicLab\fixtures',
@@ -162,7 +166,7 @@ $evidence = Join-Path $script:LcEvidenceRoot $sessionId
 $profileDir = Join-Path $evidence 'profile'
 
 # Everything checkable is checked before anything is acquired.
-$candidateSha = Assert-LcSessionInputs $CandidateZip $HarnessDir
+$candidateSha = Assert-LcSessionInputs $CandidateZip $HarnessDir $CandidateDevelopmentPurpose -HistoricalReleaseControl:$HistoricalReleaseControl
 $summary = [ordered]@{ sessionId = $sessionId; session = $session.name; loaderProfile = $LoaderProfile
     candidateZip = $CandidateZip; candidateZipSha256 = $candidateSha; gameCopy = $copyRoot
     git = (& git -C (Split-Path (Split-Path (Split-Path $PSScriptRoot))) rev-parse HEAD); launches = @(); status = 'started' }

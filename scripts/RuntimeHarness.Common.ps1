@@ -386,13 +386,18 @@ function Read-KmgBuildLocalManifest {
         # Names the one development purpose this caller may consume. Without
         # it, a development candidate is refused; with it, only a development
         # candidate built for that purpose is accepted.
-        [string]$DevelopmentPurpose
+        [string]$DevelopmentPurpose,
+        # Admission for staging (Deploy-Local, the loader harness): the candidate's material inputs must equal its
+        # producing commit. Callers name an explicitly historical control with -HistoricalReleaseControl instead.
+        [switch]$RequireCurrentMaterialInputs
     )
     $package = (Resolve-Path -LiteralPath $PackagePath).Path
     if (-not [string]::IsNullOrEmpty($DevelopmentPurpose)) {
         $receipt = Read-KmgDevelopmentCandidate -PackagePath $package `
             -RepositoryRoot $RepositoryRoot -Purpose $DevelopmentPurpose
-        & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $package
+        $measured = & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $package -PassThru | Select-Object -Last 1
+        Assert-KmgReceiptDescribesPackagedDll -Receipt $receipt -Measured $measured
+        if ($RequireCurrentMaterialInputs) { Assert-KmgCandidateMaterialInputsCurrent -RepositoryRoot $RepositoryRoot -Commit ([string]$receipt.commit) }
         return $receipt
     }
     Assert-KmgNotDevelopmentCandidate -PackagePath $package -RepositoryRoot $RepositoryRoot
@@ -420,8 +425,20 @@ function Read-KmgBuildLocalManifest {
     if ($manifest.packageSha256 -ne $actualHash) {
         throw 'Build-Local package hash does not match its manifest.'
     }
-    & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $package
+    $measured = & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $package -PassThru | Select-Object -Last 1
+    Assert-KmgReceiptDescribesPackagedDll -Receipt $manifest -Measured $measured
+    if ($RequireCurrentMaterialInputs) { Assert-KmgCandidateMaterialInputsCurrent -RepositoryRoot $RepositoryRoot -Commit ([string]$manifest.commit) }
     return $manifest
+}
+
+# The DLL inside the finished ZIP must be the build its receipt names (SHA-256 and MVID), and carry the receipt's source
+# stamp (the producing commit in its informational version) when the build recorded one.
+function Assert-KmgReceiptDescribesPackagedDll {
+    param([Parameter(Mandatory = $true)]$Receipt, $Measured)
+    if ($null -eq $Measured) { throw 'Package validation returned no measured DLL identity.' }
+    if ([string]$Receipt.dllSha256 -cne [string]$Measured.sha256 -or [string]$Receipt.dllMvid -cne [string]$Measured.mvid) {
+        throw "The DLL inside the package is not the build its receipt names (receipt $($Receipt.dllSha256)/$($Receipt.dllMvid), packaged $($Measured.sha256)/$($Measured.mvid))."
+    }
 }
 
 function Assert-KmgExplicitCandidateIdentity {

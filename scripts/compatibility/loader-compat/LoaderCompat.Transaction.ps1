@@ -79,8 +79,22 @@ function Acquire-LcSharedLock([string]$RunId) {
 
 # Inputs checked before anything is acquired: the candidate package must exist and
 # be readable (its digest is returned) and the harness must be complete.
-function Assert-LcSessionInputs([string]$CandidateZip, [string]$HarnessDir) {
+function Assert-LcSessionInputs([string]$CandidateZip, [string]$HarnessDir, [string]$DevelopmentPurpose, [switch]$HistoricalReleaseControl) {
     if (-not $CandidateZip -or -not (Test-Path -LiteralPath $CandidateZip -PathType Leaf)) { throw "Candidate ZIP not found: $CandidateZip. Nothing was acquired." }
+    # The candidate is admitted exactly as Deploy-Local admits it (package contract including the DLL's actual loader
+    # references, receipt-to-DLL binding and current material inputs), in its own process, before anything is acquired.
+    # An explicitly identified historical release control is checked against the package contract only.
+    $repository = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..\..'))
+    $zip = $CandidateZip.Replace("'", "''")
+    $admission = if ($HistoricalReleaseControl) {
+        "& '$((Join-Path $repository 'scripts\validate-package.ps1').Replace("'", "''"))' -PackagePath '$zip'"
+    } else {
+        ". '$((Join-Path $repository 'scripts\RuntimeHarness.Common.ps1').Replace("'", "''"))'; [void](Read-KmgBuildLocalManifest -PackagePath '$zip' -RepositoryRoot '$($repository.Replace("'", "''"))' -DevelopmentPurpose '$DevelopmentPurpose' -RequireCurrentMaterialInputs)"
+    }
+    $previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    try { $admissionOutput = & powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command $admission 2>&1 | ForEach-Object { "$_" } }
+    finally { $ErrorActionPreference = $previous }
+    if ($LASTEXITCODE -ne 0) { throw "Candidate admission refused $CandidateZip; nothing was acquired: $(($admissionOutput | Select-Object -Last 3) -join ' ')" }
     $sha = Get-LcSha256 $CandidateZip
     foreach ($name in @('KmgLoaderCompatHarness.dll', 'Info.json')) {
         if (-not (Test-Path -LiteralPath (Join-Path $HarnessDir $name) -PathType Leaf)) { throw "Harness file missing: $(Join-Path $HarnessDir $name). Nothing was acquired." }

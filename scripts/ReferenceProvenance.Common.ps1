@@ -228,6 +228,23 @@ The package's declared loader floor is the build's pinned floor. Also refuses
 any runtime dependency copied into the mod: the package carries exactly one
 binary, the mod itself, and never a loader, Harmony, game or Unity assembly.
 #>
+<#
+Identity of a mod DLL read in an isolated Windows PowerShell process (reflection-only, so nothing is loaded into the
+caller): SHA-256, MVID and every referenced assembly's full binding identity. An unreadable DLL fails.
+#>
+function Get-KmgPackagedDllIdentity {
+    param([Parameter(Mandatory = $true)][string]$DllPath)
+    $escaped = $DllPath.Replace("'", "''")
+    $script = "`$ErrorActionPreference='Stop'; `$bytes=[IO.File]::ReadAllBytes('$escaped'); `$a=[Reflection.Assembly]::ReflectionOnlyLoad(`$bytes); " +
+        "`$sha=[Security.Cryptography.SHA256]::Create(); [ordered]@{ name=`$a.GetName().Name; sha256=([BitConverter]::ToString(`$sha.ComputeHash(`$bytes))).Replace('-','').ToLowerInvariant(); " +
+        "mvid=`$a.ManifestModule.ModuleVersionId.ToString(); references=@(`$a.GetReferencedAssemblies() | ForEach-Object { `$_.FullName }) } | ConvertTo-Json -Compress"
+    $previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    try { $output = & powershell.exe -NoLogo -NoProfile -NonInteractive -Command $script 2>&1 | ForEach-Object { "$_" } }
+    finally { $ErrorActionPreference = $previous }
+    if ($LASTEXITCODE -ne 0) { throw "The packaged mod DLL could not be read: $($output -join ' ')" }
+    return (($output -join '') | ConvertFrom-Json)
+}
+
 function Assert-KmgPackagedLoaderContract {
     param(
         [Parameter(Mandatory = $true)][string]$ModDirectory,
@@ -265,5 +282,41 @@ function Assert-KmgPackagedLoaderContract {
         if (Get-ChildItem -LiteralPath $ModDirectory -Recurse -File -Filter $name -ErrorAction SilentlyContinue) {
             throw "Install package contains a private or foreign runtime assembly: $name"
         }
+    }
+    # The packaged DLL itself: within the UnityModManager and Harmony families it must reference exactly the pinned
+    # loader assemblies, by full binding identity (a DLL compiled against a newer loader is refused).
+    $identity = Get-KmgPackagedDllIdentity -DllPath $binaryFiles[0].FullName
+    if ([string]$identity.name -cne 'KingmakerGunslinger') { throw "The packaged DLL defines assembly '$($identity.name)', not KingmakerGunslinger." }
+    $expected = @($pins.References | ForEach-Object {
+        '{0}, Version={1}, Culture=neutral, PublicKeyToken=null' -f [IO.Path]::GetFileNameWithoutExtension([string]$_.relativePath), [string]$_.assemblyVersion
+    } | Sort-Object)
+    $observed = @(@($identity.references) | Where-Object { ([string]$_ -split ',')[0] -match '(?i)^(unitymodmanager|0?harmony)' } | Sort-Object)
+    if (($observed -join "`n") -cne ($expected -join "`n")) {
+        throw "The packaged mod DLL references [$($observed -join '; ')], not exactly the pinned loader assemblies [$($expected -join '; ')]."
+    }
+    return $identity
+}
+
+# Material inputs of a candidate: the product tree, its manifest, the loader pins and every helper that selects or
+# verifies what the compiler receives. A candidate is current only while none of them differs from its producing commit.
+$script:KmgCandidateMaterialPaths = @('src/KingmakerGunslinger', 'assets', 'assets-source', 'blueprints', 'Info.json',
+    'scripts/loader-reference-pins.json', 'scripts/ReferenceProvenance.Common.ps1', 'scripts/Assert-PinnedLoaderReferences.ps1',
+    'scripts/Build-Local.ps1', 'scripts/build.ps1', 'tools/build_mod_from_private_references.py')
+
+function Assert-KmgCandidateMaterialInputsCurrent {
+    param([Parameter(Mandatory = $true)][string]$RepositoryRoot, [Parameter(Mandatory = $true)][string]$Commit)
+    if ($Commit -cnotmatch '^[0-9a-f]{40}$') { throw 'The candidate receipt does not name a producing commit.' }
+    $previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    try {
+        $null = & git -C $RepositoryRoot cat-file -e ($Commit + '^{commit}') 2>&1
+        if ($LASTEXITCODE -ne 0) { throw "The candidate's producing commit $Commit is not in this repository." }
+        $changed = @(& git -C $RepositoryRoot diff --name-only $Commit -- @($script:KmgCandidateMaterialPaths) 2>&1 | ForEach-Object { "$_" })
+        if ($LASTEXITCODE -ne 0) { throw 'Unable to compare the candidate material inputs.' }
+        $untracked = @(& git -C $RepositoryRoot ls-files --others --exclude-standard -- @($script:KmgCandidateMaterialPaths) 2>&1 | ForEach-Object { "$_" })
+    }
+    finally { $ErrorActionPreference = $previous }
+    $all = @($changed + $untracked | Where-Object { $_ })
+    if ($all.Count -ne 0) {
+        throw "The candidate is stale: material inputs changed since its producing commit $($Commit.Substring(0, 10)): $($all -join ', '). Build a new candidate."
     }
 }

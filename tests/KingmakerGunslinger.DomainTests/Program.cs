@@ -1941,6 +1941,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("armed-presentation.content-status", ArmedPresentationRepairTests.ContentStatusSeparatesLoaderActivityFromContent),
             Case("grit-ui-recipients.session-expects-audited-identities", GritUiRecipientContractTests.SessionExpectsExactlyTheAuditedIdentities),
             Case("grit-ui-recipients.membership-not-from-displayed-text", GritUiRecipientContractTests.MembershipDoesNotComeFromDisplayedText),
+            Case("loader.production-dll-references-pinned-loader", LoaderReferenceContractTests.ProductionDllReferencesExactlyThePinnedLoader),
             Case("loader-compat-probe.timed-out-probe-cannot-supply-next-result", LoaderCompatProbeLifecycleTests.TimedOutProbeCannotSupplyTheNextProbesResult),
             Case("loader-compat-probe.throwing-probe-ended-and-released", LoaderCompatProbeLifecycleTests.ProbeThatThrowsIsEndedAndReleased),
             Case("loader-compat-probe.one-failing-cleanup-does-not-stop-others", LoaderCompatProbeLifecycleTests.OneFailingCleanupDoesNotStopTheOthers),

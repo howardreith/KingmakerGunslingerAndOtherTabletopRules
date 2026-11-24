@@ -4,7 +4,9 @@ param(
     [string]$PackagePath,
     [ValidateSet('Debug', 'Release')]
     [string]$Configuration = 'Release',
-    [switch]$AllowMissingFirearmSoundBank
+    [switch]$AllowMissingFirearmSoundBank,
+    # Returns the measured packaged DLL identity (SHA-256, MVID, references) for admission callers.
+    [switch]$PassThru
 )
 
 Set-StrictMode -Version Latest
@@ -33,6 +35,15 @@ New-Item -ItemType Directory -Path $tempDirectory -Force -WhatIf:$false | Out-Nu
 try {
     # The destination is unique and empty. Avoid the Force overwrite cleanup,
     # which can race on a just-extracted file.
+    # The complete archive entry set: every entry lies under the single mod root, so nothing beside the mod directory
+    # (for example a runtime DLL at the archive root) can ship.
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $zipArchive = [IO.Compression.ZipFile]::OpenRead($PackagePath)
+    try {
+        $outside = @($zipArchive.Entries | ForEach-Object { $_.FullName.Replace('\', '/') } | Where-Object { -not $_.StartsWith($info.Id + '/', [StringComparison]::Ordinal) })
+    }
+    finally { $zipArchive.Dispose() }
+    if ($outside.Count -ne 0) { throw "Package contains entries outside the '$($info.Id)' mod root: $($outside -join ', ')" }
     Expand-Archive -LiteralPath $PackagePath -DestinationPath $tempDirectory -WhatIf:$false
     $roots = @(Get-ChildItem -LiteralPath $tempDirectory -Directory)
     if ($roots.Count -ne 1 -or $roots[0].Name -ne $info.Id) {
@@ -426,12 +437,13 @@ try {
 
     # Declared loader floor equals the pinned build floor; exactly one binary;
     # no loader, Harmony, game or Unity assembly copied into the mod.
-    Assert-KmgPackagedLoaderContract -ModDirectory $modDirectory
+    $packagedDllIdentity = Assert-KmgPackagedLoaderContract -ModDirectory $modDirectory
     $audioArtifacts=@(Get-ChildItem -LiteralPath $modDirectory -Recurse -File | Where-Object {$_.Extension -in @('.bnk','.wem')})
     if($audioArtifacts.Count -gt 1 -or ($audioArtifacts.Count -eq 1 -and $audioArtifacts[0].Name -cne 'KMG_Firearms.bnk')){throw 'Package contains forbidden or unexpected Wwise artifacts.'}
     if(Get-ChildItem -LiteralPath $modDirectory -Recurse -File | Where-Object {$_.Name -ieq 'Init.bnk'}){throw 'Package contains forbidden Init.bnk.'}
 }
 finally {
+    if ($PassThru -and $null -ne (Get-Variable -Name packagedDllIdentity -ValueOnly -ErrorAction SilentlyContinue)) { $packagedDllIdentity }
     if (Test-Path -LiteralPath $tempDirectory) {
         # Package validation owns this temporary extraction even when a caller
         # is in -WhatIf mode; keep that preference from leaking the scratch.
