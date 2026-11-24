@@ -11,8 +11,8 @@
     review routes neither create a summon with these actions nor select one, and the console only selects
     directly controllable units.
   - The Ankylosaurus impact cue and the Trumpet Archon blast cue are provisional choices pending the owner's listening.
-    In one native run a surviving impact cue's end-of-event callback did not arrive (cause unknown; not reproduced in
-    four later runs, one with a native playback readback). The product keeps such a cue tracked until its own source
+    In one native run a surviving impact cue's end-of-event callback did not arrive (cause unknown). The check passed in
+    the two runs before it and the two after it, the last with a native playback readback. The product keeps such a cue tracked until its own source
     retires, which then stops it by playing ID. This is carried as an unresolved technical requirement.
   - The Dust Mephit's breath is a recoloured native cold cone, not a separately authored dust effect. Repeated breaths
     from one spot each show their cone (the game skips a cone only for a second launch from the same point within one

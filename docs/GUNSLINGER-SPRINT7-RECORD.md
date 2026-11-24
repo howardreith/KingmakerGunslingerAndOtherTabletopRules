@@ -1,13 +1,38 @@
 # Sprint 7 record: presentation and audio remediation (S7 T1–T7)
 
-Status: **IN REVIEW (round 5 of 5, 2026-11-24).** The owner resumed the round-3 BLOCKED enrollment through owner
-amendment 1 (`resume --amend-mission`; amendment revision 1, sha256 `59be8e3f…31e0`; message sha256 `f4d26be0…a7dd`, stored
-outside the worktree at `<lab>/owner-guidance/S7-OWNER-AMENDMENT-1-2026-11-24.md`). The round-3 no-progress stop and every
-earlier failure remain recorded.
-- Round 4 (head `6095fa4a75`) verified R1-F3, R1-F9, R2-F4, R3-F1, R3-F2, R3-F3 and R3-F4, and raised R4-F1 to R4-F7.
-  R1-F1, R1-F5, R2-F2, R3-F5 and R3-F6 stayed open.
-- Round 5 addresses those twelve (§7).
-- **Nothing is merged or released, and no visual or listening choice has been accepted.**
+Status: **BLOCKED (2026-11-24): the agent-review controller stopped the enrollment after review round 5 of 5 on
+`091446a079` ("review-round cap reached for final (5/5); findings are preserved for an owner-authorized extension").
+Nothing is merged or released, and no visual or listening choice has been accepted.** The owner resumed the round-3
+stop through owner amendment 1 (revision 1, sha256 `59be8e3f…31e0`; message sha256 `f4d26be0…a7dd`, stored outside the
+worktree at `<lab>/owner-guidance/S7-OWNER-AMENDMENT-1-2026-11-24.md`). Round limits were not raised, and continuing needs
+an owner decision.
+
+Verified by the independent reviewer:
+- rounds 2–3: R1-F2, R1-F4, R1-F6, R1-F7, R1-F8, R1-F10, R1-F11, R1-F12, R1-F13, R1-F14, R2-F1, R2-F3;
+- round 4: R1-F3, R1-F9, R2-F4, R3-F1, R3-F2, R3-F3, R3-F4;
+- round 5: R1-F5, R3-F5, R3-F6, R4-F3, R4-F4, R4-F6, R4-F7.
+
+**Open after round 5** (review: https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/219, round-5
+comment). Six are observer, harness or record issues:
+
+- **R1-F1:** the record's packet description (two current cues and ten alternatives; the Trumpet distance was observed
+  one frame after posting). Corrected below; not re-reviewed.
+- **R2-F2:** a directly nested foreign `RuleRollD20` inside the owned save could take the claim. The intervention should
+  bind to the save's own die.
+- **R4-F1:** the early-exit Dust cast's ledger outcome is not propagated to the effects verdict when the runner unwinds.
+- **R4-F2:** combat teardown still uses unit-wide `LeaveCombat` for participants that were idle at intake.
+- **R4-F5:** a missing survivor end callback is not accounted for in the retirement verdict. The playback owner may need
+  correction. **Carried as an unresolved technical requirement.**
+- **R5-F1:** the Ghaele pending-abandonment case stops watching for a late owned spawn once disposed, and does not
+  re-verify the command and loan after the foreign control.
+- **R5-F2:** an explicit-null body row returns inconclusive before checking for contradictions.
+- **R5-F3:** the Ghaele lighting verdict ignores the capture's `faderVisible`.
+- **R5-F4:** the observer's witness move on the main character is not released.
+- **R5-F5:** a combat target can be destroyed twice on abandonment.
+- **R5-F6:** the effects count and retirement tally in the record. Corrected below; not re-reviewed.
+
+None of the open findings changes product presentation or mechanics. R4-F5 concerns the impact-cue playback owner's
+handling of a missing callback.
 - Draft PR #219; one agent-review enrollment (`kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1`, foreground,
   single plan); branch `codex/s7-visual-audio-remediation`.
 - Mission: `docs/missions/sprint7/SPRINT7-AUTONOMOUS-MISSION.md` (verbatim, sha256 `c232f135…f56f0`), plus owner amendment 1.
@@ -49,7 +74,7 @@ earlier failure remain recorded.
 | S7 T2 / VIS-01 | 48 zero-area wing-root triangles (and inside-out welded membranes) | **Repaired at the generator.** 0 zero-area triangles, 0 repeated edges, all parts outward | `ed88ad994e`; export receipt; models `…162110Z` (round 4, party views bound to the body) and `…050957Z` | Implemented and verified | Owner visual acceptance |
 | S7 T3 / VIS-02 | 19/12,924 normal corners at a waist pleat and the left-hand fingers | **Repaired from the exact private input.** 16 → 0 opposing corners | `d864e7b01f`; export receipt; `…162110Z`, `…050957Z` | Implemented and verified | Owner visual acceptance |
 | S7 T4 / VIS-03 | Owned Trample/Overrun windows: "Target point within 0 ft. feet." and school "None" | **Scoped presentation override:** "Target point within twice this creature's speed." (owner-approved wording), no school | `2614ea3bd6`; `…050957Z` `ui` | Implemented and verified for desktop fact and HUD | **Controller mode unexecuted** (§4.4): no admitted route creates or selects a summon in the console UI. Not a controller PASS. |
-| S7 T5 / VIS-04 | No added impact sound on the Ankylosaurus tail strike | **One owned cue per resolved tail roll on the roll's own in-game target** (`Sweetener_Low_06_Quake`, provisional) | `90bc2ae7eb`; fx `…180635Z` (round 5), `…170720Z` and `…061437Z` | Cue ownership, timing and retirement verified in five of six round-4/5 runs; private packet delivered | **Unresolved technical requirement:** in `…164749Z` a surviving cue's native end callback never arrived (cause unknown, §4.5). **Listening and choice pending (owner).** |
+| S7 T5 / VIS-04 | No added impact sound on the Ankylosaurus tail strike | **One owned cue per resolved tail roll on the roll's own in-game target** (`Sweetener_Low_06_Quake`, provisional) | `90bc2ae7eb`; fx `…180635Z` (round 5), `…170720Z` and `…061437Z` | Cue ownership and timing verified; concurrent retirement passed in four of the five round-4/5 runs that include it (`…154136Z`, `…161344Z`, `…170720Z`, `…180635Z`; failed in `…164749Z`); private packet delivered | **Unresolved technical requirement:** in `…164749Z` a surviving cue's native end callback never arrived (cause unknown, §4.5). **Listening and choice pending (owner).** |
 | S7 T6 / VIS-05 | The Dust Mephit breath shows the ice cone | **Owned per-instance dust recolour** of the one cone CreateView spawns for the executing owned Dust breath, now bound to that native spawn call; restored on release; released mechanics (Sickened, damage, save, enemies only, action) unchanged | `9733a0c9b7`; fx `…180635Z` and `…170720Z` | Implemented and verified | Owner visual acceptance. Allies' harmless saves stay documented. |
 | S7 T7 / VIS-06 | Provisional `InspireCourage` cue on the Trumpet Blast | **Kept provisionally** (no code change); six alternatives sampled; cue verified across an in-process save and load, with blast-owned seeding | `r6` in `…180635Z` and `…170720Z`; Trumpet reload `…182558Z` (round 5) and `…162605Z` | Cue technically verified; private packet delivered | **Listening and choice pending (owner).** |
 
@@ -61,7 +86,7 @@ head.
 
 | Candidate | Package / DLL SHA-256 | Harness | Session | Result |
 |---|---|---|---|---|
-| **`ac96bab4c2`** | `1bca116c5c0a0a47cc3a29ae88fb87b2b564d8b5f7c9af03c165a74faf1e851d` / `f8fd7251925fe3a5ad5c90ac2de37373e6b74d6f67f5090cba9f88d962423545` | n/a | **`20261124T180635Z-…-s7-fx`** (fx, r6) | **PASS 2/2** (fx 34/34, r6 16/16), 7 min 58 s |
+| **`ac96bab4c2`** | `1bca116c5c0a0a47cc3a29ae88fb87b2b564d8b5f7c9af03c165a74faf1e851d` / `f8fd7251925fe3a5ad5c90ac2de37373e6b74d6f67f5090cba9f88d962423545` | n/a | **`20261124T180635Z-…-s7-fx`** (fx, r6) | **PASS 2/2** (fx: 34 native assertions, the 33 structured checks in the extract plus the plain-text native-profile restoration line, all passing; r6 16/16), 7 min 58 s |
 | `ac96bab4c2` | as above | `5d39a60b…` | `20261124T181432Z-…-s7-trumpet-reload` | FAIL, retained (observer): the probe's own nested foreign save inherited the blast's rule context and was treated as owned, which also shifted the following draw. 1 min 37 s |
 | released v0.0.195 / `ac96bab4c2` | `456d504d…` / `1bca116c…` | `5d39a60b…` | `20261124T181609Z`, `20261124T182018Z` `-s7-ghaele` | FAIL, retained (observer): everything held, but the target's destruction was read in the same call as `Destroy()`. 4 min 9 s each |
 | `ac96bab4c2` | as above | **`5d2350f83f965bfba45c87f64c06a64f70631a63ce72c1507f8166a6d6bba545`** | **`20261124T182558Z-…-s7-trumpet-reload`** | **PASS**, 1 min 59 s |
@@ -371,8 +396,8 @@ Native, round 4 (`…170720Z`, `bc67438f3b`):
 **Narrowed observation, round 5 (`…180635Z`).** The retirement now records each playing ID's native event
 (`AkSoundEngine.GetEventIDFromPlayingID`) and the survivor's tracking before, right after, 3 s after and at the end of the
 wait. In this run both cues were playing at retirement (event 4293635115), and both had ended natively with tracking
-released by the end; the failure did not reproduce. It also did not recur in `…154136Z`, `…161344Z` or `…170720Z`; round 2
-retained a separate run that lost both end callbacks.
+released by the end; the failure did not reproduce. The check passed in `…154136Z` and `…161344Z` (before the failure) and in
+`…170720Z` and `…180635Z` (after it); round 2 retained a separate run that lost both end callbacks.
 
 This concurrent outcome is **carried as an unresolved technical requirement** in the outcome table. Both existing verdicts
 are kept.
@@ -392,7 +417,7 @@ are kept.
   - the in-play Trumpet Blast (actual, ID 397, 37.09 m one frame after posting);
   - the Vrock neighbour (40.05 m, likewise);
   - two quiet baselines;
-  - isolated observer samples: the two current cues and eleven alternatives.
+  - twelve isolated observer samples: the two current cues and ten alternatives.
 - **Per clip:** hash, session, package, UTC interval, event, playing ID, emitter, game volumes (all 100) and listener
   context.
 - **Verification:** every clip matches its lab excerpt's hash, decodes as 16-bit PCM, and loads in the Windows WAV
@@ -483,7 +508,7 @@ of scope.
 ### 4.7 T7 / VIS-06 Trumpet Archon
 
 R6 (`…170720Z`):
-- One `InspireCourage` cue per blast, ending naturally (ID 397; listener 37.09 m at its post).
+- One `InspireCourage` cue per blast, ending naturally (ID 397; listener 37.09 m observed one frame after posting).
 - None on a cancelled cast.
 - Early retirement stopped by playing ID.
 - The Vrock neighbour completed naturally.
@@ -549,6 +574,9 @@ records the required gate receipts on the reviewed head.
 5. Merge and release remain the owner's; this sprint authorizes neither.
 
 ## 7. Review findings and corrections
+
+Round-5 review outcome: seven verified (R1-F5, R3-F5, R3-F6, R4-F3, R4-F4, R4-F6, R4-F7); R1-F1, R2-F2, R4-F1, R4-F2 and
+R4-F5 still open; R5-F1 to R5-F6 raised; the controller stopped at the round cap (status above).
 
 Round-5 correction matrix (the twelve findings pending after round 4):
 
