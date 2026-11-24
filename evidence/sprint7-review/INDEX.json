@@ -1,0 +1,1002 @@
+[
+ {
+  "story": "T1-REP-04",
+  "file": "T1-REP-04/bright-loop-high-t084-rawdissolve-1.00.jpg",
+  "sha256": "521b176cf5db75dd4edd2f89deca43cc34dca9619bfa452be6b1c442218f1915",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/04-gh/product/r6-frames/s7-ghaele-bright-lifetime/0036.jpg",
+  "note": "After (no product change): ordinary Ghaele at 84.4 game-seconds, raw body _Dissolve 1.00, cutout 0.00; the body stays visible.",
+  "committed": "T1-REP-04/bright-loop-high-t084-rawdissolve-1.00.jpg",
+  "committedSha256": "521b176cf5db75dd4edd2f89deca43cc34dca9619bfa452be6b1c442218f1915",
+  "reason": "copied"
+ },
+ {
+  "story": "T1-REP-04",
+  "file": "T1-REP-04/bright-loop-low-t094-rawdissolve-0.01.jpg",
+  "sha256": "0a243aed22c552cb1f74e1693016b8bc8ab79379bf8f86d42b05f335e27ae1c6",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/04-gh/product/r6-frames/s7-ghaele-bright-lifetime/0041.jpg",
+  "note": "After (no product change): ordinary Ghaele at 94.46 game-seconds, raw body _Dissolve 0.01, cutout 0.00; the body stays visible.",
+  "committed": "T1-REP-04/bright-loop-low-t094-rawdissolve-0.01.jpg",
+  "committedSha256": "0a243aed22c552cb1f74e1693016b8bc8ab79379bf8f86d42b05f335e27ae1c6",
+  "reason": "copied"
+ },
+ {
+  "story": "T1-REP-04",
+  "file": "T1-REP-04/bright-last-frame-t120.jpg",
+  "sha256": "e9bb6b0a2fe0ba22cc02a9e7f9dd0f719a06a11a6cdf80e83475fc515b1638fa",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/04-gh/product/r6-frames/s7-ghaele-bright-lifetime/0054.jpg",
+  "note": "Last lifetime frame before native expiry.",
+  "committed": "T1-REP-04/bright-last-frame-t120.jpg",
+  "committedSha256": "e9bb6b0a2fe0ba22cc02a9e7f9dd0f719a06a11a6cdf80e83475fc515b1638fa",
+  "reason": "copied"
+ },
+ {
+  "story": "T1-REP-04",
+  "file": "T1-REP-04/dim-loop-high-t094-rawdissolve-1.00.jpg",
+  "sha256": "1c571507ad69450a722707f7245bb577009e00fc3073b3921fc7796f4b43240b",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/05-ghd/product/r6-frames/s7-ghaele-dim-lifetime/0041.jpg",
+  "note": "After (no product change): ordinary Ghaele at 94.45 game-seconds, raw body _Dissolve 1.00, cutout 0.00; the body stays visible.",
+  "committed": "T1-REP-04/dim-loop-high-t094-rawdissolve-1.00.jpg",
+  "committedSha256": "1c571507ad69450a722707f7245bb577009e00fc3073b3921fc7796f4b43240b",
+  "reason": "copied"
+ },
+ {
+  "story": "T1-REP-04",
+  "file": "T1-REP-04/dim-loop-low-t104-rawdissolve-0.01.jpg",
+  "sha256": "4dc92fb2af59bb31a82bf2e9e6baf3083d20b8f39572aaf16e1848c6dde7b1a4",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/05-ghd/product/r6-frames/s7-ghaele-dim-lifetime/0046.jpg",
+  "note": "After (no product change): ordinary Ghaele at 104.52 game-seconds, raw body _Dissolve 0.01, cutout 0.00; the body stays visible.",
+  "committed": "T1-REP-04/dim-loop-low-t104-rawdissolve-0.01.jpg",
+  "committedSha256": "4dc92fb2af59bb31a82bf2e9e6baf3083d20b8f39572aaf16e1848c6dde7b1a4",
+  "reason": "copied"
+ },
+ {
+  "story": "T1-REP-04",
+  "file": "T1-REP-04/dim-last-frame-t120.jpg",
+  "sha256": "e88afe44284650cce69b497ac2a8803a27abd2927907ec60c28a39e4ac9c3553",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/05-ghd/product/r6-frames/s7-ghaele-dim-lifetime/0054.jpg",
+  "note": "Last lifetime frame before native expiry.",
+  "committed": "T1-REP-04/dim-last-frame-t120.jpg",
+  "committedSha256": "e88afe44284650cce69b497ac2a8803a27abd2927907ec60c28a39e4ac9c3553",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/bright-wing-root-left-before.jpg",
+  "sha256": "15f35aa15ba71ba419a9e2f09397d22be74a882f89967097ed1e308d12e58a64",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-nalfeshnee-bright-before-detail-wing-root-left/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, bright fixture.",
+  "committed": "T2-VIS-01/bright-wing-root-left-before.jpg",
+  "committedSha256": "15f35aa15ba71ba419a9e2f09397d22be74a882f89967097ed1e308d12e58a64",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/bright-wing-root-left-after.jpg",
+  "sha256": "9f09157c518fe85f8897d03ea99a39b464c4fcb88de5c62924659e819492013a",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-nalfeshnee-bright-after-detail-wing-root-left/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, bright fixture.",
+  "committed": "T2-VIS-01/bright-wing-root-left-after.jpg",
+  "committedSha256": "9f09157c518fe85f8897d03ea99a39b464c4fcb88de5c62924659e819492013a",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/bright-wing-root-right-before.jpg",
+  "sha256": "5d1647624631357c89da12dbef59fd611f57ddf3c42c8430a7fe83ae0fa0c487",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-nalfeshnee-bright-before-detail-wing-root-right/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, bright fixture.",
+  "committed": "T2-VIS-01/bright-wing-root-right-before.jpg",
+  "committedSha256": "5d1647624631357c89da12dbef59fd611f57ddf3c42c8430a7fe83ae0fa0c487",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/bright-wing-root-right-after.jpg",
+  "sha256": "1973b1a399ad1a5d5dba013f9acee87cd96e85a20880591153226fb5ff79d281",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-nalfeshnee-bright-after-detail-wing-root-right/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, bright fixture.",
+  "committed": "T2-VIS-01/bright-wing-root-right-after.jpg",
+  "committedSha256": "1973b1a399ad1a5d5dba013f9acee87cd96e85a20880591153226fb5ff79d281",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/bright-wing-roots-rear-before.jpg",
+  "sha256": "3bf1223622f6b6ab998ad2d4f01c5ab07d0fa3028c85372aa8c9d0eb07093528",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-nalfeshnee-bright-before-detail-wing-roots-rear/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, bright fixture.",
+  "committed": "T2-VIS-01/bright-wing-roots-rear-before.jpg",
+  "committedSha256": "3bf1223622f6b6ab998ad2d4f01c5ab07d0fa3028c85372aa8c9d0eb07093528",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/bright-wing-roots-rear-after.jpg",
+  "sha256": "3e1f84349f3c39feec5e4773993d5af3837493cd77a786b509d96ba2fbacf717",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-nalfeshnee-bright-after-detail-wing-roots-rear/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, bright fixture.",
+  "committed": "T2-VIS-01/bright-wing-roots-rear-after.jpg",
+  "committedSha256": "3e1f84349f3c39feec5e4773993d5af3837493cd77a786b509d96ba2fbacf717",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/bright-front-before.jpg",
+  "sha256": "4641e25d5be61d692a8918cf73c3f9d162c782adef35c7eb6bd8e6474f8ccdc2",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-nalfeshnee-bright-before-front/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, bright fixture.",
+  "committed": "T2-VIS-01/bright-front-before.jpg",
+  "committedSha256": "4641e25d5be61d692a8918cf73c3f9d162c782adef35c7eb6bd8e6474f8ccdc2",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/bright-front-after.jpg",
+  "sha256": "5f36e4261bdb12ffaf4382610351cdadb6c127dbe254c329ca32be9cd061c511",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-nalfeshnee-bright-after-front/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, bright fixture.",
+  "committed": "T2-VIS-01/bright-front-after.jpg",
+  "committedSha256": "5f36e4261bdb12ffaf4382610351cdadb6c127dbe254c329ca32be9cd061c511",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/bright-rear-before.jpg",
+  "sha256": "2ba4be15b836e12fbbd5ca2149bbab2acdd6104e4f105f221084e11cd2fc0ed0",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-nalfeshnee-bright-before-rear/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, bright fixture.",
+  "committed": "T2-VIS-01/bright-rear-before.jpg",
+  "committedSha256": "2ba4be15b836e12fbbd5ca2149bbab2acdd6104e4f105f221084e11cd2fc0ed0",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/bright-rear-after.jpg",
+  "sha256": "44945fdc57cc5286a3b2470510ea18c9f5e71f50e73ec8b9eecc4c7cb71509f6",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-nalfeshnee-bright-after-rear/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, bright fixture.",
+  "committed": "T2-VIS-01/bright-rear-after.jpg",
+  "committedSha256": "44945fdc57cc5286a3b2470510ea18c9f5e71f50e73ec8b9eecc4c7cb71509f6",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/bright-turn-after-mid.jpg",
+  "sha256": "15a59181a68c6b56c868606cc3570861c18c38e0e1758c38226fe0abd6246138",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-nalfeshnee-bright-after-turn/0006.jpg",
+  "note": "After: mid-turn frame.",
+  "committed": "T2-VIS-01/bright-turn-after-mid.jpg",
+  "committedSha256": "15a59181a68c6b56c868606cc3570861c18c38e0e1758c38226fe0abd6246138",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/bright-move-after-mid.jpg",
+  "sha256": "c2612bc8a27efdeb9462b2f87d135001214b08f4acca75bc333b5e15bad6c068",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-nalfeshnee-bright-after-move/0007.jpg",
+  "note": "After: mid-move frame.",
+  "committed": "T2-VIS-01/bright-move-after-mid.jpg",
+  "committedSha256": "c2612bc8a27efdeb9462b2f87d135001214b08f4acca75bc333b5e15bad6c068",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/bright-attack-after-mid.jpg",
+  "sha256": "8f54f7e4cbe7542bd0857af5628eab1f211cf2715af9b0623d5f024a95ff3d3f",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-nalfeshnee-bright-after-attack/0042.jpg",
+  "note": "After: mid-attack frame.",
+  "committed": "T2-VIS-01/bright-attack-after-mid.jpg",
+  "committedSha256": "8f54f7e4cbe7542bd0857af5628eab1f211cf2715af9b0623d5f024a95ff3d3f",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/bright-party-after.png",
+  "sha256": "59091e9b90e10e342aa4bc65af98b699a6ff95be15d1c322ee6dcf198a7f4575",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/s7-nalfeshnee-bright-after-party.png",
+  "note": "After: gameplay-zoom party camera.",
+  "committed": "T2-VIS-01/bright-party-after.jpg",
+  "committedSha256": "fba561a2cb06ffbeae89cbb96d989dc84fa63b8ba38cac4b1742e5edf25b2db7",
+  "reason": "re-encoded from the lab PNG as JPEG quality 92"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/bright-waist-front-before.jpg",
+  "sha256": "ac4fb6b1e3aad0c7d5dfc7d93f22251032862cd15b2c060418f94eab7e8856db",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-salamander-bright-before-detail-waist-front/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, bright fixture.",
+  "committed": "T3-VIS-02/bright-waist-front-before.jpg",
+  "committedSha256": "ac4fb6b1e3aad0c7d5dfc7d93f22251032862cd15b2c060418f94eab7e8856db",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/bright-waist-front-after.jpg",
+  "sha256": "3a23931027aa19c8d33c4c1d0d2ca9b19978b17834eb9affd78ba0e70dda6790",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-salamander-bright-after-detail-waist-front/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, bright fixture.",
+  "committed": "T3-VIS-02/bright-waist-front-after.jpg",
+  "committedSha256": "3a23931027aa19c8d33c4c1d0d2ca9b19978b17834eb9affd78ba0e70dda6790",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/bright-waist-rear-before.jpg",
+  "sha256": "e74e1624f886f6af72debaf737ccff43222abfdb96aae66ac1f674545fdeb4f5",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-salamander-bright-before-detail-waist-rear/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, bright fixture.",
+  "committed": "T3-VIS-02/bright-waist-rear-before.jpg",
+  "committedSha256": "e74e1624f886f6af72debaf737ccff43222abfdb96aae66ac1f674545fdeb4f5",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/bright-waist-rear-after.jpg",
+  "sha256": "981bb2677ecc09c43bba8b593cd893d08186a05c585688db63a4657c438e4ae2",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-salamander-bright-after-detail-waist-rear/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, bright fixture.",
+  "committed": "T3-VIS-02/bright-waist-rear-after.jpg",
+  "committedSha256": "981bb2677ecc09c43bba8b593cd893d08186a05c585688db63a4657c438e4ae2",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/bright-left-hand-before.jpg",
+  "sha256": "32ffe3a64959a242abd274c9fccae07512afcf1c8292b19ecab7ff7b982f4ef5",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-salamander-bright-before-detail-left-hand/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, bright fixture.",
+  "committed": "T3-VIS-02/bright-left-hand-before.jpg",
+  "committedSha256": "32ffe3a64959a242abd274c9fccae07512afcf1c8292b19ecab7ff7b982f4ef5",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/bright-left-hand-after.jpg",
+  "sha256": "9af0353d946aa1ad61938c7666a1ed97c6cd17e2476a2ead48cdce84c08caf02",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-salamander-bright-after-detail-left-hand/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, bright fixture.",
+  "committed": "T3-VIS-02/bright-left-hand-after.jpg",
+  "committedSha256": "9af0353d946aa1ad61938c7666a1ed97c6cd17e2476a2ead48cdce84c08caf02",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/bright-right-hand-before.jpg",
+  "sha256": "2d1fb0f70ea48d55e0de230d539289112e4242363a1a9acf5ee44ce5f1bd86cb",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-salamander-bright-before-detail-right-hand/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, bright fixture.",
+  "committed": "T3-VIS-02/bright-right-hand-before.jpg",
+  "committedSha256": "2d1fb0f70ea48d55e0de230d539289112e4242363a1a9acf5ee44ce5f1bd86cb",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/bright-right-hand-after.jpg",
+  "sha256": "104265dfa1e4a25d1c32d262623b58d8aa6021feae695f91d3deb202251e65b7",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-salamander-bright-after-detail-right-hand/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, bright fixture.",
+  "committed": "T3-VIS-02/bright-right-hand-after.jpg",
+  "committedSha256": "104265dfa1e4a25d1c32d262623b58d8aa6021feae695f91d3deb202251e65b7",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/bright-front-before.jpg",
+  "sha256": "4e690b1f27c5af4eaac1dcee58749c4ce33eab6e29eb68aa8ba9d2d7a7224353",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-salamander-bright-before-front/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, bright fixture.",
+  "committed": "T3-VIS-02/bright-front-before.jpg",
+  "committedSha256": "4e690b1f27c5af4eaac1dcee58749c4ce33eab6e29eb68aa8ba9d2d7a7224353",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/bright-front-after.jpg",
+  "sha256": "96fccd9c673e7fa29e2464c9dbba051d28c5022aa985744b0989184d10f70fee",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-salamander-bright-after-front/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, bright fixture.",
+  "committed": "T3-VIS-02/bright-front-after.jpg",
+  "committedSha256": "96fccd9c673e7fa29e2464c9dbba051d28c5022aa985744b0989184d10f70fee",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/bright-rear-before.jpg",
+  "sha256": "ffdc39c7bf9834f98a7d327fbf24f74ac2c2951a93f0784d74c26ef52a508542",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-salamander-bright-before-rear/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, bright fixture.",
+  "committed": "T3-VIS-02/bright-rear-before.jpg",
+  "committedSha256": "ffdc39c7bf9834f98a7d327fbf24f74ac2c2951a93f0784d74c26ef52a508542",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/bright-rear-after.jpg",
+  "sha256": "74b2201ede5e9fe2cf370acb2e44938044c1a03cd4f6aeff611847d3bd87ffb9",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-salamander-bright-after-rear/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, bright fixture.",
+  "committed": "T3-VIS-02/bright-rear-after.jpg",
+  "committedSha256": "74b2201ede5e9fe2cf370acb2e44938044c1a03cd4f6aeff611847d3bd87ffb9",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/bright-turn-after-mid.jpg",
+  "sha256": "12fb40ff97fcb58e946db4a95d7b10117a5b3e4d4fabe91f7deba965e55fabe1",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-salamander-bright-after-turn/0009.jpg",
+  "note": "After: mid-turn frame.",
+  "committed": "T3-VIS-02/bright-turn-after-mid.jpg",
+  "committedSha256": "12fb40ff97fcb58e946db4a95d7b10117a5b3e4d4fabe91f7deba965e55fabe1",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/bright-move-after-mid.jpg",
+  "sha256": "979184e58b6051cfe466134f2d200ed88d54756bc5f4d86007bf5573d14c8114",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-salamander-bright-after-move/0012.jpg",
+  "note": "After: mid-move frame.",
+  "committed": "T3-VIS-02/bright-move-after-mid.jpg",
+  "committedSha256": "979184e58b6051cfe466134f2d200ed88d54756bc5f4d86007bf5573d14c8114",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/bright-attack-after-mid.jpg",
+  "sha256": "e1fc608d67cca42ebd9de780251125e1c5bd7f023896042e91458cbfb753ab79",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/r6-frames/s7-salamander-bright-after-attack/0042.jpg",
+  "note": "After: mid-attack frame.",
+  "committed": "T3-VIS-02/bright-attack-after-mid.jpg",
+  "committedSha256": "e1fc608d67cca42ebd9de780251125e1c5bd7f023896042e91458cbfb753ab79",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/bright-party-after.png",
+  "sha256": "dee64e35d2318de0649340b3bd09035d841f3e7628471c6b6d37e9244f4a0fec",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/02-mod/product/s7-salamander-bright-after-party.png",
+  "note": "After: gameplay-zoom party camera.",
+  "committed": "T3-VIS-02/bright-party-after.jpg",
+  "committedSha256": "c5b8b3187c48c39c5f113c492781de123cb4bcc8f425f37a1c7ba9305fad2c69",
+  "reason": "re-encoded from the lab PNG as JPEG quality 92"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/dim-wing-root-left-before.jpg",
+  "sha256": "217b121c8cabc3e85e62ce111c62427936f388cabab404f20362e29b2a542734",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-nalfeshnee-dim-before-detail-wing-root-left/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, dim fixture.",
+  "committed": "T2-VIS-01/dim-wing-root-left-before.jpg",
+  "committedSha256": "217b121c8cabc3e85e62ce111c62427936f388cabab404f20362e29b2a542734",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/dim-wing-root-left-after.jpg",
+  "sha256": "916a233fd5ae81e625ae651f6fcd00f1b1161e6f70686feb0d56754477658433",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-nalfeshnee-dim-after-detail-wing-root-left/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, dim fixture.",
+  "committed": "T2-VIS-01/dim-wing-root-left-after.jpg",
+  "committedSha256": "916a233fd5ae81e625ae651f6fcd00f1b1161e6f70686feb0d56754477658433",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/dim-wing-root-right-before.jpg",
+  "sha256": "3941a0877d06f597f8e45f2bbfbef76380c22309d6322f4bce31eba34b5285bf",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-nalfeshnee-dim-before-detail-wing-root-right/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, dim fixture.",
+  "committed": "T2-VIS-01/dim-wing-root-right-before.jpg",
+  "committedSha256": "3941a0877d06f597f8e45f2bbfbef76380c22309d6322f4bce31eba34b5285bf",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/dim-wing-root-right-after.jpg",
+  "sha256": "58b46525d6b67e7c8a3fcb40cce1496fbd971c523477e209026dc32d0c339d04",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-nalfeshnee-dim-after-detail-wing-root-right/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, dim fixture.",
+  "committed": "T2-VIS-01/dim-wing-root-right-after.jpg",
+  "committedSha256": "58b46525d6b67e7c8a3fcb40cce1496fbd971c523477e209026dc32d0c339d04",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/dim-wing-roots-rear-before.jpg",
+  "sha256": "c1ab639e7dce2a33d5af57e290650a7193d003249f048432ff32963e60cedee4",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-nalfeshnee-dim-before-detail-wing-roots-rear/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, dim fixture.",
+  "committed": "T2-VIS-01/dim-wing-roots-rear-before.jpg",
+  "committedSha256": "c1ab639e7dce2a33d5af57e290650a7193d003249f048432ff32963e60cedee4",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/dim-wing-roots-rear-after.jpg",
+  "sha256": "db13e1b2aadf2330dfc0c7c6199146d95a976c53a31e0fb666ba281a4fd02732",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-nalfeshnee-dim-after-detail-wing-roots-rear/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, dim fixture.",
+  "committed": "T2-VIS-01/dim-wing-roots-rear-after.jpg",
+  "committedSha256": "db13e1b2aadf2330dfc0c7c6199146d95a976c53a31e0fb666ba281a4fd02732",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/dim-front-before.jpg",
+  "sha256": "2d40026b769b90661953c29ad0bf33a850a1b8930598e48335cb9e2266c34554",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-nalfeshnee-dim-before-front/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, dim fixture.",
+  "committed": "T2-VIS-01/dim-front-before.jpg",
+  "committedSha256": "2d40026b769b90661953c29ad0bf33a850a1b8930598e48335cb9e2266c34554",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/dim-front-after.jpg",
+  "sha256": "6222396b6d9d9daeffbc9555cc2aa680cc1f48bf3a276ca6776e3b0e65ff2318",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-nalfeshnee-dim-after-front/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, dim fixture.",
+  "committed": "T2-VIS-01/dim-front-after.jpg",
+  "committedSha256": "6222396b6d9d9daeffbc9555cc2aa680cc1f48bf3a276ca6776e3b0e65ff2318",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/dim-rear-before.jpg",
+  "sha256": "9fb7b1a1c99667ee071e37512915403f58c0e989c7560c36058586c7a714f072",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-nalfeshnee-dim-before-rear/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, dim fixture.",
+  "committed": "T2-VIS-01/dim-rear-before.jpg",
+  "committedSha256": "9fb7b1a1c99667ee071e37512915403f58c0e989c7560c36058586c7a714f072",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/dim-rear-after.jpg",
+  "sha256": "eb0c2422697530f0e02a1c4a1f7b53d22ee725c2880f28445967bf756747b65e",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-nalfeshnee-dim-after-rear/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, dim fixture.",
+  "committed": "T2-VIS-01/dim-rear-after.jpg",
+  "committedSha256": "eb0c2422697530f0e02a1c4a1f7b53d22ee725c2880f28445967bf756747b65e",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/dim-turn-after-mid.jpg",
+  "sha256": "d063a1d796dca30dc9bf720852d48acdaa4483668805bfd22a8cbde3697a5870",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-nalfeshnee-dim-after-turn/0004.jpg",
+  "note": "After: mid-turn frame.",
+  "committed": "T2-VIS-01/dim-turn-after-mid.jpg",
+  "committedSha256": "d063a1d796dca30dc9bf720852d48acdaa4483668805bfd22a8cbde3697a5870",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/dim-move-after-mid.jpg",
+  "sha256": "fea33fe7f5d30ead00c3648c3a19f4e50eb55504d591da8d36dcd46b76eaf079",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-nalfeshnee-dim-after-move/0005.jpg",
+  "note": "After: mid-move frame.",
+  "committed": "T2-VIS-01/dim-move-after-mid.jpg",
+  "committedSha256": "fea33fe7f5d30ead00c3648c3a19f4e50eb55504d591da8d36dcd46b76eaf079",
+  "reason": "copied"
+ },
+ {
+  "story": "T2-VIS-01",
+  "file": "T2-VIS-01/dim-party-after.png",
+  "sha256": "6bb0eaf2de5de4a5174ee92481645d45ecee15bf3bb9f7f46522cf2ddc750e49",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/s7-nalfeshnee-dim-after-party.png",
+  "note": "After: gameplay-zoom party camera.",
+  "committed": "T2-VIS-01/dim-party-after.jpg",
+  "committedSha256": "8751ddddf9f79d2163f4e9f8396a7984710fa643df85a21b57245056ade5e0e8",
+  "reason": "re-encoded from the lab PNG as JPEG quality 92"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/dim-waist-front-before.jpg",
+  "sha256": "3a0e2c233abc9e4137d6240cbaa1fe8ffb3cb4e33e069474040a455d92a98c6b",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-salamander-dim-before-detail-waist-front/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, dim fixture.",
+  "committed": "T3-VIS-02/dim-waist-front-before.jpg",
+  "committedSha256": "3a0e2c233abc9e4137d6240cbaa1fe8ffb3cb4e33e069474040a455d92a98c6b",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/dim-waist-front-after.jpg",
+  "sha256": "5da5a5ad7d312a9e3c0d8d5997f0e914cf38f24a483b4c92521272143c52ee6f",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-salamander-dim-after-detail-waist-front/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, dim fixture.",
+  "committed": "T3-VIS-02/dim-waist-front-after.jpg",
+  "committedSha256": "5da5a5ad7d312a9e3c0d8d5997f0e914cf38f24a483b4c92521272143c52ee6f",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/dim-waist-rear-before.jpg",
+  "sha256": "319c2c11cd5b5f6344fb109a4ee24048e05b0ad2e9f61c3b9f416509a2697907",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-salamander-dim-before-detail-waist-rear/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, dim fixture.",
+  "committed": "T3-VIS-02/dim-waist-rear-before.jpg",
+  "committedSha256": "319c2c11cd5b5f6344fb109a4ee24048e05b0ad2e9f61c3b9f416509a2697907",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/dim-waist-rear-after.jpg",
+  "sha256": "a5cc9ad5fa0b92c8a03fa87d8e9b99939aade426c44fdd64b06b9e0fcde95459",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-salamander-dim-after-detail-waist-rear/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, dim fixture.",
+  "committed": "T3-VIS-02/dim-waist-rear-after.jpg",
+  "committedSha256": "a5cc9ad5fa0b92c8a03fa87d8e9b99939aade426c44fdd64b06b9e0fcde95459",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/dim-left-hand-before.jpg",
+  "sha256": "c724728feed3e68691864a7084c223515b9b312f3737d9e0d86cd5f36ba99b04",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-salamander-dim-before-detail-left-hand/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, dim fixture.",
+  "committed": "T3-VIS-02/dim-left-hand-before.jpg",
+  "committedSha256": "c724728feed3e68691864a7084c223515b9b312f3737d9e0d86cd5f36ba99b04",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/dim-left-hand-after.jpg",
+  "sha256": "b52d770b90700e5c74218f5091308867931fe2d2805379a4616058fd9645e3b4",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-salamander-dim-after-detail-left-hand/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, dim fixture.",
+  "committed": "T3-VIS-02/dim-left-hand-after.jpg",
+  "committedSha256": "b52d770b90700e5c74218f5091308867931fe2d2805379a4616058fd9645e3b4",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/dim-right-hand-before.jpg",
+  "sha256": "4a0203c99f005a8ee3cd8a4be3bb0c2b7680b9d75945b2368c34458e154f9c03",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-salamander-dim-before-detail-right-hand/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, dim fixture.",
+  "committed": "T3-VIS-02/dim-right-hand-before.jpg",
+  "committedSha256": "4a0203c99f005a8ee3cd8a4be3bb0c2b7680b9d75945b2368c34458e154f9c03",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/dim-right-hand-after.jpg",
+  "sha256": "790bf92fc15313da14df670ba92a0cf81c1a257cc5d35b9753df4d9ca9c1b942",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-salamander-dim-after-detail-right-hand/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, dim fixture.",
+  "committed": "T3-VIS-02/dim-right-hand-after.jpg",
+  "committedSha256": "790bf92fc15313da14df670ba92a0cf81c1a257cc5d35b9753df4d9ca9c1b942",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/dim-front-before.jpg",
+  "sha256": "cba8e264cef595b5a305041648f67c1edd6426e35cce5a8618f6b824d4060ec6",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-salamander-dim-before-front/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, dim fixture.",
+  "committed": "T3-VIS-02/dim-front-before.jpg",
+  "committedSha256": "cba8e264cef595b5a305041648f67c1edd6426e35cce5a8618f6b824d4060ec6",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/dim-front-after.jpg",
+  "sha256": "e69bbb7c7d05c47f1d1e92253924d782174cfc740507a60b672fd86b8ff620a5",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-salamander-dim-after-front/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, dim fixture.",
+  "committed": "T3-VIS-02/dim-front-after.jpg",
+  "committedSha256": "e69bbb7c7d05c47f1d1e92253924d782174cfc740507a60b672fd86b8ff620a5",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/dim-rear-before.jpg",
+  "sha256": "63f7b4e1de65481a787bd562ae1c0355153077f4ffbc5e612a2f575cd9db9c7d",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-salamander-dim-before-rear/0000.jpg",
+  "note": "Before: shipped pre-Sprint-7 export on the same live unit, dim fixture.",
+  "committed": "T3-VIS-02/dim-rear-before.jpg",
+  "committedSha256": "63f7b4e1de65481a787bd562ae1c0355153077f4ffbc5e612a2f575cd9db9c7d",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/dim-rear-after.jpg",
+  "sha256": "f52036405ce8b2e670b59b1cfbac8bebb0536197cae2cfc835318bb68b369be4",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-salamander-dim-after-rear/0000.jpg",
+  "note": "After: Sprint 7 export on the same live unit, dim fixture.",
+  "committed": "T3-VIS-02/dim-rear-after.jpg",
+  "committedSha256": "f52036405ce8b2e670b59b1cfbac8bebb0536197cae2cfc835318bb68b369be4",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/dim-turn-after-mid.jpg",
+  "sha256": "dc41f1821938f507c10caec9d5535e74402d15d31a99fd1133b4a5583547682d",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-salamander-dim-after-turn/0005.jpg",
+  "note": "After: mid-turn frame.",
+  "committed": "T3-VIS-02/dim-turn-after-mid.jpg",
+  "committedSha256": "dc41f1821938f507c10caec9d5535e74402d15d31a99fd1133b4a5583547682d",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/dim-move-after-mid.jpg",
+  "sha256": "f9bac0ae00aec049ffc2bf3c0ddb0a8b7f700f7502b49ec895a7ee5e8e649a6f",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/r6-frames/s7-salamander-dim-after-move/0007.jpg",
+  "note": "After: mid-move frame.",
+  "committed": "T3-VIS-02/dim-move-after-mid.jpg",
+  "committedSha256": "f9bac0ae00aec049ffc2bf3c0ddb0a8b7f700f7502b49ec895a7ee5e8e649a6f",
+  "reason": "copied"
+ },
+ {
+  "story": "T3-VIS-02",
+  "file": "T3-VIS-02/dim-party-after.png",
+  "sha256": "86c17e6ef2b3f6aac4e28c96dbae550aa272b9d30b2c519974c20c03fdfa9590",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/03-modd/product/s7-salamander-dim-after-party.png",
+  "note": "After: gameplay-zoom party camera.",
+  "committed": "T3-VIS-02/dim-party-after.jpg",
+  "committedSha256": "858cb99ed17b4982f961ad3d5c41ceca1f95e403c54cd4835e1ce7f87e0d306f",
+  "reason": "re-encoded from the lab PNG as JPEG quality 92"
+ },
+ {
+  "story": "T4-VIS-03",
+  "file": "T4-VIS-03/before-brachiosaurus-overrun.png",
+  "sha256": "6fab2a997f9ab86dacc1cfe0e5bf66252bb2a83ae6f76f5444c7fab67bc207c2",
+  "source": "<lab>/runtime-evidence/loader-compat/20261123T233302Z-owner-0.33.0-s7-baseline/01-r3/product/native-ui-004.png",
+  "note": "Before (released v0.0.195): Overrun header \"None\", target \"within 0 ft. feet\".",
+  "committed": "T4-VIS-03/before-brachiosaurus-overrun.jpg",
+  "committedSha256": "5a77d698ec4123879ffe24cc6d754f9ac582861f21e23b4f128e768f1995c441",
+  "reason": "re-encoded from the lab PNG as JPEG quality 92"
+ },
+ {
+  "story": "T4-VIS-03",
+  "file": "T4-VIS-03/before-brachiosaurus-trample.png",
+  "sha256": "5c55db0db49124d4c04ede37d8a3a39de1d7afd363df15068bb7281664c7b115",
+  "source": "<lab>/runtime-evidence/loader-compat/20261123T233302Z-owner-0.33.0-s7-baseline/01-r3/product/native-ui-005.png",
+  "note": "Before (released v0.0.195).",
+  "committed": "T4-VIS-03/before-brachiosaurus-trample.jpg",
+  "committedSha256": "d98981deca6a416e125802d012834641898ff8f08f641645b3ea337473e04bc4",
+  "reason": "re-encoded from the lab PNG as JPEG quality 92"
+ },
+ {
+  "story": "T4-VIS-03",
+  "file": "T4-VIS-03/after-brachiosaurus-overrun.png",
+  "sha256": "81b253ab6e7b63aabdf2339c87906cb8f380a9d98aab063e6cbd9606f429ac67",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/01-ui/product/native-ui-000.png",
+  "note": "After: rendered brachiosaurus-overrun window.",
+  "committed": "T4-VIS-03/after-brachiosaurus-overrun.jpg",
+  "committedSha256": "3fc0ff0ffbf37f0bc1c72a6717867551ef702f977311148430967e2abe95dbb7",
+  "reason": "re-encoded from the lab PNG as JPEG quality 92"
+ },
+ {
+  "story": "T4-VIS-03",
+  "file": "T4-VIS-03/after-brachiosaurus-overrun-hud.png",
+  "sha256": "3266c2ee61117c5727021dedcccb32be83e239bb1792b2ca4a3523a9eefd2d1c",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/01-ui/product/native-ui-001.png",
+  "note": "After: rendered brachiosaurus-overrun-hud window.",
+  "committed": "T4-VIS-03/after-brachiosaurus-overrun-hud.jpg",
+  "committedSha256": "10162e1235631a7a1848c9dbfd4c721dc68a6ad1fe67c1550608fb90e21008d7",
+  "reason": "re-encoded from the lab PNG as JPEG quality 92"
+ },
+ {
+  "story": "T4-VIS-03",
+  "file": "T4-VIS-03/after-brachiosaurus-trample.png",
+  "sha256": "5f37aa7cc9132368f93ff407a27a1afc7006b173d22d3736883fcca679b39937",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/01-ui/product/native-ui-002.png",
+  "note": "After: rendered brachiosaurus-trample window.",
+  "committed": "T4-VIS-03/after-brachiosaurus-trample.jpg",
+  "committedSha256": "c8dc1debd604a86636fb342dd24e6f441bfcd762277d9f48e927ca001518976e",
+  "reason": "re-encoded from the lab PNG as JPEG quality 92"
+ },
+ {
+  "story": "T4-VIS-03",
+  "file": "T4-VIS-03/after-brachiosaurus-trample-hud.png",
+  "sha256": "8ef632ee6e82ff1a17ae8d56e7eda6be520ce93a0e471a7ea245a32e1635a5bd",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/01-ui/product/native-ui-003.png",
+  "note": "After: rendered brachiosaurus-trample-hud window.",
+  "committed": "T4-VIS-03/after-brachiosaurus-trample-hud.jpg",
+  "committedSha256": "ee40d8ce7fd2d54e3f03ec42c5014888b07a3276e3a56439e5a58328dcdd89cf",
+  "reason": "re-encoded from the lab PNG as JPEG quality 92"
+ },
+ {
+  "story": "T4-VIS-03",
+  "file": "T4-VIS-03/after-mastodon-trample.png",
+  "sha256": "271123bec71cfb22b4dc025f54d8ee996cd341c8186e86f3e7d8762f5d554f5e",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/01-ui/product/native-ui-004.png",
+  "note": "After: rendered mastodon-trample window.",
+  "committed": "T4-VIS-03/after-mastodon-trample.jpg",
+  "committedSha256": "f22c81294cddd8a20d9d84dd441f7ff319984b6f81411bb19ca4ecf50064b550",
+  "reason": "re-encoded from the lab PNG as JPEG quality 92"
+ },
+ {
+  "story": "T4-VIS-03",
+  "file": "T4-VIS-03/after-mastodon-trample-hud.png",
+  "sha256": "64726be0e4f6fe49b62c8499039171f02f3ff3d118ab9c680dcd2dcb5ce822d9",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/01-ui/product/native-ui-005.png",
+  "note": "After: rendered mastodon-trample-hud window.",
+  "committed": "T4-VIS-03/after-mastodon-trample-hud.jpg",
+  "committedSha256": "ca7a286b2b163fb7f479485497ae8d92181437bd4aac0b232f8812d4874d02a5",
+  "reason": "re-encoded from the lab PNG as JPEG quality 92"
+ },
+ {
+  "story": "T4-VIS-03",
+  "file": "T4-VIS-03/after-control-native-overrun.png",
+  "sha256": "2f9711c061b7aca95e16a25b1b58a3e46abb03529d279cfa3c39647460f44e76",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/01-ui/product/native-ui-006.png",
+  "note": "After: rendered control-native-overrun window. Control: native text must be unchanged.",
+  "committed": "T4-VIS-03/after-control-native-overrun.jpg",
+  "committedSha256": "78f79d4e99f52cdb7ba85db49802cba2551daa3ec63134db420b600d9513f65e",
+  "reason": "re-encoded from the lab PNG as JPEG quality 92"
+ },
+ {
+  "story": "T4-VIS-03",
+  "file": "T4-VIS-03/after-control-native-overrun-hud.png",
+  "sha256": "6bbcb3d65ebbf1d82d9b08a7d8966706ebcc048b4d415e510e68ae3e53c5a5ec",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/01-ui/product/native-ui-007.png",
+  "note": "After: rendered control-native-overrun-hud window. Control: native text must be unchanged.",
+  "committed": "T4-VIS-03/after-control-native-overrun-hud.jpg",
+  "committedSha256": "97114990a2a4655f162cad9294a7404ac852437ee628767576ce107582f5e46c",
+  "reason": "re-encoded from the lab PNG as JPEG quality 92"
+ },
+ {
+  "story": "T4-VIS-03",
+  "file": "T4-VIS-03/after-control-native-spell.png",
+  "sha256": "5a389db16f59a1add35b19171858ccacec8596c8a979bc2693c19a0944415f64",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/01-ui/product/native-ui-008.png",
+  "note": "After: rendered control-native-spell window. Control: native text must be unchanged.",
+  "committed": "T4-VIS-03/after-control-native-spell.jpg",
+  "committedSha256": "dbf7aa6f753919f8c0c64338888068be501097f5eef78b650e0c223dadd6940c",
+  "reason": "re-encoded from the lab PNG as JPEG quality 92"
+ },
+ {
+  "story": "T4-VIS-03",
+  "file": "T4-VIS-03/after-control-native-spell-hud.png",
+  "sha256": "243c854db7d58d4ba252f3bc84af13d54f3bb68816bcc7a9afc719e921a57920",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T050957Z-owner-0.33.0-s7-core/01-ui/product/native-ui-009.png",
+  "note": "After: rendered control-native-spell-hud window. Control: native text must be unchanged.",
+  "committed": "T4-VIS-03/after-control-native-spell-hud.jpg",
+  "committedSha256": "7d14c07575117e1dbebf0e94d5eb6259c181bf8672c19f88718a77356241b310",
+  "reason": "re-encoded from the lab PNG as JPEG quality 92"
+ },
+ {
+  "story": "T6-VIS-05",
+  "file": "T6-VIS-05/after-dust-02.jpg",
+  "sha256": "81ca1b8daa5bd77040fd9b18339067fc2370953d88a3847f37c510393598284b",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T061437Z-owner-0.33.0-s7-fx/01-fx/product/r6-frames/s7-dust-cast-0/0032.jpg",
+  "note": "After: Dust Mephit breath with the owned dust recolour.",
+  "committed": "T6-VIS-05/after-dust-02.jpg",
+  "committedSha256": "81ca1b8daa5bd77040fd9b18339067fc2370953d88a3847f37c510393598284b",
+  "reason": "copied"
+ },
+ {
+  "story": "T6-VIS-05",
+  "file": "T6-VIS-05/after-dust-06.jpg",
+  "sha256": "dfc9a0d3bf203848110e5633827860f7132d5f9936890d8ecc268e9228970631",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T061437Z-owner-0.33.0-s7-fx/01-fx/product/r6-frames/s7-dust-cast-0/0040.jpg",
+  "note": "After: Dust Mephit breath with the owned dust recolour.",
+  "committed": "T6-VIS-05/after-dust-06.jpg",
+  "committedSha256": "dfc9a0d3bf203848110e5633827860f7132d5f9936890d8ecc268e9228970631",
+  "reason": "copied"
+ },
+ {
+  "story": "T6-VIS-05",
+  "file": "T6-VIS-05/after-dust-10.jpg",
+  "sha256": "95b6f9365b8f8cca027d378d47334d70b33aeb36ad37f7edfeb4ef1771e26b2d",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T061437Z-owner-0.33.0-s7-fx/01-fx/product/r6-frames/s7-dust-cast-0/0048.jpg",
+  "note": "After: Dust Mephit breath with the owned dust recolour.",
+  "committed": "T6-VIS-05/after-dust-10.jpg",
+  "committedSha256": "95b6f9365b8f8cca027d378d47334d70b33aeb36ad37f7edfeb4ef1771e26b2d",
+  "reason": "copied"
+ },
+ {
+  "story": "T6-VIS-05",
+  "file": "T6-VIS-05/before-native-ice-look-02.jpg",
+  "sha256": "a17cd4d180f2506147517f4cfbc8d97c02060e821dcf428651ab4f6899106c38",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T061437Z-owner-0.33.0-s7-fx/01-fx/product/r6-frames/s7-dust-native-look/0032.jpg",
+  "note": "Before: the same Dust breath with the recolour removed by the observer (the shipped ice cone).",
+  "committed": "T6-VIS-05/before-native-ice-look-02.jpg",
+  "committedSha256": "a17cd4d180f2506147517f4cfbc8d97c02060e821dcf428651ab4f6899106c38",
+  "reason": "copied"
+ },
+ {
+  "story": "T6-VIS-05",
+  "file": "T6-VIS-05/before-native-ice-look-06.jpg",
+  "sha256": "782e24782111c59031bd320e7272e57fe44eb321cddedf20900f84022ef0034e",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T061437Z-owner-0.33.0-s7-fx/01-fx/product/r6-frames/s7-dust-native-look/0040.jpg",
+  "note": "Before: the same Dust breath with the recolour removed by the observer (the shipped ice cone).",
+  "committed": "T6-VIS-05/before-native-ice-look-06.jpg",
+  "committedSha256": "782e24782111c59031bd320e7272e57fe44eb321cddedf20900f84022ef0034e",
+  "reason": "copied"
+ },
+ {
+  "story": "T6-VIS-05",
+  "file": "T6-VIS-05/before-native-ice-look-10.jpg",
+  "sha256": "9f48f00cc083555794214213728d81ff4ae40a1c19d3d5aec314d0fa0c399e95",
+  "source": "<lab>/runtime-evidence/loader-compat/20261124T061437Z-owner-0.33.0-s7-fx/01-fx/product/r6-frames/s7-dust-native-look/0048.jpg",
+  "note": "Before: the same Dust breath with the recolour removed by the observer (the shipped ice cone).",
+  "committed": "T6-VIS-05/before-native-ice-look-10.jpg",
+  "committedSha256": "9f48f00cc083555794214213728d81ff4ae40a1c19d3d5aec314d0fa0c399e95",
+  "reason": "copied"
+ },
+ {
+  "story": "T5-VIS-04",
+  "file": "T5-VIS-04/t5-baseline-no-cue.wav",
+  "sha256": "2a5db4e46ee8a22df51a7735248eaaad4da0b35fd51f555594a740d16efcd3ed",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t5-baseline-no-cue.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T5-VIS-04",
+  "file": "T5-VIS-04/t5-sample-1-Sweetener_Low_06_Quake-recommended.wav",
+  "sha256": "7ade7492cd191b04544e63d8c02d424cf05d9b434dd4c6636117b74da88fd05e",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t5-sample-1-Sweetener_Low_06_Quake-recommended.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T5-VIS-04",
+  "file": "T5-VIS-04/t5-sample-2-Physical_Hit_03_Punch.wav",
+  "sha256": "9a50d80438a48006a317a7674e85f51eb7cc636a09e15811ccb7d202f7d10c0e",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t5-sample-2-Physical_Hit_03_Punch.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T5-VIS-04",
+  "file": "T5-VIS-04/t5-sample-3-Earthblast_Hit.wav",
+  "sha256": "96c86e9de62c1b2a6813a7bf7b6b5de0d4734a59813040307dff1d5edc349422",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t5-sample-3-Earthblast_Hit.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T5-VIS-04",
+  "file": "T5-VIS-04/t5-sample-4-DustCritHeavy.wav",
+  "sha256": "aee0daa9ad66e682b722d10e75109acb875c4de7059fc4cb57a542d4b16eef6a",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t5-sample-4-DustCritHeavy.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T5-VIS-04",
+  "file": "T5-VIS-04/t5-sample-5-MediumBluntNatural_Flesh.wav",
+  "sha256": "76037e16ce5f3e8f43a2d05c63eb075420df8b1c22a29ca8f0fde8bb67626ec7",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t5-sample-5-MediumBluntNatural_Flesh.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T5-VIS-04",
+  "file": "T5-VIS-04/t5-strike-1-cue149.wav",
+  "sha256": "4519c49d6fbf7ca75fc2de71a202f510bd670b33b6ba59b756feb42119add0d1",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t5-strike-1-cue149.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T5-VIS-04",
+  "file": "T5-VIS-04/t5-strike-2-cue227.wav",
+  "sha256": "0df4cf35c4af32db92c40f99fcde0d0ae6b8c2afc3a959f7542693905b08962a",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t5-strike-2-cue227.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T7-VIS-06",
+  "file": "T7-VIS-06/t7-baseline-no-cue.wav",
+  "sha256": "b2927bea00d25974932edb07466586de2a28aa3ac01089b2398777d704f87b62",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t7-baseline-no-cue.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T7-VIS-06",
+  "file": "T7-VIS-06/t7-sample-1-InspireCourage-current.wav",
+  "sha256": "640f29ad03a111f4ef89a2f2b3e8d8c4eda58594324513c9ca2eab7b24dceb61",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t7-sample-1-InspireCourage-current.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T7-VIS-06",
+  "file": "T7-VIS-06/t7-sample-2-InspireGreatness.wav",
+  "sha256": "a7b5a8f6ecb5d4b0074dabcbf02dedfe79c7cfb38f6755d446d94f2ae6ddecc3",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t7-sample-2-InspireGreatness.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T7-VIS-06",
+  "file": "T7-VIS-06/t7-sample-3-CacophonousCall.wav",
+  "sha256": "d853ea7afde9079782f9653317dd344208e8078b56fb4618f101d66a7b86ba58",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t7-sample-3-CacophonousCall.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T7-VIS-06",
+  "file": "T7-VIS-06/t7-sample-4-AoE_Sonic_Large.wav",
+  "sha256": "a258e064d4bef9ff10480abe438cc9d91585b9bca042ab865b30e28ba43d927c",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t7-sample-4-AoE_Sonic_Large.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T7-VIS-06",
+  "file": "T7-VIS-06/t7-sample-5-Sweetener_High_04_Celestial.wav",
+  "sha256": "9e0f2df0205c623903d991d45907a8b4b3bc6efaae91f4c0ae578d940cc09f93",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t7-sample-5-Sweetener_High_04_Celestial.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T7-VIS-06",
+  "file": "T7-VIS-06/t7-sample-6-HolyBomb.wav",
+  "sha256": "544491433410bfec7cd9dbb82ad39728b24cc2264087463ac10164c8965c65f5",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t7-sample-6-HolyBomb.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T7-VIS-06",
+  "file": "T7-VIS-06/t7-sample-7-Heroism.wav",
+  "sha256": "c8531fd8de1262ba238c215bc405b2da8c1945d8f268390e4965f0203751ca67",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t7-sample-7-Heroism.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T7-VIS-06",
+  "file": "T7-VIS-06/t7-trumpet-blast-in-play.wav",
+  "sha256": "1fccce304244b8fdf1cfec53ec2c27b3a96821038b7d8d1b969977193b90ecdb",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t7-trumpet-blast-in-play.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ },
+ {
+  "story": "T7-VIS-06",
+  "file": "T7-VIS-06/t7-vrock-screech-neighbour.wav",
+  "sha256": "ca62afc5c706cface14c0de81a93cafbbeddc0fa44de3fac55a31d8cf538b0a3",
+  "source": "<lab>/runtime-evidence/s7/audio-r3/t7-vrock-screech-neighbour.wav",
+  "note": "Loopback excerpt of the default output device (whole mix, not an isolated process).",
+  "committed": null,
+  "committedSha256": null,
+  "reason": "audio of the game stays in the lab"
+ }
+]

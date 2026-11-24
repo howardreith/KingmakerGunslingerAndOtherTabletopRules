@@ -3,11 +3,12 @@
 - Sprint 7 presentation and audio (development candidate on draft PR #219; not released; record
   `docs/GUNSLINGER-SPRINT7-RECORD.md`).
   - The Ghaele's body shows a native coloured dissolve band that loops about every 5 seconds. It is native to the
-    azata body (also on an unsummoned native Ghaele), removes no surface and does not shorten the summon; the earlier
-    "progressive dissolve" report measured this loop. No change.
+    azata body (also on an unsummoned native Ghaele), removes no surface and does not shorten the summon, on the
+    released v0.0.195 and current builds. No change. The October "progressive dissolve" observation itself is not
+    attributed (its run's evidence is unavailable).
   - The owned Trample/Overrun target row now reads "within twice this creature's speed" in the description and HUD
-    windows; the controller (gamepad) window shares the same text code but was not rendered (no admitted observer
-    reaches a summon's abilities in controller mode).
+    windows; the controller (gamepad) window shares the same text code but was not rendered: console Inspect lives in
+    the console in-game UI scene, which no admitted review fixture loads.
   - The Ankylosaurus impact cue and the Trumpet Archon blast cue are provisional choices pending listening.
   - The Dust Mephit's breath is a recoloured native cold cone, not a separately authored dust effect. Repeated breaths
     from one spot each show their cone (the game skips a cone only for a second launch from the same point within one

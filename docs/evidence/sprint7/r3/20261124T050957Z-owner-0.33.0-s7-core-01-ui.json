@@ -1,0 +1,927 @@
+{
+ "checks": [
+  {
+   "observed": {
+    "actorBlueprintExact": true,
+    "actorNameExact": true,
+    "actorPresent": true,
+    "anchorCommandsEmpty": true,
+    "casterBrainDisabled": true,
+    "casterCommandsEmpty": true,
+    "originalDistinct": true,
+    "ownedPartyExact": true,
+    "presetExact": true,
+    "saveGuardOwned": true,
+    "scenesOwned": true
+   },
+   "passed": true,
+   "predicate": "summon-s7-ui-group-quiet-anchor"
+  },
+  {
+   "observed": {
+    "controller": "Mouse",
+    "exactReview": true,
+    "frame": 3867,
+    "gameSeconds": 43200.65,
+    "immediateBoundary": true,
+    "inputModeAdmitted": true,
+    "mode": "Default",
+    "narrativeAbsent": true,
+    "nativeModeAdmitted": true,
+    "noSelectedAbility": true,
+    "ownedFixture": true,
+    "saveFree": true,
+    "utc": "2026-11-24T05:11:13.5778563Z"
+   },
+   "passed": true,
+   "predicate": "cleanup2-native-default-admission-summon-s7-ui"
+  },
+  {
+   "observed": {
+    "activeModeCounts": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "closed": false,
+    "controllerReferences": [
+     {
+      "actualInstance": -701970176,
+      "expectedInstance": -701970176,
+      "name": "ClickEventsController",
+      "same": true
+     },
+     {
+      "actualInstance": -1501445376,
+      "expectedInstance": -1501445376,
+      "name": "SelectedAbilityHandler",
+      "same": true
+     },
+     {
+      "actualInstance": -1795157760,
+      "expectedInstance": -1795157760,
+      "name": "PlaceRestMarkerHandler",
+      "same": true
+     },
+     {
+      "actualInstance": 1105535488,
+      "expectedInstance": 1105535488,
+      "name": "InteractionHighlightController",
+      "same": true
+     },
+     {
+      "actualInstance": 951448320,
+      "expectedInstance": 951448320,
+      "name": "CombatEngagementController",
+      "same": true
+     },
+     {
+      "actualInstance": -1418667264,
+      "expectedInstance": -1418667264,
+      "name": "HandsEquipmentController",
+      "same": true
+     },
+     {
+      "actualInstance": 1476290688,
+      "expectedInstance": 1476290688,
+      "name": "CameraController",
+      "same": true
+     }
+    ],
+    "current": true,
+    "existingNativeDefaultBorrowed": true,
+    "expectedActiveModeCounts": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "frame": 3867,
+    "gameSeconds": 43200.65,
+    "manualClockSuspended": true,
+    "manualPulsesBefore": 0,
+    "manualPulsesCurrent": 0,
+    "mode": "Default",
+    "nativeFactoryModeOwned": false,
+    "originalStackCount": 1,
+    "ownershipPredicates": {
+     "exactActiveModeCounts": true,
+     "exactControllerReferences": true,
+     "exactModeStackReferences": true,
+     "factoryDefaultPointerExact": true,
+     "gameModeTicking": false,
+     "immediateBoundary": true,
+     "modeIsNativeDefault": true,
+     "notClosed": true,
+     "pendingBeforeTickActions": 0,
+     "selectedAbility": null,
+     "selectedAbilityAbsent": true,
+     "switchingModes": false
+    },
+    "pointerController": "Kingmaker.Controllers.Clicks.PointerController",
+    "purpose": "summon-s7-ui",
+    "selectedAbilityHandler": "Kingmaker.Controllers.Clicks.Handlers.ClickWithSelectedAbilityHandler",
+    "stackCount": 1,
+    "tickGateBefore": {
+     "allowedAbilityExecutionTicks": 0,
+     "allowedActionTicks": 0,
+     "allowedCooldownTicks": 0,
+     "blockedAmbientActionTicks": 0,
+     "blockedAmbientCooldownTicks": 0,
+     "blockedDuplicateAbilityExecutionTicks": 0,
+     "brainTicks": 0,
+     "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+     "maximumActionTicksPerUnitPerUnityFrame": 0,
+     "nativeDefaultActions": 0,
+     "nativeDefaultCooldowns": 0,
+     "nativeDefaultExecutions": 0,
+     "nativeDefaultLeaseActive": false,
+     "refusedStaleNativeTicks": 0,
+     "scope": "exact request fixture/turn-clock actor set"
+    },
+    "tickGateCurrent": {
+     "allowedAbilityExecutionTicks": 0,
+     "allowedActionTicks": 0,
+     "allowedCooldownTicks": 0,
+     "blockedAmbientActionTicks": 0,
+     "blockedAmbientCooldownTicks": 0,
+     "blockedDuplicateAbilityExecutionTicks": 0,
+     "brainTicks": 0,
+     "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+     "maximumActionTicksPerUnitPerUnityFrame": 0,
+     "nativeDefaultActions": 0,
+     "nativeDefaultCooldowns": 0,
+     "nativeDefaultExecutions": 0,
+     "nativeDefaultLeaseActive": true,
+     "refusedStaleNativeTicks": 0,
+     "scope": "exact request fixture/turn-clock actor set"
+    },
+    "utc": "2026-11-24T05:11:13.5932213Z"
+   },
+   "passed": true,
+   "predicate": "cleanup2-native-default-enter-summon-s7-ui"
+  },
+  {
+   "observed": {
+    "blueprint": "b41f7d2a6c8e40539af1c2d5e7b30486",
+    "contentTexts": [
+     "TARGET",
+     "Target point within twice this creature's speed.",
+     "SPELL RESISTANCE",
+     "Not affected by target's spell resistance",
+     "CASTING TIME",
+     "Full round",
+     "Move through an opponent's space, forcing a combat maneuver check. This is the ordinary overrun maneuver and is not the creature's trample."
+    ],
+    "headerTexts": [
+     "Overrun",
+     "Extraordinary",
+     "",
+     ""
+    ],
+    "nativeTarget": "Target point within twice this creature's speed.\n",
+    "owner": "9093aef39ecc416092ef68655a7e56fb",
+    "path": "Ability fact (description window)"
+   },
+   "passed": true,
+   "predicate": "s7-ui-brachiosaurus-overrun"
+  },
+  {
+   "observed": {
+    "blueprint": "b41f7d2a6c8e40539af1c2d5e7b30486",
+    "contentTexts": [
+     "TARGET",
+     "Target point within twice this creature's speed.",
+     "SPELL RESISTANCE",
+     "Not affected by target's spell resistance",
+     "CASTING TIME",
+     "Full round",
+     "Move through an opponent's space, forcing a combat maneuver check. This is the ordinary overrun maneuver and is not the creature's trample."
+    ],
+    "headerTexts": [
+     "Overrun",
+     "Extraordinary",
+     "",
+     ""
+    ],
+    "nativeTarget": "Target point within twice this creature's speed.\n",
+    "owner": "9093aef39ecc416092ef68655a7e56fb",
+    "path": "AbilityData (HUD action bar)"
+   },
+   "passed": true,
+   "predicate": "s7-ui-brachiosaurus-overrun-hud"
+  },
+  {
+   "observed": {
+    "blueprint": "309ec3dedcf04c15b3011933f5eafef4",
+    "contentTexts": [
+     "TARGET",
+     "Target point within twice this creature's speed.",
+     "SAVING THROW",
+     "Reflex DC 32 half; none for a target that makes its attack of opportunity instead",
+     "SPELL RESISTANCE",
+     "Not affected by target's spell resistance",
+     "CASTING TIME",
+     "Full round",
+     "As a full-round action, move up to twice speed through smaller enemies. Each target takes 2d6+19 bludgeoning damage at most once per round. On first contact, a target that can make a legal melee attack of opportunity automatically makes one at -4 before damage and receives no save. Otherwise it attempts a Reflex DC 32 save for half. An attack that stops the trampler prevents that contact's damage and ends the trample."
+    ],
+    "headerTexts": [
+     "Trample",
+     "Extraordinary",
+     "",
+     ""
+    ],
+    "nativeTarget": "Target point within twice this creature's speed.\n",
+    "owner": "9093aef39ecc416092ef68655a7e56fb",
+    "path": "Ability fact (description window)"
+   },
+   "passed": true,
+   "predicate": "s7-ui-brachiosaurus-trample"
+  },
+  {
+   "observed": {
+    "blueprint": "309ec3dedcf04c15b3011933f5eafef4",
+    "contentTexts": [
+     "TARGET",
+     "Target point within twice this creature's speed.",
+     "SAVING THROW",
+     "Reflex DC 32 half; none for a target that makes its attack of opportunity instead",
+     "SPELL RESISTANCE",
+     "Not affected by target's spell resistance",
+     "CASTING TIME",
+     "Full round",
+     "As a full-round action, move up to twice speed through smaller enemies. Each target takes 2d6+19 bludgeoning damage at most once per round. On first contact, a target that can make a legal melee attack of opportunity automatically makes one at -4 before damage and receives no save. Otherwise it attempts a Reflex DC 32 save for half. An attack that stops the trampler prevents that contact's damage and ends the trample."
+    ],
+    "headerTexts": [
+     "Trample",
+     "Extraordinary",
+     "",
+     ""
+    ],
+    "nativeTarget": "Target point within twice this creature's speed.\n",
+    "owner": "9093aef39ecc416092ef68655a7e56fb",
+    "path": "AbilityData (HUD action bar)"
+   },
+   "passed": true,
+   "predicate": "s7-ui-brachiosaurus-trample-hud"
+  },
+  {
+   "observed": {
+    "blueprint": "a1f52aace5124004b76e2351c7023566",
+    "contentTexts": [
+     "TARGET",
+     "Target point within twice this creature's speed.",
+     "SAVING THROW",
+     "Reflex DC 29 half; none for a target that makes its attack of opportunity instead",
+     "SPELL RESISTANCE",
+     "Not affected by target's spell resistance",
+     "CASTING TIME",
+     "Full round",
+     "As a full-round action, move up to twice speed through smaller enemies. Each target takes 2d8+18 bludgeoning damage at most once per round. On first contact, a target that can make a legal melee attack of opportunity automatically makes one at -4 before damage and receives no save. Otherwise it attempts a Reflex DC 29 save for half. An attack that stops the trampler prevents that contact's damage and ends the trample."
+    ],
+    "headerTexts": [
+     "Trample",
+     "Extraordinary",
+     "",
+     ""
+    ],
+    "nativeTarget": "Target point within twice this creature's speed.\n",
+    "owner": "e129ffc2768d47c5bee61bb99b0c8703",
+    "path": "Ability fact (description window)"
+   },
+   "passed": true,
+   "predicate": "s7-ui-mastodon-trample"
+  },
+  {
+   "observed": {
+    "blueprint": "a1f52aace5124004b76e2351c7023566",
+    "contentTexts": [
+     "TARGET",
+     "Target point within twice this creature's speed.",
+     "SAVING THROW",
+     "Reflex DC 29 half; none for a target that makes its attack of opportunity instead",
+     "SPELL RESISTANCE",
+     "Not affected by target's spell resistance",
+     "CASTING TIME",
+     "Full round",
+     "As a full-round action, move up to twice speed through smaller enemies. Each target takes 2d8+18 bludgeoning damage at most once per round. On first contact, a target that can make a legal melee attack of opportunity automatically makes one at -4 before damage and receives no save. Otherwise it attempts a Reflex DC 29 save for half. An attack that stops the trampler prevents that contact's damage and ends the trample."
+    ],
+    "headerTexts": [
+     "Trample",
+     "Extraordinary",
+     "",
+     ""
+    ],
+    "nativeTarget": "Target point within twice this creature's speed.\n",
+    "owner": "e129ffc2768d47c5bee61bb99b0c8703",
+    "path": "AbilityData (HUD action bar)"
+   },
+   "passed": true,
+   "predicate": "s7-ui-mastodon-trample-hud"
+  },
+  {
+   "observed": {
+    "nativeOverrun": {
+     "blueprint": "1a3b471ecea51f7439a946b23577fd70",
+     "contentTexts": [
+      "TARGET",
+      "Target point within 0 ft. feet.",
+      "DURATION",
+      "Trample",
+      "SAVING THROW",
+      "You can attempt to run over your target, trampling them underfoot.\nIf your maneuver is successful, you will move through the target's space and deal damage to it. If your attack exceeds your opponent's CMD by 5 or more, you move through the target's space, deal damage to it, and the target is knocked prone.\nIf your attempt fails, you halt in the space directly in front of the opponent, or the nearest unoccupied space in front of the target.",
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      "CASTING TIME",
+      "Standard action"
+     ],
+     "headerTexts": [
+      "Overrun",
+      "Special",
+      "None",
+      ""
+     ],
+     "nativeTarget": "Target point within 0 ft. feet.\n",
+     "owner": "9093aef39ecc416092ef68655a7e56fb",
+     "path": "Ability fact (description window)"
+    },
+    "spell": {
+     "blueprint": "4ac47ddb9fa1eaf43a1b6809980cfbd2",
+     "contentTexts": [
+      "TARGET",
+      "One enemy creature within medium range.",
+      "SPELL RESISTANCE",
+      "Affected by target's spell resistance",
+      "CASTING TIME",
+      "Standard action",
+      "A missile of magical energy darts forth from your fingertip and strikes its target, dealing 1d4+1 points of force damage.\nThe missile strikes unerringly, even if the target is in melee combat, so long as it has less than total cover or total concealment. Specific parts of a creature can't be singled out. Objects are not damaged by the spell.\nFor every two caster levels beyond 1st, you gain an additional missile \u2013 two at 3rd level, three at 5th, four at 7th, and the maximum of five missiles at 9th level or higher."
+     ],
+     "headerTexts": [
+      "Magic Missile",
+      "Spell",
+      "Evocation",
+      "Level: 1"
+     ],
+     "nativeTarget": "One enemy creature within medium range.\n",
+     "owner": "4391e8b9afbb0cf43aeba700c089f56d",
+     "path": "Ability fact (description window)"
+    }
+   },
+   "passed": true,
+   "predicate": "s7-ui-controls"
+  },
+  {
+   "observed": {
+    "nativeOverrun": {
+     "blueprint": "1a3b471ecea51f7439a946b23577fd70",
+     "contentTexts": [
+      "TARGET",
+      "Target point within 0 ft. feet.",
+      "DURATION",
+      "Trample",
+      "SAVING THROW",
+      "You can attempt to run over your target, trampling them underfoot.\nIf your maneuver is successful, you will move through the target's space and deal damage to it. If your attack exceeds your opponent's CMD by 5 or more, you move through the target's space, deal damage to it, and the target is knocked prone.\nIf your attempt fails, you halt in the space directly in front of the opponent, or the nearest unoccupied space in front of the target.",
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      "CASTING TIME",
+      "Standard action"
+     ],
+     "headerTexts": [
+      "Overrun",
+      "Special",
+      "",
+      ""
+     ],
+     "nativeTarget": "Target point within 0 ft. feet.\n",
+     "owner": "9093aef39ecc416092ef68655a7e56fb",
+     "path": "AbilityData (HUD action bar)"
+    },
+    "spell": {
+     "blueprint": "4ac47ddb9fa1eaf43a1b6809980cfbd2",
+     "contentTexts": [
+      "TARGET",
+      "One enemy creature within medium range.",
+      "SPELL RESISTANCE",
+      "Affected by target's spell resistance",
+      "CASTING TIME",
+      "Standard action",
+      "A missile of magical energy darts forth from your fingertip and strikes its target, dealing 1d4+1 points of force damage.\nThe missile strikes unerringly, even if the target is in melee combat, so long as it has less than total cover or total concealment. Specific parts of a creature can't be singled out. Objects are not damaged by the spell.\nFor every two caster levels beyond 1st, you gain an additional missile \u2013 two at 3rd level, three at 5th, four at 7th, and the maximum of five missiles at 9th level or higher."
+     ],
+     "headerTexts": [
+      "Magic Missile",
+      "Spell",
+      "Evocation",
+      "Level: 1"
+     ],
+     "nativeTarget": "One enemy creature within medium range.\n",
+     "owner": "4391e8b9afbb0cf43aeba700c089f56d",
+     "path": "AbilityData (HUD action bar)"
+    }
+   },
+   "passed": true,
+   "predicate": "s7-ui-controls-hud"
+  },
+  {
+   "observed": {
+    "addedFacts": 2,
+    "errors": []
+   },
+   "passed": true,
+   "predicate": "s7-ui-owned-state-restored"
+  },
+  {
+   "observed": {
+    "activeModeCounts": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "closed": true,
+    "controllerReferences": [
+     {
+      "actualInstance": -701970176,
+      "expectedInstance": -701970176,
+      "name": "ClickEventsController",
+      "same": true
+     },
+     {
+      "actualInstance": -1501445376,
+      "expectedInstance": -1501445376,
+      "name": "SelectedAbilityHandler",
+      "same": true
+     },
+     {
+      "actualInstance": -1795157760,
+      "expectedInstance": -1795157760,
+      "name": "PlaceRestMarkerHandler",
+      "same": true
+     },
+     {
+      "actualInstance": 1105535488,
+      "expectedInstance": 1105535488,
+      "name": "InteractionHighlightController",
+      "same": true
+     },
+     {
+      "actualInstance": 951448320,
+      "expectedInstance": 951448320,
+      "name": "CombatEngagementController",
+      "same": true
+     },
+     {
+      "actualInstance": -1418667264,
+      "expectedInstance": -1418667264,
+      "name": "HandsEquipmentController",
+      "same": true
+     },
+     {
+      "actualInstance": 1476290688,
+      "expectedInstance": 1476290688,
+      "name": "CameraController",
+      "same": true
+     }
+    ],
+    "current": false,
+    "existingNativeDefaultBorrowed": true,
+    "expectedActiveModeCounts": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "frame": 4488,
+    "gameSeconds": 43216.589,
+    "manualClockSuspended": false,
+    "manualPulsesBefore": 0,
+    "manualPulsesCurrent": 0,
+    "mode": "Default",
+    "nativeFactoryModeOwned": false,
+    "originalStackCount": 1,
+    "ownershipPredicates": {
+     "exactActiveModeCounts": true,
+     "exactControllerReferences": true,
+     "exactModeStackReferences": true,
+     "factoryDefaultPointerExact": true,
+     "gameModeTicking": false,
+     "immediateBoundary": true,
+     "modeIsNativeDefault": true,
+     "notClosed": false,
+     "pendingBeforeTickActions": 0,
+     "selectedAbility": null,
+     "selectedAbilityAbsent": true,
+     "switchingModes": false
+    },
+    "pointerController": "Kingmaker.Controllers.Clicks.PointerController",
+    "purpose": "summon-s7-ui",
+    "selectedAbilityHandler": "Kingmaker.Controllers.Clicks.Handlers.ClickWithSelectedAbilityHandler",
+    "stackCount": 1,
+    "tickGateBefore": {
+     "allowedAbilityExecutionTicks": 0,
+     "allowedActionTicks": 0,
+     "allowedCooldownTicks": 0,
+     "blockedAmbientActionTicks": 0,
+     "blockedAmbientCooldownTicks": 0,
+     "blockedDuplicateAbilityExecutionTicks": 0,
+     "brainTicks": 0,
+     "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+     "maximumActionTicksPerUnitPerUnityFrame": 0,
+     "nativeDefaultActions": 0,
+     "nativeDefaultCooldowns": 0,
+     "nativeDefaultExecutions": 0,
+     "nativeDefaultLeaseActive": false,
+     "refusedStaleNativeTicks": 0,
+     "scope": "exact request fixture/turn-clock actor set"
+    },
+    "tickGateCurrent": {
+     "allowedAbilityExecutionTicks": 0,
+     "allowedActionTicks": 0,
+     "allowedCooldownTicks": 0,
+     "blockedAmbientActionTicks": 0,
+     "blockedAmbientCooldownTicks": 0,
+     "blockedDuplicateAbilityExecutionTicks": 0,
+     "brainTicks": 0,
+     "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+     "maximumActionTicksPerUnitPerUnityFrame": 0,
+     "nativeDefaultActions": 2484,
+     "nativeDefaultCooldowns": 0,
+     "nativeDefaultExecutions": 4,
+     "nativeDefaultLeaseActive": false,
+     "refusedStaleNativeTicks": 0,
+     "scope": "exact request fixture/turn-clock actor set"
+    },
+    "utc": "2026-11-24T05:11:30.4712461Z"
+   },
+   "passed": true,
+   "predicate": "cleanup2-native-default-restored-summon-s7-ui"
+  },
+  {
+   "observed": {
+    "cleanup": {
+     "areaChanges": [],
+     "casterAbsent": true,
+     "extraUnits": "",
+     "missingUnits": "",
+     "partyAfter": 1,
+     "partyBefore": 1,
+     "partyExact": true,
+     "unitsAfter": 1,
+     "unitsBefore": 1,
+     "unitsExact": true
+    },
+    "clockRestored": true,
+    "referencesRestored": true
+   },
+   "passed": true,
+   "predicate": "fixture-restored"
+  }
+ ],
+ "harness": {
+  "conditions": {},
+  "exitRequested": false,
+  "failure": null,
+  "finishedUtc": "2026-11-24T05:11:06.8689969Z",
+  "isolation": "saves=<lab>/Saved Games; areas=<lab>/Areas",
+  "isolationRestored": true,
+  "loggerExceptionHooks": 4,
+  "requestPath": "<lab>/harness-request.json",
+  "runId": "20261124T050957Z-owner-0.33.0-s7-core-01-ui",
+  "startedUtc": "2026-11-24T05:10:12.9190509Z",
+  "status": "passed",
+  "steps": []
+ },
+ "harnessEvents": [
+  {
+   "detail": {
+    "ummWindowOpen": true
+   },
+   "event": "mainMenu",
+   "t": 57.12179,
+   "utc": "2026-11-24T05:11:06.6824662Z"
+  }
+ ],
+ "launch": "01-ui",
+ "launchSummary": {
+  "conditions": {},
+  "gameArguments": [
+   "locale=enGB"
+  ],
+  "harness": "passed",
+  "identity": {
+   "activeMods": [
+    "KingmakerGunslinger 0.0.195",
+    "KmgLoaderCompatHarness 0.1.0"
+   ],
+   "harmony12Sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+   "harmony2": [
+    "2.3.6.0 df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80"
+   ],
+   "productSha256": "d7088878c3deda8f9d3d37f5cf2bb97be79c48b4bea66c4aa66f0cd9e72d5976",
+   "umm": "0.33.0.0",
+   "ummReported": "0.33.0.0",
+   "ummSha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
+  },
+  "label": "01-ui",
+  "pid": 18568,
+  "problems": [],
+  "product": {
+   "failed": [],
+   "scenario": "disposable-expanded-summoning-sprint32-native-review",
+   "status": "PASS"
+  },
+  "seconds": 88,
+  "verdict": "PASS"
+ },
+ "records": {
+  "summon-s7-ui.json": {
+   "limits": "Desktop description windows (fact path) and the HUD AbilityData path, rendered and read back. The controller UI was not rendered: no admitted observer reaches a summoned creature's ability in controller mode (record S7 T4).",
+   "phase": "summon-s7-ui",
+   "restoreErrors": [],
+   "runId": "lc-20261124T050957Z-owner-0.33.0-s7-core-01-ui",
+   "windows": {
+    "brachiosaurus-overrun": {
+     "blueprint": "b41f7d2a6c8e40539af1c2d5e7b30486",
+     "contentTexts": [
+      "TARGET",
+      "Target point within twice this creature's speed.",
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      "CASTING TIME",
+      "Full round",
+      "Move through an opponent's space, forcing a combat maneuver check. This is the ordinary overrun maneuver and is not the creature's trample."
+     ],
+     "headerTexts": [
+      "Overrun",
+      "Extraordinary",
+      "",
+      ""
+     ],
+     "nativeTarget": "Target point within twice this creature's speed.\n",
+     "owner": "9093aef39ecc416092ef68655a7e56fb",
+     "path": "Ability fact (description window)"
+    },
+    "brachiosaurus-overrun-hud": {
+     "blueprint": "b41f7d2a6c8e40539af1c2d5e7b30486",
+     "contentTexts": [
+      "TARGET",
+      "Target point within twice this creature's speed.",
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      "CASTING TIME",
+      "Full round",
+      "Move through an opponent's space, forcing a combat maneuver check. This is the ordinary overrun maneuver and is not the creature's trample."
+     ],
+     "headerTexts": [
+      "Overrun",
+      "Extraordinary",
+      "",
+      ""
+     ],
+     "nativeTarget": "Target point within twice this creature's speed.\n",
+     "owner": "9093aef39ecc416092ef68655a7e56fb",
+     "path": "AbilityData (HUD action bar)"
+    },
+    "brachiosaurus-trample": {
+     "blueprint": "309ec3dedcf04c15b3011933f5eafef4",
+     "contentTexts": [
+      "TARGET",
+      "Target point within twice this creature's speed.",
+      "SAVING THROW",
+      "Reflex DC 32 half; none for a target that makes its attack of opportunity instead",
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      "CASTING TIME",
+      "Full round",
+      "As a full-round action, move up to twice speed through smaller enemies. Each target takes 2d6+19 bludgeoning damage at most once per round. On first contact, a target that can make a legal melee attack of opportunity automatically makes one at -4 before damage and receives no save. Otherwise it attempts a Reflex DC 32 save for half. An attack that stops the trampler prevents that contact's damage and ends the trample."
+     ],
+     "headerTexts": [
+      "Trample",
+      "Extraordinary",
+      "",
+      ""
+     ],
+     "nativeTarget": "Target point within twice this creature's speed.\n",
+     "owner": "9093aef39ecc416092ef68655a7e56fb",
+     "path": "Ability fact (description window)"
+    },
+    "brachiosaurus-trample-hud": {
+     "blueprint": "309ec3dedcf04c15b3011933f5eafef4",
+     "contentTexts": [
+      "TARGET",
+      "Target point within twice this creature's speed.",
+      "SAVING THROW",
+      "Reflex DC 32 half; none for a target that makes its attack of opportunity instead",
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      "CASTING TIME",
+      "Full round",
+      "As a full-round action, move up to twice speed through smaller enemies. Each target takes 2d6+19 bludgeoning damage at most once per round. On first contact, a target that can make a legal melee attack of opportunity automatically makes one at -4 before damage and receives no save. Otherwise it attempts a Reflex DC 32 save for half. An attack that stops the trampler prevents that contact's damage and ends the trample."
+     ],
+     "headerTexts": [
+      "Trample",
+      "Extraordinary",
+      "",
+      ""
+     ],
+     "nativeTarget": "Target point within twice this creature's speed.\n",
+     "owner": "9093aef39ecc416092ef68655a7e56fb",
+     "path": "AbilityData (HUD action bar)"
+    },
+    "control-native-overrun": {
+     "blueprint": "1a3b471ecea51f7439a946b23577fd70",
+     "contentTexts": [
+      "TARGET",
+      "Target point within 0 ft. feet.",
+      "DURATION",
+      "Trample",
+      "SAVING THROW",
+      "You can attempt to run over your target, trampling them underfoot.\nIf your maneuver is successful, you will move through the target's space and deal damage to it. If your attack exceeds your opponent's CMD by 5 or more, you move through the target's space, deal damage to it, and the target is knocked prone.\nIf your attempt fails, you halt in the space directly in front of the opponent, or the nearest unoccupied space in front of the target.",
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      "CASTING TIME",
+      "Standard action"
+     ],
+     "headerTexts": [
+      "Overrun",
+      "Special",
+      "None",
+      ""
+     ],
+     "nativeTarget": "Target point within 0 ft. feet.\n",
+     "owner": "9093aef39ecc416092ef68655a7e56fb",
+     "path": "Ability fact (description window)"
+    },
+    "control-native-overrun-hud": {
+     "blueprint": "1a3b471ecea51f7439a946b23577fd70",
+     "contentTexts": [
+      "TARGET",
+      "Target point within 0 ft. feet.",
+      "DURATION",
+      "Trample",
+      "SAVING THROW",
+      "You can attempt to run over your target, trampling them underfoot.\nIf your maneuver is successful, you will move through the target's space and deal damage to it. If your attack exceeds your opponent's CMD by 5 or more, you move through the target's space, deal damage to it, and the target is knocked prone.\nIf your attempt fails, you halt in the space directly in front of the opponent, or the nearest unoccupied space in front of the target.",
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      "CASTING TIME",
+      "Standard action"
+     ],
+     "headerTexts": [
+      "Overrun",
+      "Special",
+      "",
+      ""
+     ],
+     "nativeTarget": "Target point within 0 ft. feet.\n",
+     "owner": "9093aef39ecc416092ef68655a7e56fb",
+     "path": "AbilityData (HUD action bar)"
+    },
+    "control-native-spell": {
+     "blueprint": "4ac47ddb9fa1eaf43a1b6809980cfbd2",
+     "contentTexts": [
+      "TARGET",
+      "One enemy creature within medium range.",
+      "SPELL RESISTANCE",
+      "Affected by target's spell resistance",
+      "CASTING TIME",
+      "Standard action",
+      "A missile of magical energy darts forth from your fingertip and strikes its target, dealing 1d4+1 points of force damage.\nThe missile strikes unerringly, even if the target is in melee combat, so long as it has less than total cover or total concealment. Specific parts of a creature can't be singled out. Objects are not damaged by the spell.\nFor every two caster levels beyond 1st, you gain an additional missile \u2013 two at 3rd level, three at 5th, four at 7th, and the maximum of five missiles at 9th level or higher."
+     ],
+     "headerTexts": [
+      "Magic Missile",
+      "Spell",
+      "Evocation",
+      "Level: 1"
+     ],
+     "nativeTarget": "One enemy creature within medium range.\n",
+     "owner": "4391e8b9afbb0cf43aeba700c089f56d",
+     "path": "Ability fact (description window)"
+    },
+    "control-native-spell-hud": {
+     "blueprint": "4ac47ddb9fa1eaf43a1b6809980cfbd2",
+     "contentTexts": [
+      "TARGET",
+      "One enemy creature within medium range.",
+      "SPELL RESISTANCE",
+      "Affected by target's spell resistance",
+      "CASTING TIME",
+      "Standard action",
+      "A missile of magical energy darts forth from your fingertip and strikes its target, dealing 1d4+1 points of force damage.\nThe missile strikes unerringly, even if the target is in melee combat, so long as it has less than total cover or total concealment. Specific parts of a creature can't be singled out. Objects are not damaged by the spell.\nFor every two caster levels beyond 1st, you gain an additional missile \u2013 two at 3rd level, three at 5th, four at 7th, and the maximum of five missiles at 9th level or higher."
+     ],
+     "headerTexts": [
+      "Magic Missile",
+      "Spell",
+      "Evocation",
+      "Level: 1"
+     ],
+     "nativeTarget": "One enemy creature within medium range.\n",
+     "owner": "4391e8b9afbb0cf43aeba700c089f56d",
+     "path": "AbilityData (HUD action bar)"
+    },
+    "mastodon-trample": {
+     "blueprint": "a1f52aace5124004b76e2351c7023566",
+     "contentTexts": [
+      "TARGET",
+      "Target point within twice this creature's speed.",
+      "SAVING THROW",
+      "Reflex DC 29 half; none for a target that makes its attack of opportunity instead",
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      "CASTING TIME",
+      "Full round",
+      "As a full-round action, move up to twice speed through smaller enemies. Each target takes 2d8+18 bludgeoning damage at most once per round. On first contact, a target that can make a legal melee attack of opportunity automatically makes one at -4 before damage and receives no save. Otherwise it attempts a Reflex DC 29 save for half. An attack that stops the trampler prevents that contact's damage and ends the trample."
+     ],
+     "headerTexts": [
+      "Trample",
+      "Extraordinary",
+      "",
+      ""
+     ],
+     "nativeTarget": "Target point within twice this creature's speed.\n",
+     "owner": "e129ffc2768d47c5bee61bb99b0c8703",
+     "path": "Ability fact (description window)"
+    },
+    "mastodon-trample-hud": {
+     "blueprint": "a1f52aace5124004b76e2351c7023566",
+     "contentTexts": [
+      "TARGET",
+      "Target point within twice this creature's speed.",
+      "SAVING THROW",
+      "Reflex DC 29 half; none for a target that makes its attack of opportunity instead",
+      "SPELL RESISTANCE",
+      "Not affected by target's spell resistance",
+      "CASTING TIME",
+      "Full round",
+      "As a full-round action, move up to twice speed through smaller enemies. Each target takes 2d8+18 bludgeoning damage at most once per round. On first contact, a target that can make a legal melee attack of opportunity automatically makes one at -4 before damage and receives no save. Otherwise it attempts a Reflex DC 29 save for half. An attack that stops the trampler prevents that contact's damage and ends the trample."
+     ],
+     "headerTexts": [
+      "Trample",
+      "Extraordinary",
+      "",
+      ""
+     ],
+     "nativeTarget": "Target point within twice this creature's speed.\n",
+     "owner": "e129ffc2768d47c5bee61bb99b0c8703",
+     "path": "AbilityData (HUD action bar)"
+    }
+   }
+  }
+ },
+ "session": "20261124T050957Z-owner-0.33.0-s7-core",
+ "sources": {
+  "harness-result.json": "ce57ea128f6e47693c4bb90a46bd604ef11ec68ff007b001257ed0ec7cc6f8ef",
+  "sprint32-review.json": "a3163016014d981cb111646d65f49304f3b7a4757418a6bcad51ed176f0373a0",
+  "summon-s7-ui.json": "170058f7acf44e6bae5d90cc1a0a60c88c3f67e48ccdf10365a9c72371103e29"
+ },
+ "summary": [
+  "Kingmaker Gunslinger runtime test",
+  "Run ID: lc-20261124T050957Z-owner-0.33.0-s7-core-01-ui",
+  "Scenario: disposable-expanded-summoning-sprint32-native-review",
+  "Status: PASS",
+  "Loaded mod: 0.0.195",
+  "Runtime: KingmakerGunslinger, Version=0.0.195.0, Culture=neutral, PublicKeyToken=null",
+  "Started UTC: 2026-11-24T05:10:12.6197621Z",
+  "Ended UTC: 2026-11-24T05:11:33.8057671Z",
+  "Duration ms: 81185"
+ ]
+}

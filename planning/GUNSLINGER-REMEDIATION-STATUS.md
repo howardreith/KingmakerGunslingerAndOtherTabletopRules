@@ -237,19 +237,19 @@ from RISK-01).
 
 ## Sprint 7 (started 2026-11-23; agent-review controller, foreground)
 
-**Current state (2026-11-24): development candidate for review on draft PR #219, review round 2** (record
+**Current state (2026-11-24): development candidate for review on draft PR #219, review round 3** (record
 `docs/GUNSLINGER-SPRINT7-RECORD.md`; enrollment `kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1`; base
 post-release master `35763430ac`, v0.0.195). Nothing is merged or released. Every visual and listening judgment is the
 owner's.
 
 | Story / record | Category | Result | Evidence | Delivery state | Owner decision |
 |---|---|---|---|---|---|
-| S7 T1 / REP-04 | historical incident | Attributed, no product change: a native looping non-cutout dissolve (also on an unsummoned donor) and an old review path that did not tick movement | `f8cefba85d` `gh`/`ghd` PASS (natural cast, controller attribution) | Disposition, draft PR | Accept attribution |
-| S7 T2 / VIS-01 | asset defect | Generator repair: 48 zero-area triangles and inside-out welded membranes removed | `ed88ad994e`; `f8cefba85d` before/after PASS | Implemented, draft PR | Visual acceptance |
-| S7 T3 / VIS-02 | asset defect | Exact-source repair: 16 opposing normal corners to 0 | `d864e7b01f`; `f8cefba85d` before/after PASS | Implemented, draft PR | Visual acceptance |
-| S7 T4 / VIS-03 | presentation | Scoped override: "within twice this creature's speed", no school | `2614ea3bd6`; `f8cefba85d` windows with controls PASS | Implemented, draft PR | Wording; controller mode blocked (no admitted observer) |
-| S7 T5 / VIS-04 | audio | One owned cue per resolved tail hit on the roll's own present target (`Sweetener_Low_06_Quake`, provisional) | `09fbe70ce5` `fx` PASS | Implemented, draft PR | Listening choice |
-| S7 T6 / VIS-05 | presentation | Owned per-instance dust recolour bound to the executing owned Dust breath | `09fbe70ce5` `fx` PASS | Implemented, draft PR | Visual acceptance |
+| S7 T1 / REP-04 | historical incident | Current and released builds: no premature dissolve (native looping non-cutout loop, also on an unsummoned donor); no product change. The October incident itself is not attributed (its writer and frames are unavailable) | harness timeline on v0.0.195 and the candidate; `6f2f16ca88` `gh`/`ghd` PASS | Disposition, draft PR; historical scope open | Accept the current-build disposition |
+| S7 T2 / VIS-01 | asset defect | Generator repair: 48 zero-area triangles and inside-out welded membranes removed | `ed88ad994e`; `6f2f16ca88` natural-appearance before/after PASS | Implemented, draft PR | Visual acceptance |
+| S7 T3 / VIS-02 | asset defect | Exact-source repair: 16 opposing normal corners to 0 | `d864e7b01f`; `6f2f16ca88` natural-appearance before/after PASS | Implemented, draft PR | Visual acceptance |
+| S7 T4 / VIS-03 | presentation | Scoped override: "within twice this creature's speed", no school | `2614ea3bd6`; `6f2f16ca88` windows with controls PASS | Implemented, draft PR; controller mode open (needs a console in-game UI admission) | Wording |
+| S7 T5 / VIS-04 | audio | One owned cue per resolved tail hit on the roll's own in-game target (`Sweetener_Low_06_Quake`, provisional) | `f564cbb844` `fx` PASS | Implemented, draft PR | Listening choice |
+| S7 T6 / VIS-05 | presentation | Owned per-instance dust recolour bound to the executing owned Dust breath | `f564cbb844` `fx` PASS | Implemented, draft PR | Visual acceptance |
 | S7 T7 / VIS-06 | audio decision | Proposed: keep `InspireCourage`; six alternatives sampled | `r6` PASS; cue across an in-process reload PASS | Disposition, draft PR | Listening decision |
 
 ## Sprint 6 (started 2026-11-22; manual review workflow)
