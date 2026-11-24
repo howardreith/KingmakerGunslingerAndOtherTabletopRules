@@ -237,7 +237,7 @@ from RISK-01).
 
 ## Sprint 7 (started 2026-11-23; agent-review controller, foreground)
 
-**Current state (2026-11-24): BLOCKED by the agent-review controller at the review-round cap after round 5 of 5 on `091446a079`.** Round 5 verified 7 findings. R1-F1, R2-F2, R4-F1, R4-F2, R4-F5 and R5-F1 to R5-F6 are open (record status block); continuing needs an owner decision. The owner resumed the round-3 BLOCKED enrollment through owner
+**Current state (2026-11-24): IN REVIEW, round 6 of 7 under owner amendment 2.** The owner extended the review cap from five to seven. Round 6 corrects the eleven findings open after round 5 (matrix in the record, §7). Validation used 38 min 25 s of the 60-minute exception and both authorized candidates, before the controller gates. The owner resumed the round-3 BLOCKED enrollment through owner
 amendment 1 (revision 1, sha256 `59be8e3f…31e0`). The round-3 no-progress stop on `511160dc6e` and every earlier failure
 remain recorded. Draft PR #219; record `docs/GUNSLINGER-SPRINT7-RECORD.md`; enrollment
 `kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1`; base post-release master `35763430ac` (v0.0.195). Nothing is

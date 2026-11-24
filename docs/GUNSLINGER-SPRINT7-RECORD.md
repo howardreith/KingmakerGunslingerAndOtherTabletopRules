@@ -1,38 +1,55 @@
 # Sprint 7 record: presentation and audio remediation (S7 T1–T7)
 
-Status: **BLOCKED (2026-11-24): the agent-review controller stopped the enrollment after review round 5 of 5 on
-`091446a079` ("review-round cap reached for final (5/5); findings are preserved for an owner-authorized extension").
-Nothing is merged or released, and no visual or listening choice has been accepted.** The owner resumed the round-3
-stop through owner amendment 1 (revision 1, sha256 `59be8e3f…31e0`; message sha256 `f4d26be0…a7dd`, stored outside the
-worktree at `<lab>/owner-guidance/S7-OWNER-AMENDMENT-1-2026-11-24.md`). Round limits were not raised, and continuing needs
-an owner decision.
+Status: **IN REVIEW (round 6 of 7, 2026-11-24). Nothing is merged or released, and no visual or listening choice has
+been accepted.** After the controller stopped the enrollment at the round-5 cap, the owner issued owner amendment 2
+(revision 2, sha256 `26409cd8…3ab4`; message sha256 `cc57e9e9…9bb7`, stored outside the worktree at
+`<lab>/owner-guidance/S7-OWNER-AMENDMENT-2-2026-11-24.md`). Applied to the stopped enrollment, it left it BLOCKED at the
+exhausted cap, as the owner expected. The owner's separate extension (`resume --max-rounds 7`) then raised the cap from
+five to seven reviews. Amendment 1 (revision 1, sha256 `59be8e3f…31e0`) and every spent round, finding, failed session and
+candidate identity are kept.
+
+Amendment 2 also records two owner acceptances:
+- the bounded Ghaele scope: the demonstrated released and current interior observations; the released outdoor/bright case
+  stays unexecuted and the October incident unattributed;
+- the verified controller-admission disposition: controller rendering stays unexecuted, not PASS.
 
 Verified by the independent reviewer:
 - rounds 2–3: R1-F2, R1-F4, R1-F6, R1-F7, R1-F8, R1-F10, R1-F11, R1-F12, R1-F13, R1-F14, R2-F1, R2-F3;
 - round 4: R1-F3, R1-F9, R2-F4, R3-F1, R3-F2, R3-F3, R3-F4;
 - round 5: R1-F5, R3-F5, R3-F6, R4-F3, R4-F4, R4-F6, R4-F7.
 
-**Open after round 5** (review: https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/219, round-5
-comment). Six are observer, harness or record issues:
+**Round 6** addresses the eleven findings open after round 5 (matrix in §7). None is a gameplay defect, and no product
+presentation or mechanics changed:
+- two are record reconciliations: R1-F1 and R5-F6;
+- eight concern observers and harnesses: R2-F2, R4-F1, R4-F2 and R5-F1 to R5-F5;
+- R4-F5 is the impact-cue playback and tracking requirement. Round 6 characterizes the missing-callback path (§4.5) and
+  claims the conditional owner disposition of amendment 2 §4 on that evidence. Independent review has not accepted it.
 
-- **R1-F1:** the record's packet description (two current cues and ten alternatives; the Trumpet distance was observed
-  one frame after posting). Corrected below; not re-reviewed.
-- **R2-F2:** a directly nested foreign `RuleRollD20` inside the owned save could take the claim. The intervention should
-  bind to the save's own die.
-- **R4-F1:** the early-exit Dust cast's ledger outcome is not propagated to the effects verdict when the runner unwinds.
-- **R4-F2:** combat teardown still uses unit-wide `LeaveCombat` for participants that were idle at intake.
-- **R4-F5:** a missing survivor end callback is not accounted for in the retirement verdict. The playback owner may need
-  correction. **Carried as an unresolved technical requirement.**
-- **R5-F1:** the Ghaele pending-abandonment case stops watching for a late owned spawn once disposed, and does not
-  re-verify the command and loan after the foreign control.
-- **R5-F2:** an explicit-null body row returns inconclusive before checking for contradictions.
-- **R5-F3:** the Ghaele lighting verdict ignores the capture's `faderVisible`.
-- **R5-F4:** the observer's witness move on the main character is not released.
-- **R5-F5:** a combat target can be destroyed twice on abandonment.
-- **R5-F6:** the effects count and retirement tally in the record. Corrected below; not re-reviewed.
+**Validation exception (owner amendment 2 §7).** For rounds 6 and 7 together, the owner authorized up to 60 minutes of
+cumulative validation-command time (a one-off exception to the 30-minute ceiling; `VALIDATION-POLICY.md` is unchanged) and
+at most two new product candidates.
 
-None of the open findings changes product presentation or mechanics. R4-F5 concerns the impact-cue playback owner's
-handling of a missing callback.
+Spent in round 6 (wall clock, failed attempts included):
+
+| # | Command | Result | Time |
+|---|---|---|---|
+| 1 | Focused gate `sprint7-visual` (uncommitted) | FAIL: a test field never assigned (compile) | 18 s |
+| 2 | Focused gate `sprint7-visual` | PASS, 20 tests | 4 s |
+| 3 | Harness build | FAIL: a local name shadowed the new field (compile) | 2 s |
+| 4 | Harness build (`f3bfab1303`) | PASS, `9240a3d6…` | 2 s |
+| 5 | Build-Local candidate 1 (`f3bfab1303`) | PASS | 7 min 23 s |
+| 6 | Session `20261124T200320Z-…-s7-fx` | FAIL, retained (observer) | 8 min 12 s |
+| 7 | Session `20261124T201133Z-…-s7-trumpet-reload` | PASS | 2 min 1 s |
+| 8 | Session `20261124T201333Z-…-s7-ghaele` | PASS | 4 min 11 s |
+| 9 | Focused gate `sprint7-visual` | PASS | 17 s |
+| 10 | Build-Local candidate 2 (`740d94a995`) | PASS | 7 min 15 s |
+| 11 | Session `20261124T202648Z-…-s7-fx` | FAIL, retained (observer) | 8 min 16 s |
+| 12 | Focused gate `sprint7-visual` | PASS | 24 s |
+
+Total before the controller's required gates: 38 min 25 s; both authorized candidates are used. Restoration was never
+interrupted: every session completed its transaction and verified the owner files. Each game window was agreed with the
+other Kingmaker session on this machine and handed back at 20:35Z.
+
 - Draft PR #219; one agent-review enrollment (`kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1`, foreground,
   single plan); branch `codex/s7-visual-audio-remediation`.
 - Mission: `docs/missions/sprint7/SPRINT7-AUTONOMOUS-MISSION.md` (verbatim, sha256 `c232f135…f56f0`), plus owner amendment 1.
@@ -80,13 +97,33 @@ handling of a missing callback.
 
 ## 3. Candidates, sessions and identities
 
+**Round 6.** No product change: only `RuntimeTesting/`, the harness, the tests and the sessions changed. Product code
+outside `RuntimeTesting/` is identical from the round-5 head `091446a079` to the round-6 head.
+- **Harness:** `9240a3d633a801c86775eb678d7be2818190e7f10cb9b5e39e8485f62cdb08a0`, built from `f3bfab1303`.
+- **Counts:** each effects extract has 34 structured checks. The runs also emit a plain-text native-profile restoration
+  line, which is not counted.
+
+| Candidate | Package / DLL SHA-256 | Session | Result |
+|---|---|---|---|
+| `f3bfab1303` | `a6ac5d79f2d794ea5f9707c003885160c0392b0f6f1036b49e806de3a59d0017` / `270f7aa4d897274808c4523e654a0c468f354cac37c250f60a30eefc7975c355` | `20261124T200320Z-…-s7-fx` (fx, r6) | FAIL, retained (observer). `s7-anky-callback-loss-characterized` latched the other source's cue once seen; it had ended before the survivor's cue posted ("not-both-playing"). The other 33 structured checks and r6 16/16 pass. |
+| `f3bfab1303` | as above | **`20261124T201133Z-…-s7-trumpet-reload`** | **PASS** |
+| `f3bfab1303` | as above | **`20261124T201333Z-…-s7-ghaele`** | **PASS** |
+| `740d94a995` | `e0eda5b9ee7bde2b6c6bacb5f6167dc531cc0c470091182665fc5b8b0c55b7a7` / `f145ed84917be449c1ca994b838644f0a270d262a69553dc15f786535c9a36cb` | `20261124T202648Z-…-s7-fx` (fx, r6) | FAIL, retained (observer). Both cues were confirmed playing, but the predicate read the other source's stop in the retirement frame, before the product requests it in that view's destroy callback ("other-not-stopped-by-own-id"). The other 33 structured checks and r6 16/16 pass. The offline re-evaluation of this run's own records is in §4.5. |
+
+What the final head changes after these runs:
+- `c9c4c33154` makes the in-run predicate read the other source's retirement once settled (`RetiredByOwnId`), as the
+  normal-callback control does.
+- That observer change is **not natively exercised**: both authorized candidates are used.
+- The Trumpet and Ghaele sessions ran on candidate 1. Candidate 2 changed only the callback-loss observer, which they do
+  not use.
+
 **Round 5.** No product change: only `RuntimeTesting/` (`ac96bab4c2`), the harness (`ac96bab4c2`, `c151cdfdc5`), the
 tests and the sessions changed. Product code outside `RuntimeTesting/` is identical from `1ac4324617` to the round-5
 head.
 
 | Candidate | Package / DLL SHA-256 | Harness | Session | Result |
 |---|---|---|---|---|
-| **`ac96bab4c2`** | `1bca116c5c0a0a47cc3a29ae88fb87b2b564d8b5f7c9af03c165a74faf1e851d` / `f8fd7251925fe3a5ad5c90ac2de37373e6b74d6f67f5090cba9f88d962423545` | n/a | **`20261124T180635Z-…-s7-fx`** (fx, r6) | **PASS 2/2** (fx: 34 native assertions, the 33 structured checks in the extract plus the plain-text native-profile restoration line, all passing; r6 16/16), 7 min 58 s |
+| **`ac96bab4c2`** | `1bca116c5c0a0a47cc3a29ae88fb87b2b564d8b5f7c9af03c165a74faf1e851d` / `f8fd7251925fe3a5ad5c90ac2de37373e6b74d6f67f5090cba9f88d962423545` | n/a | **`20261124T180635Z-…-s7-fx`** (fx, r6) | **PASS 2/2** (fx: 33 structured checks in the extract, all passing; the plain-text native-profile restoration line is not counted; r6 16/16), 7 min 58 s |
 | `ac96bab4c2` | as above | `5d39a60b…` | `20261124T181432Z-…-s7-trumpet-reload` | FAIL, retained (observer): the probe's own nested foreign save inherited the blast's rule context and was treated as owned, which also shifted the following draw. 1 min 37 s |
 | released v0.0.195 / `ac96bab4c2` | `456d504d…` / `1bca116c…` | `5d39a60b…` | `20261124T181609Z`, `20261124T182018Z` `-s7-ghaele` | FAIL, retained (observer): everything held, but the target's destruction was read in the same call as `Destroy()`. 4 min 9 s each |
 | `ac96bab4c2` | as above | **`5d2350f83f965bfba45c87f64c06a64f70631a63ce72c1507f8166a6d6bba545`** | **`20261124T182558Z-…-s7-trumpet-reload`** | **PASS**, 1 min 59 s |
@@ -399,8 +436,49 @@ wait. In this run both cues were playing at retirement (event 4293635115), and b
 released by the end; the failure did not reproduce. The check passed in `…154136Z` and `…161344Z` (before the failure) and in
 `…170720Z` and `…180635Z` (after it); round 2 retained a separate run that lost both end callbacks.
 
-This concurrent outcome is **carried as an unresolved technical requirement** in the outcome table. Both existing verdicts
-are kept.
+Round 5 carried this concurrent outcome as an unresolved technical requirement; both existing verdicts are kept.
+
+**Round 6: the normal-callback control.** The concurrent retirement's verdict now includes the per-ID trace. It goes
+through the installed query (`GetEventIDFromPlayingID`), which distinguishes confirmed playing, confirmed inactive, and
+unknown (engine not initialized, query failed, or no playing ID). Unknown is never completion. The check requires:
+- both IDs confirmed playing before retirement;
+- no stop attempt on the survivor;
+- the survivor's own end-of-event callback;
+- two frames later, the survivor confirmed inactive and no longer tracked;
+- the retired ID confirmed inactive.
+
+The check passed in `…200320Z` and `…202648Z`.
+
+**Round 6: bounded characterization (synthetic callback loss; R4-F5).**
+- **Method.** Two fresh Ankylosaurus sources post overlapping cues. The observer's prefix on the product's callback
+  receiver (`SummonAbilityCastCueRuntime.OnEnded`) withholds the end-of-event callback for one exact survivor record from
+  the product; every other record's callback passes through. Native playback is untouched and read separately.
+- **Declared beforehand:** a 16 s overlap search, a 12 s observation window after the other source retires, and a 6 s
+  disposal wait.
+- **`…202648Z` (candidate `740d94a995`), from its retained records:**
+  - before retirement, survivor 656 (posted 20:29:00.197) and other 684 (posted 02.314) were both confirmed playing;
+  - the other source was retired at 02.326; the product requested a stop for 684 alone at 02.330 (view-destroyed), and 684
+    ended natively at 02.379;
+  - 656's callback arrived at the withholding prefix at 02.395, 2.2 s after it posted, its natural length, and was
+    withheld. The native query confirmed 656 inactive from 02.833 through the window end;
+  - the product recorded no end and kept tracking 656 on its own source's playback component. That is the only residual;
+  - retiring the survivor's source at 14.334 made the product request a stop for the already inactive 656
+    (view-destroyed, 14.339). A request on an inactive playing ID is not completion, and `EndUtc` stays unset;
+  - the source's view and playback component were then observed destroyed;
+  - no other cue record changed, and the observer's hook was removed.
+- **The in-run verdict, "other-not-stopped-by-own-id", is retained as recorded.** It read 684's stop in the retirement
+  frame, before the product's destroy callback ran.
+- **Offline re-evaluation of the same records** (labelled as such; domain case `sprint7-visual.impact-cue-playback-verdicts`):
+  - the settled predicate (`RetiredByOwnId` over the end-of-phase record of 684) and `CallbackLossVerdict` give
+    "characterized" for `…202648Z`;
+  - the same reader keeps `…200320Z` at "not-both-playing". That run's survivor 599 also played out naturally (callback
+    withheld 37.54, confirmed inactive 38.01), but its other cue had already ended.
+- **Disposition claimed (amendment 2 §4; for independent review).** Under synthetic callback loss:
+  - playback ended normally;
+  - the other source was unaffected;
+  - the only residual was source-local tracking, which disappeared when that source's view and component were destroyed.
+  No product change and no watchdog. The historical `…164749Z` failure and its unknown cause are kept: the
+  characterization does not explain why that callback was missing, only how the product behaves when one is.
 
 **Private listening packet (R1-F1, owner amendment 1).**
 - **Location (round 5):** `C:\Dev\KingmakerGunslingerLab\private\s7-listening-packet-r5\` and
@@ -516,7 +594,21 @@ R6 (`…170720Z`):
 Reload (`…162605Z`, R2-F2, R3-F2):
 - **Reload.** The saved cue (ID 159) ended natively and naturally. Nothing was posted after the load, and the fresh blast
   posted one new cue (ID 323).
-- **Round 5 (R2-F2; `…182558Z`).** The shared generator is no longer touched.
+- **Round 6 (R2-F2; `…201133Z`, candidate `f3bfab1303`, harness `9240a3d6…`). No die is forced.**
+  - **Why some intervention stays.** The blast's native outcome would paralyze non-archons in range, the fixture party
+    included, and the condition would be carried into the save the reload takes.
+  - **The intervention.** Only the observed blast's own top-level save is marked passed, through its own `AutoPass`
+    field. No d20 rule is pre-rolled and no generator draw is touched; `OwnedD20Claim` and the d20 handler are removed.
+  - **Decisive interval.** Inside the first owned save, before its native roll, a foreign `RuleRollD20` for the main
+    character was dispatched directly. It rolled 8, equal to the untreated generator copy's 8, and was not pre-rolled. The
+    owned save then rolled its own natural 17 (control 17) and passed through `AutoPass` alone. The following draw equalled
+    the control.
+  - **Other saves.** All 49 owned saves passed with natural dice (1 to 20). The pending-command interleave was untouched
+    (d20 15 = 15, not marked).
+  - **Reload and abandonment.** The reload held: saved cue 160 ended naturally, nothing replayed, and the fresh blast
+    posted 324. The abandonment check found nothing held, the Trumpet destroyed with a single destruction request, and no
+    release failure.
+- **Round 5 (R2-F2; `…182558Z`, superseded).** The shared generator is no longer touched.
   - A blast save is a top-level save (no other saving throw below it on the rule stack) whose reason context is the
     observed blast's execution and whose saver is not the Trumpet.
   - Its own d20 rule (the d20 whose previous event on the rule stack is that save) is pre-rolled to 20 through the native
@@ -547,8 +639,16 @@ Reload (`…162605Z`, R2-F2, R3-F2):
 
 ## 5. Validation
 
-Focused domain tests, `sprint7-visual.*` (18 cases; round 5 adds `ghaele-lighting-and-loan` and
-`probe-final-releases-per-item`, and replaces `trumpet-owned-roll` with `trumpet-owned-d20`):
+Focused domain tests, `sprint7-visual.*`: 20 cases. Round 6 changes:
+- replaces `trumpet-owned-d20` with `trumpet-owned-save`;
+- adds `probe-slot-destroys-each-unit-once`, which runs the real ProbeSlot → Release → iterator finally → remaining
+  resources sequence with deferred destruction;
+- adds `impact-cue-playback-verdicts`, which includes the offline re-evaluation of the retained round-6 records;
+- extends `ghaele-attribution` and `ghaele-lighting-and-loan` with the R5-F2/R5-F3 negatives, the pending and combat
+  verdicts, and the re-evaluation of the complete retained `…182757Z` and `…183206Z` datasets.
+
+Round 5 had 18 cases: it added `ghaele-lighting-and-loan` and `probe-final-releases-per-item`, and replaced
+`trumpet-owned-roll` with `trumpet-owned-d20`. The suite covers:
 - VIS-01/VIS-02 decoded exports;
 - VIS-03 identities and text;
 - VIS-04 qualification;
@@ -566,14 +666,37 @@ records the required gate receipts on the reviewed head.
 
 ## 6. Owner decisions pending and open scopes
 
-1. T1: accept the bounded current-build disposition. The released outdoor/bright case has no admitted route; the
-   October incident remains unattributed.
+1. T1: the bounded scope is accepted by owner amendment 2 (released/current interior observations). The released
+   outdoor/bright case stays unexecuted and the October incident unattributed.
 2. T2, T3, T6: visual acceptance of the Nalfeshnee wing roots, the Salamander waist and fingers, and the dust cone.
-3. T4: controller mode stays unexecuted (§4.4); it would need a new admission, which this continuation does not create.
+3. T4: the controller-admission disposition is accepted by owner amendment 2. Controller rendering stays unexecuted,
+   not PASS (§4.4).
 4. T5, T7: listen with the private packet and choose; both cues stay provisional until then.
-5. Merge and release remain the owner's; this sprint authorizes neither.
+5. T5 / R4-F5: the conditional disposition of amendment 2 §4 is claimed on the round-6 characterization (§4.5). Its
+   in-run predicate failed on an observer timing defect and is accepted only through the offline re-evaluation of the
+   same retained records, subject to independent review.
+6. Merge and release remain the owner's; this sprint authorizes neither.
 
 ## 7. Review findings and corrections
+
+Round-6 correction matrix (the eleven findings open after round 5; owner amendment 2). All candidate sessions listed are in
+`docs/evidence/sprint7/r6/`.
+
+| Finding | Exact trigger | Owning code | Correction or disposition | Decisive check | Evidence |
+|---|---|---|---|---|---|
+| R1-F1 (record) | Trumpet distance and isolated-clip counts traced to the packet | this record | Twelve isolated clips: the two current-cue samples and ten alternatives (four impact, six Trumpet). Trumpet 397 posted in frame 4975 and its 37.09 m was observed in frame 4976, labelled so everywhere. The packet MANIFEST's role field groups all twelve isolated samples as "alternative"; each label names the current-cue samples. No new recording | Record against `<lab>/private/s7-listening-packet-r5/MANIFEST.json` and `audio-context-r4.json` | packet unchanged (`2b5f4610…2565`) |
+| R5-F6 (record) | Recount of the effects predicates and concurrent-retirement runs | this record, `KNOWN-ISSUES.md` | 33 structured checks for `…180635Z` (the plain-text profile line is not counted). Concurrent retirement passed in four of five round-4/5 runs: `…154136Z` and `…161344Z` before the `…164749Z` failure, `…170720Z` and `…180635Z` after it. The stale "Six are observer…" introduction is replaced | Extract MANIFEST counts | `docs/evidence/sprint7/r4/`, `r5/` |
+| R2-F2 | A foreign `RuleRollD20` dispatched directly inside the owned save before its native roll | `TrumpetCueProbes.cs`, `TrumpetSaveOwnership` | Claim machinery and pre-roll removed. The blast's own top-level save passes through `AutoPass`, and its die rolls natively. The intervention stays because paralysis would otherwise enter the reload's save | Native: foreign d20 8 = control 8 (not pre-rolled); owned die 17 = control 17; following draw = control. Domain `trumpet-owned-save` | `…201133Z` |
+| R4-F1 | Enclosing runner disposed while the early-exit cast is active | `S7DustEarlyExit`, `S7DustCastOwningConditions`, `S7DustConditions`, `S7DustRestored`, `S7DustAbandoned`, effects runner | One acquisition tree: the early cast uses the cell's ledger and writes its failures into the cell's list. Still-live executions are reported. The restoration verdict names every reason. Later cells do not run on lost isolation | Native: runner disposed inside the early cast after it applied Sickened, with one owned removal made to fail. The verdict failed naming it; the foreign condition was kept; the other releases ran; the observer repaired its leftover | `…200320Z`, `…202648Z` (`s7-dust-abandoned-unwound`, `s7-dust-early-exit-released`) |
+| R4-F2 | A second engagement acquired after clean intake | `GhaeleLifetimeProbes.cs` (`Observe`), `GhaeleCombat` | `LeaveCombat` removed. Only owned attacks and the target are released (single destruction request). An independent engagement control is preserved; unowned engagements are reported, never cleared; native exit is required | Native: control preserved in combat through teardown, no unowned engagement, native combat exit 3.04 s after the control's release. Domain combat verdict | `…201333Z` |
+| R4-F5 (requirement) | Survivor callback missing while the other source retires | product cue tracking (unchanged); `S7Ankylosaurus`, `S7CallbackLoss`, `Sprint7ObserverPolicy` | Per-ID playback and tracking in the verdict. Synthetic callback-loss characterization; conditional owner disposition (amendment 2 §4) claimed; no product change | Normal control PASS ×2. Characterization in-run FAIL (`…202648Z`, observer timing) retained. Offline re-evaluation of its records: characterized. `…200320Z` stays not established | §4.5; domain `impact-cue-playback-verdicts` |
+| R5-F1 | Owned summon appearing after the pending cast was disposed | `GhaeleLifetimeProbes.cs` (`Lifecycle`), `SummonWitness`, `GhaelePending` | Foreign summon prepared first. Exact command and loan verified just before disposal. A separate execution-correlated witness runs through the 6 s window. A real owned spawn is the negative control | Native: pending true, loan held (CL20, cast's own grant), witness saw no owned or unattributed summon, foreign kept, witness unsubscribed. Negative control: "late-owned-summon" | `…201333Z` |
+| R5-F2 | Null body plus a contradictory animation | `GhaeleAttribution.Classify` | Contradictions evaluated before body credit | Domain: five positive rows plus a null-body cutout or unknown row do not attribute. Six retained datasets re-evaluated, all 11/11 positive | `ghaele-attribution` |
+| R5-F3 | Lit, enabled renderer while the unit's fader reports it hidden | `GhaeleLighting.Valid` | `faderVisible=true` required; "fader-hidden" and "fader-unavailable" reasons | Domain negatives. Retained `…182757Z`/`…183206Z` rows re-evaluated valid; native `…201333Z` rows valid | `ghaele-lighting-and-loan` |
+| R5-F4 | Timeline abandoned after the witness readback | `Observe` (witness move) | Witness owned separately, registered before it is issued, settled right after its readback or on abandonment | Native: held through teardown, then settled. Domain combat verdict ("witness-not-settled") | `…201333Z` |
+| R5-F5 | Slot release with combat active: target held by both the cleanup and the final collection | `OwnedDisposables`, `YieldedProbeLifecycle.Release` (final releases built after the iterator), both probes | One destruction-request owner per unit; final releases only for units never requested | Domain `probe-slot-destroys-each-unit-once` through `ProbeSlot` with deferred destruction: one request per target, the failure retained, the others attempted | domain; `…201133Z` abandonment |
+
+Retained round-6 failures (observer): `…200320Z` and `…202648Z`, both on `s7-anky-callback-loss-characterized`.
 
 Round-5 review outcome: seven verified (R1-F5, R3-F5, R3-F6, R4-F3, R4-F4, R4-F6, R4-F7); R1-F1, R2-F2, R4-F1, R4-F2 and
 R4-F5 still open; R5-F1 to R5-F6 raised; the controller stopped at the round cap (status above).

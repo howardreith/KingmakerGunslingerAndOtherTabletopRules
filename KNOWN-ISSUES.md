@@ -12,8 +12,13 @@
     directly controllable units.
   - The Ankylosaurus impact cue and the Trumpet Archon blast cue are provisional choices pending the owner's listening.
     In one native run a surviving impact cue's end-of-event callback did not arrive (cause unknown). The check passed in
-    the two runs before it and the two after it, the last with a native playback readback. The product keeps such a cue tracked until its own source
-    retires, which then stops it by playing ID. This is carried as an unresolved technical requirement.
+    the two runs before it and the two after it, the last with a native playback readback.
+    - Round 6 withheld that callback synthetically from the product. The sound still ended normally and no other source
+      was affected.
+    - The product kept the cue tracked on its own source until that source was destroyed; the tracking went with it, and
+      the source's own retirement requested a stop for the already ended playing ID.
+    - This development limitation is documented under the owner's conditional disposition and is subject to independent
+      review.
   - The Dust Mephit's breath is a recoloured native cold cone, not a separately authored dust effect. Repeated breaths
     from one spot each show their cone (the game skips a cone only for a second launch from the same point within one
     frame).
