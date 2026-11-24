@@ -1,0 +1,14 @@
+{
+  "project": "kingmaker-gunslinger",
+  "problems": [],
+  "repo_root": "<repo>",
+  "origin": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules.git",
+  "actor": "howardreith",
+  "default_branch": "master",
+  "permission": "ADMIN",
+  "branch_pattern": "^codex/[a-z0-9][a-z0-9._/-]*$",
+  "push": "repository wrapper",
+  "gates": [
+    "focused"
+  ]
+}

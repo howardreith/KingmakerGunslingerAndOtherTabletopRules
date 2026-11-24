@@ -1,0 +1,41 @@
+{
+ "schema": "kmg.published-release-loader-verification.v1",
+ "recorded_at_utc": "2026-11-24T03:05:00Z",
+ "method": "gh release download <tag> -p '*.zip'; SHA-256 of the download compared with the GitHub asset digest; the package extracted; Info.json ManagerVersion read; the packaged KingmakerGunslinger.dll loaded reflection-only (Windows PowerShell 5.1) and its AssemblyRef table read for UnityModManager/Harmony names; DLLs counted; INSTALLATION-COMPATIBILITY.md searched for 0.31.1.",
+ "releases": [
+  {
+   "tag": "v0.0.188",
+   "tag_commit": "097e522f9fa0a8fdc8a773fb51fc3cfbf91d115c",
+   "published_at": "2026-11-14T03:17:52Z",
+   "asset": "KingmakerGunslinger-0.0.188-umm-0311-minimum.zip",
+   "asset_digest_github": "sha256:64d83955478c3824c5fee485f4189b7d0be1141938a89e70e4cdab037461d412",
+   "downloaded_sha256": "64d83955478c3824c5fee485f4189b7d0be1141938a89e70e4cdab037461d412",
+   "info_json_manager_version": "0.31.1",
+   "dll_sha256": "0eb2f0027f1b8639cb8988f24fffda263cf92bfdadd180f40b1aebe79019b151",
+   "dll_mvid": "e4454979-fb41-4a66-bc2e-ced5184097c4",
+   "dll_loader_references": [
+    "UnityModManager 0.31.1.0",
+    "0Harmony12 1.2.0.1"
+   ],
+   "dll_count_in_package": 1,
+   "bundled_installation_doc_states_0_31_1": true
+  },
+  {
+   "tag": "v0.0.195",
+   "tag_commit": "ef0e1fe15d59fc6f04ef4956337690f14de3c528",
+   "published_at": "2026-11-23T22:42:12Z",
+   "asset": "KingmakerGunslinger-0.0.195-gunslinger-remediation-sprint6.zip",
+   "asset_digest_github": "sha256:456d504ddde0ad3d0bb41a7dc141848a99feeee83d9665db9eeadcd95c359444",
+   "downloaded_sha256": "456d504ddde0ad3d0bb41a7dc141848a99feeee83d9665db9eeadcd95c359444",
+   "info_json_manager_version": "0.31.1",
+   "dll_sha256": "3ef052ea441af368381b1cea7d2ee7acaa813000986de8644430ff63ee1d6a6b",
+   "dll_mvid": "d06352f9-efe2-4f75-bbf7-72da04a4b793",
+   "dll_loader_references": [
+    "UnityModManager 0.31.1.0",
+    "0Harmony12 1.2.0.1"
+   ],
+   "dll_count_in_package": 1,
+   "bundled_installation_doc_states_0_31_1": true
+  }
+ ]
+}
