@@ -502,7 +502,7 @@ namespace KmgLoaderCompatHarness
                         combat["mainIndependentAfter"] = new JObject { ["held"] = main.Commands.Contains(independent), ["finished"] = independent.IsFinished,
                             ["result"] = independent.IsFinished ? independent.Result.ToString() : null };
                         combat["ownedAttacks"] = attacks.Count; combat["ownedAttacksLeft"] = attacks.Count(value => !value.IsFinished && ghaele.Commands.Contains(value));
-                        combat["targetDestroyed"] = hostile.Destroyed;
+
                     }
                 }
                 yield return null;
@@ -515,6 +515,8 @@ namespace KmgLoaderCompatHarness
                 ["maxBodyDissolveCutoutInLife"] = maxCutout, ["maxBodyDissolveInLife"] = maxDissolve, ["moveTravel"] = Math.Round(travel, 2),
                 ["attribution"] = attribution, ["autoPausesCleared"] = autoPauses };
             combat["attackRollCount"] = attackRolls.Count;
+            // Unit destruction completes after the call; read once the observation has run on.
+            combat["targetDestroyed"] = hostile == null ? (bool?)null : hostile.Destroyed || !Game.Instance.State.Units.Contains(hostile);
             if (appearedAt < 0) life.Problems.Add("the appearance did not complete");
             if (maxCutout < 0 || maxCutout > .02) life.Problems.Add("the body showed a cutout dissolve in life: " + maxCutout);
             if (removedAt < 0 || lifetimeEnd < 0 || removedAt < lifetimeEnd - 1 || removedAt > lifetimeEnd + 15) life.Problems.Add("the summon was not removed at its native expiry");
@@ -523,7 +525,7 @@ namespace KmgLoaderCompatHarness
             if (attackRolls.Count < 1) life.Problems.Add("no ordinary combat was observed: " + (combat["unavailable"] ?? "no attack roll"));
             JToken independentAfter = combat["mainIndependentAfter"];
             if (independentAfter == null || !((bool)independentAfter["held"] || ((bool)independentAfter["finished"] && (string)independentAfter["result"] != "Interrupt")) ||
-                (int)combat["ownedAttacksLeft"] != 0 || !(bool)combat["targetDestroyed"])
+                (int)combat["ownedAttacksLeft"] != 0 || combat["targetDestroyed"] == null || combat["targetDestroyed"].Type == JTokenType.Null || !(bool)combat["targetDestroyed"])
                 life.Problems.Add("the combat teardown did not release exactly the observation's own activity");
             // R4-F6: each lighting observation is judged on its own readbacks.
             foreach (JObject row in lighting.OfType<JObject>())

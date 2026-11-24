@@ -171,6 +171,15 @@ namespace KmgLoaderCompatHarness
         }
 
         internal void Abandon() { open.Clear(); claimed.Clear(); }
+
+        /// <summary>
+        /// A blast save is one the blast's own action triggers: no other saving throw is below it on the rule stack. A
+        /// save dispatched from inside another save's callbacks inherits the blast's rule context but is not the blast's.
+        /// </summary>
+        internal static bool TopLevelSave(IEnumerable<object> ruleStack, object save, Func<object, bool> isSave)
+        {
+            return save != null && !(ruleStack ?? Enumerable.Empty<object>()).Any(rule => rule != null && !ReferenceEquals(rule, save) && isSave(rule));
+        }
     }
 
     /// <summary>

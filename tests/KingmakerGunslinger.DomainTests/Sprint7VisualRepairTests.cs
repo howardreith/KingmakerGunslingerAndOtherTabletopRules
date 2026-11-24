@@ -765,6 +765,11 @@ namespace KingmakerGunslinger.DomainTests
             claim.Begin(ownedSave);
             claim.Abandon();
             Assertions.True(!claim.Open && !claim.Claim(ownedSave), "Abandonment closes the intervention.");
+            // A save dispatched inside another save's callbacks inherits the blast's rule context but is not the blast's.
+            Func<object, bool> isSave = rule => rule is string && ((string)rule).StartsWith("save", StringComparison.Ordinal);
+            object blastSave = "save-blast", nestedSave = "save-nested", ability = "ability-rule";
+            Assertions.True(KmgLoaderCompatHarness.OwnedD20Claim.TopLevelSave(new[] { ability, blastSave }, blastSave, isSave), "The blast's own save is top level.");
+            Assertions.False(KmgLoaderCompatHarness.OwnedD20Claim.TopLevelSave(new[] { ability, blastSave, nestedSave }, nestedSave, isSave), "A save nested inside the blast save is not the blast's.");
         }
 
         private static JObject Anim(bool started, bool delayed, double delay, double lifetime, bool loop, bool cutout, double current)

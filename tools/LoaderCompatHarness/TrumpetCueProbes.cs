@@ -112,7 +112,9 @@ namespace KmgLoaderCompatHarness
             if (command == null || evt == null || evt.Initiator == null || ReferenceEquals(evt.Initiator, trumpet) || PreRolled == null) return false;
             AbilityExecutionContext execution = command.ExecutionProcess == null ? null : command.ExecutionProcess.Context;
             Kingmaker.UnitLogic.Mechanics.MechanicsContext context = evt.Reason == null ? null : evt.Reason.Context;
-            return execution != null && context != null && (ReferenceEquals(context, execution) || ReferenceEquals(context.SourceAbilityContext, execution));
+            RulebookEventContext rules = Rulebook.CurrentContext;
+            return execution != null && context != null && (ReferenceEquals(context, execution) || ReferenceEquals(context.SourceAbilityContext, execution)) &&
+                OwnedD20Claim.TopLevelSave(rules == null ? null : rules.EventStack.Cast<object>(), evt, rule => rule is RuleSavingThrow);
         }
 
         public void OnEventAboutToTrigger(RuleSavingThrow evt)
