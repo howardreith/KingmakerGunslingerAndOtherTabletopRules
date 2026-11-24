@@ -47,6 +47,42 @@ namespace KingmakerGunslinger.RuntimeTesting
             return (present ?? Enumerable.Empty<T>()).Where(value => value != null && mine.Any(own => ReferenceEquals(own, value))).ToList();
         }
 
+        /// <summary>
+        /// A held observer resource is released only when every release ran
+        /// without failure and none of the observer's own hooks remains.
+        /// </summary>
+        internal static bool Released(ICollection<string> failures, int remainingOwned)
+        {
+            return (failures == null || failures.Count == 0) && remainingOwned == 0;
+        }
+
+        /// <summary>
+        /// R1-F3: a gameplay-distance party capture counts only when the shared
+        /// helper wrote an image (png named, not &lt;none&gt;), the unit was in frame,
+        /// the screen was lit with the native fade cleared, the helper's renderer
+        /// is enabled and carries the expected body mesh, and the body is intact.
+        /// </summary>
+        internal static bool PartyCaptureValid(string readback, string expectedMesh, out string reason)
+        {
+            var fields = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (string part in (readback ?? string.Empty).Split(';'))
+            {
+                int equals = part.IndexOf('=');
+                if (equals > 0 && !fields.ContainsKey(part.Substring(0, equals))) fields[part.Substring(0, equals)] = part.Substring(equals + 1);
+            }
+            Func<string, string> field = name => fields.ContainsKey(name) ? fields[name] : null;
+            double fade;
+            if (field("png") == null || field("png") == "<none>") reason = "no-image" + (field("reason") == null ? string.Empty : ":" + field("reason"));
+            else if (field("inFrame") != "true") reason = "out-of-frame";
+            else if (field("screenLit") != "true") reason = "unlit";
+            else if (!double.TryParse(field("screenFade"), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out fade) || fade > .05) reason = "screen-fade";
+            else if (field("rendererEnabled") != "true") reason = "renderer-disabled";
+            else if (string.IsNullOrEmpty(expectedMesh) || field("mesh") != expectedMesh) reason = "wrong-body";
+            else if (field("intact") != "true") reason = "dissolved";
+            else reason = null;
+            return reason == null;
+        }
+
         /// <summary>Runs every release; a release that throws is recorded and the rest still run.</summary>
         internal static List<string> RunReleases(IEnumerable<KeyValuePair<string, Action>> releases)
         {
@@ -69,4 +105,53 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (original == null ? "unknown" : original.GetType().Name + ": " + original.Message), original);
         }
     }
+    /// <summary>
+    /// R3-F3: the conditions a cell's own executions introduced. Instances
+    /// already present when the cell began are never acquired; an instance is
+    /// acquired when it is seen with an owned origin (for Dust: a Dust breath
+    /// execution by one of the cell's own Dust units), however its cast ended,
+    /// and release removes exactly the acquired instances still present.
+    /// </summary>
+    internal sealed class AcquisitionLedger<T> where T : class
+    {
+        private readonly List<T> _preexisting;
+        internal readonly List<T> Acquired = new List<T>();
+
+        internal AcquisitionLedger(IEnumerable<T> present)
+        {
+            _preexisting = new List<T>(present ?? Enumerable.Empty<T>());
+        }
+
+        private bool Contains(List<T> list, T value) { return list.Any(item => ReferenceEquals(item, value)); }
+
+        /// <summary>Acquires every present instance with an owned origin that was not there at the start; returns how many were new.</summary>
+        internal int Observe(IEnumerable<T> present, Func<T, bool> ownedOrigin)
+        {
+            int added = 0;
+            foreach (T value in (present ?? Enumerable.Empty<T>()).ToList())
+                if (value != null && !Contains(_preexisting, value) && !Contains(Acquired, value) && ownedOrigin(value)) { Acquired.Add(value); added++; }
+            return added;
+        }
+
+        /// <summary>Observes once more, then removes each acquired instance still present; every removal is attempted.</summary>
+        internal List<string> Release(IEnumerable<T> present, Func<T, bool> ownedOrigin, Action<T> remove)
+        {
+            List<T> now = (present ?? Enumerable.Empty<T>()).ToList();
+            Observe(now, ownedOrigin);
+            var failures = new List<string>();
+            foreach (T value in now.Where(item => item != null && Contains(Acquired, item)))
+            {
+                try { remove(value); }
+                catch (Exception error) { failures.Add(error.GetType().Name + ": " + error.Message); }
+            }
+            return failures;
+        }
+
+        /// <summary>Present instances with an owned origin that were not there at the start.</summary>
+        internal int Remaining(IEnumerable<T> present, Func<T, bool> ownedOrigin)
+        {
+            return (present ?? Enumerable.Empty<T>()).Count(value => value != null && !Contains(_preexisting, value) && ownedOrigin(value));
+        }
+    }
+
 }

@@ -1,6 +1,6 @@
 {
   "name": "s7-fx",
-  "description": "Sprint 7 bounded selection on the final Dust presentation candidate: the effects phase (Ankylosaurus impact cue, Dust Mephit breath, listening samples) and the R6 Trumpet Archon/Vrock cue checks on the shared cue helper. The other Sprint 7 phases ran on the preceding candidate, whose product code differs only in the Dust presentation. No other mods.",
+  "description": "Sprint 7 review round 4 selection: the effects phase (Ankylosaurus impact cue with event-time listener distance; Dust Mephit breath with the call-site bound tint, the nested interrupted-creation case (R1-F9), the cell condition ledger and early exit (R3-F3) and the trace release verdict (R3-F4); listening samples) and the R6 Trumpet Archon/Vrock cue checks on the shared cue helper. Run with loopback audio capture. No other mods.",
   "ownerMods": [],
   "fixtureSaves": [],
   "launches": [

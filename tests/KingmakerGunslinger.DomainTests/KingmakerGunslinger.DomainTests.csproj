@@ -608,6 +608,7 @@
     <Compile Include="SummoningPublicationBoundaryTests.cs" />
     <Compile Include="..\..\tools\LoaderCompatHarness\ProbeLifecycle.cs"><Link>LoaderCompatHarness\ProbeLifecycle.cs</Link></Compile>
     <Compile Include="..\..\tools\LoaderCompatHarness\TrumpetCueVerdict.cs"><Link>LoaderCompatHarness\TrumpetCueVerdict.cs</Link></Compile>
+    <Compile Include="..\..\tools\LoaderCompatHarness\GhaeleAttribution.cs"><Link>LoaderCompatHarness\GhaeleAttribution.cs</Link></Compile>
     <Compile Include="WeaponFindabilityTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\HeirloomNodachiIconObservation.cs"><Link>RuntimeTesting\HeirloomNodachiIconObservation.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\WeaponFindabilitySaveContract.cs"><Link>RuntimeTesting\WeaponFindabilitySaveContract.cs</Link></Compile>

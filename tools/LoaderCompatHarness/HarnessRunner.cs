@@ -550,7 +550,7 @@ namespace KmgLoaderCompatHarness
                 {
                     // Sprint 7 T1 / REP-04 (R1-F2): an ordinary Ghaele timeline on the loaded product package (see GhaeleLifetimeProbes.cs).
                     string identity = StepIdentity(step);
-                    if (!probes.IsActive) probes.Begin(identity, new GhaeleLifetimeProbe(step.Match));
+                    if (!probes.IsActive) probes.Begin(identity, new GhaeleLifetimeProbe(step.Match, evidence.Directory));
                     ProbeOutcome outcome = probes.Poll(identity);
                     if (outcome == null) return StepStatus.Running;
                     RecordProbe(outcome);

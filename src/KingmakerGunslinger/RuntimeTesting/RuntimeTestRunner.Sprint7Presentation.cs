@@ -191,7 +191,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (view == null) scenery++;
                 else if (!ReferenceEquals(view, unit.View)) others++;
             }
-            return new JObject { ["scenery"] = scenery, ["otherUnits"] = others, ["distance"] = Math.Round(distance, 2) };
+            // The centre and eight points at half the extents, each toward the
+            // camera: a ray blocked by scenery hides part of the body.
+            Vector3 cameraAt = bounds.center + direction.normalized * distance;
+            int rays = 0, blocked = 0;
+            foreach (float x in new[] { 0f, -.5f, .5f })
+                foreach (float y in new[] { -.5f, .5f })
+                    foreach (float z in new[] { -.5f, .5f })
+                    {
+                        if (x == 0f && (y != -.5f || z != -.5f)) continue;
+                        Vector3 from = x == 0f ? bounds.center : bounds.center + Vector3.Scale(bounds.extents, new Vector3(x, y, z));
+                        Vector3 toCamera = cameraAt - from;
+                        rays++;
+                        if (Physics.RaycastAll(from, toCamera.normalized, toCamera.magnitude).Any(hit => hit.collider != null && hit.collider.GetComponentInParent<UnitEntityView>() == null)) blocked++;
+                    }
+            return new JObject { ["scenery"] = scenery, ["otherUnits"] = others, ["distance"] = Math.Round(distance, 2), ["rays"] = rays, ["blockedRays"] = blocked };
         }
 
         private static readonly float[] S7YawOffsets = { 0f, 15f, -15f, 30f, -30f, 45f, -45f, 60f, -60f };
@@ -203,7 +217,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 Vector3 direction = Quaternion.Euler(0f, yaw, 0f) * nominal;
                 JObject hits = S7Occluders(unit, bounds, direction, minimumRadius);
-                int score = (int)hits["scenery"] + (detail ? (int)hits["otherUnits"] : 0);
+                int score = ((int)hits["scenery"] + (detail ? (int)hits["otherUnits"] : 0)) * 100 + (int)hits["blockedRays"];
                 hits["yawOffset"] = yaw;
                 if (score < bestScore) { bestScore = score; best = hits; chosen = direction; }
                 if (score == 0) break;
@@ -215,10 +229,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> S7Stills(UnitEntityData unit, S7Model model, string state, string scene, JObject row)
         {
             foreach (int step in SummonOverhaulSettlePartyCamera(unit)) yield return step;
-            row["party"] = WriteExpandedSummoningPartyCameraCapture(unit, _request.EvidenceDirectory,
-                "s7-" + model.Key + "-" + scene + "-" + state + "-party.png");
-            row["dissolve"] = S7MaxDissolve(unit);
             SkinnedMeshRenderer body = S7Body(unit);
+            // R1-F3: the gameplay-distance party view is bound to the enabled
+            // body renderer (its exact name) and judged on its own readback.
+            string partyReadback = body == null ? "png=<none>;reason=no-body;inFrame=false" : WriteExpandedSummoningPartyCameraCapture(unit, _request.EvidenceDirectory,
+                "s7-" + model.Key + "-" + scene + "-" + state + "-party.png", body.name);
+            string partyReason;
+            bool partyValid = Sprint7ObserverPolicy.PartyCaptureValid(partyReadback, body == null || body.sharedMesh == null ? null : body.sharedMesh.name, out partyReason);
+            row["party"] = new JObject { ["readback"] = partyReadback, ["renderer"] = body == null ? null : body.name, ["valid"] = partyValid, ["reason"] = partyReason };
+            row["dissolve"] = S7MaxDissolve(unit);
             row["body"] = body == null ? null : new JObject { ["renderer"] = S7RendererName(body), ["enabled"] = body.enabled && body.gameObject.activeInHierarchy,
                 ["mesh"] = body.sharedMesh == null ? null : body.sharedMesh.name, ["vertices"] = body.sharedMesh == null ? -1 : body.sharedMesh.vertexCount,
                 ["dissolve"] = S7RendererDissolve(body), ["cutoutDissolve"] = S7RendererCutoutDissolve(body) };
@@ -376,18 +395,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool settled = natural && bodyBound && (float)row["settledDissolve"] <= .02f && (float)after["dissolve"] <= .02f;
                 bool framed = new[] { after, before }.All(values => values.Properties()
                     .Where(value => value.Name != "party" && value.Name != "dissolve" && value.Name != "occluders" && value.Name != "body").All(value => (bool)value.Value));
+                bool party = new[] { after, before }.All(values => values["party"] != null && (bool)values["party"]["valid"]);
+                row["partyBound"] = party;
                 // Details must be clear of scenery and of other units; whole-body
                 // views of scenery.
                 bool clear = new[] { after, before }.All(values => ((JObject)values["occluders"]).Properties().All(value =>
                     (int)value.Value["scenery"] == 0 && (!value.Name.StartsWith("detail-", StringComparison.Ordinal) || (int)value.Value["otherUnits"] == 0)));
                 row["clearOfOccluders"] = clear;
+                // Whole-body views are context: any of their sampled body rays
+                // blocked by scenery is identified here; anatomical claims rest on
+                // the detail views, whose centre must be clear.
+                row["obstructedWholeBodyViews"] = new JArray(new[] { new { Name = "after", Values = after }, new { Name = "before", Values = before } }
+                    .SelectMany(entry => ((JObject)entry.Values["occluders"]).Properties().Where(value => !value.Name.StartsWith("detail-", StringComparison.Ordinal) &&
+                        (int)value.Value["blockedRays"] > 0).Select(value => entry.Name + "-" + value.Name + ":" + (int)value.Value["blockedRays"] + "/" + (int)value.Value["rays"])));
                 bool moved = (float)motionAfter["moveTravel"] > 1f && (float)motionBefore["moveTravel"] > 1f;
                 bool turned = (float)motionAfter["turnDegrees"] > 45f && (float)motionBefore["turnDegrees"] > 45f;
                 bool attacked = hostile == null || ((bool)motionAfter["attackActed"] && (bool)motionBefore["attackActed"]);
                 bool different = swap.CurrentVertices != swap.BeforeVertices || model.Salamander;
-                Sprint25Check("s7-" + model.Key + "-" + scene, shown && settled && framed && clear && moved && turned && attacked && different,
+                Sprint25Check("s7-" + model.Key + "-" + scene, shown && settled && framed && party && clear && moved && turned && attacked && different,
                     (JObject)row.DeepClone(),
-                    "The summon cast through the published spell completes its native appearance on its own (no buff removed) and then shows the Sprint 7 export on its enabled body renderer (vertex count bound to the export; every body material reads _Dissolve 0); the pinned pre-Sprint-7 export is shown on the same live unit; whole-body views and every named-bone detail are framed and clear of scenery, details also of other units (each view keeps its nominal bearing or the nearest yaw offset up to 60 degrees that is clear, recorded); and both complete the observed idle, movement, a turn of more than 45 degrees and any attack.");
+                    "The summon cast through the published spell completes its native appearance on its own (no buff removed) and then shows the Sprint 7 export on its enabled body renderer (vertex count bound to the export; every body material reads _Dissolve 0); the pinned pre-Sprint-7 export is shown on the same live unit; whole-body views and every named-bone detail are framed and clear of scenery at their centre, details also of other units (each view keeps its nominal bearing or the yaw offset up to 60 degrees with the fewest blocked rays, recorded; whole-body views with any blocked body ray are identified as context only); the gameplay-distance party view of each state is a successful, lit, in-frame image whose readback names the enabled body renderer and its current mesh, with the native fade cleared and the body intact; and both complete the observed idle, movement, a turn of more than 45 degrees and any attack.");
             }
         }
 
@@ -422,17 +449,37 @@ namespace KingmakerGunslinger.RuntimeTesting
             JObject traceRollback = S7ProjectileTrace.LastRollback;
             var normal = new S7ProjectileTrace();
             int normalInstalled = normal.OwnedHooks();
-            normal.Dispose();
+            var normalRow = new JObject();
+            bool normalReleased = S7DisposeTrace(normal, normalRow);
             int normalAfter = normal.OwnedHooks();
+            // R3-F4: a normal disposal whose CreateView unpatch fails: the
+            // verdict fails, the other releases still run, and a later disposal
+            // (injection cleared) removes the remaining hooks.
+            var failing = new S7ProjectileTrace();
+            var failedRow = new JObject();
+            bool failedReleased;
+            S7ProjectileTrace.Inject = "fail-normal-unpatch";
+            try { failedReleased = S7DisposeTrace(failing, failedRow); }
+            finally { S7ProjectileTrace.Inject = null; }
+            failedRow["remainingCreateViewHooks"] = S7ProjectileTrace.HookCount(failing.CreateMethod, failing.Id);
+            failedRow["remainingSpawnHooks"] = S7ProjectileTrace.HookCount(failing.SpawnMethod, failing.Id);
+            failedRow["remainingProductHooks"] = S7ProjectileTrace.HookCount(failing.ProductMethod, failing.Id);
+            var finalRow = new JObject();
+            bool finalReleased = S7DisposeTrace(failing, finalRow);
+            failedRow["afterRetry"] = finalRow;
             row["trace"] = new JObject { ["error"] = traceError, ["original"] = traceInner, ["rollback"] = traceRollback == null ? null : traceRollback.DeepClone(),
-                ["normalInstalled"] = normalInstalled, ["normalAfterDispose"] = normalAfter };
+                ["normalInstalled"] = normalInstalled, ["normalAfterDispose"] = normalAfter, ["normalReleased"] = normalReleased, ["failedNormalDisposal"] = failedRow };
+            bool failedCase = !failedReleased && ((JArray)failedRow["disposeFailures"]).Count == 1 &&
+                ((string)failedRow["disposeFailures"][0]).Contains("injected failure of the CreateView unpatch") &&
+                (int)failedRow["remainingCreateViewHooks"] == 2 && (int)failedRow["remainingSpawnHooks"] == 0 && (int)failedRow["remainingProductHooks"] == 0 &&
+                finalReleased && (int)finalRow["ownedHooksAfterDispose"] == 0;
             bool swapOk = swapError != null && swapError.Contains("rollback complete") && swapInner == "injected failure after comparison-mesh allocation" &&
                 meshDestroyed && rendererRestored && S7BodySwap.LastRollback != null && (bool)S7BodySwap.LastRollback["comparisonMeshAllocated"];
             bool traceOk = traceError != null && traceError.Contains("rollback complete") && traceInner == "injected failure after the first patch" &&
                 traceRollback != null && (int)traceRollback["hooksBeforeRollback"] >= 1 && (int)traceRollback["hooksAfterRollback"] == 0 &&
-                ((JArray)traceRollback["failures"]).Count == 0 && normalInstalled == 4 && normalAfter == 0;
+                ((JArray)traceRollback["failures"]).Count == 0 && normalInstalled == 4 && normalAfter == 0 && normalReleased && failedCase;
             Sprint25Check("s7-observer-rollback", swapOk && traceOk, (JObject)row.DeepClone(),
-                "A body swap that fails after allocating its comparison mesh and putting it on the renderer surfaces the original failure with a complete rollback: the renderer is back on its own mesh and the comparison mesh is destroyed. A projectile trace that fails after its first patch surfaces the original failure with no owned hook left; a normal trace then installs its 4 hooks and removes all of them.");
+                "A body swap that fails after allocating its comparison mesh and putting it on the renderer surfaces the original failure with a complete rollback: the renderer is back on its own mesh and the comparison mesh is destroyed. A projectile trace that fails after its first patch surfaces the original failure with no owned hook left; a normal trace then installs its 4 hooks and removes all of them (released verdict true). A normal disposal whose CreateView unpatch fails yields a failed release verdict while the native-spawn and product-wrapper releases still run (2 CreateView hooks remain, none elsewhere); a later disposal removes them.");
         }
 
         private IEnumerable<int> ReviewSprint7Models(ExpandedSummoningCorrectionFixture fixture, string phase, Cleanup2NativeDefaultScope mode)
@@ -446,7 +493,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string scene = outdoor ? "bright" : "dim";
             var record = new JObject { ["phase"] = phase, ["runId"] = _request.RunId, ["scene"] = scene,
                 ["area"] = Game.Instance.CurrentlyLoadedArea?.name,
-                ["limits"] = "Summons are cast through the published spell as native commands (caster level 20 only); the arrival and appearance complete naturally before the unit is moved to its mark. Body readbacks name the enabled body renderer; the party capture's own readback (shared helper) may name another renderer. Commanded motion with brains inactive. Images are presentation evidence only; aesthetic approval is the owner's." };
+                ["limits"] = "Summons are cast through the published spell as native commands (caster level 20 only); the arrival and appearance complete naturally before the unit is moved to its mark. Body readbacks and the party capture name the enabled body renderer; whole-body views are context, details carry the anatomical claims. Commanded motion with brains inactive. Images are presentation evidence only; aesthetic approval is the owner's." };
             var owned = new List<UnitEntityData>();
             Vector3 centre = fixture.Caster.Position;
             UnitEntityData hostile = outdoor ? fixture.Hostile : null;
@@ -1108,7 +1155,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Rows.Add(new JObject { ["initiator"] = evt.Initiator.UniqueId, ["target"] = evt.Target == null ? null : evt.Target.UniqueId,
                     ["weapon"] = evt.Weapon == null ? null : evt.Weapon.Blueprint.name, ["weaponGuid"] = evt.Weapon == null ? null : evt.Weapon.Blueprint.AssetGuid,
                     ["roll"] = evt.AttackRoll == null ? 0 : System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(evt.AttackRoll),
-                    ["hit"] = evt.AttackRoll != null && evt.AttackRoll.IsHit, ["utc"] = DateTime.UtcNow.ToString("o"), ["frame"] = Time.frameCount });
+                    ["hit"] = evt.AttackRoll != null && evt.AttackRoll.IsHit, ["utc"] = DateTime.UtcNow.ToString("o"), ["frame"] = Time.frameCount,
+                    // R1-F1: listener (game camera) to emitter distance in the
+                    // resolving frame, the frame the impact cue is posted in.
+                    ["listenerDistanceAtEvent"] = S7ListenerDistance(evt.Initiator), ["emitterPosition"] = S7Vector(evt.Initiator.Position) });
             }
         }
 
@@ -1191,7 +1241,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 mark("anky-hits-end");
                 var hits = log.Rows.Skip(logFrom).Where(value => (string)value["initiator"] == first.UniqueId && (bool)value["hit"] && S7IsTail(value)).ToArray();
                 SummonCastCueRecord[] hitCues = S7ImpactCues(first).Skip(cuesFrom).ToArray();
-                var pairs = new JArray(hits.Select(hit => new JObject { ["hit"] = hit.DeepClone(), ["listenerDistance"] = S7ListenerDistance(first),
+                double afterSequence = S7ListenerDistance(first);
+                var pairs = new JArray(hits.Select(hit => new JObject { ["hit"] = hit.DeepClone(), ["listenerDistanceAtEvent"] = hit["listenerDistanceAtEvent"],
+                    ["listenerDistanceAfterSequence"] = afterSequence,
                     ["cues"] = new JArray(hitCues.Where(cue => cue.Frame == (int)hit["frame"]).Select(S7Cue)) }));
                 row["attacks"] = new JArray(log.Rows.Skip(logFrom)); row["hitCuePairs"] = pairs;
                 bool paired = hits.Length >= 1 && hitCues.Length == hits.Length && pairs.All(value => ((JArray)value["cues"]).Count == 1) &&
@@ -1353,12 +1405,13 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         // Read-only record of every projectile creation and the effects
         // spawned inside it. Native CreateView spawns the visible cone (the
-        // projectile's cast effect) through FxHelper.SpawnFxOnPoint. A first
-        // postfix on the spawn reads the instance before the product's
-        // postfix; a last postfix reads it as the product left it; the
-        // creation is closed after CreateView returns, with the launch point,
-        // the controller's previous-launch-point state at entry and the
-        // effect's orientation. Instances are kept to read their restoration.
+        // projectile's cast effect) through FxHelper.SpawnFxOnPoint, a call the
+        // product makes through its own wrapper (SpawnCastFx). A postfix on the
+        // native spawn reads the instance before any product code; a postfix on
+        // the product wrapper reads it as the product left it; the creation is
+        // closed after CreateView returns, with the launch point, the
+        // controller's previous-launch-point state at entry and the effect's
+        // orientation. Instances are kept to read their restoration.
         private sealed class S7ProjectileTrace : IDisposable
         {
             private static S7ProjectileTrace active;
@@ -1375,6 +1428,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly System.Reflection.MethodInfo spawn = typeof(Kingmaker.Visual.Particles.FxHelper).GetMethod("SpawnFxOnPoint",
                 System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static, null,
                 new[] { typeof(GameObject), typeof(Vector3), typeof(Quaternion) }, null);
+            private readonly System.Reflection.MethodInfo product = typeof(KingmakerGunslinger.Summoning.DustMephitBreathPresentation).GetMethod("SpawnCastFx",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
             internal readonly JArray Creations = new JArray();
             internal readonly List<KeyValuePair<JObject, GameObject>> Instances = new List<KeyValuePair<JObject, GameObject>>();
 
@@ -1384,7 +1439,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             internal S7ProjectileTrace()
             {
-                if (active != null || create == null || spawn == null || PreviousLaunch == null) throw new InvalidOperationException("Projectile readers unavailable.");
+                if (active != null || create == null || spawn == null || product == null || PreviousLaunch == null) throw new InvalidOperationException("Projectile readers unavailable.");
                 harmony = Harmony12.HarmonyInstance.Create(id);
                 var flags = System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic;
                 try
@@ -1393,7 +1448,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         new Harmony12.HarmonyMethod(typeof(S7ProjectileTrace).GetMethod("AfterCreate", flags)) { prioritiy = Harmony12.Priority.Last });
                     if (Inject == "after-first-patch") throw new InvalidOperationException("injected failure after the first patch");
                     harmony.Patch(spawn, null, new Harmony12.HarmonyMethod(typeof(S7ProjectileTrace).GetMethod("BeforeProduct", flags)) { prioritiy = Harmony12.Priority.First });
-                    harmony.Patch(spawn, null, new Harmony12.HarmonyMethod(typeof(S7ProjectileTrace).GetMethod("AfterSpawn", flags)) { prioritiy = Harmony12.Priority.Last });
+                    harmony.Patch(product, null, new Harmony12.HarmonyMethod(typeof(S7ProjectileTrace).GetMethod("AfterProduct", flags)) { prioritiy = Harmony12.Priority.Last });
                     active = this;
                 }
                 catch (Exception original)
@@ -1408,11 +1463,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
 
+            // "fail-normal-unpatch" (rollback check only): the CreateView release
+            // fails during a normal disposal, so its hooks stay; the other
+            // releases still run.
             private List<string> Unhook()
             {
                 return Sprint7ObserverPolicy.RunReleases(new[] {
-                    new KeyValuePair<string, Action>("CreateView hooks", () => harmony.Unpatch(create, Harmony12.HarmonyPatchType.All, id)),
-                    new KeyValuePair<string, Action>("SpawnFxOnPoint hooks", () => harmony.Unpatch(spawn, Harmony12.HarmonyPatchType.All, id)) });
+                    new KeyValuePair<string, Action>("CreateView hooks", () =>
+                    {
+                        if (Inject == "fail-normal-unpatch") throw new InvalidOperationException("injected failure of the CreateView unpatch");
+                        harmony.Unpatch(create, Harmony12.HarmonyPatchType.All, id);
+                    }),
+                    new KeyValuePair<string, Action>("SpawnFxOnPoint hooks", () => harmony.Unpatch(spawn, Harmony12.HarmonyPatchType.All, id)),
+                    new KeyValuePair<string, Action>("product spawn hooks", () => harmony.Unpatch(product, Harmony12.HarmonyPatchType.All, id)) });
             }
 
             internal GameObject Instance(JObject row)
@@ -1433,10 +1496,63 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return info.Prefixes.Concat(info.Postfixes).Concat(info.Transpilers).Count(value => value.owner == owner);
             }
 
-            internal int OwnedHooks() { return HookCount(create, id) + HookCount(spawn, id); }
+            internal int OwnedHooks() { return HookCount(create, id) + HookCount(spawn, id) + HookCount(product, id); }
+            internal System.Reflection.MethodBase CreateMethod { get { return create; } }
+            internal System.Reflection.MethodBase SpawnMethod { get { return spawn; } }
+            internal System.Reflection.MethodBase ProductMethod { get { return product; } }
+            internal string Id { get { return id; } }
+
+            // R1-F9 (native): armed for one owned Dust creation. While that
+            // enclosing creation is in progress, an inner owned creation of the
+            // same Dust breath is interrupted (no target: native CreateView
+            // throws after setting its launch point, before its spawn); then,
+            // before the enclosing call returns, a foreign spawn of the same cast
+            // effect at the same point is made directly. The enclosing creation
+            // then proceeds as the subsequent valid owned spawn.
+            internal static JObject NestedProbe;
+            internal static string NestedProbeLauncher;
+
+            private static void RunNestedProbe(Kingmaker.Controllers.Projectiles.ProjectileController controller, Kingmaker.Controllers.Projectiles.Projectile outer, JObject probe)
+            {
+                var method = typeof(Kingmaker.Controllers.Projectiles.ProjectileController).GetMethod("CreateView", System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.Instance, null, new[] { typeof(Kingmaker.Controllers.Projectiles.Projectile), typeof(Vector3?) }, null);
+                var inner = new Kingmaker.Controllers.Projectiles.Projectile { Launcher = outer.Launcher, Blueprint = outer.Blueprint, Target = null };
+                int applied = DustMephitBreathTint.Applied;
+                probe["frame"] = Time.frameCount;
+                probe["enclosingExecutingAbility"] = DustMephitBreathExecutionScope.ExecutingAbility(outer.Launcher);
+                try { method.Invoke(controller, new object[] { inner, null }); probe["innerInterrupted"] = null; }
+                catch (System.Reflection.TargetInvocationException error) { probe["innerInterrupted"] = error.InnerException == null ? "unknown" : error.InnerException.GetType().Name; }
+                // The inner creation never closes: its own trace entry is dropped.
+                current = null; creation = null;
+                probe["innerTintsApplied"] = DustMephitBreathTint.Applied - applied;
+                probe["innerLaunchPoint"] = S7Vector(inner.LaunchPosition);
+                GameObject prefab = outer.Blueprint.CastFx.Load();
+                GameObject foreignSpawn = Kingmaker.Visual.Particles.FxHelper.SpawnFxOnPoint(prefab, inner.LaunchPosition);
+                probe["foreignSpawned"] = foreignSpawn != null;
+                probe["foreignPrefab"] = prefab == null ? null : prefab.name;
+                probe["foreignPoint"] = foreignSpawn == null ? null : S7Vector(foreignSpawn.transform.position);
+                probe["foreignTinted"] = foreignSpawn != null && foreignSpawn.GetComponent<DustMephitBreathTint>() != null;
+                probe["foreignTintsApplied"] = DustMephitBreathTint.Applied - applied;
+                if (foreignSpawn != null)
+                {
+                    probe["foreignSignature"] = S7FxSignature(foreignSpawn);
+                    var destroy = foreignSpawn.GetComponent<Kingmaker.Utility.AutoDestroy>() ?? foreignSpawn.AddComponent<Kingmaker.Utility.AutoDestroy>();
+                    destroy.Lifetime = 1f;
+                }
+                probe["appliedBeforeEnclosingSpawn"] = DustMephitBreathTint.Applied;
+            }
 
             private static void Before(Kingmaker.Controllers.Projectiles.ProjectileController __instance, Kingmaker.Controllers.Projectiles.Projectile __0)
             {
+                JObject probe = NestedProbe;
+                if (probe != null && active != null && __0 != null && __0.Launcher != null && __0.Launcher.UniqueId == NestedProbeLauncher &&
+                    __0.Blueprint != null && __0.Blueprint.AssetGuid == MephitBreathPolicy.ColdConeProjectileGuid &&
+                    DustMephitBreathExecutionScope.ExecutingAbility(__0.Launcher) == MephitBreathPolicy.DustMephitBreathGuid)
+                {
+                    NestedProbe = null; NestedProbeLauncher = null;
+                    try { RunNestedProbe(__instance, __0, probe); }
+                    catch (Exception error) { probe["probeError"] = error.GetType().Name + ": " + error.Message; }
+                }
                 current = __0; creation = null;
                 if (active == null || __0 == null || __0.Launcher == null) return;
                 Vector3 previous = (Vector3)PreviousLaunch.GetValue(__instance);
@@ -1445,7 +1561,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["projectile"] = __0.Blueprint == null ? null : __0.Blueprint.AssetGuid,
                     ["executingAbility"] = DustMephitBreathExecutionScope.ExecutingAbility(__0.Launcher),
                     ["previousLaunchPoint"] = S7Vector(previous), ["previousLaunchPointCleared"] = previous == Vector3.zero,
-                    ["unadoptedBefore"] = DustMephitBreathPresentation.Unadopted, ["effects"] = new JArray() };
+                    ["callSiteInstalled"] = DustMephitBreathPresentation.Installed, ["effects"] = new JArray() };
             }
 
             private static void BeforeProduct(GameObject __result, GameObject __0)
@@ -1460,7 +1576,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Instances.Add(new KeyValuePair<JObject, GameObject>(row, __result));
             }
 
-            private static void AfterSpawn(GameObject __result)
+            // After the product's wrapper of CreateView's cast-effect spawn.
+            private static void AfterProduct(GameObject __result)
             {
                 if (active == null || creation == null || __result == null) return;
                 JObject row = ((JArray)creation["effects"]).OfType<JObject>().LastOrDefault(value => (int)value["instance"] == __result.GetInstanceID());
@@ -1478,7 +1595,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 current = null; creation = null;
                 if (value == null || closing == null || projectile == null) return;
                 closing["launchPoint"] = S7Vector(projectile.LaunchPosition);
-                closing["unadopted"] = DustMephitBreathPresentation.Unadopted - (int)closing["unadoptedBefore"];
                 foreach (JObject row in ((JArray)closing["effects"]).OfType<JObject>())
                 {
                     GameObject instance = value.Instances.Where(entry => ReferenceEquals(entry.Key, row)).Select(entry => entry.Value).FirstOrDefault();
@@ -1510,6 +1626,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             internal List<string> DisposeFailures = new List<string>();
 
+            // Repeatable: a later disposal attempts every release again.
             public void Dispose()
             {
                 DisposeFailures = Unhook();
@@ -1593,6 +1710,75 @@ namespace KingmakerGunslinger.RuntimeTesting
             return toUnit.magnitude <= reach && Vector3.Angle(axis, toUnit) <= 45f;
         }
 
+        // R3-F3: the cell's Sickened ledger over every unit in the area.
+        private sealed class S7DustConditions
+        {
+            private readonly BlueprintBuff _sickened;
+            private readonly BlueprintAbility _breath;
+            private readonly UnitEntityData[] _casters;
+            private readonly AcquisitionLedger<Buff> _ledger;
+
+            internal S7DustConditions(BlueprintBuff sickened, BlueprintAbility breath, params UnitEntityData[] casters)
+            {
+                _sickened = sickened; _breath = breath; _casters = casters.Where(value => value != null).ToArray();
+                _ledger = new AcquisitionLedger<Buff>(Present());
+            }
+
+            internal List<Buff> Acquired { get { return _ledger.Acquired; } }
+
+            private IEnumerable<Buff> Present()
+            {
+                return Game.Instance.State.Units.Where(unit => unit != null && !unit.Destroyed)
+                    .SelectMany(unit => unit.Descriptor.Buffs.Enumerable.Where(buff => ReferenceEquals(buff.Blueprint, _sickened))).ToList();
+            }
+
+            // A Dust breath execution by one of the cell's own Dust units.
+            private bool Owned(Buff buff)
+            {
+                Kingmaker.UnitLogic.Mechanics.MechanicsContext context = buff.Context;
+                AbilityExecutionContext execution = context as AbilityExecutionContext ?? (context == null ? null : context.SourceAbilityContext);
+                return execution != null && ReferenceEquals(execution.AbilityBlueprint, _breath) && _casters.Any(caster => ReferenceEquals(caster, execution.MaybeCaster));
+            }
+
+            internal int Observe() { return _ledger.Observe(Present(), Owned); }
+            internal List<string> Release() { return _ledger.Release(Present(), Owned, buff => buff.Remove()); }
+            internal int Remaining() { return _ledger.Remaining(Present(), Owned); }
+        }
+
+        // One Dust cast that owns its command and its conditions: however it
+        // ends (normally, or abandoned while yielded), the command is ended if
+        // still running and the conditions it introduced are released.
+        private IEnumerable<int> S7DustCastOwningConditions(UnitEntityData dust, AbilityData data, UnitEntityData target, S7DustConditions ledger, JObject row)
+        {
+            var command = new UnitUseAbility(data, new TargetWrapper(target));
+            try
+            {
+                dust.Commands.Run(command);
+                DateTime deadline = DateTime.UtcNow.AddSeconds(20);
+                while (DateTime.UtcNow < deadline && !(command.IsFinished && (command.ExecutionProcess == null || command.ExecutionProcess.IsEnded))) yield return 0;
+            }
+            finally
+            {
+                row["commandFinishedAtExit"] = command.IsFinished;
+                if (!command.IsFinished) { dust.Commands.InterruptAll(value => ReferenceEquals(value, command)); dust.Commands.RemoveFinishedAndUpdateQueue(); }
+                row["releaseFailures"] = new JArray(ledger.Release());
+            }
+        }
+
+        // R3-F4: a trace's disposal and its verdict: every release is attempted;
+        // a failed release or a remaining owned hook fails the verdict.
+        private static bool S7DisposeTrace(S7ProjectileTrace trace, JObject row)
+        {
+            row["ownedHooksBeforeDispose"] = trace.OwnedHooks();
+            trace.Dispose();
+            int after = trace.OwnedHooks();
+            row["ownedHooksAfterDispose"] = after;
+            row["disposeFailures"] = new JArray(trace.DisposeFailures);
+            bool released = Sprint7ObserverPolicy.Released(trace.DisposeFailures, after);
+            row["traceReleased"] = released;
+            return released;
+        }
+
         private IEnumerable<int> S7WaitDustReleased()
         {
             DateTime deadline = DateTime.UtcNow.AddSeconds(20);
@@ -1616,12 +1802,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             Func<UnitEntityData, string> label = unit => unit == null ? null : ReferenceEquals(unit, hostile) ? "enemy-inside" :
                 ReferenceEquals(unit, outside) ? "enemy-outside" : ReferenceEquals(unit, ice) ? "ally-inside" :
                 ReferenceEquals(unit, fixture.Caster) ? "caster-behind" : ReferenceEquals(unit, dust) ? "dust" : unit.Blueprint.name;
-            // Only Sickened instances a Dust breath of this cell applied (by
-            // execution context) and the observer's own control are removed.
-            var breathSickened = new List<Buff>();
+            // R3-F3: every Sickened instance a Dust breath execution of this
+            // cell's own Dust units introduced, however that cast ended, is
+            // acquired by the cell's ledger; only those (and, at the very end,
+            // the observer's own control) are removed.
+            var conditions = new S7DustConditions(sickened, breath, dust, spare);
             Buff foreignSickened = null;
-            Action clearSickened = () => { foreach (UnitEntityData unit in new[] { hostile, ice, outside, fixture.Caster }.Where(value => value != null && !value.Destroyed))
-                foreach (Buff buff in Sprint7ObserverPolicy.Acquired(unit.Descriptor.Buffs.Enumerable, breathSickened)) buff.Remove(); };
+            var releaseFailures = new JArray();
+            Action clearSickened = () => { foreach (string failure in conditions.Release()) releaseFailures.Add(failure); };
             try
             {
                 Vector3 spot = ground(hostile.Position + Vector3.back * 2.6f);
@@ -1691,7 +1879,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     cast["saves"] = new JArray(saveLog.Rows.Skip(savesFrom).Where(value => mine(value.Value)).Select(value => { var copy = (JObject)value.Key.DeepClone(); copy["unit"] = label(new[] { hostile, ice, outside, fixture.Caster }.FirstOrDefault(unit => unit != null && unit.UniqueId == (string)value.Key["unit"])) ?? (string)value.Key["unit"]; return copy; }));
                     var castSickened = new[] { hostile, ice, outside, fixture.Caster }.SelectMany(unit => unit.Descriptor.Buffs.Enumerable
                         .Where(buff => ReferenceEquals(buff.Blueprint, sickened) && mine(buff.Context)).Select(buff => new { Unit = unit, Buff = buff })).ToList();
-                    breathSickened.AddRange(castSickened.Select(value => value.Buff));
+                    conditions.Observe();
                     cast["sickened"] = new JArray(castSickened.Select(value => new JObject { ["unit"] = label(value.Unit), ["secondsLeft"] = Math.Round(value.Buff.TimeLeft.TotalSeconds, 2) }));
                     var creations = trace.Creations.Skip(creationsFrom).OfType<JObject>().Where(value => (string)value["launcher"] == dust.UniqueId).ToList();
                     cast["creations"] = new JArray(creations.Select(value => value.DeepClone()));
@@ -1717,10 +1905,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool visible = (int)castRows[0]["sceneryHitsOnBearing"] == 0 && (int)castRows[0]["outOfFrame"] == 0;
                 Sprint25Check("s7-dust-casts", samePlace && presented && visible, new JObject { ["casts"] = casts.DeepClone() },
                     "Three consecutive Dust breaths executed from one unchanged position each produce one execution, one creation bound to the Dust breath, and exactly one cast effect oriented with the projectile and recoloured; on release each instance reads back exactly its pre-tint materials and particle colours; the first is framed on an unobstructed bearing with the targets.");
-                bool neverCarried = castRows.All(cast => ((JArray)cast["creations"]).OfType<JObject>().All(value => (bool)value["previousLaunchPointCleared"] && (int)value["unadopted"] == 0));
+                bool neverCarried = castRows.All(cast => ((JArray)cast["creations"]).OfType<JObject>().All(value => (bool)value["previousLaunchPointCleared"] &&
+                    (bool)value["callSiteInstalled"] && ((JArray)value["effects"]).OfType<JObject>().Count(effect => (bool)effect["isCastFx"]) == 1));
                 Sprint25Check("s7-dust-repeat-launch-point", samePlace && neverCarried, new JObject { ["launchPoints"] = new JArray(castRows.Select(cast => ((JArray)cast["creations"]).Count == 1 ? cast["creations"][0]["launchPoint"].DeepClone() : null)),
                         ["previousLaunchPointAtEntry"] = new JArray(castRows.Select(cast => ((JArray)cast["creations"]).Count == 1 ? cast["creations"][0]["previousLaunchPoint"].DeepClone() : null)) },
-                    "At each repeated breath the native controller's previous launch point is already cleared (ProjectileController.Tick resets it every frame), so native creation spawns every execution's own effect and none is left unadopted.");
+                    "At each repeated breath the native controller's previous launch point is already cleared (ProjectileController.Tick resets it every frame), so native creation spawns every execution's own cast effect, through the product's installed call site.");
                 Func<JObject, string, JObject[]> damageTo = (cast, who) => ((JArray)cast["damage"]).OfType<JObject>().Where(value => (string)value["target"] == who).ToArray();
                 Func<JObject, string, JObject[]> savesBy = (cast, who) => ((JArray)cast["saves"]).OfType<JObject>().Where(value => (string)value["unit"] == who).ToArray();
                 Func<JObject, string, bool> sickenedOn = (cast, who) => ((JArray)cast["sickened"]).OfType<JObject>().Any(value => (string)value["unit"] == who);
@@ -1926,6 +2115,67 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new JObject { ["launched"] = launched, ["live"] = DustMephitBreathTint.Live, ["effects"] = new JArray(lossEffects.Select(value => value.DeepClone())), ["restored"] = new JArray(lossRestored) },
                     "A Dust Mephit removed while its breath effect is active leaves the instance reading its native signature once the effect ends.");
 
+                // 8. R1-F9: inside an enclosing owned Dust creation, an inner
+                // owned creation is interrupted and, before the enclosing call
+                // returns, the same cast effect is spawned at the same point by
+                // another caller; the enclosing creation's own spawn follows.
+                PlaceExpandedSummoningUnit(dust, spot);
+                foreach (int step in R6Wait(4)) yield return step;
+                var nested = new JObject(); row["nestedInterruption"] = nested;
+                var nestedCast = new JObject(); nested["cast"] = nestedCast;
+                int nestedFrom = trace.Creations.Count, nestedApplied = DustMephitBreathTint.Applied;
+                mark("dust-nested-start");
+                S7ProjectileTrace.NestedProbeLauncher = dust.UniqueId; S7ProjectileTrace.NestedProbe = nested;
+                try { foreach (int step in R6RunPassive(dust, abilityData(dust, breath), new TargetWrapper(hostile), nestedCast, null)) yield return step; }
+                finally { S7ProjectileTrace.NestedProbe = null; S7ProjectileTrace.NestedProbeLauncher = null; }
+                conditions.Observe();
+                var nestedCreations = trace.Creations.Skip(nestedFrom).OfType<JObject>().Where(value => (string)value["launcher"] == dust.UniqueId).ToList();
+                nested["creations"] = new JArray(nestedCreations.Select(value => value.DeepClone()));
+                nested["tintsApplied"] = DustMephitBreathTint.Applied - nestedApplied;
+                foreach (int step in S7WaitDustReleased()) yield return step;
+                mark("dust-nested-end");
+                var nestedEffects = nestedCreations.SelectMany(value => ((JArray)value["effects"]).OfType<JObject>()).ToList();
+                nested["restored"] = new JArray(nestedEffects.Select(effect => trace.Restoration(effect)));
+                Func<JToken, Vector3> vector = value => value == null || value.Type != JTokenType.Array ? new Vector3(float.NaN, 0f, 0f) : new Vector3((float)value[0], (float)value[1], (float)value[2]);
+                bool nestedOk = (string)nested["innerInterrupted"] == "NullReferenceException" && (string)nested["enclosingExecutingAbility"] == breath.AssetGuid &&
+                    (int?)nested["innerTintsApplied"] == 0 && (bool?)nested["foreignSpawned"] == true && (bool?)nested["foreignTinted"] == false &&
+                    (int?)nested["foreignTintsApplied"] == 0 && Vector3.Distance(vector(nested["foreignPoint"]), vector(nested["innerLaunchPoint"])) < .001f &&
+                    nested["foreignSignature"] != null && originals.Contains((string)nested["foreignSignature"]["hash"]) &&
+                    nestedCreations.Count == 1 && (string)nestedCreations[0]["executingAbility"] == breath.AssetGuid &&
+                    nestedEffects.Count(effect => (bool)effect["isCastFx"]) == 1 && nestedEffects.All(effect => (bool?)effect["tinted"] == true) &&
+                    (int)nested["tintsApplied"] == 1 &&
+                    ((JArray)nested["restored"]).All(value => (bool)value["exists"] && !(bool)value["tintPresent"] && (bool)value["matchesBefore"]);
+                Sprint25Check("s7-dust-nested-interruption", nestedOk, (JObject)nested.DeepClone(),
+                    "While an owned Dust creation is in progress, an inner owned creation of the same breath is interrupted (native CreateView throws after setting its launch point, before its spawn) and the same cast effect is then spawned at that very point by another caller before the enclosing call returns: that foreign instance stays native (no tint, the native signature) and the interrupted creation tints nothing; the enclosing creation's own cast effect is then tinted exactly once and restored on release.");
+
+                // 9. Early exit after application: a cast owning its own ledger
+                // is abandoned (its enumerator disposed) as soon as its Sickened
+                // is seen; its cleanup leaves no condition it owns.
+                var early = new JObject(); row["earlyExit"] = early;
+                hostileSaves.DesiredRoll = 1;
+                var earlyLedger = new S7DustConditions(sickened, breath, dust);
+                early["preexistingCellOwned"] = earlyLedger.Remaining();
+                mark("dust-early-exit-start");
+                IEnumerator<int> earlyRun = S7DustCastOwningConditions(dust, abilityData(dust, breath), hostile, earlyLedger, early).GetEnumerator();
+                bool earlyApplied = false;
+                DateTime earlyDeadline = DateTime.UtcNow.AddSeconds(20);
+                while (DateTime.UtcNow < earlyDeadline && earlyRun.MoveNext())
+                {
+                    if (earlyLedger.Observe() > 0) { earlyApplied = true; break; }
+                    yield return 0;
+                }
+                early["appliedBeforeExit"] = earlyApplied;
+                early["acquiredBeforeExit"] = earlyLedger.Acquired.Count;
+                earlyRun.Dispose();
+                early["remainingAfterExit"] = earlyLedger.Remaining();
+                early["foreignKept"] = foreignSickened != null && ice.Descriptor.Buffs.Enumerable.Contains(foreignSickened);
+                early["commandsLeft"] = (dust.Commands.HasUnfinished() ? 1 : 0);
+                mark("dust-early-exit-end");
+                foreach (int step in S7WaitDustReleased()) yield return step;
+                Sprint25Check("s7-dust-early-exit-released", earlyApplied && (int)early["acquiredBeforeExit"] >= 1 && (int)early["remainingAfterExit"] == 0 &&
+                        (bool)early["foreignKept"] && ((JArray)early["releaseFailures"]).Count == 0 && (int)early["commandsLeft"] == 0, (JObject)early.DeepClone(),
+                    "A Dust cast whose owner exits as soon as its Sickened is applied (enumerator disposed mid-cast) interrupts only its own command and removes exactly the Sickened instances its own execution introduced: none remains, and the foreign control survives.");
+
                 // 7. A native-look comparison of the same Dust cast: the
                 // observer restores the recolour as soon as it is applied.
                 var nativeLook = new JObject(); row["nativeLook"] = nativeLook;
@@ -1959,13 +2209,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                if (trace != null) { row["ownedHooksBeforeDispose"] = trace.OwnedHooks(); trace.Dispose(); row["ownedHooksAfterDispose"] = trace.OwnedHooks(); row["disposeFailures"] = new JArray(trace.DisposeFailures); }
+                if (trace != null)
+                {
+                    bool released = S7DisposeTrace(trace, row);
+                    Sprint25Check("s7-dust-trace-released", released, new JObject { ["before"] = row["ownedHooksBeforeDispose"], ["after"] = row["ownedHooksAfterDispose"],
+                        ["failures"] = row["disposeFailures"].DeepClone() }, "The projectile trace's normal disposal removes every owned hook without a failed release.");
+                }
                 EventBus.Unsubscribe(saveLog);
                 if (outsideSaves != null) outsideSaves.Dispose();
                 hostileSaves.DesiredRoll = 1;
                 if (grantedIce && !dust.Destroyed && dust.Descriptor.HasFact(iceBreath)) dust.Descriptor.RemoveFact(iceBreath);
                 clearSickened();
+                int remainingOwned = conditions.Remaining();
+                row["conditions"] = new JObject { ["acquired"] = conditions.Acquired.Count, ["remainingAfterCleanup"] = remainingOwned, ["releaseFailures"] = releaseFailures };
                 bool foreignKept = foreignSickened != null && !ice.Destroyed && ice.Descriptor.Buffs.Enumerable.Contains(foreignSickened);
+                Sprint25Check("s7-dust-cell-conditions-released", remainingOwned == 0 && releaseFailures.Count == 0 && conditions.Acquired.Count >= 3 && foreignKept,
+                    (JObject)row["conditions"].DeepClone(),
+                    "Cleanup removes every Sickened instance any Dust execution of this cell introduced, including the later concurrent, paired, nested and final comparison casts: none remains, and the foreign control is still present at that moment.");
                 if (foreignSickened != null && !ice.Destroyed && foreignKept) foreignSickened.Remove();
                 Sprint25Check("s7-dust-foreign-sickened-kept", foreignSickened != null && (bool?)row["foreignSickenedAfterResets"] == true && foreignKept,
                     new JObject { ["afterResets"] = row["foreignSickenedAfterResets"], ["afterCleanup"] = foreignKept },
@@ -2052,8 +2312,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 restore("hostile", () => { if (!fixture.Hostile.Destroyed) { fixture.Hostile.Descriptor.Stats.HitPoints.BaseValue = hostileHitPoints; fixture.Hostile.Descriptor.Damage = 0; PlaceExpandedSummoningUnit(fixture.Hostile, hostilePosition); } });
                 PlaceExpandedSummoningUnit(fixture.Caster, centre);
                 DisposeExpandedSummoningUnits(fixture.Created, owned.Where(value => !value.Destroyed).ToArray());
-                Sprint25Check("s7-effects-owned-state-restored", errors.Count == 0 && DustMephitBreathTint.Live == 0,
-                    new JObject { ["errors"] = errors, ["liveRecolours"] = DustMephitBreathTint.Live }, "Readers, combat, positions and recolours restore.");
+                JToken dustRow = record["dust"];
+                bool traceReleased = dustRow == null || dustRow["traceReleased"] == null || (bool)dustRow["traceReleased"];
+                int remainingConditions = dustRow == null || dustRow["conditions"] == null ? 0 : (int)dustRow["conditions"]["remainingAfterCleanup"];
+                Sprint25Check("s7-effects-owned-state-restored", errors.Count == 0 && DustMephitBreathTint.Live == 0 && traceReleased && remainingConditions == 0,
+                    new JObject { ["errors"] = errors, ["liveRecolours"] = DustMephitBreathTint.Live, ["traceReleased"] = traceReleased, ["remainingCellConditions"] = remainingConditions },
+                    "Readers, combat, positions, recolours, the projectile trace's hooks and the cell's conditions restore.");
                 record["restoreErrors"] = errors;
                 RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory, phase + ".json"), record.ToString(Formatting.Indented));
             }

@@ -381,54 +381,96 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(Summoning.MephitBreathPolicy.PresentsDustBreath(null, breath, cold), "A launcher without identity is not recoloured.");
         }
 
-        // VIS-05: a cast-effect spawn belongs only to the innermost creation of
-        // the innermost execution scope of its frame; foreign creations shadow,
-        // interrupted creations cannot lend their identity, and nothing outside
-        // a scope adopts.
-        internal static void Vis05CreationTrackerOwnership()
+        // R1-F9: a stand-in native creation whose one cast-effect spawn is made
+        // through the production call-site adoption (CastEffectAdoption.Spawn),
+        // as the transpiled CreateView makes it; it can be interrupted before or
+        // after that spawn and can run nested work first.
+        private sealed class StandInFx
         {
-            var tracker = new Summoning.DustCreationTracker();
-            object dust = "dust", ice = "ice", other = "other";
-            Assertions.True(tracker.BeginCreation(dust, true, 1) == null && tracker.Peek(1) == null, "Outside an execution scope nothing is tracked or adopted.");
+            internal readonly string Prefab; internal readonly float Point; internal int Tints;
+            internal StandInFx(string prefab, float point) { Prefab = prefab; Point = point; }
+        }
 
-            // Nested owned and foreign creations in one scope.
-            object scope = tracker.BeginScope(1);
-            object owned = tracker.BeginCreation(dust, true, 1);
-            object foreign = tracker.BeginCreation(ice, false, 1);
-            Assertions.True(tracker.Adopt(1) == null, "A spawn inside the nested foreign creation is not tinted.");
-            Assertions.False(tracker.EndCreation(foreign), "The foreign creation ends without an owned result.");
-            Assertions.True(ReferenceEquals(dust, tracker.Adopt(1)), "The enclosing owned creation's own spawn is tinted.");
-            Assertions.True(tracker.Adopt(1) == null, "It is tinted once.");
-            Assertions.False(tracker.EndCreation(owned), "An adopted creation ends with nothing outstanding.");
-            Assertions.True(tracker.Adopt(1) == null, "After its end the scope lends nothing.");
+        private sealed class StandInWorld
+        {
+            internal readonly List<StandInFx> Spawned = new List<StandInFx>();
+            internal int Adoptions;
 
-            // An owned creation that throws (never ends) inside an enclosing foreign one.
-            object outer = tracker.BeginCreation(other, false, 1);
-            tracker.BeginCreation(dust, true, 1);
-            Assertions.True(ReferenceEquals(dust, tracker.Peek(1)), "While the owned creation runs its spawn would be tinted.");
-            tracker.EndCreation(outer);
-            Assertions.True(tracker.Peek(1) == null && tracker.Adopt(1) == null, "The enclosing creation's end discards the interrupted one.");
+            // Any caller's native spawn (no product code).
+            internal StandInFx NativeSpawn(string prefab, float point)
+            {
+                var fx = new StandInFx(prefab, point); Spawned.Add(fx); return fx;
+            }
 
-            // An owned creation that throws at the top of the scope: the scope's end discards it.
-            tracker.BeginCreation(dust, true, 1);
-            tracker.EndScope(scope);
-            Assertions.True(tracker.ScopeDepth == 0 && tracker.Adopt(1) == null, "After the execution scope ends an unrelated matching spawn in the same frame is not tinted.");
+            internal void CreateView(bool owned, string interrupt, Action nested)
+            {
+                if (nested != null) nested();
+                if (interrupt == "before-spawn") throw new NullReferenceException("no target");
+                Summoning.CastEffectAdoption.Spawn(() => NativeSpawn("cold-cone-cast", 1f), () => owned,
+                    fx => { fx.Tints++; Adoptions++; }, error => { throw new InvalidOperationException("unexpected adoption failure", error); });
+                if (interrupt == "after-spawn") throw new InvalidOperationException("after spawn");
+            }
+        }
 
-            // A creation whose native effect was skipped is reported once.
-            object again = tracker.BeginScope(2);
-            object skipped = tracker.BeginCreation(dust, true, 2);
-            Assertions.True(tracker.EndCreation(skipped), "An owned creation with no adopted effect is reported as unadopted.");
-            Assertions.True(tracker.Adopt(3) == null, "Another frame never adopts.");
-            tracker.EndScope(again);
+        // R1-F9: ownership is bound to the one spawn invocation of the creation
+        // itself: an interrupted creation lends nothing, a foreign spawn of the
+        // same prefab at the same point inside the enclosing creation stays
+        // native, and the subsequent valid owned spawn is tinted exactly once.
+        internal static void Vis05CallSiteAdoptionOwnership()
+        {
+            // The reviewer's interval: an enclosing owned creation is active; an
+            // inner owned creation is interrupted; before the enclosing call
+            // returns, another caller spawns the same prefab at the same point.
+            var world = new StandInWorld();
+            StandInFx foreign = null;
+            world.CreateView(true, null, () =>
+            {
+                try { world.CreateView(true, "before-spawn", null); Assertions.True(false, "The inner creation is interrupted."); }
+                catch (NullReferenceException) { }
+                foreign = world.NativeSpawn("cold-cone-cast", 1f);
+                Assertions.Equal(0, foreign.Tints, "The foreign same-prefab, same-point spawn inside the enclosing creation stays native.");
+                Assertions.Equal(0, world.Adoptions, "The interrupted creation tinted nothing and lent nothing.");
+            });
+            Assertions.Equal(2, world.Spawned.Count, "Two instances exist: the foreign one and the enclosing creation's own.");
+            Assertions.Equal(1, world.Adoptions, "The subsequent valid owned spawn (the enclosing creation's) is tinted once.");
+            Assertions.True(world.Spawned[1].Tints == 1 && foreign.Tints == 0, "Exactly the owned creation's own instance carries the tint.");
 
-            // A scope left behind by an earlier frame (its tick threw before its own handling) is discarded.
-            tracker.BeginScope(4);
-            tracker.BeginScope(5);
-            Assertions.Equal(1, tracker.ScopeDepth, "A stale scope from an earlier frame is dropped when the next one begins.");
-            Assertions.True(tracker.BeginCreation(dust, true, 5) != null && ReferenceEquals(dust, tracker.Adopt(5)), "The new scope tracks normally.");
-            string patch = File.ReadAllText("src/KingmakerGunslinger/Summoning/DustMephitBreathPresentation.cs");
-            Assertions.True(patch.Contains("point != projectile.LaunchPosition") && patch.Contains("Creations.EndScope(saved.Scope)"),
-                "The spawn must also match its creation's launch point, and every execution tick ends its scope.");
+            // The same interval inside a foreign enclosing creation, then a later owned creation.
+            var second = new StandInWorld();
+            StandInFx stray = null;
+            second.CreateView(false, null, () =>
+            {
+                try { second.CreateView(true, "before-spawn", null); } catch (NullReferenceException) { }
+                stray = second.NativeSpawn("cold-cone-cast", 1f);
+            });
+            Assertions.True(stray.Tints == 0 && second.Spawned.All(fx => fx.Tints == 0), "Neither the foreign spawn nor the foreign creation's own spawn is tinted.");
+            second.CreateView(true, null, null);
+            Assertions.True(second.Adoptions == 1 && second.Spawned.Last().Tints == 1, "A later valid owned creation still receives its own tint.");
+
+            // Interrupted after its own spawn: that instance is the owned cast's
+            // (tinted once); a later foreign spawn is not.
+            var third = new StandInWorld();
+            try { third.CreateView(true, "after-spawn", null); } catch (InvalidOperationException) { }
+            StandInFx after = third.NativeSpawn("cold-cone-cast", 1f);
+            Assertions.True(third.Adoptions == 1 && third.Spawned[0].Tints == 1 && after.Tints == 0, "A creation interrupted after its spawn keeps only its own tint.");
+
+            // A foreign creation nested in an owned one is not tinted; the owned one is.
+            var fourth = new StandInWorld();
+            fourth.CreateView(true, null, () => fourth.CreateView(false, null, null));
+            Assertions.True(fourth.Spawned[0].Tints == 0 && fourth.Spawned[1].Tints == 1, "Nested foreign creation native, enclosing owned creation tinted.");
+
+            // Native failures propagate unchanged; no native instance, nothing adopted;
+            // an adoption failure is reported and the native instance returned.
+            var boom = new InvalidOperationException("native spawn failed");
+            try { Summoning.CastEffectAdoption.Spawn<StandInFx>(() => { throw boom; }, () => true, fx => fx.Tints++, null); Assertions.True(false, "Native failure propagates."); }
+            catch (InvalidOperationException error) { Assertions.True(ReferenceEquals(error, boom), "The native exception is the one propagated."); }
+            bool asked = false;
+            Assertions.True(Summoning.CastEffectAdoption.Spawn<StandInFx>(() => null, () => { asked = true; return true; }, fx => fx.Tints++, null) == null && !asked,
+                "A spawn that produced nothing adopts nothing.");
+            Exception reported = null;
+            var kept = new StandInFx("cold-cone-cast", 1f);
+            Assertions.True(ReferenceEquals(kept, Summoning.CastEffectAdoption.Spawn(() => kept, () => true, fx => { throw new InvalidOperationException("tint failed"); }, error => reported = error)) &&
+                reported != null && kept.Tints == 0, "An adoption failure is reported and the native instance is returned untouched.");
         }
 
         // VIS-05: the recolour keeps each colour's alpha and brightness and
@@ -615,10 +657,232 @@ namespace KingmakerGunslinger.DomainTests
             int seeded = 1; var failures = new List<string>();
             early.Hold("blast seeding", () => seeded = 0);
             early.ReleaseNow("blast seeding", failures);
-            Assertions.True(seeded == 0 && early.Count == 0 && failures.Count == 0, "Seeding is released right after its blast, once.");
-            string probe = File.ReadAllText("tools/LoaderCompatHarness/TrumpetCueProbes.cs");
-            Assertions.True(probe.Contains("() => script.Dispose()") && probe.Contains("owned.ReleaseAll()") && probe.Contains("owned.ReleaseNow(\"blast seeding\""),
-                "The probe's Release disposes its iterator and releases every held restore; seeding ends with its blast.");
+            Assertions.True(seeded == 0 && early.Count == 0 && failures.Count == 0, "An early release runs right away, once.");
+            Assertions.True(early.Outcome.Attempted.Count == 1 && early.Outcome.Restored, "Its outcome is kept for the slot's report.");
+        }
+
+        // R3-F2: a yielded probe built exactly as the Trumpet and Ghaele probes
+        // are (YieldedProbeLifecycle, held restores, an iterator finally that
+        // drains them), with an injectable failing restore.
+        private sealed class LifecycleProbe : KmgLoaderCompatHarness.IOwnedProbe
+        {
+            internal readonly KmgLoaderCompatHarness.OwnedProbeResources Owned = new KmgLoaderCompatHarness.OwnedProbeResources();
+            internal readonly KmgLoaderCompatHarness.YieldedProbeLifecycle Life;
+            internal int Pause, Unsubscribe, Rng, Units;
+            private readonly bool failUnsubscribe;
+            private readonly int yields;
+
+            internal LifecycleProbe(bool failUnsubscribe, int yields)
+            {
+                this.failUnsubscribe = failUnsubscribe; this.yields = yields;
+                Life = new KmgLoaderCompatHarness.YieldedProbeLifecycle(Owned, lifecycle => Body());
+            }
+
+            private IEnumerable<object> Body()
+            {
+                Owned.Hold("pause", () => Pause++);
+                Owned.Hold("save seeding subscription", () => { Unsubscribe++; if (failUnsubscribe) throw new InvalidOperationException("cannot unsubscribe"); });
+                Owned.Hold("rng", () => Rng++);
+                try { for (int index = 0; index < yields; index++) yield return null; }
+                finally
+                {
+                    KmgLoaderCompatHarness.CleanupReport held = Owned.ReleaseAll();
+                    if (!held.Restored) Life.Problems.Add("restore failures: " + string.Join("; ", held.Failures.ToArray()));
+                }
+            }
+
+            public object Result { get { return "recorded"; } }
+            public string Poll() { return Life.Poll(); }
+            public KmgLoaderCompatHarness.CleanupReport Release(string testFailure)
+            {
+                return Life.Release(new[] { new KeyValuePair<string, Action>("disposable units", () => Units++) });
+            }
+        }
+
+        // R3-F2: a restore that fails while the iterator is disposed reaches the
+        // slot: the named failure, every other release attempted once, the
+        // original test error kept, IsolationRestored=false, and no further probe.
+        internal static void ProbeCleanupReachesSlot()
+        {
+            const string owner = "3|kmgTrumpetCue_before";
+            var slot = new KmgLoaderCompatHarness.ProbeSlot();
+            var probe = new LifecycleProbe(true, 5);
+            slot.Begin(owner, probe);
+            Assertions.True(slot.Poll(owner) == null, "The probe is yielded.");
+            KmgLoaderCompatHarness.ProbeOutcome outcome = slot.Abandon("step timeout after 180s");
+            Assertions.False(outcome.IsolationRestored, "The failed unsubscribe reaches the slot as unrestored isolation.");
+            Assertions.Equal("step timeout after 180s", outcome.TestFailure, "The original test error is kept.");
+            Assertions.True(outcome.Failure.Contains("save seeding subscription") && outcome.Failure.Contains("cannot unsubscribe"), "The failure is named.");
+            Assertions.True(probe.Pause == 1 && probe.Unsubscribe == 1 && probe.Rng == 1 && probe.Units == 1, "Every release is attempted exactly once.");
+            Assertions.True(outcome.Cleanup.Attempted.Contains("pause") && outcome.Cleanup.Attempted.Contains("rng") && outcome.Cleanup.Attempted.Contains("disposable units"),
+                "The remaining releases are attempted after the failure.");
+            Assertions.False(slot.IsolationRestored, "The slot records the unrestored isolation.");
+            bool refused = false;
+            try { slot.Begin("4|kmgTrumpetCue_after", new LifecycleProbe(false, 1)); }
+            catch (InvalidOperationException error) { refused = error.Message.Contains("isolation was not restored"); }
+            Assertions.True(refused, "No other probe may start.");
+            Assertions.True(KmgLoaderCompatHarness.ProbeSlot.Decide(false, true, slot.IsolationRestored) == KmgLoaderCompatHarness.StepContinuation.StopLaunch,
+                "The launch stops.");
+
+            // The same failure at an ordinary end: the verdict and the slot both carry it.
+            var ending = new KmgLoaderCompatHarness.ProbeSlot();
+            var finished = new LifecycleProbe(true, 1);
+            ending.Begin(owner, finished);
+            Assertions.True(ending.Poll(owner) == null, "First poll yields.");
+            KmgLoaderCompatHarness.ProbeOutcome ended = ending.Poll(owner);
+            Assertions.True(ended != null && !ended.IsolationRestored && ended.TestFailure.Contains("cannot unsubscribe"), "An ordinary end with a failed restore fails isolation and the verdict.");
+            Assertions.True(finished.Pause == 1 && finished.Unsubscribe == 1 && finished.Rng == 1 && finished.Units == 1, "Each release still runs once.");
+
+            // Control: nothing fails, isolation restored, the probe passes.
+            var clean = new KmgLoaderCompatHarness.ProbeSlot();
+            var fine = new LifecycleProbe(false, 2);
+            clean.Begin(owner, fine);
+            clean.Poll(owner);
+            KmgLoaderCompatHarness.ProbeOutcome abandoned = clean.Abandon("step timeout after 180s");
+            Assertions.True(abandoned.IsolationRestored && clean.IsolationRestored && fine.Unsubscribe == 1 && fine.Units == 1, "A clean abandonment restores isolation.");
+        }
+
+        // R2-F2: the shared generator is seeded only inside the owned rule and
+        // put back at that rule's end; unrelated draws before, between and after
+        // keep exactly the values the unseeded generator gives; abandonment ends
+        // an open intervention.
+        internal static void TrumpetOwnedRollScope()
+        {
+            int state = 7;
+            Func<int> next = () => { state = unchecked(state * 1103515245 + 12345) & 0x7fffffff; return state % 20 + 1; };
+            const int seed = 424242;
+            var scope = new KmgLoaderCompatHarness.OwnedRollScope<int>(() => state, value => state = value, () => state = seed);
+            object blastSave = new object(), unrelatedSave = new object();
+            int a = next();                                   // frame 1: unrelated draw while the blast yields
+            Assertions.True(scope.Begin(blastSave), "The blast's own save opens the intervention.");
+            int forced = next();
+            Assertions.False(scope.Begin(unrelatedSave), "No second rule is seeded while one is open.");
+            Assertions.False(scope.End(unrelatedSave), "Another rule's end restores nothing.");
+            Assertions.True(scope.End(blastSave) && !scope.Active, "The owned rule's end closes the intervention.");
+            int b = next();                                   // an unrelated save's d20 in a later frame
+            int c = next();                                   // an unrelated draw after the blast
+            int control = 7;
+            Func<int> controlNext = () => { control = unchecked(control * 1103515245 + 12345) & 0x7fffffff; return control % 20 + 1; };
+            Assertions.True(a == controlNext() && b == controlNext() && c == controlNext(), "Unrelated draws keep the unseeded generator's own values; nothing is rewound.");
+            int expectedForced = unchecked(seed * 1103515245 + 12345) & 0x7fffffff;
+            Assertions.Equal(expectedForced % 20 + 1, forced, "Only the owned rule's draw comes from the seeded state.");
+            Assertions.Equal(1, scope.Seeded, "Exactly one rule was seeded.");
+
+            int before = state;
+            Assertions.True(scope.Begin(blastSave), "A new owned rule opens.");
+            scope.Abandon();
+            Assertions.True(!scope.Active && state == before, "Abandonment ends the intervention and restores the generator.");
+            Assertions.False(scope.End(blastSave), "An abandoned rule's late end does nothing.");
+            Assertions.False(scope.Begin(null), "A missing rule is never seeded.");
+        }
+
+        private static JObject Anim(bool started, bool delayed, double delay, double lifetime, bool loop, bool cutout, double current)
+        {
+            return new JObject { ["IsStarted"] = started, ["IsDelayed"] = delayed, ["Delay"] = delay, ["Lifetime"] = lifetime, ["LoopAnimation"] = loop,
+                ["DissolveCutout"] = cutout, ["PlayBackwards"] = false, ["CurrentDissolve"] = current };
+        }
+
+        private static JObject Snapshot(JArray animations, JArray driven, JArray body)
+        {
+            var snapshot = new JObject { ["t"] = 10, ["controllers"] = animations == null ? new JArray() :
+                new JArray(new JObject { ["controller"] = 1, ["animations"] = animations, ["driven"] = driven ?? new JArray() }) };
+            if (body != null) snapshot["bodyMaterials"] = body;
+            return snapshot;
+        }
+
+        // R3-F6: only positive active non-cutout loop matches with a readable
+        // driven body material confirm; empty, inactive, delayed and unreadable
+        // samples are inconclusive; the retained released and current rows are
+        // re-evaluated through the corrected predicate.
+        internal static void GhaeleAttributionRequiresPositiveSamples()
+        {
+            var donor = new HashSet<string> { "delay=4.75 lifetime=5.00 loop=True cutout=False backwards=False", "delay=0.00 lifetime=3.00 loop=False cutout=False backwards=False" };
+            Func<JObject> loop = () => Anim(true, false, 4.75, 5, true, false, .4);
+            Func<JArray> driven = () => new JArray(new JObject { ["material"] = 11, ["dissolve"] = .4 });
+            Func<JObject, string> classify = row => KmgLoaderCompatHarness.GhaeleAttribution.Classify(row, donor);
+            Assertions.Equal("positive", classify(Snapshot(new JArray(loop()), driven(), new JArray(11))), "An active donor loop driving a body material confirms.");
+            Assertions.Equal("positive", classify(Snapshot(new JArray(loop()), driven(), null)), "Without body identity recorded, a readable driven match is positive (labelled not-recorded).");
+            Assertions.Equal("inconclusive:no-controller", classify(Snapshot(null, null, new JArray(11))), "An empty controller set does not confirm.");
+            Assertions.Equal("inconclusive:no-animation", classify(Snapshot(new JArray(), driven(), new JArray(11))), "A controller without animations does not confirm.");
+            Assertions.Equal("inconclusive:no-active-animation", classify(Snapshot(new JArray(Anim(false, false, 4.75, 5, true, false, 0)), driven(), new JArray(11))), "An inactive animation does not confirm.");
+            Assertions.Equal("inconclusive:no-active-animation", classify(Snapshot(new JArray(Anim(true, true, 4.75, 5, true, false, 0)), driven(), new JArray(11))), "A delayed-only animation does not confirm.");
+            Assertions.Equal("inconclusive:no-readable-driven-value", classify(Snapshot(new JArray(loop()), new JArray(new JObject { ["material"] = 11, ["dissolve"] = -1 }), new JArray(11))),
+                "A driven material without a readable value does not confirm.");
+            Assertions.Equal("inconclusive:no-readable-driven-value", classify(Snapshot(new JArray(loop()), new JArray(), new JArray(11))), "No driven material does not confirm.");
+            Assertions.Equal("inconclusive:no-driven-body-material", classify(Snapshot(new JArray(loop()), driven(), new JArray(99))), "A driven material that is not the body's does not confirm.");
+            Assertions.Equal("inconclusive:no-active-loop", classify(Snapshot(new JArray(Anim(true, false, 0, 3, false, false, .4)), driven(), new JArray(11))), "Only the appearance animation does not confirm a loop.");
+            Assertions.Equal("contradicting", classify(Snapshot(new JArray(Anim(true, false, 4.75, 5, true, true, .4)), driven(), new JArray(11))), "A cutout dissolve contradicts.");
+            Assertions.Equal("contradicting", classify(Snapshot(new JArray(Anim(true, false, 2, 5, true, false, .4)), driven(), new JArray(11))), "A loop the donor does not run contradicts.");
+            Assertions.Equal("contradicting", classify(Snapshot(new JArray(loop()), new JArray(new JObject { ["material"] = 11, ["dissolve"] = .9 }), new JArray(11))), "A disagreeing driven value contradicts.");
+            Func<int, int, int, JObject> evaluate = (positive, inconclusive, contradicting) => KmgLoaderCompatHarness.GhaeleAttribution.Evaluate(
+                Enumerable.Repeat(Snapshot(new JArray(loop()), driven(), new JArray(11)), positive)
+                    .Concat(Enumerable.Repeat(Snapshot(null, null, new JArray(11)), inconclusive))
+                    .Concat(Enumerable.Repeat(Snapshot(new JArray(Anim(true, false, 4.75, 5, true, true, .4)), driven(), new JArray(11)), contradicting)), donor);
+            Assertions.False((bool)evaluate(0, 6, 0)["attributed"], "Only inconclusive samples never attribute.");
+            Assertions.False((bool)evaluate(4, 4, 0)["attributed"], "Fewer than five positive samples do not attribute.");
+            Assertions.False((bool)evaluate(6, 0, 1)["attributed"], "Any contradiction refuses attribution.");
+            Assertions.True((bool)evaluate(5, 3, 0)["attributed"], "Five positive samples and no contradiction attribute.");
+            Assertions.False((bool)KmgLoaderCompatHarness.GhaeleAttribution.Evaluate(Enumerable.Repeat(Snapshot(new JArray(loop()), driven(), new JArray(11)), 6), new HashSet<string>())["attributed"],
+                "Without a donor signature nothing attributes.");
+
+            // Re-evaluation of the retained released (v0.0.195) and current-candidate rows, as recorded.
+            foreach (string name in new[] { "20261124T052619Z-owner-0.33.0-s7-ghaele-01-ghaele.json", "20261124T052954Z-owner-0.33.0-s7-ghaele-01-ghaele.json" })
+            {
+                JObject probe = (JObject)JObject.Parse(File.ReadAllText(Path.Combine("docs/evidence/sprint7/r3", name)))["harness"]["kmgGhaeleLifetime_timeline"];
+                double appeared = (double)probe["timeline"]["appearanceEndedAt"], ends = (double)probe["timeline"]["lifetimeEndsAt"];
+                var signatures = new HashSet<string>(probe["donorControllers"].SelectMany(row => row["controllers"]).SelectMany(c => c["animations"]).Select(KmgLoaderCompatHarness.GhaeleAttribution.Signature));
+                var inLife = probe["controllers"].Where(row => (double)row["t"] >= appeared + 1 && (ends < 0 || (double)row["t"] < ends - .5)).ToList();
+                JObject result = KmgLoaderCompatHarness.GhaeleAttribution.Evaluate(inLife, signatures);
+                Console.WriteLine("GHAELE-REEVALUATION " + name + " productVersion=" + probe["productVersion"] + " " + result.ToString(Newtonsoft.Json.Formatting.None));
+                Assertions.True((bool)result["attributed"] && (int)result["contradicting"] == 0 && (int)result["positive"] >= KmgLoaderCompatHarness.GhaeleAttribution.MinimumPositive,
+                    name + ": the retained rows still attribute through positive samples.");
+                Assertions.Equal("not-recorded", (string)result["bodyMaterialIdentity"], name + ": the retained rows did not record body material identity.");
+            }
+        }
+
+        // R3-F3 / R3-F4 / R1-F3: the cell's condition ledger, the trace release
+        // verdict and the party-capture verdict.
+        internal static void Sprint7CellOwnershipAndCaptureVerdicts()
+        {
+            object foreign = new object(), preexisting = new object();
+            var owned = new HashSet<object>();
+            Func<object, bool> fromCellBreath = value => owned.Contains(value);
+            var present = new List<object> { foreign, preexisting };
+            owned.Add(preexisting); // a Dust-origin instance already present when the cell began is never the cell's
+            var ledger = new AcquisitionLedger<object>(present);
+            // Three mechanics casts, each observed after its readback.
+            for (int cast = 0; cast < 3; cast++) { var applied = new object(); owned.Add(applied); present.Add(applied); Assertions.Equal(1, ledger.Observe(present, fromCellBreath), "Each mechanics cast's instance is acquired."); }
+            // Later concurrent, paired, nested and final casts, and an interrupted command, never observed before cleanup.
+            for (int cast = 0; cast < 5; cast++) { var later = new object(); owned.Add(later); present.Add(later); }
+            var removed = new List<object>();
+            List<string> failures = ledger.Release(present, fromCellBreath, value => { removed.Add(value); present.Remove(value); });
+            Assertions.True(failures.Count == 0 && removed.Count == 8, "Cleanup acquires and removes every instance the cell's executions introduced, observed or not.");
+            Assertions.True(present.Contains(foreign) && present.Contains(preexisting), "The foreign control and an instance present before the cell survive.");
+            Assertions.Equal(0, ledger.Remaining(present, fromCellBreath), "No cell-owned condition remains.");
+
+            // Early exit right after application: its own ledger, released by its finally.
+            var early = new AcquisitionLedger<object>(present);
+            var applying = new object(); owned.Add(applying); present.Add(applying);
+            Assertions.Equal(1, early.Observe(present, fromCellBreath), "The early exit sees its application.");
+            failures = early.Release(present, value => fromCellBreath(value), value => { if (ReferenceEquals(value, applying)) throw new InvalidOperationException("cannot remove"); present.Remove(value); });
+            Assertions.True(failures.Count == 1 && early.Remaining(present, fromCellBreath) == 1, "A failed removal is reported and its instance is still counted as remaining.");
+
+            Assertions.True(Sprint7ObserverPolicy.Released(new List<string>(), 0), "No failure and no hook: released.");
+            Assertions.False(Sprint7ObserverPolicy.Released(new List<string> { "CreateView hooks: injected failure" }, 2), "A failed unpatch with hooks left fails the verdict.");
+            Assertions.False(Sprint7ObserverPolicy.Released(new List<string>(), 1), "A remaining owned hook fails the verdict even without a reported failure.");
+
+            const string good = "png=s7-nalfeshnee-bright-after-party.png;bytes=812345;viewport=0.5,0.48;inFrame=true;screenFade=0;luma=61.2;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=KMG_Nalfeshnee_Body;dissolve=0;intact=true;material=x;visual=y";
+            string reason;
+            Assertions.True(Sprint7ObserverPolicy.PartyCaptureValid(good, "KMG_Nalfeshnee_Body", out reason) && reason == null, "A lit, in-frame image of the enabled body passes.");
+            Assertions.False(Sprint7ObserverPolicy.PartyCaptureValid("png=<none>;reason=empty-render;inFrame=false", "KMG_Nalfeshnee_Body", out reason), "An absent image fails.");
+            Assertions.Equal("no-image:empty-render", reason, "The absent image is named.");
+            Assertions.False(Sprint7ObserverPolicy.PartyCaptureValid(good.Replace("mesh=KMG_Nalfeshnee_Body", "mesh=_ammunition04"), "KMG_Nalfeshnee_Body", out reason) || reason != "wrong-body", "A capture naming an accessory fails.");
+            Assertions.False(Sprint7ObserverPolicy.PartyCaptureValid(good.Replace("rendererEnabled=true", "rendererEnabled=false"), "KMG_Nalfeshnee_Body", out reason) || reason != "renderer-disabled", "A disabled renderer fails.");
+            Assertions.False(Sprint7ObserverPolicy.PartyCaptureValid(good.Replace("screenLit=true", "screenLit=false"), "KMG_Nalfeshnee_Body", out reason) || reason != "unlit", "An unlit frame fails.");
+            Assertions.False(Sprint7ObserverPolicy.PartyCaptureValid(good.Replace("inFrame=true", "inFrame=false"), "KMG_Nalfeshnee_Body", out reason) || reason != "out-of-frame", "An out-of-frame unit fails.");
+            Assertions.False(Sprint7ObserverPolicy.PartyCaptureValid(good.Replace("screenFade=0", "screenFade=0.6"), "KMG_Nalfeshnee_Body", out reason) || reason != "screen-fade", "A frame under the native fade fails.");
+            Assertions.False(Sprint7ObserverPolicy.PartyCaptureValid(good.Replace("intact=true", "intact=false"), "KMG_Nalfeshnee_Body", out reason) || reason != "dissolved", "A dissolving body fails.");
+            Assertions.False(Sprint7ObserverPolicy.PartyCaptureValid(good, null, out reason), "Without an expected body nothing passes.");
         }
 
         private static IEnumerable<object> Body(KmgLoaderCompatHarness.OwnedProbeResources owned, Action unpause, Action subscribe, Action seed,

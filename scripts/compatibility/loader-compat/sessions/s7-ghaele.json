@@ -1,6 +1,6 @@
 {
   "name": "s7-ghaele",
-  "description": "Sprint 7 T1 / REP-04 review R1-F2: an ordinary Ghaele timeline observed by the harness (kmgGhaeleLifetime) on whichever product package the session loads - run once on the released v0.0.195 package (baseline) and once on the candidate - in the disposable fixture save. The published summon is cast as a native command from the main character (caster level 20 only; an existing ability borrowed and restored, a granted one released by instance); arrival and appearance kept; native donor AzataGhaelSummoned spawned without a summon; time unpaused through the native expiry. No attack: the fixture save has no hostile. The product runs alone with the harness.",
+  "description": "Sprint 7 T1 / REP-04 (reviews R1-F2, R2-F4, R3-F1, R3-F5, R3-F6): harness-observed Ghaele (kmgGhaeleLifetime) on whichever product package the session loads - the released v0.0.195 package (baseline) and the candidate - in the disposable fixture save (Jamandi mansion throne room, interior). Step lifecycle: the cast ownership boundaries (borrowed ability with non-default parameters, replaced temporary grant, abandonment with the command pending, abandonment after spawn before registration, an unrelated unit's command preserved). Step timeline: the published summon cast as one owned native command (caster level 20 for that cast only; the loan ends when the cast settles), arrival and appearance kept, native donor AzataGhaelSummoned spawned without a summon, an ordinary move, an ordinary combat against a disposable hostile target (a DefaultPlayerCharacter copy under a loaded faction hostile to the Ghaele, brain off) with attack rolls, the lighting context idle and in combat (ambient, light probe, nearby lights, the game camera party view through the product capture helper), time unpaused through the native expiry, and positive-only attribution of the body value to the donor loop. The product runs alone with the harness.",
   "ownerMods": [],
   "fixtureSaves": [
     "KMCS_AFTER_NORMAL_012_MODONLY.zks"
@@ -31,6 +31,12 @@
             "op": "kmgInitialization",
             "label": "create",
             "expect": "completed"
+          },
+          {
+            "op": "kmgGhaeleLifetime",
+            "label": "lifecycle",
+            "match": "lifecycle",
+            "timeoutSeconds": 240
           },
           {
             "op": "kmgGhaeleLifetime",
