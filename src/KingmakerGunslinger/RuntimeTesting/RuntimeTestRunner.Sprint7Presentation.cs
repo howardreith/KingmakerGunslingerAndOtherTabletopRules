@@ -1175,7 +1175,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DateTime retiredAt = DateTime.UtcNow;
                 mark("anky-retire");
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { second });
-                foreach (int step in R6Seconds(5f)) yield return step;
+                DateTime ends = DateTime.UtcNow.AddSeconds(10);
+                while (DateTime.UtcNow < ends && !(retiring != null && retiring.EndUtc.HasValue && survivor != null && survivor.EndUtc.HasValue)) yield return 0;
+                row["cuesAfterRetirement"] = new JObject { ["first"] = new JArray(S7ImpactCues(first).Select(S7Cue)), ["second"] = new JArray(S7ImpactCues(second).Select(S7Cue)), ["frame"] = Time.frameCount };
                 first.Commands.InterruptAll(command => true); first.Commands.RemoveFinishedAndUpdateQueue();
                 mark("anky-concurrent-end");
                 row["retired"] = retiring == null ? null : S7Cue(retiring);
@@ -1774,7 +1776,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int step in R6Cell("s7-dust", () => S7Dust(fixture, summon, hostile, record, mark, ground, recorder, abilityData, symbols, saves[0]))) yield return step;
                 foreach (int step in R6Cell("s7-samples", () =>
                 {
-                    UnitEntityData anchor = owned.FirstOrDefault(value => !value.Destroyed && value.View != null && value.View.gameObject != null) ?? summon("ankylosaurus");
+                    // The caster is the emitter: a summon can reach its native expiry during the samples.
+                    UnitEntityData anchor = fixture.Caster;
                     UnitEntityData trumpet = summon("trumpet-archon");
                     PlaceExpandedSummoningUnit(trumpet, ground(centre + Vector3.right * 2f));
                     return S7Samples(anchor, record, mark, "impact", new[] { AnkylosaurusTailImpactPolicy.ImpactCue, "Physical_Hit_03_Punch", "Earthblast_Hit", "DustCritHeavy", "MediumBluntNatural_Flesh" })
