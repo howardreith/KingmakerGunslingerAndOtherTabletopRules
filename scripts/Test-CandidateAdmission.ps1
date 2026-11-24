@@ -500,11 +500,11 @@ foreach ($mode in @('build-local', 'development', 'historical-release')) {
     # --- Package measurement is an opt-in structured return (R4-F4): with it, the object's digest is the final ZIP's and
     #     its checksum file's; without it, the default output is still the package path.
     $packageScript = Join-Path $clone 'scripts\package.ps1'
-    $measuredZip = Join-Path $variants 'measured-package.zip'
+    $measuredZip = Join-Path $clone 'artifacts\packages\measured-package.zip'
     $pm = Invoke-PS @('-Command', "`$o = @(& '$($packageScript.Replace("'", "''"))' -Configuration Release -PackagePath '$($measuredZip.Replace("'", "''"))' -PassThruMeasurement) | Select-Object -Last 1; 'MEASUREMENT ' + `$o.packageSha256 + ' ' + `$o.dll.sha256 + ' ' + (`$o.packagePath -ceq '$($measuredZip.Replace("'", "''"))')")
     $pmMatch = [regex]::Match($pm.Output, 'MEASUREMENT ([0-9a-f]{64}) ([0-9a-f]{64}) True')
     $checksumText = if (Test-Path -LiteralPath "$measuredZip.sha256") { [IO.File]::ReadAllText("$measuredZip.sha256") } else { '' }
-    $defaultZip = Join-Path $variants 'default-package.zip'
+    $defaultZip = Join-Path $clone 'artifacts\packages\default-package.zip'
     $pd = Invoke-PS @('-Command', "`$o = @(& '$($packageScript.Replace("'", "''"))' -Configuration Release -PackagePath '$($defaultZip.Replace("'", "''"))') | Select-Object -Last 1; 'DEFAULT-OUTPUT ' + (`$o -is [string]) + ' ' + (`$o -ceq '$($defaultZip.Replace("'", "''"))')")
     Add-Case 'package-measurement-return-leaves-the-zip-equal-to-its-checksum' ($pm.ExitCode -eq 0 -and $pmMatch.Success -and $pmMatch.Groups[1].Value -ceq (Get-Sha $measuredZip) -and $checksumText -match ('^' + $pmMatch.Groups[1].Value) -and $pd.Output -match 'DEFAULT-OUTPUT True True') ("measured $($pmMatch.Groups[1].Value); file $(Get-Sha $measuredZip); checksum file '$($checksumText.Trim())'; " + [regex]::Match($pd.Output, 'DEFAULT-OUTPUT \w+ \w+').Value)
 
