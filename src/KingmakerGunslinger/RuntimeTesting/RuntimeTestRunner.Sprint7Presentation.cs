@@ -181,6 +181,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             return new JObject { ["scenery"] = scenery, ["otherUnits"] = others, ["distance"] = Math.Round(distance, 2) };
         }
 
+        private static readonly float[] S7YawOffsets = { 0f, 15f, -15f, 30f, -30f, 45f, -45f, 60f, -60f };
+
+        private static Vector3 S7ClearDirection(UnitEntityData unit, Bounds bounds, Vector3 nominal, float minimumRadius, bool detail, out JObject measured)
+        {
+            JObject best = null; Vector3 chosen = nominal; int bestScore = int.MaxValue;
+            foreach (float yaw in S7YawOffsets)
+            {
+                Vector3 direction = Quaternion.Euler(0f, yaw, 0f) * nominal;
+                JObject hits = S7Occluders(unit, bounds, direction, minimumRadius);
+                int score = (int)hits["scenery"] + (detail ? (int)hits["otherUnits"] : 0);
+                hits["yawOffset"] = yaw;
+                if (score < bestScore) { bestScore = score; best = hits; chosen = direction; }
+                if (score == 0) break;
+            }
+            measured = best;
+            return chosen;
+        }
+
         private IEnumerable<int> S7Stills(UnitEntityData unit, S7Model model, string state, string scene, JObject row)
         {
             foreach (int step in SummonOverhaulSettlePartyCamera(unit)) yield return step;
@@ -191,11 +209,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             Quaternion facing = unit.View.transform.rotation;
             foreach (var view in new[] { new { Name = "front", Local = new Vector3(.55f, .32f, .78f) }, new { Name = "rear", Local = new Vector3(-.55f, .32f, -.78f) } })
             {
-                Vector3 direction = facing * view.Local.normalized;
+                JObject measured;
+                Vector3 direction = S7ClearDirection(unit, R6RenderBounds(unit), facing * view.Local.normalized, .9f, false, out measured);
                 using (var clip = new R6Clip(_request.EvidenceDirectory, "s7-" + model.Key + "-" + scene + "-" + state + "-" + view.Name,
                     () => R6RenderBounds(unit), direction))
                 {
-                    occluders[view.Name] = S7Occluders(unit, R6RenderBounds(unit), direction, .9f);
+                    occluders[view.Name] = measured;
                     clip.Shot(new JObject { ["state"] = state, ["occluders"] = occluders[view.Name].DeepClone() });
                     row[view.Name] = clip.OutOfFrame == 0;
                 }
@@ -205,13 +224,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 float radius = R7Number(detail[2]);
                 var local = new Vector3(R7Number(detail[3]), R7Number(detail[4]), R7Number(detail[5])).normalized;
                 string bone = detail[1];
-                Vector3 direction = facing * local;
                 float minimum = radius * unit.View.transform.lossyScale.y;
                 Bounds bounds = S7BoneBounds(unit, bone, radius);
+                JObject measured;
+                Vector3 direction = S7ClearDirection(unit, bounds, facing * local, minimum, true, out measured);
                 using (var clip = new R6Clip(_request.EvidenceDirectory, "s7-" + model.Key + "-" + scene + "-" + state + "-detail-" + detail[0],
                     () => S7BoneBounds(unit, bone, radius), direction, minimum))
                 {
-                    occluders["detail-" + detail[0]] = S7Occluders(unit, bounds, direction, minimum);
+                    occluders["detail-" + detail[0]] = measured;
                     clip.Shot(new JObject { ["state"] = state, ["bone"] = bone, ["occluders"] = occluders["detail-" + detail[0]].DeepClone() });
                     row["detail-" + detail[0]] = clip.OutOfFrame == 0;
                 }
@@ -335,7 +355,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool different = swap.CurrentVertices != swap.BeforeVertices || model.Salamander;
                 Sprint25Check("s7-" + model.Key + "-" + scene, shown && settled && framed && clear && moved && turned && attacked && different,
                     (JObject)row.DeepClone(),
-                    "The published summon shows the Sprint 7 export after its arrival and appearance settle (the fixture helper removes the appearance buffs; every body material reads _Dissolve 0); the pinned pre-Sprint-7 export is shown on the same live unit; whole-body views and every named-bone detail are framed and clear of scenery, details also of other units; and both complete the observed idle, movement, a turn of more than 45 degrees and any attack.");
+                    "The published summon shows the Sprint 7 export after its arrival and appearance settle (the fixture helper removes the appearance buffs; every body material reads _Dissolve 0); the pinned pre-Sprint-7 export is shown on the same live unit; whole-body views and every named-bone detail are framed and clear of scenery, details also of other units (each view keeps its nominal bearing or the nearest yaw offset up to 60 degrees that is clear, recorded); and both complete the observed idle, movement, a turn of more than 45 degrees and any attack.");
             }
         }
 
@@ -717,30 +737,54 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool fought = hostile == null || attackRow["rules"] != null && ((JArray)attackRow["rules"]).Count > 0;
                 Sprint25Check("s7-ghaele-" + scene + "-visible-lifetime", visible && expired && walked && fought, new JObject { ["a"] = rows[0].DeepClone(), ["move"] = moveRow.DeepClone(), ["attack"] = attackRow.DeepClone() },
                     "An ordinarily summoned Ghaele's body renderer (the enabled skinned renderer with the most vertices) has no surface-removing (cutout) dissolve above 0.02 from appearance completion until its native lifetime ends, an ordinary move travels more than 2 m, and the summon is removed at its genuine expiry. The raw _Dissolve, which also drives the native non-cutout edge band, is recorded beside it.");
-                // Attribution: any other renderer whose dissolve rises in life,
-                // compared with the same renderer on the native donor that was
-                // spawned, never summoned, at the same game times.
+                // Attribution: the native dissolve animation controllers on the
+                // summon, read every ten seconds in life. Each animation must
+                // have a signature (delay, lifetime, loop, cutout, direction)
+                // that the native donor, spawned and never summoned, also runs,
+                // must not be a cutout dissolve, and every driven material's
+                // _Dissolve must equal the animation's own current value. Each
+                // unit's loop starts at its own spawn, so values at the same
+                // moment differ in phase and are not compared.
                 S7LifeSubject nativeDonor = subjects.FirstOrDefault(value => value.Label == "native-donor");
-                var shared = new JArray(); int compared = 0, matched = 0;
-                if (nativeDonor != null)
-                    foreach (JObject sample in a.Samples.OfType<JObject>().Where(value => value["renderers"] != null && value["renderers"].Type == JTokenType.Object))
+                Func<JToken, string> signature = animation => string.Format(CultureInfo.InvariantCulture, "delay={0:F2} lifetime={1:F2} loop={2} cutout={3} backwards={4}",
+                    (double)animation["Delay"], (double)animation["Lifetime"], (bool)animation["LoopAnimation"], (bool)animation["DissolveCutout"], (bool)animation["PlayBackwards"]);
+                Func<S7LifeSubject, IEnumerable<JObject>> snapshots = subject => subject.Controllers.OfType<JObject>().Where(value => value["state"] is JObject);
+                Func<JObject, IEnumerable<JObject>> animationsOf = state => (state["controllers"] as JArray ?? new JArray()).OfType<JObject>()
+                    .SelectMany(controller => (controller["animations"] as JArray ?? new JArray()).OfType<JObject>().Select(animation => { var copy = (JObject)animation.DeepClone(); copy["driven"] = controller["drivenMaterials"]; return copy; }));
+                var donorSignatures = new HashSet<string>(nativeDonor == null ? new string[0] : snapshots(nativeDonor).SelectMany(value => animationsOf((JObject)value["state"])).Select(signature));
+                double appearedAt = a.AppearEnded.HasValue ? (a.AppearEnded.Value - a.Spawned).TotalSeconds : double.MaxValue;
+                double lifeEnd = a.LifetimeEnd.HasValue ? (a.LifetimeEnd.Value - a.Spawned).TotalSeconds : double.MaxValue;
+                int inLife = 0, consistent = 0, valueChecks = 0;
+                var findings = new JArray();
+                foreach (JObject snapshot in snapshots(a).Where(value => (double)value["t"] >= appearedAt + 1 && (double)value["t"] < lifeEnd - .5))
+                {
+                    inLife++;
+                    var state = (JObject)snapshot["state"];
+                    var dissolveOf = new Dictionary<long, double>();
+                    foreach (JObject material in (state["skins"] as JArray ?? new JArray()).OfType<JObject>().SelectMany(skin => (skin["materials"] as JArray ?? new JArray()).OfType<JObject>()))
+                        if (material["instance"] != null && material["properties"] != null && material["properties"]["_Dissolve"] != null && material["properties"]["_Dissolve"].Type != JTokenType.Null)
+                            dissolveOf[(long)material["instance"]] = (double)material["properties"]["_Dissolve"];
+                    bool ok = true;
+                    foreach (JObject animation in animationsOf(state))
                     {
-                        double at = (double)sample["t"] + (a.Spawned - nativeDonor.Spawned).TotalSeconds;
-                        JObject donorSample = nativeDonor.Samples.OfType<JObject>().Where(value => value["renderers"] != null && value["renderers"].Type == JTokenType.Object)
-                            .OrderBy(value => Math.Abs((double)value["t"] - at)).FirstOrDefault();
-                        if (donorSample == null || Math.Abs((double)donorSample["t"] - at) > .6) continue;
-                        foreach (JProperty level in ((JObject)sample["renderers"]).Properties().Where(value => (double)value.Value > .02))
-                        {
-                            JToken donorLevel = donorSample["renderers"][level.Name];
-                            compared++;
-                            if (donorLevel != null && Math.Abs((double)donorLevel - (double)level.Value) <= .1) matched++;
-                            if (shared.Count < 12) shared.Add(new JObject { ["t"] = sample["t"], ["renderer"] = level.Name, ["summon"] = level.Value, ["donor"] = donorLevel });
-                        }
+                        string name = signature(animation);
+                        if (!donorSignatures.Contains(name) || (bool)animation["DissolveCutout"]) { ok = false; findings.Add(new JObject { ["t"] = snapshot["t"], ["unmatched"] = name }); }
+                        if ((bool)animation["IsStarted"] && !(bool)animation["IsDelayed"])
+                            foreach (long driven in (animation["driven"] as JArray ?? new JArray()).Values<long>().Where(dissolveOf.ContainsKey))
+                            {
+                                valueChecks++;
+                                if (Math.Abs(dissolveOf[driven] - (double)animation["CurrentDissolve"]) > .001)
+                                { ok = false; findings.Add(new JObject { ["t"] = snapshot["t"], ["material"] = driven, ["material_Dissolve"] = dissolveOf[driven], ["animation"] = animation["CurrentDissolve"] }); }
+                            }
                     }
-                row["loopAttribution"] = new JObject { ["compared"] = compared, ["matchedDonor"] = matched, ["examples"] = shared };
-                Sprint25Check("s7-ghaele-" + scene + "-dissolve-attribution", nativeDonor != null && compared > 0 && matched >= compared * 9 / 10,
+                    if (ok) consistent++;
+                }
+                row["loopAttribution"] = new JObject { ["donorSignatures"] = new JArray(donorSignatures),
+                    ["summonSignatures"] = new JArray(snapshots(a).SelectMany(value => animationsOf((JObject)value["state"])).Select(signature).Distinct()),
+                    ["snapshotsInLife"] = inLife, ["consistent"] = consistent, ["valueChecks"] = valueChecks, ["findings"] = findings };
+                Sprint25Check("s7-ghaele-" + scene + "-dissolve-attribution", nativeDonor != null && donorSignatures.Count > 0 && inLife >= 5 && consistent == inLife && valueChecks >= inLife,
                     (JObject)row["loopAttribution"].DeepClone(),
-                    "Every non-body renderer whose _Dissolve rises during the summon's life carries the same value at the same moment on the native donor, which was spawned and never summoned: a native looping material, not the summon's appearance or lifetime.");
+                    "Through the Ghaele's life every native dissolve animation on it is non-cutout and has a signature the native donor (spawned, never summoned) also runs, and every driven material's _Dissolve equals that animation's own current value: the rising _Dissolve is the native looping edge animation, not the summon's appearance or lifetime.");
                 bool secondVisible = second != null && second.AppearEnded.HasValue && second.MaxBodyDissolveSettled >= 0f && second.MaxBodyDissolveSettled <= .02f;
                 bool isolated = row["materialsDistinct"] != null && (bool)row["materialsDistinct"] && (bool)row["donorMaterialsDistinct"];
                 S7LifeSubject donorSubject = subjects.FirstOrDefault(value => value.Label == "native-donor");
@@ -1446,7 +1490,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     cast["resourceAfter"] = resource == null ? (int?)null : dust.Descriptor.Resources.GetResourceAmount(resource.RequiredResource);
                     cast["availableAfter"] = abilityData(dust, breath).IsAvailable;
-                    var contexts = recorder.Applied.Skip(appliedFrom).Where(value => ReferenceEquals(value.MaybeCaster, dust) && ReferenceEquals(value.AbilityBlueprint, breath)).ToList();
+                    // The native notice is raised once per delivery target; the execution is the distinct context.
+                    var contexts = recorder.Applied.Skip(appliedFrom).Where(value => ReferenceEquals(value.MaybeCaster, dust) && ReferenceEquals(value.AbilityBlueprint, breath)).Distinct().ToList();
                     AbilityExecutionContext context = contexts.Count == 1 ? contexts[0] : null;
                     Func<Kingmaker.UnitLogic.Mechanics.MechanicsContext, bool> mine = value => value != null && context != null &&
                         (ReferenceEquals(value, context) || ReferenceEquals(value.SourceAbilityContext, context));
@@ -1538,6 +1583,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25Check("s7-dust-foreign-ability", foreignNative, foreign, "The Dust Mephit executing the Ice breath (same launcher, same cold cone, different ability) gets the native cone, untouched.");
                 if (grantedIce) { dust.Descriptor.RemoveFact(iceBreath); grantedIce = false; }
                 foreach (int step in S7WaitDustReleased()) yield return step;
+                var foreignEffects = foreignCreations.SelectMany(value => ((JArray)value["effects"]).OfType<JObject>()).ToList();
+                DateTime foreignRelease = DateTime.UtcNow.AddSeconds(20);
+                while (DateTime.UtcNow < foreignRelease && foreignEffects.Any(trace.Live)) yield return 0;
 
                 // 3. Reuse: a later native consumer claims the pooled instance the
                 // Dust breaths used, and reads it as native before any product code.
@@ -1550,14 +1598,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int step in R6RunPassive(ice, abilityData(ice, iceBreath), new TargetWrapper(hostile), iceAgain, null)) yield return step;
                 foreach (int step in R6Seconds(1f)) yield return step;
                 mark("dust-reuse-end");
-                var reuseEffects = trace.Creations.Skip(reuseFrom).OfType<JObject>().Where(value => (string)value["launcher"] == ice.UniqueId)
+                var iceEffects = trace.Creations.Skip(reuseFrom).OfType<JObject>().Where(value => (string)value["launcher"] == ice.UniqueId)
                     .SelectMany(value => ((JArray)value["effects"]).OfType<JObject>()).ToList();
-                bool reused = reuseEffects.Count == 1 && dustInstances.Contains((int)reuseEffects[0]["instance"]);
-                bool reusedNative = reused && originals.Contains((string)reuseEffects[0]["before"]["hash"]) && (bool?)reuseEffects[0]["tinted"] == false &&
-                    (string)reuseEffects[0]["before"]["hash"] == (string)reuseEffects[0]["after"]["hash"] && (int)reuseEffects[0]["before"]["dustClones"] == 0;
-                Sprint25Check("s7-dust-pool-reuse", reused && reusedNative, new JObject { ["dustInstances"] = new JArray(dustInstances), ["dustOriginalSignatures"] = new JArray(originals),
-                        ["ice"] = new JArray(reuseEffects.Select(value => value.DeepClone())) },
-                    "The Ice Mephit's next cone is the same pooled instance the Dust breaths used (same instance ID), and before any product code it reads exactly the native signature recorded before the first Dust tint; it stays untouched.");
+                // Every later consumer that is not the Dust breath: the Dust
+                // Mephit's own Ice breath and the Ice Mephit's breath.
+                var laterNative = foreignEffects.Concat(iceEffects).ToList();
+                var reusedRows = laterNative.Where(effect => dustInstances.Contains((int)effect["instance"])).ToList();
+                bool allNative = laterNative.Count == 2 && laterNative.All(effect => originals.Contains((string)effect["before"]["hash"]) && (bool?)effect["tinted"] == false &&
+                    (string)effect["before"]["hash"] == (string)effect["after"]["hash"] && (int)effect["before"]["dustClones"] == 0);
+                Sprint25Check("s7-dust-pool-reuse", reusedRows.Count >= 1 && allNative, new JObject { ["dustInstances"] = new JArray(dustInstances), ["dustOriginalSignatures"] = new JArray(originals),
+                        ["laterConsumers"] = new JArray(laterNative.Select(value => value.DeepClone())), ["reusedDustInstance"] = reusedRows.Count },
+                    "A later consumer that is not the Dust breath claims the very pooled instance the Dust breaths used (same instance ID), and before any product code it reads exactly the native signature recorded before the first Dust tint; every later consumer stays untouched.");
                 foreach (int step in S7WaitDustReleased()) yield return step;
 
                 // 4. Cancelled before execution: no effect, no damage.
@@ -1719,7 +1770,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int step in R6Cell("s7-dust", () => S7Dust(fixture, summon, hostile, record, mark, ground, recorder, abilityData, symbols, saves[0]))) yield return step;
                 foreach (int step in R6Cell("s7-samples", () =>
                 {
-                    UnitEntityData anchor = owned.FirstOrDefault(value => !value.Destroyed) ?? summon("ankylosaurus");
+                    UnitEntityData anchor = owned.FirstOrDefault(value => !value.Destroyed && value.View != null && value.View.gameObject != null) ?? summon("ankylosaurus");
                     UnitEntityData trumpet = summon("trumpet-archon");
                     PlaceExpandedSummoningUnit(trumpet, ground(centre + Vector3.right * 2f));
                     return S7Samples(anchor, record, mark, "impact", new[] { AnkylosaurusTailImpactPolicy.ImpactCue, "Physical_Hit_03_Punch", "Earthblast_Hit", "DustCritHeavy", "MediumBluntNatural_Flesh" })
