@@ -380,6 +380,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             return max;
         }
 
+        // The native dissolve only removes surface when its cutout is on
+        // (StandardMaterialController writes _DissolveCutout from the
+        // animation's DissolveCutout); otherwise it draws the coloured edge.
+        private static float S7RendererCutoutDissolve(Renderer renderer)
+        {
+            float max = 0f;
+            foreach (Material material in renderer.sharedMaterials)
+                if (material != null && material.HasProperty("_Dissolve") && material.IsKeywordEnabled("DISSOLVE_ON") &&
+                    material.HasProperty("_DissolveCutout") && material.GetFloat("_DissolveCutout") >= .5f)
+                    max = Math.Max(max, material.GetFloat("_Dissolve"));
+            return max;
+        }
+
         private static SkinnedMeshRenderer S7Body(UnitEntityData unit)
         {
             return unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
@@ -422,13 +435,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 subject.MaxDissolveAt = stage + "@" + (clock - subject.Spawned).TotalSeconds.ToString("0.0");
             }
             if (!alive && !subject.Ended.HasValue) subject.Ended = clock;
-            float body = -1f, first = -1f;
+            float body = -1f, first = -1f, bodyCut = -1f;
             JObject renderers = null;
             if (alive)
             {
                 SkinnedMeshRenderer bodyRenderer = S7Body(unit);
                 SkinnedMeshRenderer firstRenderer = unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).FirstOrDefault();
-                if (bodyRenderer != null) { body = S7RendererDissolve(bodyRenderer); subject.BodyRenderer = S7RendererName(bodyRenderer); }
+                if (bodyRenderer != null) { body = S7RendererDissolve(bodyRenderer); bodyCut = S7RendererCutoutDissolve(bodyRenderer); subject.BodyRenderer = S7RendererName(bodyRenderer); }
                 if (firstRenderer != null) { first = S7RendererDissolve(firstRenderer); subject.FirstSkinned = S7RendererName(firstRenderer); }
                 if (subject.RendererCensus == null)
                     subject.RendererCensus = new JArray(unit.View.GetComponentsInChildren<Renderer>(true).Where(value => value != null)
@@ -446,15 +459,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (level >= 0f) renderers[S7RendererName(value)] = Math.Round(level, 3);
                     }
                 }
-                if (inLife && body > subject.MaxBodyDissolveSettled)
+                if (inLife && bodyCut > subject.MaxBodyDissolveSettled)
                 {
-                    subject.MaxBodyDissolveSettled = body;
+                    subject.MaxBodyDissolveSettled = bodyCut;
                     subject.MaxBodyDissolveAt = stage + "@" + (clock - subject.Spawned).TotalSeconds.ToString("0.0");
                 }
             }
             subject.SampleCount++;
             subject.Samples.Add(new JObject { ["t"] = Math.Round((clock - subject.Spawned).TotalSeconds, 2), ["stage"] = stage,
-                ["alive"] = alive, ["dissolve"] = dissolve, ["body"] = body, ["firstSkinned"] = first, ["appear"] = appear != null,
+                ["alive"] = alive, ["dissolve"] = dissolve, ["body"] = body, ["bodyCutout"] = bodyCut, ["firstSkinned"] = first, ["appear"] = appear != null,
                 ["remaining"] = summoned == null ? (double?)null : Math.Round((summoned.EndTime - clock).TotalSeconds, 2),
                 ["position"] = alive ? SurveyVector(unit.Position) : null, ["renderers"] = renderers });
         }
@@ -526,6 +539,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             SkinnedMeshRenderer shotBody = S7Body(first);
                             state["t"] = Math.Round(t, 2); state["dissolve"] = S7MaxDissolve(first);
                             state["body"] = shotBody == null ? -1f : S7RendererDissolve(shotBody);
+                            state["bodyCutout"] = shotBody == null ? -1f : S7RendererCutoutDissolve(shotBody);
                             clip.Shot(state);
                         }
                         // The native dissolve-animation controllers, every ten seconds.
@@ -583,7 +597,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["endedAt"] = subject.Ended.HasValue ? Math.Round((subject.Ended.Value - subject.Spawned).TotalSeconds, 2) : (double?)null,
                         ["maxDissolveInLife"] = subject.MaxDissolveSettled, ["maxDissolveAt"] = subject.MaxDissolveAt,
                         ["bodyRenderer"] = subject.BodyRenderer, ["firstSkinned"] = subject.FirstSkinned,
-                        ["maxBodyDissolveInLife"] = subject.MaxBodyDissolveSettled, ["maxBodyDissolveAt"] = subject.MaxBodyDissolveAt,
+                        ["maxBodyCutoutDissolveInLife"] = subject.MaxBodyDissolveSettled, ["maxBodyCutoutDissolveAt"] = subject.MaxBodyDissolveAt,
                         ["rendererCensus"] = subject.RendererCensus, ["controllers"] = subject.Controllers,
                         ["samples"] = subject.Samples });
                 row["subjects"] = rows;
@@ -594,7 +608,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     a.Ended.Value >= a.LifetimeEnd.Value - TimeSpan.FromSeconds(1) && a.Ended.Value <= a.LifetimeEnd.Value + TimeSpan.FromSeconds(15);
                 bool walked = moveRow["travel"] != null && (float)moveRow["travel"] > 2f;
                 Sprint25Check("s7-ghaele-" + scene + "-visible-lifetime", visible && expired && walked, new JObject { ["a"] = rows[0].DeepClone(), ["move"] = moveRow.DeepClone(), ["attack"] = attackRow.DeepClone() },
-                    "An ordinarily summoned Ghaele's body renderer (the enabled skinned renderer with the most vertices) stays undissolved (_Dissolve at most 0.02) from appearance completion until its native lifetime ends, an ordinary move travels more than 2 m, and the summon is removed at its genuine expiry.");
+                    "An ordinarily summoned Ghaele's body renderer (the enabled skinned renderer with the most vertices) has no surface-removing (cutout) dissolve above 0.02 from appearance completion until its native lifetime ends, an ordinary move travels more than 2 m, and the summon is removed at its genuine expiry. The raw _Dissolve, which also drives the native non-cutout edge band, is recorded beside it.");
                 // Attribution: any other renderer whose dissolve rises in life,
                 // compared with the same renderer on the native donor that was
                 // spawned, never summoned, at the same game times.
@@ -622,11 +636,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool secondVisible = second != null && second.AppearEnded.HasValue && second.MaxBodyDissolveSettled >= 0f && second.MaxBodyDissolveSettled <= .02f;
                 bool isolated = row["materialsDistinct"] != null && (bool)row["materialsDistinct"] && (bool)row["donorMaterialsDistinct"];
                 S7LifeSubject donorSubject = subjects.FirstOrDefault(value => value.Label == "native-donor");
-                bool donorClean = donorSubject == null || donorSubject.Samples.All(value => (float)value["body"] <= .02f || !(bool)value["alive"]);
+                bool donorClean = donorSubject == null || donorSubject.Samples.All(value => (float)value["bodyCutout"] <= .02f || !(bool)value["alive"]);
                 Sprint25Check("s7-ghaele-" + scene + "-isolation", secondVisible && isolated && donorClean,
                     new JObject { ["second"] = second == null ? null : rows[rows.Count - 1].DeepClone(), ["materialsDistinct"] = row["materialsDistinct"],
                         ["donorMaterialsDistinct"] = row["donorMaterialsDistinct"], ["donorClean"] = donorClean },
-                    "A second Ghaele summoned during the first's life keeps an undissolved body through its own life; the two summons and the native donor hold distinct material instances, and the donor's body stays undissolved.");
+                    "A second Ghaele summoned during the first's life has no cutout dissolve through its own life; the two summons and the native donor hold distinct material instances, and the donor's body shows no cutout dissolve.");
             }
             finally
             {
@@ -956,40 +970,49 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        // Read-only record of each projectile's cast effect, the visible
+        // cone: native CreateView spawns it through FxHelper.SpawnFxOnPoint.
+        // The prefix notes the launching projectile; the last-running postfix
+        // on the spawn records the instance as the product left it.
         private sealed class S7ProjectileTrace : IDisposable
         {
             private static S7ProjectileTrace active;
+            private static Kingmaker.Controllers.Projectiles.Projectile current;
             private readonly Harmony12.HarmonyInstance harmony;
             private readonly string id = "KMG.S7.Projectile." + Guid.NewGuid().ToString("N");
-            private readonly System.Reflection.MethodInfo method = typeof(Kingmaker.Controllers.Projectiles.ProjectileController)
+            private readonly System.Reflection.MethodInfo create = typeof(Kingmaker.Controllers.Projectiles.ProjectileController)
                 .GetMethod("CreateView", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic |
                     System.Reflection.BindingFlags.Instance, null,
                     new[] { typeof(Kingmaker.Controllers.Projectiles.Projectile), typeof(Vector3?) }, null);
-            internal readonly List<KeyValuePair<Kingmaker.Controllers.Projectiles.Projectile, GameObject>> Views =
-                new List<KeyValuePair<Kingmaker.Controllers.Projectiles.Projectile, GameObject>>();
+            private readonly System.Reflection.MethodInfo spawn = typeof(Kingmaker.Visual.Particles.FxHelper).GetMethod("SpawnFxOnPoint",
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static, null,
+                new[] { typeof(GameObject), typeof(Vector3), typeof(Quaternion) }, null);
             internal readonly JArray Rows = new JArray();
 
             internal S7ProjectileTrace()
             {
-                if (active != null || method == null) throw new InvalidOperationException("Projectile reader unavailable.");
+                if (active != null || create == null || spawn == null) throw new InvalidOperationException("Projectile readers unavailable.");
                 harmony = Harmony12.HarmonyInstance.Create(id);
-                // Runs after the product's own postfix on the same method.
-                var postfix = new Harmony12.HarmonyMethod(typeof(S7ProjectileTrace).GetMethod("After",
-                    System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)) { prioritiy = Harmony12.Priority.Last };
-                harmony.Patch(method, null, postfix);
+                var flags = System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic;
+                harmony.Patch(create, new Harmony12.HarmonyMethod(typeof(S7ProjectileTrace).GetMethod("Before", flags)) { prioritiy = Harmony12.Priority.First },
+                    new Harmony12.HarmonyMethod(typeof(S7ProjectileTrace).GetMethod("AfterCreate", flags)) { prioritiy = Harmony12.Priority.Last });
+                harmony.Patch(spawn, null, new Harmony12.HarmonyMethod(typeof(S7ProjectileTrace).GetMethod("AfterSpawn", flags)) { prioritiy = Harmony12.Priority.Last });
                 active = this;
             }
 
-            private static void After(Kingmaker.Controllers.Projectiles.Projectile __0)
+            private static void Before(Kingmaker.Controllers.Projectiles.Projectile __0) { current = __0; }
+            private static void AfterCreate() { current = null; }
+
+            private static void AfterSpawn(GameObject __result, GameObject __0)
             {
-                var value = active;
-                if (value == null || __0 == null || __0.Launcher == null) return;
-                value.Views.Add(new KeyValuePair<Kingmaker.Controllers.Projectiles.Projectile, GameObject>(__0, __0.View));
-                DustMephitBreathTint tint = __0.View == null ? null : __0.View.GetComponent<DustMephitBreathTint>();
-                var renderers = __0.View == null ? new Renderer[0] : __0.View.GetComponentsInChildren<Renderer>(true);
+                var value = active; var projectile = current;
+                if (value == null || projectile == null || projectile.Launcher == null || __result == null) return;
+                DustMephitBreathTint tint = __result.GetComponent<DustMephitBreathTint>();
+                var renderers = __result.GetComponentsInChildren<Renderer>(true);
                 value.Rows.Add(new JObject { ["frame"] = Time.frameCount, ["utc"] = DateTime.UtcNow.ToString("o"),
-                    ["launcher"] = __0.Launcher.UniqueId, ["launcherBlueprint"] = __0.Launcher.Blueprint.AssetGuid,
-                    ["projectile"] = __0.Blueprint == null ? null : __0.Blueprint.AssetGuid, ["view"] = __0.View == null ? 0 : __0.View.GetInstanceID(),
+                    ["launcher"] = projectile.Launcher.UniqueId, ["launcherBlueprint"] = projectile.Launcher.Blueprint.AssetGuid,
+                    ["projectile"] = projectile.Blueprint == null ? null : projectile.Blueprint.AssetGuid,
+                    ["castFx"] = __0 == null ? null : __0.name, ["view"] = __result.GetInstanceID(),
                     ["tinted"] = tint != null, ["recolouredMaterials"] = tint == null ? 0 : tint.RecolouredMaterials,
                     ["recolouredParticleColours"] = tint == null ? 0 : tint.RecolouredParticleColours,
                     ["materials"] = new JArray(renderers.SelectMany(renderer => renderer.sharedMaterials).Where(material => material != null)
@@ -998,8 +1021,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             public void Dispose()
             {
-                if (method != null) harmony.Unpatch(method, Harmony12.HarmonyPatchType.All, id);
+                if (create != null) harmony.Unpatch(create, Harmony12.HarmonyPatchType.All, id);
+                if (spawn != null) harmony.Unpatch(spawn, Harmony12.HarmonyPatchType.All, id);
                 if (ReferenceEquals(active, this)) active = null;
+                current = null;
             }
         }
 
@@ -1040,6 +1065,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     int damageFrom = recorder.Damage.Count, appliedFrom = DustMephitBreathTint.Applied, rowsFrom = trace.Rows.Count;
                     hostile.Descriptor.Damage = 0;
                     if (sickened != null) foreach (Buff buff in hostile.Descriptor.Buffs.Enumerable.Where(value => ReferenceEquals(value.Blueprint, sickened)).ToArray()) buff.Remove();
+                    PlaceExpandedSummoningUnit(dust, ground(hostile.Position + Vector3.back * 2.6f + Vector3.right * (.3f * index)));
+                    foreach (int step in R6Wait(4)) yield return step;
                     mark("dust-cast-" + index + "-start");
                     using (var clip = new R6Clip(_request.EvidenceDirectory, "s7-dust-cast-" + index, frame, bearing))
                         foreach (int step in R6RunPassive(dust, abilityData(dust, breath), new TargetWrapper(hostile), cast, clip)) yield return step;
@@ -1052,6 +1079,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["types"] = string.Join(",", value.DamageBundle.Select(part => part.Type.ToString()).ToArray()) }));
                     cast["projectiles"] = new JArray(trace.Rows.Skip(rowsFrom).Where(value => (string)value["launcher"] == dust.UniqueId));
                     cast["applied"] = DustMephitBreathTint.Applied - appliedFrom; cast["liveAtCommandEnd"] = liveAtEnd;
+                    cast["recolouredMaterials"] = DustMephitBreathTint.LastMaterials;
+                    cast["recolouredParticleColours"] = DustMephitBreathTint.LastParticleColours;
+                    cast["recolouredRenderers"] = new JArray(DustMephitBreathTint.LastRenderers);
                     cast["liveAfter"] = DustMephitBreathTint.Live;
                     cast["hostileInCone"] = S7InCone(dust, aim, hostile, 15f);
                     cast["allyInCone"] = S7InCone(dust, aim, fixture.Caster, 15f);
@@ -1059,11 +1089,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     cast["hostileSickened"] = sickened != null && hostile.Descriptor.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, sickened));
                 }
                 bool oneEach = casts.All(value => (int)value["applied"] == 1 && ((JArray)value["projectiles"]).Count == 1 &&
-                    (bool)((JArray)value["projectiles"])[0]["tinted"] && (int)value["liveAfter"] == 0);
+                    (bool)((JArray)value["projectiles"])[0]["tinted"] && (int)value["liveAfter"] == 0 &&
+                    (int)value["recolouredMaterials"] + (int)value["recolouredParticleColours"] > 0);
                 bool mechanics = casts.All(value => (bool)value["hostileInCone"] && ((JArray)value["damage"]).Any(part => (bool)part["isHostile"]) &&
                     !(bool)value["allyDamaged"]);
                 Sprint25Check("s7-dust-casts", oneEach && mechanics, new JObject { ["casts"] = casts.DeepClone() },
-                    "Each committed Dust breath at normal speed launches one cold-cone instance that the product recolours as dust, deals its damage to the hostile inside the forward 15-foot cone and none to the ally behind, and the recolour is restored after the effect ends.");
+                    "Each committed Dust breath at normal speed launches one cold-cone instance whose actual renderers or particle colours the product recolours as dust, deals its damage to the hostile inside the forward 15-foot cone and none to the ally behind, and the recolour is restored after the effect ends.");
 
                 // 2. Cancelled before execution: no effect, no damage.
                 int cancelApplied = DustMephitBreathTint.Applied, cancelRows = trace.Rows.Count, cancelDamage = recorder.Damage.Count;

@@ -9,31 +9,59 @@ namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
     /// VIS-05: the Dust Mephit breath keeps the shared native cold cone for
-    /// delivery, area, orientation and timing, and only the cone instance the
-    /// exact owned Dust Mephit launches is presented as dust. After the native
-    /// view is created, that instance gets an owned component which clones its
-    /// renderers' materials and recolours the clones and its particle colours
-    /// from ice to dust. When the instance is released to the native pool
-    /// (deactivated) or destroyed, the component puts back the original shared
-    /// materials and colours, destroys its clones and removes itself, so the
-    /// next consumer of the pooled cone sees the native ice cone. No shared
-    /// prefab, projectile blueprint or material is written.
+    /// delivery, area, orientation and timing, and only the cone the exact
+    /// owned Dust Mephit launches is presented as dust. The visible cone is
+    /// the projectile blueprint's cast effect, which native
+    /// <c>ProjectileController.CreateView</c> spawns through
+    /// <c>FxHelper.SpawnFxOnPoint</c> beside the (renderer-less) projectile
+    /// view. While CreateView runs for that exact projectile, the instance
+    /// spawned from its own cast-effect prefab gets an owned component which
+    /// clones its renderers' materials and recolours the clones and its
+    /// particle colours from ice to dust. When the instance is released to the
+    /// native pool (deactivated) or destroyed, the component puts back the
+    /// original shared materials and colours, destroys its clones and removes
+    /// itself, so the next consumer sees the native ice cone. No shared prefab,
+    /// projectile blueprint or material is written.
     /// </summary>
     [HarmonyPatch(typeof(ProjectileController), "CreateView", new[] { typeof(Projectile), typeof(Vector3?) })]
     internal static class DustMephitBreathPresentation
     {
-        private static void Postfix(Projectile projectile)
+        // The exact Dust projectile whose cast effect is being spawned now;
+        // set only inside its own CreateView and cleared after one adoption.
+        internal static Projectile Pending;
+
+        private static void Prefix(Projectile projectile)
+        {
+            Pending = null;
+            try
+            {
+                if (projectile != null && projectile.Launcher != null && projectile.Launcher.Blueprint != null &&
+                    projectile.Blueprint != null && MephitBreathPolicy.PresentsDustBreath(
+                        projectile.Launcher.Blueprint.AssetGuid, projectile.Blueprint.AssetGuid))
+                    Pending = projectile;
+            }
+            catch (Exception error) { Debug.LogException(error); }
+        }
+
+        private static void Postfix() { Pending = null; }
+    }
+
+    [HarmonyPatch(typeof(Kingmaker.Visual.Particles.FxHelper), "SpawnFxOnPoint",
+        new[] { typeof(GameObject), typeof(Vector3), typeof(Quaternion) })]
+    internal static class DustMephitBreathCastFxPatch
+    {
+        private static void Postfix(GameObject prefab, GameObject __result)
         {
             try
             {
-                if (projectile == null || projectile.View == null || projectile.Launcher == null ||
-                    projectile.Launcher.Blueprint == null || projectile.Blueprint == null ||
-                    !MephitBreathPolicy.PresentsDustBreath(projectile.Launcher.Blueprint.AssetGuid,
-                        projectile.Blueprint.AssetGuid))
-                    return;
-                DustMephitBreathTint existing = projectile.View.GetComponent<DustMephitBreathTint>();
+                Projectile projectile = DustMephitBreathPresentation.Pending;
+                if (projectile == null || __result == null || prefab == null) return;
+                GameObject castFx = projectile.Blueprint.CastFx.Load();
+                if (!ReferenceEquals(prefab, castFx)) return;
+                DustMephitBreathPresentation.Pending = null;
+                DustMephitBreathTint existing = __result.GetComponent<DustMephitBreathTint>();
                 if (existing != null) existing.Restore();
-                projectile.View.AddComponent<DustMephitBreathTint>().Apply(projectile.Launcher.UniqueId);
+                __result.AddComponent<DustMephitBreathTint>().Apply(projectile.Launcher.UniqueId);
             }
             catch (Exception error)
             {
@@ -74,26 +102,43 @@ namespace KingmakerGunslinger.Summoning
 
         private readonly List<RendererState> _renderers = new List<RendererState>();
         private readonly List<ParticleState> _particles = new List<ParticleState>();
+        private readonly HashSet<int> _seenRenderers = new HashSet<int>();
+        private readonly HashSet<int> _seenSystems = new HashSet<int>();
         private bool _restored;
 
-        // Evidence counters for the native observer.
-        internal static int Applied, Restored, Live;
+        // Evidence counters for the native observer: the last restored
+        // instance's recolour totals and the renderers it covered.
+        internal static int Applied, Restored, Live, LastMaterials, LastParticleColours;
         internal static string LastLauncher;
+        internal static string[] LastRenderers = new string[0];
         internal int RecolouredMaterials, RecolouredParticleColours;
 
         internal void Apply(string launcher)
         {
             Applied++; Live++; LastLauncher = launcher;
+            RecolourNew();
+        }
+
+        // The native cone attaches its effect children after the view is
+        // created, so new renderers and particle systems are recoloured as
+        // they appear, for as long as this instance is active.
+        private void LateUpdate()
+        {
+            if (!_restored) RecolourNew();
+        }
+
+        private void RecolourNew()
+        {
             if (ParticleSystemType != null && MainProperty != null)
                 foreach (Component system in GetComponentsInChildren(ParticleSystemType, true))
                 {
-                    if (system == null) continue;
+                    if (system == null || !_seenSystems.Add(system.GetInstanceID())) continue;
                     TintModule(MainProperty.GetValue(system, null), "startColor", false);
                     if (LifetimeProperty != null) TintModule(LifetimeProperty.GetValue(system, null), "color", true);
                 }
             foreach (Renderer renderer in GetComponentsInChildren<Renderer>(true))
             {
-                if (renderer == null) continue;
+                if (renderer == null || !_seenRenderers.Add(renderer.GetInstanceID())) continue;
                 Material[] original = renderer.sharedMaterials;
                 var clones = new Material[original.Length];
                 for (int index = 0; index < original.Length; index++)
@@ -148,6 +193,11 @@ namespace KingmakerGunslinger.Summoning
         {
             if (_restored) return;
             _restored = true; Restored++; Live--;
+            LastMaterials = RecolouredMaterials; LastParticleColours = RecolouredParticleColours;
+            var names = new List<string>();
+            foreach (RendererState state in _renderers)
+                if (state.Renderer != null) names.Add(state.Renderer.GetType().Name + ":" + state.Renderer.name);
+            LastRenderers = names.ToArray();
             foreach (ParticleState state in _particles)
                 try { state.Colour.SetValue(state.Module, state.Original, null); }
                 catch (Exception) { /* the system was destroyed with its object */ }
