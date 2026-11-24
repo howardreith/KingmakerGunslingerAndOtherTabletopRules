@@ -1,7 +1,19 @@
 # Unity Mod Manager compatibility (declared minimum 0.31.1)
 
-Status: **development candidate, tested, not released.** This record covers one development candidate.
-The owner has not accepted it, and there is no Nexus upload. v0.0.187 stays published and unchanged.
+Status: **released.** v0.0.188 (GitHub release 2026-11-14, tag commit `097e522f9f`) was the first release to declare
+Unity Mod Manager 0.31.1, and every release since keeps it. Verified 2026-11-24 from the published GitHub assets:
+
+| Release | ZIP SHA-256 | `Info.json` `ManagerVersion` | Packaged DLL SHA-256 | DLL loader references |
+|---|---|---|---|---|
+| v0.0.188 (`KingmakerGunslinger-0.0.188-umm-0311-minimum.zip`) | `64d83955478c3824c5fee485f4189b7d0be1141938a89e70e4cdab037461d412` | 0.31.1 | `0eb2f0027f1b8639cb8988f24fffda263cf92bfdadd180f40b1aebe79019b151` | `UnityModManager 0.31.1.0`, `0Harmony12 1.2.0.1` |
+| v0.0.195 (`KingmakerGunslinger-0.0.195-gunslinger-remediation-sprint6.zip`, tag commit `ef0e1fe15d`) | `456d504ddde0ad3d0bb41a7dc141848a99feeee83d9665db9eeadcd95c359444` | 0.31.1 | `3ef052ea441af368381b1cea7d2ee7acaa813000986de8644430ff63ee1d6a6b` | `UnityModManager 0.31.1.0`, `0Harmony12 1.2.0.1` |
+
+Each package contains exactly one DLL (the mod's), and its bundled `INSTALLATION-COMPATIBILITY.md` states the 0.31.1
+minimum. The DLL references were read from the AssemblyRef table of the packaged file. The newer loaders remain separate
+compatibility targets; the in-game matrix below was run once, on the development candidate that became v0.0.188.
+
+The rest of this record is the historical account of that development candidate (`b9400333`, built as version 0.0.187
+before v0.0.188 was opened). Its identities, results and gaps are kept as they were recorded.
 
 ## Candidate
 
@@ -67,14 +79,25 @@ No compatibility adapter was needed and none was added.
 * **Fetching and refusal.** `Build-Local.ps1` fetches absent files into `artifacts/references/loader`. It refuses a file
   that differs from its pin and never falls back to the installed or bundled loader. The exact-reference compiler
   re-verifies the pins.
+* **Every MSBuild compile (added 2026-11-24).** Until then the project's default `UnityModManagerDir` was the installed
+  loader (`<KingmakerInstallDir>\Kingmaker_Data\Managed\UnityModManager`), so a direct MSBuild and the development
+  compiles of `scripts\build.ps1` and `Invoke-KmgGate.ps1` were compiled against whichever loader was installed (the
+  packaged DLL was never affected: it comes from the exact-reference compiler). The default is now the pinned cache
+  `artifacts\references\loader\UnityModManager`, which `scripts\build.ps1` fetches and verifies first. Before
+  references resolve, the project verifies the folder it is given against the pins (`scripts\Assert-PinnedLoaderReferences.ps1`),
+  so a direct MSBuild pointed at the installed loader or at altered files is refused; after reference selection, the
+  UnityModManager and 0Harmony12 inputs Csc receives must be exactly those verified files.
 * **Game and Unity references** keep their exact bundle-equals-installation check.
 * **Receipts.** Build receipts record each loader row's role, assembly version, source URL and the pins hash.
   Development receipts are refused if their loader rows differ from the current pins. A changed pins file changes the
   source state, which invalidates earlier receipts.
 * **Package validation.** The packaged `ManagerVersion` must equal the pinned floor. The package must contain exactly one
   binary, the mod, and no loader, Harmony, dnlib, game or Unity assembly.
-* **Tests.** `scripts/Test-LoaderReferencePins.ps1` (32 checks) and `tools/test_loader_reference_pins.py` (5) run inside
-  `validate-repository.ps1`. `Test-DevelopmentCandidate.ps1` now also proves that the compiler receives the pinned
+* **Tests.** `scripts/Test-LoaderReferencePins.ps1` (36 checks) and `tools/test_loader_reference_pins.py` (5) run inside
+  `validate-repository.ps1`. `scripts/Test-PinnedLoaderMsBuild.ps1` runs MSBuild on a temporary clone: the previous
+  defaults compile against the installed loader, `build.ps1` and a direct MSBuild compile against the pinned files, and
+  the installed loader, an altered copy, a folder not named `UnityModManager` and a second injected UnityModManager
+  reference are refused before compilation. `Test-DevelopmentCandidate.ps1` now also proves that the compiler receives the pinned
   directory and that a tampered loader is refused before any child step.
 
 ## How the runtime matrix was run
@@ -185,8 +208,9 @@ These runs preceded the matrix. They are not evidence about the product either w
   them by their own declaration (not tested here). That is unrelated to this mod.
 * **Owner's data folder.** Each launch overwrote the owner's shared `output_log.txt` (the player log, not a save). It was
   copied into each launch's evidence.
-* **Packaged documentation.** The candidate ZIP's bundled `INSTALLATION-COMPATIBILITY.md` still has the pre-change
-  requirement wording. The DLL and `Info.json` are the tested identity; a release build carries the updated text.
+* **Packaged documentation.** The candidate ZIP's bundled `INSTALLATION-COMPATIBILITY.md` still had the pre-change
+  requirement wording. The DLL and `Info.json` are the tested identity. The released v0.0.188 and v0.0.195 packages carry
+  the updated text (see the status table).
 
 ## Proposed Nexus wording
 

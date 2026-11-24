@@ -50,6 +50,10 @@ if ($KingmakerInstallDir) {
 }
 
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
+# The product compiles against the pinned loader references (the project's default UnityModManagerDir); fetch and verify
+# them first, exactly as Build-Local.ps1 does.
+. (Join-Path $PSScriptRoot 'ReferenceProvenance.Common.ps1')
+[void](Initialize-KmgPinnedLoaderReferences -LoaderReferenceDir (Join-Path $repositoryRoot 'artifacts\references\loader'))
 $target = if ($Clean) { 'Rebuild' } else { 'Build' }
 # test-domain already compiles the runner. Building the solution here would
 # compile it again along with production.

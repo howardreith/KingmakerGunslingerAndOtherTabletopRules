@@ -16,7 +16,9 @@
     <FileAlignment>512</FileAlignment>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <KingmakerManagedDir Condition=" '$(KingmakerManagedDir)' == '' and '$(KingmakerInstallDir)' != '' ">$(KingmakerInstallDir)\Kingmaker_Data\Managed</KingmakerManagedDir>
-    <UnityModManagerDir Condition=" '$(UnityModManagerDir)' == '' and '$(KingmakerManagedDir)' != '' ">$(KingmakerManagedDir)\UnityModManager</UnityModManagerDir>
+    <!-- The loader references are the pinned Unity Mod Manager 0.31.1 files (scripts/loader-reference-pins.json), fetched
+         into artifacts\references\loader by scripts\build.ps1 and Build-Local.ps1; never the installed loader. -->
+    <UnityModManagerDir Condition=" '$(UnityModManagerDir)' == '' ">$(MSBuildThisFileDirectory)..\..\artifacts\references\loader\UnityModManager</UnityModManagerDir>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -2224,6 +2226,34 @@
     <Error Condition=" '$(KingmakerInstallDir)' == '' " Text="KingmakerInstallDir is not configured. Copy GamePath.props.example to GamePath.props, edit the path, or pass /p:KingmakerInstallDir=&quot;C:\Path\To\Pathfinder Kingmaker&quot;." />
     <Error Condition=" '$(KingmakerInstallDir)' != '' and !Exists('$(KingmakerInstallDir)') " Text="KingmakerInstallDir does not exist: $(KingmakerInstallDir)" />
     <Error Condition=" '$(KingmakerInstallDir)' != '' and !Exists('%(RequiredKingmakerAssembly.Identity)') " Text="Required Kingmaker/UMM assembly is missing: %(RequiredKingmakerAssembly.Identity)" />
+  </Target>
+
+  <!-- Every compile verifies the loader folder it is given against the pins (SHA-256) before references resolve, so a
+       direct MSBuild pointed at the installed Unity Mod Manager or at altered files is refused. -->
+  <Target Name="VerifyPinnedLoaderReferences" BeforeTargets="ResolveAssemblyReferences" Condition=" '$(DesignTimeBuild)' != 'true' ">
+    <PropertyGroup>
+      <_KmgUnityModManagerDir>$([System.IO.Path]::GetFullPath('$(UnityModManagerDir)').TrimEnd('\'))</_KmgUnityModManagerDir>
+      <_KmgLoaderReferenceRoot>$([System.IO.Path]::GetDirectoryName('$(_KmgUnityModManagerDir)'))</_KmgLoaderReferenceRoot>
+    </PropertyGroup>
+    <Error Condition=" '$([System.IO.Path]::GetFileName($(_KmgUnityModManagerDir)))' != 'UnityModManager' " Text="UnityModManagerDir must be the UnityModManager folder of the pinned loader references: $(UnityModManagerDir)" />
+    <Exec Command="powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)..\..\scripts\Assert-PinnedLoaderReferences.ps1&quot; -LoaderReferenceDir &quot;$(_KmgLoaderReferenceRoot)&quot;" />
+  </Target>
+
+  <!-- After reference-assembly selection, immediately before compilation: the UnityModManager and 0Harmony12 inputs Csc
+       receives (@(ReferencePathWithRefAssemblies)) must be exactly the verified files. -->
+  <Target Name="AssertPinnedLoaderReferencesResolved" AfterTargets="FindReferenceAssembliesForReferences" BeforeTargets="CoreCompile" Condition=" '$(DesignTimeBuild)' != 'true' ">
+    <PropertyGroup>
+      <_KmgPinnedUmmDirectory>$([MSBuild]::NormalizeDirectory('$(UnityModManagerDir)'))</_KmgPinnedUmmDirectory>
+    </PropertyGroup>
+    <ItemGroup>
+      <_KmgResolvedUmm Include="@(ReferencePathWithRefAssemblies)" Condition=" '%(Filename)' == 'UnityModManager' or $([System.String]::Copy('%(ReferencePathWithRefAssemblies.FusionName)').StartsWith('UnityModManager,')) " />
+      <_KmgResolvedHarmony12 Include="@(ReferencePathWithRefAssemblies)" Condition=" '%(Filename)' == '0Harmony12' or $([System.String]::Copy('%(ReferencePathWithRefAssemblies.FusionName)').StartsWith('0Harmony12,')) " />
+      <_KmgResolvedOutside Include="@(_KmgResolvedUmm)" Condition=" '%(FullPath)' != '$(_KmgPinnedUmmDirectory)UnityModManager.dll' " />
+      <_KmgResolvedOutside Include="@(_KmgResolvedHarmony12)" Condition=" '%(FullPath)' != '$(_KmgPinnedUmmDirectory)0Harmony12.dll' " />
+    </ItemGroup>
+    <Error Condition=" '@(_KmgResolvedUmm->Count())' != '1' " Text="Exactly one UnityModManager compiler input is required; resolved: @(_KmgResolvedUmm)" />
+    <Error Condition=" '@(_KmgResolvedHarmony12->Count())' != '1' " Text="Exactly one 0Harmony12 compiler input is required; resolved: @(_KmgResolvedHarmony12)" />
+    <Error Condition=" '@(_KmgResolvedOutside)' != '' " Text="Loader compiler references must be the verified pinned files in $(_KmgPinnedUmmDirectory); resolved: @(_KmgResolvedOutside)" />
   </Target>
 
   <Target Name="VerifyOwnedBuildOutput" AfterTargets="Build">

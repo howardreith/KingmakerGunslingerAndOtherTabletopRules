@@ -30,6 +30,22 @@ $umm = @($realPins.References | Where-Object relativePath -ceq 'UnityModManager/
 Assert-That ($umm.Count -eq 1 -and $umm[0].assemblyVersion -ceq '0.31.1.0' -and
     $umm[0].sha256 -ceq '2e038ff23ab01d538dfef792096e1f5c04802d1edac3660db20d0d54c167c2c4') 'umm-pin-is-the-verified-0.31.1-nuget-build'
 
+# Every MSBuild compile of the product uses the pinned files: the project's default loader folder is the pinned cache
+# (never the installed Unity Mod Manager), the folder is verified against the pins before references resolve, and the
+# resolved compiler inputs must be exactly those files. (scripts/Test-PinnedLoaderMsBuild.ps1 exercises this in MSBuild.)
+[xml]$productProject = Get-Content -LiteralPath (Join-Path $root 'src\KingmakerGunslinger\KingmakerGunslinger.csproj') -Raw
+$ummDefaults = @($productProject.Project.PropertyGroup | ForEach-Object { $_.ChildNodes } | Where-Object { $_.LocalName -ceq 'UnityModManagerDir' })
+Assert-That ($ummDefaults.Count -eq 1 -and $ummDefaults[0].InnerText -ceq '$(MSBuildThisFileDirectory)..\..\artifacts\references\loader\UnityModManager' -and
+    $ummDefaults[0].GetAttribute('Condition') -match "'\`$\(UnityModManagerDir\)' == ''" -and $ummDefaults[0].InnerText -notmatch 'KingmakerManagedDir|KingmakerInstallDir') 'project-default-loader-folder-is-the-pinned-cache'
+$targets = @($productProject.Project.Target)
+$verifyTarget = @($targets | Where-Object { $_.Name -ceq 'VerifyPinnedLoaderReferences' })
+Assert-That ($verifyTarget.Count -eq 1 -and $verifyTarget[0].BeforeTargets -ceq 'ResolveAssemblyReferences' -and
+    @($verifyTarget[0].Exec).Count -eq 1 -and $verifyTarget[0].Exec.Command -match 'Assert-PinnedLoaderReferences\.ps1') 'project-verifies-loader-folder-before-resolution'
+$resolvedTarget = @($targets | Where-Object { $_.Name -ceq 'AssertPinnedLoaderReferencesResolved' })
+Assert-That ($resolvedTarget.Count -eq 1 -and $resolvedTarget[0].BeforeTargets -ceq 'CoreCompile' -and $resolvedTarget[0].AfterTargets -ceq 'FindReferenceAssembliesForReferences') 'project-checks-resolved-loader-inputs-before-compile'
+$buildScript = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'build.ps1') -Raw
+Assert-That ($buildScript.IndexOf('Initialize-KmgPinnedLoaderReferences') -gt 0 -and $buildScript.IndexOf('Initialize-KmgPinnedLoaderReferences') -lt $buildScript.IndexOf('& $msbuild @arguments')) 'build-script-fetches-pins-before-msbuild'
+
 $fixture = Join-Path ([IO.Path]::GetTempPath()) ('KmgLoaderPins-' + [Guid]::NewGuid().ToString('N'))
 try {
     $loader = Join-Path $fixture 'loader'
