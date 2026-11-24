@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace KmgLoaderCompatHarness
 {
@@ -137,51 +138,56 @@ namespace KmgLoaderCompatHarness
     }
 
     /// <summary>
-    /// A shared-generator intervention confined to one owned rule (review R2-F2). Begin, at the owned rule's
-    /// about-to-trigger, saves the generator and seeds it; End, at that same rule's did-trigger, puts the saved state back.
-    /// Draws made outside the owned rule (before it, after it, or by other work while a command yields) are never seeded
-    /// and never rewound; only the owned rule's own draws are replaced. Abandon ends an open intervention.
+    /// Review R2-F2: the observed blast's own saving throws get a natural 20 without touching the shared generator. A save
+    /// is registered as owned at its about-to-trigger (when correlated to the blast's execution) and released at its
+    /// did-trigger; the d20 rule native code triggers inside that save (the d20 whose previous event on the rule stack is
+    /// the owned save) is claimed once and pre-rolled. Any other rule or random draw, including one dispatched by another
+    /// handler while the owned save is open, is untouched.
     /// </summary>
-    internal sealed class OwnedRollScope<TState>
+    internal sealed class OwnedD20Claim
     {
-        private readonly Func<TState> read;
-        private readonly Action<TState> write;
-        private readonly Action seed;
-        private object rule;
-        private TState saved;
+        private readonly List<object> open = new List<object>();
+        private readonly List<object> claimed = new List<object>();
 
-        internal OwnedRollScope(Func<TState> read, Action<TState> write, Action seed)
+        internal int Claims { get; private set; }
+
+        internal bool Open { get { return open.Count > 0; } }
+
+        internal void Begin(object ownedSave) { if (ownedSave != null && !open.Any(value => ReferenceEquals(value, ownedSave))) open.Add(ownedSave); }
+
+        internal void End(object ownedSave)
         {
-            this.read = read; this.write = write; this.seed = seed;
+            open.RemoveAll(value => ReferenceEquals(value, ownedSave));
+            claimed.RemoveAll(value => ReferenceEquals(value, ownedSave));
         }
 
-        internal int Seeded { get; private set; }
-
-        internal bool Active { get { return rule != null; } }
-
-        internal bool Begin(object ownedRule)
+        /// <summary>True once for the first d20 rule whose parent rule is an open owned save.</summary>
+        internal bool Claim(object parentRule)
         {
-            if (ownedRule == null || rule != null) return false;
-            saved = read();
-            rule = ownedRule;
-            seed();
-            Seeded++;
+            if (parentRule == null || !open.Any(value => ReferenceEquals(value, parentRule)) || claimed.Any(value => ReferenceEquals(value, parentRule))) return false;
+            claimed.Add(parentRule);
+            Claims++;
             return true;
         }
 
-        internal bool End(object ownedRule)
-        {
-            if (rule == null || !ReferenceEquals(rule, ownedRule)) return false;
-            rule = null;
-            write(saved);
-            return true;
-        }
+        internal void Abandon() { open.Clear(); claimed.Clear(); }
+    }
 
-        internal void Abandon()
+    /// <summary>
+    /// Review R4-F7: one release per owned item, so a failure on one item is reported under its own identity and every
+    /// other item still gets its attempt.
+    /// </summary>
+    internal static class ProbeReleases
+    {
+        internal static List<KeyValuePair<string, Action>> PerItem<T>(string name, IEnumerable<T> items, Func<T, string> identity, Action<T> release)
         {
-            if (rule == null) return;
-            rule = null;
-            write(saved);
+            var list = new List<KeyValuePair<string, Action>>();
+            foreach (T item in (items ?? Enumerable.Empty<T>()).ToList())
+            {
+                T owned = item;
+                list.Add(new KeyValuePair<string, Action>(name + " " + identity(owned), () => release(owned)));
+            }
+            return list;
         }
     }
 }

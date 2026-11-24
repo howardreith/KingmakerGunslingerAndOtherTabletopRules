@@ -33,13 +33,15 @@ namespace KmgLoaderCompatHarness
     /// started and the probe stays yielded until the step's timeout abandons it; mode "abandon-check" then confirms that
     /// the abandoned probe's subscription, seeding and command ended.
     ///
-    /// Disclosed setup: appear buffs removed, brain off (re-applied after load), time unpaused. A saving throw is seeded
-    /// to a natural 20 only when its rule belongs to the observed blast's own execution (its reason's context is that
-    /// execution or derives from it) and its saver is not the Trumpet, so the blast paralyzes nobody in the fixture; the
-    /// shared generator is seeded at that rule's start and its saved state put back at that same rule's end, so no other
-    /// save or draw is seeded or rewound.
+    /// Disclosed setup: appear buffs removed, brain off (re-applied after load), time unpaused. A saving throw gets a
+    /// natural 20 only when its rule belongs to the observed blast's own execution (its reason's context is that
+    /// execution or derives from it) and its saver is not the Trumpet, so the blast paralyzes nobody in the fixture. The
+    /// intervention is the native rule contract, not the shared generator: the d20 rule triggered inside that owned save
+    /// (its previous event on the rule stack) is pre-rolled to 20, once (review R2-F2). Nothing else is touched: during
+    /// the first blast's first owned save, a foreign draw and a foreign save are dispatched from inside the owned save's
+    /// callbacks and compared, with the following draw, against an untreated control.
     /// </summary>
-    internal sealed class TrumpetCueProbe : IOwnedProbe, IGlobalRulebookHandler<RuleSavingThrow>
+    internal sealed class TrumpetCueProbe : IOwnedProbe, IGlobalRulebookHandler<RuleSavingThrow>, IGlobalRulebookHandler<RuleRollD20>
     {
         private const BindingFlags Any = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         private const string CueEvent = "InspireCourage";
@@ -55,12 +57,16 @@ namespace KmgLoaderCompatHarness
         private readonly JObject result = new JObject();
         private readonly OwnedProbeResources owned = new OwnedProbeResources();
         private readonly YieldedProbeLifecycle life;
-        private readonly OwnedRollScope<UnityEngine.Random.State> roll;
+        private static readonly FieldInfo PreRolled = typeof(RuleRollD20).GetField("m_PreRolledResult", Any);
+        private readonly OwnedD20Claim d20 = new OwnedD20Claim();
+        private bool nestedPending;
+        private object nestedSave;
+        private JObject nested;
+        private float nestedFollowingControl;
         private readonly List<UnitEntityData> created = new List<UnitEntityData>();
         private readonly List<UnitEntityData> awakeAdded = new List<UnitEntityData>();
         private readonly JArray ownedSaves = new JArray();
         private bool subscribed;
-        private int seed = -1;
         private UnitUseAbility observed;
         private UnitEntityData trumpet;
         private Assembly product;
@@ -70,8 +76,6 @@ namespace KmgLoaderCompatHarness
         {
             this.mode = mode;
             result["mode"] = mode;
-            roll = new OwnedRollScope<UnityEngine.Random.State>(() => UnityEngine.Random.state, state => UnityEngine.Random.state = state,
-                () => UnityEngine.Random.InitState(seed));
             life = new YieldedProbeLifecycle(owned, lifecycle => Run());
         }
 
@@ -89,13 +93,10 @@ namespace KmgLoaderCompatHarness
         // returned report (R3-F2).
         public CleanupReport Release(string testFailure)
         {
-            var releases = new List<KeyValuePair<string, Action>>
-            {
-                new KeyValuePair<string, Action>("awake registrations", () => { foreach (UnitEntityData u in awakeAdded) Game.Instance.State.AwakeUnits.Remove(u); awakeAdded.Clear(); })
-            };
+            var releases = ProbeReleases.PerItem("awake registration", awakeAdded, u => u.UniqueId, u => Game.Instance.State.AwakeUnits.Remove(u));
             // The "before" Trumpet must survive into the save; it is released by the "after" step (or by any failure).
             if (mode != "before" || !string.IsNullOrEmpty(testFailure) || !life.Ended)
-                releases.Add(new KeyValuePair<string, Action>("disposable units", () => { foreach (UnitEntityData u in created.Where(u => u != null && !u.Destroyed).ToArray()) u.Destroy(); created.Clear(); }));
+                releases.AddRange(ProbeReleases.PerItem("disposable unit", created.Where(u => u != null), u => u.UniqueId, u => { if (!u.Destroyed) u.Destroy(); }));
             CleanupReport report = life.Release(releases);
             result["problems"] = new JArray(life.Problems.Cast<object>().ToArray());
             result["ownedSaves"] = ownedSaves;
@@ -108,7 +109,7 @@ namespace KmgLoaderCompatHarness
         private bool OwnedByBlast(RuleSavingThrow evt)
         {
             UnitUseAbility command = observed;
-            if (command == null || evt == null || evt.Initiator == null || ReferenceEquals(evt.Initiator, trumpet) || seed < 0) return false;
+            if (command == null || evt == null || evt.Initiator == null || ReferenceEquals(evt.Initiator, trumpet) || PreRolled == null) return false;
             AbilityExecutionContext execution = command.ExecutionProcess == null ? null : command.ExecutionProcess.Context;
             Kingmaker.UnitLogic.Mechanics.MechanicsContext context = evt.Reason == null ? null : evt.Reason.Context;
             return execution != null && context != null && (ReferenceEquals(context, execution) || ReferenceEquals(context.SourceAbilityContext, execution));
@@ -116,33 +117,63 @@ namespace KmgLoaderCompatHarness
 
         public void OnEventAboutToTrigger(RuleSavingThrow evt)
         {
-            if (OwnedByBlast(evt)) roll.Begin(evt);
+            if (!OwnedByBlast(evt)) return;
+            d20.Begin(evt);
+            if (!nestedPending) return;
+            nestedPending = false; nestedSave = evt;
+            nested = NestedForeign();
         }
 
         public void OnEventDidTrigger(RuleSavingThrow evt)
         {
-            if (roll.End(evt))
-                ownedSaves.Add(new JObject { ["saver"] = evt.Initiator.UniqueId, ["stat"] = evt.StatType.ToString(), ["d20"] = (int)evt.D20, ["passed"] = evt.IsPassed });
+            if (!d20.Open) return;
+            bool wasOwned = OwnedByBlast(evt);
+            d20.End(evt);
+            if (!wasOwned) return;
+            ownedSaves.Add(new JObject { ["saver"] = evt.Initiator.UniqueId, ["stat"] = evt.StatType.ToString(), ["d20"] = (int)evt.D20, ["passed"] = evt.IsPassed });
+            if (ReferenceEquals(evt, nestedSave) && nested != null)
+            {
+                // The first draw after the owned save ended, against the untreated control sequence.
+                float following = UnityEngine.Random.value;
+                nested["followingDraw"] = following; nested["followingControl"] = nestedFollowingControl;
+                nested["followingMatchesControl"] = following == nestedFollowingControl;
+                nested["ownedSaveD20"] = (int)evt.D20;
+                nestedSave = null;
+            }
+        }
+
+        // The native d20 rule of an owned save: pre-rolled to 20 (no draw from the shared generator).
+        public void OnEventAboutToTrigger(RuleRollD20 evt)
+        {
+            if (evt == null || !d20.Open) return;
+            RulebookEventContext context = Rulebook.CurrentContext;
+            object parent = context == null ? null : ReferenceEquals(context.CurrentEvent, evt) ? (object)context.PreviousEvent : context.CurrentEvent;
+            if (d20.Claim(parent)) PreRolled.SetValue(evt, (int?)20);
+        }
+
+        public void OnEventDidTrigger(RuleRollD20 evt) { }
+
+        // Dispatched from inside the first owned save's callbacks: a foreign draw and a foreign Will save by the main
+        // character, each against the value an untreated generator gives from the same state (a copy drawn first).
+        private JObject NestedForeign()
+        {
+            UnitEntityData main = Game.Instance.Player.MainCharacter.Value;
+            int claimsBefore = d20.Claims;
+            UnityEngine.Random.State start = UnityEngine.Random.state;
+            float controlDraw = UnityEngine.Random.value;
+            int controlD20 = UnityEngine.Random.Range(1, 21);
+            nestedFollowingControl = UnityEngine.Random.value;
+            UnityEngine.Random.state = start;
+            float draw = UnityEngine.Random.value;
+            var save = new RuleSavingThrow(main, SavingThrowType.Will, 10);
+            Rulebook.Trigger(save);
+            return new JObject { ["insideOwnedSave"] = d20.Open, ["draw"] = draw, ["controlDraw"] = controlDraw, ["drawMatchesControl"] = draw == controlDraw,
+                ["foreignSaveD20"] = (int)save.D20, ["controlD20"] = controlD20, ["foreignSaveMatchesControl"] = (int)save.D20 == controlD20,
+                ["claimsDuringForeign"] = d20.Claims - claimsBefore };
         }
 
         private void Subscribe() { if (!subscribed) { EventBus.Subscribe(this); subscribed = true; } }
         private void Unsubscribe() { if (subscribed) { EventBus.Unsubscribe(this); subscribed = false; } }
-
-        // Finds the seed without leaving the shared generator changed.
-        private static int D20Seed(int expected)
-        {
-            UnityEngine.Random.State saved = UnityEngine.Random.state;
-            try
-            {
-                for (int value = 0; value < 100000; value++)
-                {
-                    UnityEngine.Random.InitState(value);
-                    if (UnityEngine.Random.Range(1, 21) == expected) return value;
-                }
-                throw new InvalidOperationException("no d20 seed for " + expected);
-            }
-            finally { UnityEngine.Random.state = saved; }
-        }
 
         private IEnumerable<object> Run()
         {
@@ -150,7 +181,6 @@ namespace KmgLoaderCompatHarness
             product = ProductProbes.Entry().Assembly;
             runner = product.GetType("KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner", true);
             cueRuntime = product.GetType("KingmakerGunslinger.Summoning.SummonAbilityCastCueRuntime", true);
-            seed = D20Seed(20);
             result["area"] = Game.Instance.CurrentlyLoadedArea == null ? null : Game.Instance.CurrentlyLoadedArea.name;
             bool paused = Game.Instance.IsPaused;
             owned.Hold("pause", () => Game.Instance.IsPaused = paused);
@@ -234,7 +264,7 @@ namespace KmgLoaderCompatHarness
         private JObject Interleave()
         {
             UnitEntityData main = Game.Instance.Player.MainCharacter.Value;
-            int seededBefore = roll.Seeded;
+            int claimsBefore = d20.Claims;
             UnityEngine.Random.State start = UnityEngine.Random.state;
             float controlDraw = UnityEngine.Random.value;
             int controlD20 = UnityEngine.Random.Range(1, 21);
@@ -244,7 +274,7 @@ namespace KmgLoaderCompatHarness
             Rulebook.Trigger(save);
             return new JObject { ["draw"] = draw, ["controlDraw"] = controlDraw, ["drawMatchesControl"] = draw == controlDraw,
                 ["saveD20"] = (int)save.D20, ["controlD20"] = controlD20, ["saveMatchesControl"] = (int)save.D20 == controlD20,
-                ["seededDuringUnrelated"] = roll.Seeded - seededBefore, ["interventionOpenAfter"] = roll.Active,
+                ["claimsDuringUnrelated"] = d20.Claims - claimsBefore, ["interventionOpenAfter"] = d20.Open,
                 ["blastExecuting"] = observed != null && observed.ExecutionProcess != null && !observed.ExecutionProcess.IsEnded };
         }
 
@@ -262,10 +292,11 @@ namespace KmgLoaderCompatHarness
             observed = command;
             owned.Hold("observed blast", () =>
             {
-                observed = null; roll.Abandon();
+                observed = null; d20.Abandon(); nestedPending = false;
                 if (!command.IsFinished) { unit.Commands.InterruptAll(value => ReferenceEquals(value, command)); unit.Commands.RemoveFinishedAndUpdateQueue(); }
             });
             UnityEngine.Random.State blastStart = UnityEngine.Random.state;
+            nestedPending = interleave;
             unit.Commands.Run(command);
             float deadline = Time.realtimeSinceStartup + 30f;
             int frames = 0;
@@ -276,7 +307,8 @@ namespace KmgLoaderCompatHarness
             }
             owned.ReleaseNow("observed blast", null);
             row["ownedSavesSeeded"] = ownedSaves.Count - savesFrom;
-            row["interventionOpenAfter"] = roll.Active;
+            row["interventionOpenAfter"] = d20.Open;
+            if (interleave) row["nestedForeign"] = nested;
             if (interleave) row["generatorRewoundToBlastStart"] = UnityEngine.Random.state.Equals(blastStart);
             row["finished"] = command.IsFinished; row["result"] = command.Result.ToString();
             row["executionEnded"] = command.ExecutionProcess != null && command.ExecutionProcess.IsEnded;
@@ -284,9 +316,12 @@ namespace KmgLoaderCompatHarness
             if (interleave)
             {
                 JToken inter = row["interleaved"];
-                if (inter == null || !(bool)inter["drawMatchesControl"] || !(bool)inter["saveMatchesControl"] || (int)inter["seededDuringUnrelated"] != 0 ||
+                if (inter == null || !(bool)inter["drawMatchesControl"] || !(bool)inter["saveMatchesControl"] || (int)inter["claimsDuringUnrelated"] != 0 ||
                     (bool)row["generatorRewoundToBlastStart"] || (bool)row["interventionOpenAfter"])
                     life.Problems.Add(row.Path + ": an unrelated save or draw during the blast did not keep its ordinary outcome, or the generator was rewound");
+                if (nested == null || !(bool)nested["insideOwnedSave"] || !(bool)nested["drawMatchesControl"] || !(bool)nested["foreignSaveMatchesControl"] ||
+                    (int)nested["claimsDuringForeign"] != 0 || nested["followingMatchesControl"] == null || !(bool)nested["followingMatchesControl"] || (int)nested["ownedSaveD20"] != 20)
+                    life.Problems.Add(row.Path + ": a foreign draw or save inside the owned save, or the draw after it, did not keep its untreated value");
             }
         }
 
@@ -391,7 +426,7 @@ namespace KmgLoaderCompatHarness
             observed = command;
             owned.Hold("observed blast", () =>
             {
-                observed = null; roll.Abandon();
+                observed = null; d20.Abandon();
                 if (!command.IsFinished) { trumpet.Commands.InterruptAll(value => ReferenceEquals(value, command)); trumpet.Commands.RemoveFinishedAndUpdateQueue(); }
             });
             trumpet.Commands.Run(command);
@@ -404,12 +439,12 @@ namespace KmgLoaderCompatHarness
             TrumpetCueProbe abandoned = s_Abandoned;
             s_Abandoned = null;
             if (abandoned == null) { life.Problems.Add("abandon-check: no abandoned probe in this process"); return; }
-            var check = new JObject { ["subscribed"] = abandoned.subscribed, ["interventionOpen"] = abandoned.roll.Active, ["observedCleared"] = abandoned.observed == null,
+            var check = new JObject { ["subscribed"] = abandoned.subscribed, ["interventionOpen"] = abandoned.d20.Open, ["observedCleared"] = abandoned.observed == null,
                 ["heldLeft"] = abandoned.owned.Count, ["trumpetDestroyed"] = abandoned.trumpet == null || abandoned.trumpet.Destroyed,
                 ["releasesAttempted"] = new JArray(abandoned.owned.Outcome.Attempted.Cast<object>().ToArray()),
                 ["releaseFailures"] = new JArray(abandoned.owned.Outcome.Failures.Cast<object>().ToArray()) };
             result["abandoned"] = check;
-            if (abandoned.subscribed || abandoned.roll.Active || abandoned.observed != null || abandoned.owned.Count != 0 || !(bool)check["trumpetDestroyed"] ||
+            if (abandoned.subscribed || abandoned.d20.Open || abandoned.observed != null || abandoned.owned.Count != 0 || !(bool)check["trumpetDestroyed"] ||
                 abandoned.owned.Outcome.Failures.Count != 0)
                 life.Problems.Add("abandon-check: the abandoned probe left its subscription, seeding, command or Trumpet behind");
         }

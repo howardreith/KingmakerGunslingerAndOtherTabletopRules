@@ -47,7 +47,7 @@ namespace KmgLoaderCompatHarness
     /// its Ghaele spawned and before ordinary registration. No owned command or late summon may remain, and an
     /// unrelated unit's command survives.
     /// </summary>
-    internal sealed class GhaeleLifetimeProbe : IOwnedProbe, IGlobalRulebookHandler<RuleAttackRoll>
+    internal sealed class GhaeleLifetimeProbe : IOwnedProbe, IGlobalRulebookHandler<RuleAttackRoll>, IGlobalRulebookHandler<RuleSummonUnit>
     {
         private const BindingFlags Any = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         private const string SummonAbility = "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One";
@@ -83,24 +83,29 @@ namespace KmgLoaderCompatHarness
 
         public CleanupReport Release(string testFailure)
         {
-            CleanupReport report = life.Release(new[]
-            {
-                new KeyValuePair<string, Action>("disposable units", () =>
-                {
-                    foreach (UnitEntityData u in created.Where(u => u != null && !u.Destroyed).ToArray()) u.Destroy();
-                    created.Clear();
-                }),
-                new KeyValuePair<string, Action>("disposable blueprints", () =>
-                {
-                    foreach (BlueprintUnit blueprint in createdBlueprints) UnityEngine.Object.Destroy(blueprint);
-                    createdBlueprints.Clear();
-                })
-            });
+            var releases = ProbeReleases.PerItem("disposable unit", created.Where(u => u != null), u => u.UniqueId, u => { if (!u.Destroyed) u.Destroy(); });
+            releases.AddRange(ProbeReleases.PerItem("disposable blueprint", createdBlueprints, b => b.name + "#" + b.GetInstanceID(), b => UnityEngine.Object.Destroy(b)));
+            CleanupReport report = life.Release(releases);
             result["problems"] = new JArray(life.Problems.Cast<object>().ToArray());
             return report;
         }
 
         public void OnEventAboutToTrigger(RuleAttackRoll evt) { }
+
+        // R3-F5: the native summon rule carries the summoning context; the unit it produced belongs to the cast whose
+        // command's execution that context is (or derives from).
+        private readonly List<CastHandle> casts = new List<CastHandle>();
+        public void OnEventAboutToTrigger(RuleSummonUnit evt) { }
+        public void OnEventDidTrigger(RuleSummonUnit evt)
+        {
+            if (evt == null || evt.SummonedUnit == null || evt.Context == null) return;
+            foreach (CastHandle handle in casts)
+            {
+                AbilityExecutionContext execution = handle.Command == null || handle.Command.ExecutionProcess == null ? null : handle.Command.ExecutionProcess.Context;
+                if (execution != null && handle.Summoned == null && (ReferenceEquals(evt.Context, execution) || ReferenceEquals(evt.Context.SourceAbilityContext, execution)))
+                    handle.Summoned = evt.SummonedUnit;
+            }
+        }
 
         public void OnEventDidTrigger(RuleAttackRoll evt)
         {
@@ -211,6 +216,17 @@ namespace KmgLoaderCompatHarness
             return unit != null && unit.Blueprint != null && unit.Blueprint.name.IndexOf("GhaeleAzata", StringComparison.Ordinal) >= 0;
         }
 
+        private static bool LoanVerdict(UnitEntityData main, BlueprintAbility ability, CastHandle handle, JObject row)
+        {
+            Ability now = main.Descriptor.Abilities.GetAbility(ability);
+            string reason;
+            bool released = GhaeleLoan.Released(handle.Existing != null, now, handle.Existing, handle.Granted, now == null ? null : now.OverrideParams, handle.PriorParams, out reason);
+            row["loan"] = new JObject { ["released"] = released, ["reason"] = reason, ["abilityPresent"] = now != null,
+                ["sameInstance"] = handle.Existing != null ? ReferenceEquals(now, handle.Existing) : (bool?)null, ["grantRetained"] = handle.Granted != null ? ReferenceEquals(now, handle.Granted) : (bool?)null,
+                ["overrideParams"] = now == null || now.OverrideParams == null ? null : new JObject { ["casterLevel"] = now.OverrideParams.CasterLevel, ["spellLevel"] = now.OverrideParams.SpellLevel } };
+            return released;
+        }
+
         private static bool SummonedBy(UnitEntityData unit, UnitEntityData summoner)
         {
             UnitPartSummonedMonster part = unit == null ? null : unit.Get<UnitPartSummonedMonster>();
@@ -225,7 +241,7 @@ namespace KmgLoaderCompatHarness
             internal AbilityParams PriorParams;
             internal UnitUseAbility Command;
             internal HashSet<UnitEntityData> Before;
-            internal UnitEntityData Registered;
+            internal UnitEntityData Registered, Summoned;
             internal bool LoanReleased, CommandReleased;
             internal int LateSummonsDestroyed;
         }
@@ -258,12 +274,13 @@ namespace KmgLoaderCompatHarness
             Vector3 forward = Quaternion.Euler(0, main.Orientation, 0) * Vector3.forward;
             Vector3 point = ObstacleAnalyzer.TraceAlongNavmesh(main.Position, main.Position + forward * 3f);
             handle.Command = new UnitUseAbility(new AbilityData(handle.Used), new TargetWrapper(point));
+            casts.Add(handle);
             owned.Hold(late, () =>
             {
+                // Only the unit this cast's own execution summoned, and only if it was never registered.
                 Game.Instance.EntityCreator.Tick();
-                foreach (UnitEntityData unit in Game.Instance.State.Units.ToArray())
-                    if (!handle.Before.Contains(unit) && !ReferenceEquals(unit, handle.Registered) && !unit.Destroyed && IsKmgGhaele(unit) && SummonedBy(unit, main))
-                    { unit.Destroy(); handle.LateSummonsDestroyed++; }
+                UnitEntityData own = handle.Summoned;
+                if (own != null && !ReferenceEquals(own, handle.Registered) && !own.Destroyed) { own.Destroy(); handle.LateSummonsDestroyed++; }
             });
             owned.Hold(command, () =>
             {
@@ -288,8 +305,9 @@ namespace KmgLoaderCompatHarness
                 owned.ReleaseNow(command, null);
                 // One frame between settlement and registration (the summon is in the game, not yet registered).
                 yield return null;
-                UnitEntityData ghaele = Game.Instance.State.Units.FirstOrDefault(unit => !handle.Before.Contains(unit) && !unit.Destroyed && IsKmgGhaele(unit) && SummonedBy(unit, main));
+                UnitEntityData ghaele = handle.Summoned != null && !handle.Summoned.Destroyed && IsKmgGhaele(handle.Summoned) ? handle.Summoned : null;
                 cast["spawned"] = ghaele == null ? null : ghaele.Blueprint.name;
+                cast["summonedId"] = ghaele == null ? null : ghaele.UniqueId;
                 if (!handle.Command.IsFinished || handle.Command.Result != Kingmaker.UnitLogic.Commands.Base.UnitCommand.ResultType.Success || ghaele == null)
                 { life.Problems.Add(tag + ": the published summon did not complete with a Ghaele"); yield break; }
                 handle.Registered = ghaele;
@@ -304,6 +322,7 @@ namespace KmgLoaderCompatHarness
                 owned.ReleaseNow(late, null);
                 cast["loanReleased"] = handle.LoanReleased; cast["commandReleased"] = handle.CommandReleased;
                 cast["lateSummonsDestroyed"] = handle.LateSummonsDestroyed;
+                casts.Remove(handle);
             }
         }
 
@@ -323,10 +342,12 @@ namespace KmgLoaderCompatHarness
             bool paused = Game.Instance.IsPaused;
             owned.Hold("pause", () => Game.Instance.IsPaused = paused);
             Game.Instance.IsPaused = false;
+            EventBus.Subscribe(this);
+            owned.Hold("rule subscription", () => EventBus.Unsubscribe(this));
             try
             {
                 IEnumerable<object> body = mode == "timeline" ? Observe(main, ability, donorBlueprint, library) :
-                    mode == "lifecycle" ? Lifecycle(main, ability, donorBlueprint) : null;
+                    mode == "lifecycle" ? Lifecycle(main, ability, donorBlueprint, library) : null;
                 if (body == null) { life.Problems.Add("unknown mode " + mode); yield break; }
                 foreach (object step in body) yield return step;
             }
@@ -380,19 +401,14 @@ namespace KmgLoaderCompatHarness
         {
             var cast = new JObject(); result["cast"] = cast;
             UnitEntityData ghaele = null;
-            foreach (object step in CastOwned(main, ability, "timeline", cast, new CastHandle(), null, unit => { ghaele = unit; created.Add(unit); })) yield return step;
+            var timelineHandle = new CastHandle();
+            foreach (object step in CastOwned(main, ability, "timeline", cast, timelineHandle, null, unit => { ghaele = unit; created.Add(unit); })) yield return step;
             if (ghaele == null) yield break;
-            // R2-F4: at the first post-cast observation the loan has ended.
-            Ability now = main.Descriptor.Abilities.GetAbility(ability);
-            cast["afterCast"] = new JObject { ["abilityPresent"] = now != null,
-                ["overrideParams"] = now == null || now.OverrideParams == null ? null : new JObject { ["casterLevel"] = now.OverrideParams.CasterLevel, ["spellLevel"] = now.OverrideParams.SpellLevel } };
-            if (((bool)cast["granted"] && now != null) || ((bool)cast["borrowed"] && now != null && now.OverrideParams != null && now.OverrideParams.CasterLevel == 20))
-                life.Problems.Add("the summon ability loan outlived the cast");
+            // R2-F4 / R4-F3: at the first post-cast observation, judged against the exact state this cast held.
+            if (!LoanVerdict(main, ability, timelineHandle, cast)) life.Problems.Add("the summon ability loan was not released to its prior state: " + cast["loan"]["reason"]);
             runner.GetMethod("SetExpandedSummoningBrainActive", Any).Invoke(null, new object[] { ghaele, false });
             Vector3 forward = Quaternion.Euler(0, main.Orientation, 0) * Vector3.forward;
             UnitEntityData donor = SpawnDisposable(donorBlueprint, ObstacleAnalyzer.TraceAlongNavmesh(main.Position, main.Position - forward * 3f));
-            owned.Hold("attack log subscription", () => EventBus.Unsubscribe(this));
-            EventBus.Subscribe(this);
             attacker = ghaele; attackRolls = new JArray();
 
             BlueprintScriptableObject appearBuff = BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff;
@@ -402,6 +418,8 @@ namespace KmgLoaderCompatHarness
             bool moved = false; Vector3 moveFrom = Vector3.zero; double travel = -1;
             var samples = new JArray(); var controllers = new JArray(); var donorControllers = new JArray(); var lighting = new JArray();
             var combat = new JObject { ["attackRolls"] = attackRolls };
+            var attacks = new List<Kingmaker.UnitLogic.Commands.Base.UnitCommand>();
+            var intake = new Dictionary<UnitEntityData, bool>();
             result["samples"] = samples; result["controllers"] = controllers; result["donorControllers"] = donorControllers;
             result["lighting"] = lighting; result["combat"] = combat;
             UnitEntityData hostile = null; bool combatOver = false, idleLit = false, combatLit = false; int autoPauses = 0;
@@ -444,6 +462,10 @@ namespace KmgLoaderCompatHarness
                 // Combat: from 20 s, commanded attacks on a disposable hostile until three attack rolls or 60 s.
                 if (hostile == null && !combatOver && t > 20)
                 {
+                    // Intake: combat is started only when no unit this observation will engage is already fighting.
+                    foreach (UnitEntityData unit in new[] { ghaele, main, donor }.Where(u => u != null)) intake[unit] = unit.CombatState.IsInCombat;
+                    combat["intakeInCombat"] = new JArray(intake.Where(entry => entry.Value).Select(entry => (object)entry.Key.UniqueId).ToArray());
+                    if (intake.Any(entry => entry.Value)) { combatOver = true; combat["unavailable"] = "incompatible intake: a unit was already in combat"; continue; }
                     Vector3 facing = Quaternion.Euler(0, ghaele.Orientation, 0) * Vector3.forward;
                     hostile = SpawnHostile(library, ghaele, ObstacleAnalyzer.TraceAlongNavmesh(ghaele.Position, ghaele.Position + facing * 1.6f), combat);
                     combat["startedAt"] = Math.Round(t, 2);
@@ -453,36 +475,45 @@ namespace KmgLoaderCompatHarness
                         UnitEntityData target = hostile;
                         owned.Hold("combat state", () =>
                         {
-                            foreach (UnitEntityData unit in new[] { ghaele, main, donor, target }.Where(u => u != null && !u.Destroyed))
-                            {
-                                unit.Commands.InterruptAll(value => true); unit.Commands.RemoveFinishedAndUpdateQueue();
-                                if (unit.CombatState.IsInCombat) unit.CombatState.LeaveCombat();
-                            }
+                            // Only the probe's own attack commands, its own target, and the combat state this
+                            // observation introduced (units that were not fighting at intake).
+                            if (!ghaele.Destroyed) { ghaele.Commands.InterruptAll(value => attacks.Contains(value)); ghaele.Commands.RemoveFinishedAndUpdateQueue(); }
+                            if (!target.Destroyed) { created.Remove(target); target.Destroy(); }
+                            foreach (KeyValuePair<UnitEntityData, bool> entry in intake)
+                                if (!entry.Value && entry.Key != null && !entry.Key.Destroyed && entry.Key.CombatState.IsInCombat) entry.Key.CombatState.LeaveCombat();
                         });
                     }
                 }
                 if (hostile != null && !combatOver)
                 {
-                    if (!ghaele.Commands.HasUnfinished() && attackRolls.Count < 3) ghaele.Commands.Run(new UnitAttack(hostile));
+                    if (!ghaele.Commands.HasUnfinished() && attackRolls.Count < 3) { var attack = new UnitAttack(hostile); attacks.Add(attack); ghaele.Commands.Run(attack); }
                     if (!combatLit && attackRolls.Count >= 1) { combatLit = true; lighting.Add(Lighting(ghaele, "combat")); }
                     if (attackRolls.Count >= 3 || t > 60)
                     {
                         combatOver = true;
                         combat["endedAt"] = Math.Round(t, 2);
-                        owned.ReleaseNow("combat state", null);
-                        created.Remove(hostile); hostile.Destroy();
+                        // An independent command on the main character, started before the combat teardown.
+                        var independent = new UnitMoveTo(ObstacleAnalyzer.TraceAlongNavmesh(main.Position, main.Position + Quaternion.Euler(0, main.Orientation, 0) * Vector3.back * 8f), .3f);
+                        main.Commands.Run(independent);
+                        combat["mainIndependentBefore"] = new JObject { ["held"] = main.Commands.Contains(independent), ["finished"] = independent.IsFinished };
+                        var teardownFailures = new List<string>();
+                        owned.ReleaseNow("combat state", teardownFailures);
+                        combat["teardownFailures"] = new JArray(teardownFailures.Cast<object>().ToArray());
+                        combat["mainIndependentAfter"] = new JObject { ["held"] = main.Commands.Contains(independent), ["finished"] = independent.IsFinished,
+                            ["result"] = independent.IsFinished ? independent.Result.ToString() : null };
+                        combat["ownedAttacks"] = attacks.Count; combat["ownedAttacksLeft"] = attacks.Count(value => !value.IsFinished && ghaele.Commands.Contains(value));
+                        combat["targetDestroyed"] = hostile.Destroyed;
                     }
                 }
                 yield return null;
             }
 
             // R3-F6: positive attribution only.
-            var donorSignatures = new HashSet<string>(donorControllers.SelectMany(row => row["controllers"]).SelectMany(c => c["animations"]).Select(GhaeleAttribution.Signature));
             var inLifeRows = controllers.Where(row => (double)row["t"] >= appearedAt + 1 && (lifetimeEnd < 0 || (double)row["t"] < lifetimeEnd - .5)).ToList();
-            JObject attribution = GhaeleAttribution.Evaluate(inLifeRows, donorSignatures);
+            JObject attribution = GhaeleAttribution.Evaluate(inLifeRows, donorControllers);
             result["timeline"] = new JObject { ["appearanceEndedAt"] = Math.Round(appearedAt, 2), ["lifetimeEndsAt"] = Math.Round(lifetimeEnd, 2), ["removedAt"] = Math.Round(removedAt, 2),
                 ["maxBodyDissolveCutoutInLife"] = maxCutout, ["maxBodyDissolveInLife"] = maxDissolve, ["moveTravel"] = Math.Round(travel, 2),
-                ["donorSignatures"] = new JArray(donorSignatures), ["attribution"] = attribution, ["autoPausesCleared"] = autoPauses };
+                ["attribution"] = attribution, ["autoPausesCleared"] = autoPauses };
             combat["attackRollCount"] = attackRolls.Count;
             if (appearedAt < 0) life.Problems.Add("the appearance did not complete");
             if (maxCutout < 0 || maxCutout > .02) life.Problems.Add("the body showed a cutout dissolve in life: " + maxCutout);
@@ -490,15 +521,25 @@ namespace KmgLoaderCompatHarness
             if (travel <= 2) life.Problems.Add("the ordinary move did not travel");
             if (!(bool)attribution["attributed"]) life.Problems.Add("the in-life dissolve is not positively attributed to the donor's native loop: " + attribution["positive"] + " positive, " + attribution["contradicting"] + " contradicting");
             if (attackRolls.Count < 1) life.Problems.Add("no ordinary combat was observed: " + (combat["unavailable"] ?? "no attack roll"));
-            if (!idleLit || !combatLit) life.Problems.Add("the idle and combat lighting contexts were not both recorded");
+            JToken independentAfter = combat["mainIndependentAfter"];
+            if (independentAfter == null || !((bool)independentAfter["held"] || ((bool)independentAfter["finished"] && (string)independentAfter["result"] != "Interrupt")) ||
+                (int)combat["ownedAttacksLeft"] != 0 || !(bool)combat["targetDestroyed"])
+                life.Problems.Add("the combat teardown did not release exactly the observation's own activity");
+            // R4-F6: each lighting observation is judged on its own readbacks.
+            foreach (JObject row in lighting.OfType<JObject>())
+            {
+                string reason;
+                row["valid"] = GhaeleLighting.Valid(row, out reason); row["reason"] = reason;
+            }
+            if (!idleLit || !combatLit || lighting.OfType<JObject>().Count(row => (bool)row["valid"]) != 2)
+                life.Problems.Add("the idle and combat lighting observations were not both valid");
         }
 
         // ---------------------------------------------------------------- lifecycle (R2-F4, R3-F5)
 
-        private IEnumerable<object> Lifecycle(UnitEntityData main, BlueprintAbility ability, BlueprintUnit donorBlueprint)
+        private IEnumerable<object> Lifecycle(UnitEntityData main, BlueprintAbility ability, BlueprintUnit donorBlueprint, LibraryScriptableObject library)
         {
             var cases = new JObject(); result["cases"] = cases;
-            Func<int> ghaeles = () => Game.Instance.State.Units.Count(unit => !unit.Destroyed && IsKmgGhaele(unit) && SummonedBy(unit, main));
             // The unrelated command is started right before each abandonment and read right after it: still held by
             // its unit and not ended as interrupted.
             Func<UnitCommandProbe, JObject> commandState = probe => new JObject { ["held"] = probe.Unit.Commands.Contains(probe.Command),
@@ -511,50 +552,75 @@ namespace KmgLoaderCompatHarness
             UnitEntityData bystander = SpawnDisposable(donorBlueprint, ObstacleAnalyzer.TraceAlongNavmesh(main.Position, main.Position + back * 4f));
             foreach (object step in Frames(30)) yield return step;
 
-            // 1. Borrowed, with non-default parameters.
-            var borrowed = new JObject(); cases["borrowedNonDefault"] = borrowed;
-            Ability pre = main.Descriptor.AddFact(ability) as Ability;
-            owned.Hold("borrowed setup", () => { if (pre != null && ReferenceEquals(main.Descriptor.Abilities.GetAbility(ability), pre)) main.Descriptor.Abilities.RemoveFact(pre); });
-            var setupParams = new AbilityParams { CasterLevel = 7, SpellLevel = 3 };
-            if (pre != null) pre.OverrideParams = setupParams;
-            UnitEntityData first = null;
-            foreach (object step in CastOwned(main, ability, "borrowed", borrowed, new CastHandle(), null, unit => { first = unit; created.Add(unit); })) yield return step;
-            Ability afterBorrow = main.Descriptor.Abilities.GetAbility(ability);
-            borrowed["sameInstance"] = pre != null && ReferenceEquals(afterBorrow, pre);
-            borrowed["paramsRestored"] = afterBorrow != null && ReferenceEquals(afterBorrow.OverrideParams, setupParams) && setupParams.CasterLevel == 7 && setupParams.SpellLevel == 3;
-            bool borrowedOk = first != null && borrowed["borrowed"] != null && (bool)borrowed["borrowed"] && (bool)borrowed["sameInstance"] && (bool)borrowed["paramsRestored"] &&
-                borrowed["overrideDuringCast"] != null && borrowed["overrideDuringCast"].Type == JTokenType.Object && (int)borrowed["overrideDuringCast"]["casterLevel"] == 20;
-            if (!borrowedOk) life.Problems.Add("lifecycle.borrowed: the borrowed ability was not restored to its own parameters at the first post-cast observation");
-            owned.ReleaseNow("borrowed setup", null);
-            if (first != null) { created.Remove(first); first.Destroy(); }
-            foreach (object step in Frames(10)) yield return step;
+            // 1. Borrowed, with non-default parameters, then with an existing caster level 20 override; and the
+            //    timeline's own verdict against an injected incorrect restoration.
+            foreach (var variant in new[] { new { Key = "borrowedNonDefault", Cl = 7, Sl = 3 }, new { Key = "borrowedCl20Override", Cl = 20, Sl = 9 } })
+            {
+                var borrowed = new JObject(); cases[variant.Key] = borrowed;
+                Ability pre = main.Descriptor.AddFact(ability) as Ability;
+                string setup = variant.Key + " setup";
+                owned.Hold(setup, () => { if (pre != null && ReferenceEquals(main.Descriptor.Abilities.GetAbility(ability), pre)) main.Descriptor.Abilities.RemoveFact(pre); });
+                var setupParams = new AbilityParams { CasterLevel = variant.Cl, SpellLevel = variant.Sl };
+                if (pre != null) pre.OverrideParams = setupParams;
+                UnitEntityData first = null;
+                var handle = new CastHandle();
+                foreach (object step in CastOwned(main, ability, variant.Key, borrowed, handle, null, unit => { first = unit; created.Add(unit); })) yield return step;
+                bool released = LoanVerdict(main, ability, handle, borrowed);
+                bool sameParams = pre != null && ReferenceEquals(pre.OverrideParams, setupParams) && setupParams.CasterLevel == variant.Cl && setupParams.SpellLevel == variant.Sl;
+                // Injected incorrect restoration: the verdict must refuse it; then the exact parameters are put back.
+                var injected = new JObject();
+                if (pre != null) { pre.OverrideParams = new AbilityParams { CasterLevel = variant.Cl, SpellLevel = variant.Sl }; }
+                bool refusesWrong = !LoanVerdict(main, ability, handle, injected);
+                if (pre != null) pre.OverrideParams = setupParams;
+                borrowed["injectedWrongRestore"] = injected["loan"];
+                bool ok = first != null && released && sameParams && refusesWrong && borrowed["overrideDuringCast"] != null &&
+                    borrowed["overrideDuringCast"].Type == JTokenType.Object && (int)borrowed["overrideDuringCast"]["casterLevel"] == 20;
+                borrowed["verdictHeld"] = ok;
+                if (!ok) life.Problems.Add("lifecycle." + variant.Key + ": the loan verdict did not hold against the exact prior state");
+                owned.ReleaseNow(setup, null);
+                if (first != null) { created.Remove(first); first.Destroy(); }
+                foreach (object step in Frames(10)) yield return step;
+            }
+
+            // Missing borrowed instance: the verdict refuses an ability that vanished.
+            {
+                var missing = new JObject(); cases["borrowedMissing"] = missing;
+                Ability pre = main.Descriptor.AddFact(ability) as Ability;
+                var handle = new CastHandle { Existing = pre, PriorParams = pre == null ? null : pre.OverrideParams };
+                if (pre != null) main.Descriptor.Abilities.RemoveFact(pre);
+                missing["refused"] = !LoanVerdict(main, ability, handle, missing);
+                if (!(bool)missing["refused"]) life.Problems.Add("lifecycle.borrowedMissing: the loan verdict accepted a vanished borrowed ability");
+            }
 
             // 2. A temporary grant replaced during the cast: the replacement survives the loan's release.
             var replaced = new JObject(); cases["replacedGrant"] = replaced;
             Ability replacement = null; UnitEntityData second = null;
             owned.Hold("replacement setup", () => { if (replacement != null && ReferenceEquals(main.Descriptor.Abilities.GetAbility(ability), replacement)) main.Descriptor.Abilities.RemoveFact(replacement); });
-            foreach (object step in CastOwned(main, ability, "replaced", replaced, new CastHandle(), handle =>
+            var replacedHandle = new CastHandle();
+            foreach (object step in CastOwned(main, ability, "replaced", replaced, replacedHandle, handle =>
                 {
                     main.Descriptor.Abilities.RemoveFact(handle.Granted);
                     replacement = main.Descriptor.AddFact(ability) as Ability;
                 }, unit => { second = unit; created.Add(unit); })) yield return step;
             Ability afterReplace = main.Descriptor.Abilities.GetAbility(ability);
+            bool replacedReleased = LoanVerdict(main, ability, replacedHandle, replaced);
             replaced["replacementSurvived"] = replacement != null && ReferenceEquals(afterReplace, replacement);
             replaced["replacementUntouched"] = replacement != null && replacement.OverrideParams == null;
-            if (replaced["granted"] == null || !(bool)replaced["granted"] || !(bool)replaced["replacementSurvived"] || !(bool)replaced["replacementUntouched"])
+            if (replaced["granted"] == null || !(bool)replaced["granted"] || !replacedReleased || !(bool)replaced["replacementSurvived"] || !(bool)replaced["replacementUntouched"])
                 life.Problems.Add("lifecycle.replaced: the replacement grant did not survive the loan's release untouched");
             owned.ReleaseNow("replacement setup", null);
             if (second != null) { created.Remove(second); second.Destroy(); }
             foreach (object step in Frames(10)) yield return step;
 
-            // 3. Abandoned with the command pending.
+            // 3. Abandoned with the command pending, while a foreign same-caster Ghaele from another execution exists.
             var pending = new JObject(); cases["abandonedPending"] = pending;
             var pendingHandle = new CastHandle();
-            int ghaelesBefore = ghaeles();
             IEnumerator<object> pendingRun = CastOwned(main, ability, "pending", pending, pendingHandle, null, unit => created.Add(unit)).GetEnumerator();
             pendingRun.MoveNext();
             pending["actedBeforeAbandon"] = pendingHandle.Command != null && pendingHandle.Command.IsActed;
             pending["executionBeforeAbandon"] = pendingHandle.Command != null && pendingHandle.Command.ExecutionProcess != null;
+            UnitEntityData foreignPending = SummonForeignGhaele(main, library);
+            pending["foreignGhaele"] = foreignPending == null ? null : foreignPending.UniqueId;
             var pendingMove = new UnitMoveTo(ObstacleAnalyzer.TraceAlongNavmesh(bystander.Position, bystander.Position + back * 12f), .3f);
             bystander.Commands.Run(pendingMove);
             var unrelated = new UnitCommandProbe { Unit = bystander, Command = pendingMove };
@@ -562,28 +628,33 @@ namespace KmgLoaderCompatHarness
             pendingRun.Dispose();
             pending["bystanderAfterAbandon"] = commandState(unrelated);
             foreach (object step in Seconds(6f)) yield return step;
+            pending["ownedSummon"] = pendingHandle.Summoned == null ? null : pendingHandle.Summoned.UniqueId;
             pending["ownedCommandRemains"] = pendingHandle.Command != null && main.Commands.Contains(pendingHandle.Command) && !pendingHandle.Command.IsFinished;
-            pending["lateSummons"] = ghaeles() - ghaelesBefore;
+            pending["foreignPreserved"] = foreignPending != null && !foreignPending.Destroyed && Game.Instance.State.Units.Contains(foreignPending);
             pending["abilityGrantRemains"] = main.Descriptor.Abilities.GetAbility(ability) != null;
             pending["bystanderCommandSurvived"] = (bool)pending["bystanderBeforeAbandon"]["held"] && survived((JObject)pending["bystanderAfterAbandon"]);
-            if ((bool)pending["executionBeforeAbandon"] || (bool)pending["ownedCommandRemains"] || (int)pending["lateSummons"] != 0 || (bool)pending["abilityGrantRemains"] ||
-                !(bool)pending["bystanderCommandSurvived"] || !(bool)pending["commandReleased"] || !(bool)pending["loanReleased"])
+            if ((bool)pending["executionBeforeAbandon"] || (bool)pending["ownedCommandRemains"] || pendingHandle.Summoned != null || (bool)pending["abilityGrantRemains"] ||
+                !(bool)pending["foreignPreserved"] || !(bool)pending["bystanderCommandSurvived"] || !(bool)pending["commandReleased"] || !(bool)pending["loanReleased"])
                 life.Problems.Add("lifecycle.pending: the abandoned pending command was not settled exactly");
+            if (foreignPending != null) { created.Remove(foreignPending); if (!foreignPending.Destroyed) foreignPending.Destroy(); }
+            foreach (object step in Frames(10)) yield return step;
 
-            // 4. Abandoned after the Ghaele spawned, before ordinary registration.
+            // 4. Abandoned after the owned Ghaele spawned (identified by the native summon rule of the cast's own
+            //    execution) and before ordinary registration, with a foreign same-caster Ghaele from another execution.
             var spawned = new JObject(); cases["abandonedAfterSpawn"] = spawned;
             var spawnHandle = new CastHandle();
-            ghaelesBefore = ghaeles();
             IEnumerator<object> spawnRun = CastOwned(main, ability, "spawned", spawned, spawnHandle, null, unit => created.Add(unit)).GetEnumerator();
-            UnitEntityData early = null;
             float until = Time.realtimeSinceStartup + 30f;
             while (Time.realtimeSinceStartup < until && spawnRun.MoveNext())
             {
-                early = Game.Instance.State.Units.FirstOrDefault(unit => spawnHandle.Before != null && !spawnHandle.Before.Contains(unit) && !unit.Destroyed && IsKmgGhaele(unit) && SummonedBy(unit, main));
-                if (early != null) break;
+                if (spawnHandle.Summoned != null) break;
                 yield return null;
             }
+            UnitEntityData early = spawnHandle.Summoned;
             spawned["spawnSeenBeforeRegistration"] = early != null && spawnHandle.Registered == null;
+            spawned["ownedSummon"] = early == null ? null : early.UniqueId;
+            UnitEntityData foreignSpawned = SummonForeignGhaele(main, library);
+            spawned["foreignGhaele"] = foreignSpawned == null ? null : foreignSpawned.UniqueId;
             bystander.Commands.InterruptAll(value => true); bystander.Commands.RemoveFinishedAndUpdateQueue();
             var spawnMove = new UnitMoveTo(ObstacleAnalyzer.TraceAlongNavmesh(bystander.Position, bystander.Position - back * 12f), .3f);
             bystander.Commands.Run(spawnMove);
@@ -593,13 +664,29 @@ namespace KmgLoaderCompatHarness
             spawned["bystanderAfterAbandon"] = commandState(unrelatedSpawn);
             foreach (object step in Seconds(4f)) yield return step;
             spawned["earlySummonDestroyed"] = early != null && (early.Destroyed || !Game.Instance.State.Units.Contains(early));
-            spawned["lateSummons"] = ghaeles() - ghaelesBefore;
+            spawned["foreignPreserved"] = foreignSpawned != null && !foreignSpawned.Destroyed && Game.Instance.State.Units.Contains(foreignSpawned);
             spawned["ownedCommandRemains"] = spawnHandle.Command != null && main.Commands.Contains(spawnHandle.Command) && !spawnHandle.Command.IsFinished;
             spawned["abilityGrantRemains"] = main.Descriptor.Abilities.GetAbility(ability) != null;
             spawned["bystanderCommandSurvived"] = (bool)spawned["bystanderBeforeAbandon"]["held"] && survived((JObject)spawned["bystanderAfterAbandon"]);
-            if (!(bool)spawned["spawnSeenBeforeRegistration"] || !(bool)spawned["earlySummonDestroyed"] || (int)spawned["lateSummons"] > 0 ||
-                (bool)spawned["ownedCommandRemains"] || (bool)spawned["abilityGrantRemains"] || (int)spawned["lateSummonsDestroyed"] < 1 || !(bool)spawned["bystanderCommandSurvived"])
-                life.Problems.Add("lifecycle.spawned: the summon produced before registration outlived the abandoned cast");
+            if (!(bool)spawned["spawnSeenBeforeRegistration"] || !(bool)spawned["earlySummonDestroyed"] || !(bool)spawned["foreignPreserved"] ||
+                foreignSpawned == null || ReferenceEquals(foreignSpawned, early) || (bool)spawned["ownedCommandRemains"] || (bool)spawned["abilityGrantRemains"] ||
+                (int)spawned["lateSummonsDestroyed"] != 1 || !(bool)spawned["bystanderCommandSurvived"])
+                life.Problems.Add("lifecycle.spawned: the abandoned cast did not destroy exactly its own summon");
+            if (foreignSpawned != null) { created.Remove(foreignSpawned); if (!foreignSpawned.Destroyed) foreignSpawned.Destroy(); }
+        }
+
+        // A same-caster Ghaele produced by another execution: the product's own summon path (not this probe's command).
+        private UnitEntityData SummonForeignGhaele(UnitEntityData main, LibraryScriptableObject library)
+        {
+            Assembly product = runner.Assembly;
+            Type multiplicity = product.GetType("KingmakerGunslinger.Summoning.SummonMultiplicity", true);
+            object variant = runner.GetMethod("ExpandedSummoningOwnTierVariant", Any).Invoke(null, new[] { "ghaele-azata", Enum.Parse(multiplicity, "One") });
+            object evidence = Activator.CreateInstance(runner.GetNestedType("ExpandedSummoningMechanicalEvidence", Any), true);
+            var units = (UnitEntityData[])runner.GetMethods(Any).Single(m => m.Name == "CastExpandedSummoningVariant" && m.GetParameters().Length == 5)
+                .Invoke(null, new object[] { library.GetAllBlueprints().ToArray(), main, variant, null, evidence });
+            UnitEntityData unit = units != null && units.Length == 1 ? units[0] : null;
+            if (unit != null) created.Add(unit);
+            return unit;
         }
 
         private sealed class UnitCommandProbe { internal UnitEntityData Unit; internal Kingmaker.UnitLogic.Commands.Base.UnitCommand Command; }

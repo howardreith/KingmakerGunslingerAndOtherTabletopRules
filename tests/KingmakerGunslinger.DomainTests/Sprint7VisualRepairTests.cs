@@ -742,38 +742,29 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(abandoned.IsolationRestored && clean.IsolationRestored && fine.Unsubscribe == 1 && fine.Units == 1, "A clean abandonment restores isolation.");
         }
 
-        // R2-F2: the shared generator is seeded only inside the owned rule and
-        // put back at that rule's end; unrelated draws before, between and after
-        // keep exactly the values the unseeded generator gives; abandonment ends
-        // an open intervention.
-        internal static void TrumpetOwnedRollScope()
+        // R2-F2 (round 4): no shared-generator intervention. Only the d20 rule whose
+        // parent on the rule stack is an open owned save is claimed (pre-rolled),
+        // once per save; a foreign save dispatched inside the owned save's
+        // callbacks, its d20 and any foreign draw are untouched; abandonment
+        // clears everything.
+        internal static void TrumpetOwnedD20Claim()
         {
-            int state = 7;
-            Func<int> next = () => { state = unchecked(state * 1103515245 + 12345) & 0x7fffffff; return state % 20 + 1; };
-            const int seed = 424242;
-            var scope = new KmgLoaderCompatHarness.OwnedRollScope<int>(() => state, value => state = value, () => state = seed);
-            object blastSave = new object(), unrelatedSave = new object();
-            int a = next();                                   // frame 1: unrelated draw while the blast yields
-            Assertions.True(scope.Begin(blastSave), "The blast's own save opens the intervention.");
-            int forced = next();
-            Assertions.False(scope.Begin(unrelatedSave), "No second rule is seeded while one is open.");
-            Assertions.False(scope.End(unrelatedSave), "Another rule's end restores nothing.");
-            Assertions.True(scope.End(blastSave) && !scope.Active, "The owned rule's end closes the intervention.");
-            int b = next();                                   // an unrelated save's d20 in a later frame
-            int c = next();                                   // an unrelated draw after the blast
-            int control = 7;
-            Func<int> controlNext = () => { control = unchecked(control * 1103515245 + 12345) & 0x7fffffff; return control % 20 + 1; };
-            Assertions.True(a == controlNext() && b == controlNext() && c == controlNext(), "Unrelated draws keep the unseeded generator's own values; nothing is rewound.");
-            int expectedForced = unchecked(seed * 1103515245 + 12345) & 0x7fffffff;
-            Assertions.Equal(expectedForced % 20 + 1, forced, "Only the owned rule's draw comes from the seeded state.");
-            Assertions.Equal(1, scope.Seeded, "Exactly one rule was seeded.");
-
-            int before = state;
-            Assertions.True(scope.Begin(blastSave), "A new owned rule opens.");
-            scope.Abandon();
-            Assertions.True(!scope.Active && state == before, "Abandonment ends the intervention and restores the generator.");
-            Assertions.False(scope.End(blastSave), "An abandoned rule's late end does nothing.");
-            Assertions.False(scope.Begin(null), "A missing rule is never seeded.");
+            var claim = new KmgLoaderCompatHarness.OwnedD20Claim();
+            object ownedSave = new object(), foreignSave = new object(), unrelatedSave = new object();
+            Assertions.False(claim.Claim(ownedSave), "Nothing is claimed before the owned save opens.");
+            claim.Begin(ownedSave);
+            Assertions.True(claim.Open, "The owned save is open between its callbacks.");
+            Assertions.False(claim.Claim(foreignSave), "A foreign save dispatched inside the owned save is not claimed (its d20's parent is the foreign save).");
+            Assertions.False(claim.Claim(null), "A d20 with no parent rule is not claimed.");
+            Assertions.True(claim.Claim(ownedSave), "The owned save's own d20 is claimed.");
+            Assertions.False(claim.Claim(ownedSave), "It is claimed once.");
+            claim.End(ownedSave);
+            Assertions.True(!claim.Open && !claim.Claim(ownedSave), "After the owned save ends nothing more is claimed.");
+            Assertions.False(claim.Claim(unrelatedSave), "An unrelated save is never claimed.");
+            Assertions.Equal(1, claim.Claims, "Exactly one d20 was pre-rolled.");
+            claim.Begin(ownedSave);
+            claim.Abandon();
+            Assertions.True(!claim.Open && !claim.Claim(ownedSave), "Abandonment closes the intervention.");
         }
 
         private static JObject Anim(bool started, bool delayed, double delay, double lifetime, bool loop, bool cutout, double current)
@@ -790,54 +781,147 @@ namespace KingmakerGunslinger.DomainTests
             return snapshot;
         }
 
-        // R3-F6: only positive active non-cutout loop matches with a readable
-        // driven body material confirm; empty, inactive, delayed and unreadable
-        // samples are inconclusive; the retained released and current rows are
-        // re-evaluated through the corrected predicate.
+        private static JObject Donor(params JObject[] animations)
+        {
+            return new JObject { ["t"] = 10, ["controllers"] = new JArray(new JObject { ["controller"] = 2, ["animations"] = new JArray(animations),
+                ["driven"] = new JArray(new JObject { ["material"] = 21, ["dissolve"] = .4 }) }) };
+        }
+
+        // R3-F6 (round 4): only positive samples attribute. Current snapshots
+        // need a readable body (explicit null is inconclusive); qualifying donor
+        // loops must have been observed running with a readable matching value;
+        // the retained round-3 (legacy) and round-4 (current) rows are re-evaluated.
         internal static void GhaeleAttributionRequiresPositiveSamples()
         {
-            var donor = new HashSet<string> { "delay=4.75 lifetime=5.00 loop=True cutout=False backwards=False", "delay=0.00 lifetime=3.00 loop=False cutout=False backwards=False" };
-            Func<JObject> loop = () => Anim(true, false, 4.75, 5, true, false, .4);
+            JObject activeLoop() { return Anim(true, false, 4.75, 5, true, false, .4); }
+            JObject appearance() { return Anim(false, false, 0, 3, false, false, 0); }
+            var donors = new[] { Donor(activeLoop(), appearance()) };
+            var configured = KmgLoaderCompatHarness.GhaeleAttribution.Configured(donors);
+            var qualifying = KmgLoaderCompatHarness.GhaeleAttribution.Qualifying(donors);
+            Assertions.True(qualifying.Count == 1 && configured.Count == 2, "Only the donor's observed running loop qualifies; both animations are configured.");
             Func<JArray> driven = () => new JArray(new JObject { ["material"] = 11, ["dissolve"] = .4 });
-            Func<JObject, string> classify = row => KmgLoaderCompatHarness.GhaeleAttribution.Classify(row, donor);
-            Assertions.Equal("positive", classify(Snapshot(new JArray(loop()), driven(), new JArray(11))), "An active donor loop driving a body material confirms.");
-            Assertions.Equal("positive", classify(Snapshot(new JArray(loop()), driven(), null)), "Without body identity recorded, a readable driven match is positive (labelled not-recorded).");
+            Func<JObject, string> classify = row => KmgLoaderCompatHarness.GhaeleAttribution.Classify(row, configured, qualifying);
+            Assertions.Equal("positive", classify(Snapshot(new JArray(activeLoop()), driven(), new JArray(11))), "An active qualifying loop driving a body material confirms.");
+            Assertions.Equal("positive", classify(Snapshot(new JArray(activeLoop()), driven(), null)), "A legacy row without the body property is judged without body identity.");
+            var explicitNull = Snapshot(new JArray(activeLoop()), driven(), null); explicitNull["bodyMaterials"] = JValue.CreateNull();
+            Assertions.Equal("inconclusive:no-readable-body", classify(explicitNull), "A current row whose body could not be read does not confirm.");
             Assertions.Equal("inconclusive:no-controller", classify(Snapshot(null, null, new JArray(11))), "An empty controller set does not confirm.");
             Assertions.Equal("inconclusive:no-animation", classify(Snapshot(new JArray(), driven(), new JArray(11))), "A controller without animations does not confirm.");
             Assertions.Equal("inconclusive:no-active-animation", classify(Snapshot(new JArray(Anim(false, false, 4.75, 5, true, false, 0)), driven(), new JArray(11))), "An inactive animation does not confirm.");
             Assertions.Equal("inconclusive:no-active-animation", classify(Snapshot(new JArray(Anim(true, true, 4.75, 5, true, false, 0)), driven(), new JArray(11))), "A delayed-only animation does not confirm.");
-            Assertions.Equal("inconclusive:no-readable-driven-value", classify(Snapshot(new JArray(loop()), new JArray(new JObject { ["material"] = 11, ["dissolve"] = -1 }), new JArray(11))),
-                "A driven material without a readable value does not confirm.");
-            Assertions.Equal("inconclusive:no-readable-driven-value", classify(Snapshot(new JArray(loop()), new JArray(), new JArray(11))), "No driven material does not confirm.");
-            Assertions.Equal("inconclusive:no-driven-body-material", classify(Snapshot(new JArray(loop()), driven(), new JArray(99))), "A driven material that is not the body's does not confirm.");
+            Assertions.Equal("inconclusive:no-readable-driven-value", classify(Snapshot(new JArray(activeLoop()), new JArray(new JObject { ["material"] = 11, ["dissolve"] = -1 }), new JArray(11))), "An unreadable driven value does not confirm.");
+            Assertions.Equal("inconclusive:no-driven-body-material", classify(Snapshot(new JArray(activeLoop()), driven(), new JArray(99))), "A driven material that is not the body's does not confirm.");
             Assertions.Equal("inconclusive:no-active-loop", classify(Snapshot(new JArray(Anim(true, false, 0, 3, false, false, .4)), driven(), new JArray(11))), "Only the appearance animation does not confirm a loop.");
             Assertions.Equal("contradicting", classify(Snapshot(new JArray(Anim(true, false, 4.75, 5, true, true, .4)), driven(), new JArray(11))), "A cutout dissolve contradicts.");
-            Assertions.Equal("contradicting", classify(Snapshot(new JArray(Anim(true, false, 2, 5, true, false, .4)), driven(), new JArray(11))), "A loop the donor does not run contradicts.");
-            Assertions.Equal("contradicting", classify(Snapshot(new JArray(loop()), new JArray(new JObject { ["material"] = 11, ["dissolve"] = .9 }), new JArray(11))), "A disagreeing driven value contradicts.");
+            Assertions.Equal("contradicting", classify(Snapshot(new JArray(Anim(true, false, 2, 5, true, false, .4)), driven(), new JArray(11))), "An animation the donor does not configure contradicts.");
+            Assertions.Equal("contradicting", classify(Snapshot(new JArray(activeLoop()), new JArray(new JObject { ["material"] = 11, ["dissolve"] = .9 }), new JArray(11))), "A disagreeing driven value contradicts.");
+            // A donor that only configures, or only delays, the loop never qualifies it.
+            foreach (JObject idle in new[] { Anim(false, false, 4.75, 5, true, false, 0), Anim(true, true, 4.75, 5, true, false, 0) })
+            {
+                var lazy = new[] { Donor(idle, appearance()) };
+                JObject verdict = KmgLoaderCompatHarness.GhaeleAttribution.Evaluate(Enumerable.Repeat(Snapshot(new JArray(activeLoop()), driven(), new JArray(11)), 6), lazy);
+                Assertions.True(!(bool)verdict["attributed"] && (int)verdict["positive"] == 0, "A donor loop never observed running does not attribute.");
+            }
             Func<int, int, int, JObject> evaluate = (positive, inconclusive, contradicting) => KmgLoaderCompatHarness.GhaeleAttribution.Evaluate(
-                Enumerable.Repeat(Snapshot(new JArray(loop()), driven(), new JArray(11)), positive)
+                Enumerable.Repeat(Snapshot(new JArray(activeLoop()), driven(), new JArray(11)), positive)
                     .Concat(Enumerable.Repeat(Snapshot(null, null, new JArray(11)), inconclusive))
-                    .Concat(Enumerable.Repeat(Snapshot(new JArray(Anim(true, false, 4.75, 5, true, true, .4)), driven(), new JArray(11)), contradicting)), donor);
+                    .Concat(Enumerable.Repeat(Snapshot(new JArray(Anim(true, false, 4.75, 5, true, true, .4)), driven(), new JArray(11)), contradicting)), donors);
             Assertions.False((bool)evaluate(0, 6, 0)["attributed"], "Only inconclusive samples never attribute.");
             Assertions.False((bool)evaluate(4, 4, 0)["attributed"], "Fewer than five positive samples do not attribute.");
             Assertions.False((bool)evaluate(6, 0, 1)["attributed"], "Any contradiction refuses attribution.");
             Assertions.True((bool)evaluate(5, 3, 0)["attributed"], "Five positive samples and no contradiction attribute.");
-            Assertions.False((bool)KmgLoaderCompatHarness.GhaeleAttribution.Evaluate(Enumerable.Repeat(Snapshot(new JArray(loop()), driven(), new JArray(11)), 6), new HashSet<string>())["attributed"],
-                "Without a donor signature nothing attributes.");
 
-            // Re-evaluation of the retained released (v0.0.195) and current-candidate rows, as recorded.
-            foreach (string name in new[] { "20261124T052619Z-owner-0.33.0-s7-ghaele-01-ghaele.json", "20261124T052954Z-owner-0.33.0-s7-ghaele-01-ghaele.json" })
+            // Re-evaluation of the retained released (v0.0.195) and candidate rows, as recorded.
+            foreach (var retained in new[] {
+                new { Folder = "r3", Name = "20261124T052619Z-owner-0.33.0-s7-ghaele-01-ghaele.json", Body = "not-recorded" },
+                new { Folder = "r3", Name = "20261124T052954Z-owner-0.33.0-s7-ghaele-01-ghaele.json", Body = "not-recorded" },
+                new { Folder = "r4", Name = "20261124T162819Z-owner-0.33.0-s7-ghaele-01-ghaele.json", Body = "recorded" },
+                new { Folder = "r4", Name = "20261124T163235Z-owner-0.33.0-s7-ghaele-01-ghaele.json", Body = "recorded" } })
             {
-                JObject probe = (JObject)JObject.Parse(File.ReadAllText(Path.Combine("docs/evidence/sprint7/r3", name)))["harness"]["kmgGhaeleLifetime_timeline"];
+                JObject probe = (JObject)JObject.Parse(File.ReadAllText(Path.Combine("docs/evidence/sprint7/" + retained.Folder, retained.Name)))["harness"]["kmgGhaeleLifetime_timeline"];
                 double appeared = (double)probe["timeline"]["appearanceEndedAt"], ends = (double)probe["timeline"]["lifetimeEndsAt"];
-                var signatures = new HashSet<string>(probe["donorControllers"].SelectMany(row => row["controllers"]).SelectMany(c => c["animations"]).Select(KmgLoaderCompatHarness.GhaeleAttribution.Signature));
                 var inLife = probe["controllers"].Where(row => (double)row["t"] >= appeared + 1 && (ends < 0 || (double)row["t"] < ends - .5)).ToList();
-                JObject result = KmgLoaderCompatHarness.GhaeleAttribution.Evaluate(inLife, signatures);
-                Console.WriteLine("GHAELE-REEVALUATION " + name + " productVersion=" + probe["productVersion"] + " " + result.ToString(Newtonsoft.Json.Formatting.None));
+                JObject result = KmgLoaderCompatHarness.GhaeleAttribution.Evaluate(inLife, probe["donorControllers"]);
+                result.Remove("classes");
+                Console.WriteLine("GHAELE-REEVALUATION " + retained.Folder + "/" + retained.Name + " productVersion=" + probe["productVersion"] + " " + result.ToString(Newtonsoft.Json.Formatting.None));
                 Assertions.True((bool)result["attributed"] && (int)result["contradicting"] == 0 && (int)result["positive"] >= KmgLoaderCompatHarness.GhaeleAttribution.MinimumPositive,
-                    name + ": the retained rows still attribute through positive samples.");
-                Assertions.Equal("not-recorded", (string)result["bodyMaterialIdentity"], name + ": the retained rows did not record body material identity.");
+                    retained.Name + ": the retained rows still attribute through positive samples and observed donor loops.");
+                Assertions.Equal(retained.Body, (string)result["bodyMaterialIdentity"], retained.Name + ": body identity as recorded.");
+                if (retained.Folder == "r4")
+                    foreach (JObject light in probe["lighting"].OfType<JObject>())
+                    {
+                        string why;
+                        Assertions.True(KmgLoaderCompatHarness.GhaeleLighting.Valid(light, out why), retained.Name + " " + light["label"] + ": the retained lighting row qualifies (" + why + ").");
+                    }
             }
+        }
+
+        // R4-F6: a lighting observation counts only with a readable body, a clear
+        // cutout, a light-probe reading and a usable capture of that body.
+        internal static void GhaeleLightingAndLoanVerdicts()
+        {
+            Func<JObject> good = () => new JObject { ["label"] = "idle", ["body"] = "GhaeleAzata_R", ["bodyMesh"] = "GhaeleAzata_Mesh", ["bodyDissolveCutout"] = 0.0,
+                ["probeDcLuminance"] = .24, ["partyCapture"] = "png=s7-ghaele-idle.png;bytes=1;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=36;screenLit=true;rendererEnabled=true;faderVisible=true;mesh=GhaeleAzata_Mesh;dissolve=0;intact=true" };
+            string why;
+            Assertions.True(KmgLoaderCompatHarness.GhaeleLighting.Valid(good(), out why), "A complete lighting row qualifies.");
+            var noBody = good(); noBody["body"] = JValue.CreateNull();
+            Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(noBody, out why) || why != "no-body", "A missing body fails.");
+            var empty = good(); empty["partyCapture"] = "png=<none>;reason=empty-render;inFrame=false";
+            Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(empty, out why) || why != "no-image", "An empty capture fails.");
+            var noCapture = good(); noCapture.Remove("partyCapture");
+            Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(noCapture, out why), "No capture fails.");
+            var probeError = good(); probeError["probeError"] = "ArgumentException";
+            Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(probeError, out why) || why != "no-light-probe", "A failed light-probe reading fails.");
+            var cut = good(); cut["bodyDissolveCutout"] = .5;
+            Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(cut, out why) || why != "cutout", "A cut-out body fails.");
+            var wrong = good(); wrong["partyCapture"] = ((string)wrong["partyCapture"]).Replace("mesh=GhaeleAzata_Mesh", "mesh=Wing_Mesh");
+            Assertions.False(KmgLoaderCompatHarness.GhaeleLighting.Valid(wrong, out why) || why != "wrong-body", "A capture of another mesh fails.");
+
+            // R4-F3: the loan verdict against the exact prior state.
+            object existing = new object(), prior = new object(), granted = new object(), replacement = new object(), other = new object();
+            Assertions.True(KmgLoaderCompatHarness.GhaeleLoan.Released(true, existing, existing, null, prior, prior, out why), "A borrowed ability with its own (even CL20) parameter object restored passes.");
+            Assertions.False(KmgLoaderCompatHarness.GhaeleLoan.Released(true, null, existing, null, null, prior, out why) || why != "borrowed-missing", "A vanished borrowed ability fails.");
+            Assertions.False(KmgLoaderCompatHarness.GhaeleLoan.Released(true, existing, existing, null, other, prior, out why) || why != "parameters-not-restored", "Incorrectly restored parameters fail.");
+            Assertions.False(KmgLoaderCompatHarness.GhaeleLoan.Released(true, replacement, existing, null, prior, prior, out why) || why != "borrowed-replaced", "A different instance in place of the borrowed one fails.");
+            Assertions.True(KmgLoaderCompatHarness.GhaeleLoan.Released(false, null, null, granted, null, null, out why), "A removed temporary grant passes.");
+            Assertions.True(KmgLoaderCompatHarness.GhaeleLoan.Released(false, replacement, null, granted, null, null, out why), "A distinct replacement passes.");
+            Assertions.False(KmgLoaderCompatHarness.GhaeleLoan.Released(false, granted, null, granted, null, null, out why) || why != "grant-retained", "A retained grant fails.");
+        }
+
+        // R4-F7: a final release over several owned items attempts each item once;
+        // a failure on the first is reported under its identity, the second still
+        // runs, and the slot keeps the original error and failed isolation.
+        private sealed class ItemsProbe : KmgLoaderCompatHarness.IOwnedProbe
+        {
+            internal readonly KmgLoaderCompatHarness.OwnedProbeResources Owned = new KmgLoaderCompatHarness.OwnedProbeResources();
+            internal readonly KmgLoaderCompatHarness.YieldedProbeLifecycle Life;
+            internal readonly Dictionary<string, int> Releases = new Dictionary<string, int> { ["unit-1"] = 0, ["unit-2"] = 0 };
+            internal ItemsProbe() { Life = new KmgLoaderCompatHarness.YieldedProbeLifecycle(Owned, lifecycle => Body()); }
+            private IEnumerable<object> Body() { yield return null; yield return null; }
+            public object Result { get { return "recorded"; } }
+            public string Poll() { return Life.Poll(); }
+            public KmgLoaderCompatHarness.CleanupReport Release(string testFailure)
+            {
+                return Life.Release(KmgLoaderCompatHarness.ProbeReleases.PerItem("disposable unit", new[] { "unit-1", "unit-2" }, id => id, id =>
+                {
+                    Releases[id]++;
+                    if (id == "unit-1") throw new InvalidOperationException("cannot destroy unit-1");
+                }));
+            }
+        }
+
+        internal static void ProbeFinalReleasesPerItem()
+        {
+            var slot = new KmgLoaderCompatHarness.ProbeSlot();
+            var probe = new ItemsProbe();
+            slot.Begin("2|kmgGhaeleLifetime_timeline", probe);
+            Assertions.True(slot.Poll("2|kmgGhaeleLifetime_timeline") == null, "Yielded.");
+            KmgLoaderCompatHarness.ProbeOutcome outcome = slot.Abandon("step timeout after 360s");
+            Assertions.True(probe.Releases["unit-1"] == 1 && probe.Releases["unit-2"] == 1, "Each item's release is attempted exactly once, the second after the first failed.");
+            Assertions.True(outcome.Failure.Contains("disposable unit unit-1") && outcome.Failure.Contains("cannot destroy unit-1") && !outcome.Failure.Contains("disposable unit unit-2:"),
+                "The failure names the item.");
+            Assertions.True(!outcome.IsolationRestored && outcome.TestFailure == "step timeout after 360s" && !slot.IsolationRestored, "Failed isolation and the original error reach the slot.");
+            Assertions.True(outcome.Cleanup.Attempted.Contains("disposable unit unit-2"), "The second item was attempted.");
         }
 
         // R3-F3 / R3-F4 / R1-F3: the cell's condition ledger, the trace release
