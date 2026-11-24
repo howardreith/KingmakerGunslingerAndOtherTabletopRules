@@ -189,7 +189,10 @@ Mechanics, correlated to each execution's own context, with an ally inside the c
 - Released behaviour, not changed here: the save is rolled for every selected creature, so allies appear in the
   combat log with a save that has no effect.
 
-Damage dice follow the seeded d20 state (disclosed).
+Damage dice follow the seeded d20 state (disclosed). Contract discrepancy, recorded and not acted on: the mission lists
+"blindness" among the Dust mechanics to preserve, but the released Dust breath (Sprint 5 profile, `BreathSickens`)
+applies Sickened for 3 rounds on a failed save and no blindness; Sprint 7 preserves the released behaviour and makes no
+balance change (an open design question for the owner).
 
 Controls:
 - The Dust Mephit executing the Ice breath (same launcher, same cold cone) got the untinted native cone.
@@ -239,7 +242,8 @@ are recorded by the controller on the reviewed candidate.
    observer admission) is wanted.
 4. T5: listening choice of the impact cue (recommended `Sweetener_Low_06_Quake`).
 5. T6: visual acceptance of the dust recolour; whether allies rolling a no-effect save against mephit breaths (released
-   behaviour) should be raised as a separate issue.
+   behaviour) should be raised as a separate issue; whether the Dust breath should blind (mission wording) rather than
+   sicken (released behaviour).
 6. T7: keep `InspireCourage` (recommended) or choose an alternative.
 7. Merge and release remain the owner's; this sprint authorizes neither.
 
