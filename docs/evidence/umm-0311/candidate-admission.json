@@ -1,18 +1,18 @@
 {
     "schema":  "kmg.candidate-admission-tests.v1",
-    "commit":  "91139e4368ed5b2b56ff767203431e4dbde27edd",
+    "commit":  "4f196b26d112640ace1eaa49dea355d16e210127",
     "purpose":  "umm-0311-admission",
-    "package_sha256":  "a7bb52a7cf428aa1d354ec2a3fbe836263d6911c6a3df6245d36aeb8ef260c28",
+    "package_sha256":  "2f65611084f76c023a439a9c3ca8ebbf1dee06821fcd0bc381e012f432f64a6f",
     "newer_compiled_dll_sha256":  "7b23241c3a219153e688041c905f8485ea70a7f36abb6f6a94e8beb7bbafc368",
     "historical_release_zip_sha256":  "64d83955478c3824c5fee485f4189b7d0be1141938a89e70e4cdab037461d412",
     "other_build_dll_sha256":  "3ef052ea441af368381b1cea7d2ee7acaa813000986de8644430ff63ee1d6a6b",
-    "passed":  29,
-    "total":  29,
+    "passed":  46,
+    "total":  46,
     "cases":  [
                   {
                       "name":  "development-candidate-built",
                       "passed":  true,
-                      "detail":  "exit 0; <dev>\\KingmakerGunslingerLab\\worktrees\\candidate-admission-3ef953a2adc949f5a45d01415b41a29d\\clone with space\\artifacts\\development-candidates\\umm-0311-admission\\91139e4368ed\\KingmakerGunslinger-0.0.195-development-umm-0311-admission-91139e4368ed.zip"
+                      "detail":  "exit 0; <dev>\\KingmakerGunslingerLab\\worktrees\\candidate-admission-32d4c88c5c10414a9517fc375335f8fa\\clone with space\\artifacts\\development-candidates\\umm-0311-admission\\4f196b26d112\\KingmakerGunslinger-0.0.195-development-umm-0311-admission-4f196b26d112.zip"
                   },
                   {
                       "name":  "matching-candidate-admitted",
@@ -42,22 +42,32 @@
                   {
                       "name":  "receipt-with-another-builds-mvid-refused",
                       "passed":  true,
-                      "detail":  "not the build its receipt names (receipt 2225cda1bb27f963d078c0b2e5ee8710fe31a1ee5adf161b788f512fb5279f09/0ddd004b-b49e-43d6-a042-8fba236c2252, packaged 2225cda1bb27f963d078c0b2e5ee8710fe31a1ee5adf161b788f512fb5279f09/4de72756-e47c-4"
+                      "detail":  "not the build its receipt names (receipt ed6536e9cb291a728cb1bea88727a200415b6364d477039679635f54725ccbbb/83039402-3902-40a3-83ba-2d3a128f16ac, packaged ed6536e9cb291a728cb1bea88727a200415b6364d477039679635f54725ccbbb/0962727f-9af2-4"
                   },
                   {
                       "name":  "receipt-with-another-builds-dll-hash-refused",
                       "passed":  true,
-                      "detail":  "not the build its receipt names (receipt abababababababababababababababababababababababababababababababab/4de72756-e47c-42b4-90c0-76965f3fac36, packaged 2225cda1bb27f963d078c0b2e5ee8710fe31a1ee5adf161b788f512fb5279f09/4de72756-e47c-4"
+                      "detail":  "not the build its receipt names (receipt abababababababababababababababababababababababababababababababab/0962727f-9af2-4e07-98d5-2da3d2199177, packaged ed6536e9cb291a728cb1bea88727a200415b6364d477039679635f54725ccbbb/0962727f-9af2-4"
+                  },
+                  {
+                      "name":  "receipt-with-another-packaged-dll-hash-refused",
+                      "passed":  true,
+                      "detail":  "nStopped: (The DLL inside ...dcdcdcdcdcdcd).:String) [], RuntimeException + FullyQualifiedErrorId : The DLL inside the package is not the packaged DLL its receipt records (cdcdcdcdcdcdcdcd cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd). "
+                  },
+                  {
+                      "name":  "receipt-with-another-source-stamp-refused",
+                      "passed":  true,
+                      "detail":  "g commit.:String) [], RuntimeException + FullyQualifiedErrorId : The receipt\u0027s recorded source stamp 0000000000000000000000000000000000000000 is not the packaged DLL\u0027s stamp 4f196b26d112640ace1eaa49dea355d16e210127 or its producing commit. "
                   },
                   {
                       "name":  "candidate-after-project-change-refused",
                       "passed":  true,
-                      "detail":  "stale: material inputs changed since its producing commit 91139e4368: src/KingmakerGunslinger/KingmakerGunslinger"
+                      "detail":  "stale: material inputs changed since its producing commit 4f196b26d1: src/KingmakerGunslinger/KingmakerGunslinger"
                   },
                   {
                       "name":  "candidate-after-reference-helper-change-refused",
                       "passed":  true,
-                      "detail":  "stale: material inputs changed since its producing commit 91139e4368: scripts/ReferenceProvenance"
+                      "detail":  "stale: material inputs changed since its producing commit 4f196b26d1: scripts/ReferenceProvenance"
                   },
                   {
                       "name":  "candidate-admitted-again-after-reverts",
@@ -70,9 +80,19 @@
                       "detail":  "exit 0"
                   },
                   {
+                      "name":  "loader-admission-carries-the-admitted-identity-and-a-verified-staging-tree",
+                      "passed":  true,
+                      "detail":  "CARRIED development 0.0.195 4f196b26d112640ace1eaa49dea355d16e210127 True PREFLIGHT-REFUSED Kingmaker is running (fixture). COPY"
+                  },
+                  {
+                      "name":  "loader-admitted-copy-removed-when-the-session-stops-before-staging",
+                      "passed":  true,
+                      "detail":  "COPY-REMAINS False"
+                  },
+                  {
                       "name":  "loader-preflight-refuses-mismatched-zip",
                       "passed":  true,
-                      "detail":  "refused <dev>\\KingmakerGunslingerLab\\worktrees\\candidate-admission-3ef953a2adc949f5a45d01415b41a29 d\\variants\\newer-compiled-dll"
+                      "detail":  "refused <dev>\\KingmakerGunslingerLab\\worktrees\\candidate-admission-32d4c88c5c10414a9517fc375335f8f a\\variants\\newer-compiled-dll"
                   },
                   {
                       "name":  "validator-relative-path-after-location-change-accepted",
@@ -92,22 +112,32 @@
                   {
                       "name":  "receipt-records-matching-compiler-and-packaged-identities",
                       "passed":  true,
-                      "detail":  "compiler 2225cda1bb27f963d078c0b2e5ee8710fe31a1ee5adf161b788f512fb5279f09 / packaged 2225cda1bb27f963d078c0b2e5ee8710fe31a1ee5adf161b788f512fb5279f09 / stamp 91139e4368ed5b2b56ff767203431e4dbde27edd"
+                      "detail":  "compiler ed6536e9cb291a728cb1bea88727a200415b6364d477039679635f54725ccbbb / packaged ed6536e9cb291a728cb1bea88727a200415b6364d477039679635f54725ccbbb / stamp 4f196b26d112640ace1eaa49dea355d16e210127"
                   },
                   {
                       "name":  "other-baseline-build-with-original-producer-receipt-refused",
                       "passed":  true,
-                      "detail":  "side ...431e4dbde27edd.:String) [], RuntimeException + FullyQualifiedErrorId : The DLL inside the package was built from ef0e1fe15d59fc6f04ef4956337690f14de3c528, not the receipt\u0027s producing commit 91139e4368ed5b2b56ff767203431e4dbde27edd. "
+                      "detail":  "side ...a355d16e210127.:String) [], RuntimeException + FullyQualifiedErrorId : The DLL inside the package was built from ef0e1fe15d59fc6f04ef4956337690f14de3c528, not the receipt\u0027s producing commit 4f196b26d112640ace1eaa49dea355d16e210127. "
+                  },
+                  {
+                      "name":  "candidate-with-an-uncommitted-shipped-document-change-refused",
+                      "passed":  true,
+                      "detail":  "stale: material inputs changed since its producing commit 4f196b26d1: docs/WEAPON-FINDABILITY-RECOVERY"
                   },
                   {
                       "name":  "candidate-after-shipped-readme-change-refused",
                       "passed":  true,
-                      "detail":  "stale: material inputs changed since its producing commit 91139e4368: README"
+                      "detail":  "stale: material inputs changed since its producing commit 4f196b26d1: README"
                   },
                   {
                       "name":  "candidate-after-packaging-helper-change-refused",
                       "passed":  true,
-                      "detail":  "stale: material inputs changed since its producing commit 91139e4368: scripts/common"
+                      "detail":  "stale: material inputs changed since its producing commit 4f196b26d1: scripts/common"
+                  },
+                  {
+                      "name":  "candidate-after-shipped-docs-document-change-refused",
+                      "passed":  true,
+                      "detail":  "stale: material inputs changed since its producing commit 4f196b26d1: docs/WEAPON-FINDABILITY-RECOVERY"
                   },
                   {
                       "name":  "candidate-after-review-documentation-change-admitted",
@@ -122,12 +152,17 @@
                   {
                       "name":  "historical-changed-archive-refused",
                       "passed":  true,
-                      "detail":  "ion + FullyQualifiedErrorId : The package is not the recorded v0.0.188 release package (package 04c48c253f703781287036 1fcea792ba9b48a5e68cd5f973e553fe5cb2fe30ee, recorded 64d83955478c3824c5fee485f4189b7d0be1141938a89e70e4cdab037461d 412). "
+                      "detail":  "ion + FullyQualifiedErrorId : The package is not the recorded v0.0.188 release package (package 2b4dc839aefc0286e6f4a6 06f0f084b8104fb0c81660a71655b1300162913b89, recorded 64d83955478c3824c5fee485f4189b7d0be1141938a89e70e4cdab037461d 412). "
+                  },
+                  {
+                      "name":  "historical-uncommitted-record-edit-refused",
+                      "passed":  true,
+                      "detail":  "~~~~~~~~~~~~~~~ + CategoryInfo : OperationStopped: (The working-tre...t or revert it.:String) [], RuntimeException + FullyQualifiedErrorId : The working-tree historical release record differs from the committed record; commit or revert it. "
                   },
                   {
                       "name":  "historical-same-version-development-package-refused",
                       "passed":  true,
-                      "detail":  "ion + FullyQualifiedErrorId : The package is not the recorded v0.0.195 release package (package a7bb52a7cf428aa1d354ec 2a3fbe836263d6911c6a3df6245d36aeb8ef260c28, recorded 456d504ddde0ad3d0bb41a7dc141848a99feeee83d9665db9eeadcd95c359 444). "
+                      "detail":  "ion + FullyQualifiedErrorId : The package is not the recorded v0.0.195 release package (package 2f65611084f76c023a439a 9c3ca8ebbf1dee06821fcd0bc381e012f432f64a6f, recorded 456d504ddde0ad3d0bb41a7dc141848a99feeee83d9665db9eeadcd95c359 444). "
                   },
                   {
                       "name":  "historical-conflicting-mode-arguments-refused",
@@ -140,6 +175,46 @@
                       "detail":  "exit 0"
                   },
                   {
+                      "name":  "deploy-under-lease-admission-must-be-the-first-candidate",
+                      "passed":  true,
+                      "detail":  "SAME-ACCEPTED, CHANGED-REFUSED, MVID-REFUSED"
+                  },
+                  {
+                      "name":  "deploy-historical-release-expectations-from-its-package-and-tag",
+                      "passed":  true,
+                      "detail":  "HISTORICAL-EXPECTATIONS tag:v0.0.188 | historical-release v0.0.188 | True True"
+                  },
+                  {
+                      "name":  "deploy-development-expectations-from-its-receipt",
+                      "passed":  true,
+                      "detail":  "DEVELOPMENT-EXPECTATIONS True True, AUDIO-REFUSED, FIELD-REFUSED"
+                  },
+                  {
+                      "name":  "extractor-data-bearing-directory-record-refused",
+                      "passed":  true,
+                      "detail":  "REFUSED Package contains a data-bearing directory record: KingmakerGunslinger/notes/"
+                  },
+                  {
+                      "name":  "extractor-duplicate-directory-record-refused",
+                      "passed":  true,
+                      "detail":  "REFUSED Package contains a duplicate directory record: KingmakerGunslinger/notes/"
+                  },
+                  {
+                      "name":  "extractor-directory-record-at-a-file-destination-refused",
+                      "passed":  true,
+                      "detail":  "REFUSED Package contains a directory record and a file at the same destination: KingmakerGunslinger/Info.json"
+                  },
+                  {
+                      "name":  "extractor-file-that-is-the-parent-of-another-entry-refused",
+                      "passed":  true,
+                      "detail":  "REFUSED Package contains a file that is also the parent of other entries: KingmakerGunslinger/Info.json"
+                  },
+                  {
+                      "name":  "extractor-single-empty-directory-record-accepted",
+                      "passed":  true,
+                      "detail":  "EXTRACTED KingmakerGunslinger"
+                  },
+                  {
                       "name":  "staging-refuses-a-package-replaced-before-the-private-copy",
                       "passed":  true,
                       "detail":  "REFUSED The package changed after admission; nothing was staged"
@@ -147,12 +222,22 @@
                   {
                       "name":  "staging-uses-only-the-admitted-bytes-after-the-supplied-path-changes",
                       "passed":  true,
-                      "detail":  "deploy staging 2225cda1bb27f963d078c0b2e5ee8710fe31a1ee5adf161b788f512fb5279f09; loader staging 2225cda1bb27f963d078c0b2e5ee8710fe31a1ee5adf161b788f512fb5279f09"
+                      "detail":  "deploy staging ed6536e9cb291a728cb1bea88727a200415b6364d477039679635f54725ccbbb; loader staging ed6536e9cb291a728cb1bea88727a200415b6364d477039679635f54725ccbbb"
+                  },
+                  {
+                      "name":  "unstamped-compile-under-an-earlier-format-receipt-refused-for-staging",
+                      "passed":  true,
+                      "detail":  "build exit 0; stamp \u0027\u0027; ..th Build-Local.:String) [], RuntimeException + FullyQualifiedErrorId : The DLL inside the package carries no source stamp, so its producing commit 4f196b26d112 640ace1eaa49dea355d16e210127 cannot be verified; rebuild it with Build-Local. "
+                  },
+                  {
+                      "name":  "candidate-admitted-again-after-the-unstamped-case",
+                      "passed":  true,
+                      "detail":  "exit 0"
                   },
                   {
                       "name":  "loader-preflight-purpose-with-apostrophe-refused-by-purpose-validation",
                       "passed":  true,
-                      "detail":  "must be a lower-case hyphenated name of 3-48 characters: \u0027umm-0311-admission\u0027\u0027 At <dev>\\KingmakerGunslingerLab\\worktrees\\candidate-admission-3ef953a2adc949f5a45d01415b41a29d\\clone with space\\scripts\\DevelopmentCandidate"
+                      "detail":  "must be a lower-case hyphenated name of 3-48 characters: \u0027umm-0311-admission\u0027\u0027 At <dev>\\KingmakerGunslingerLab\\worktrees\\candidate-admission-32d4c88c5c10414a9517fc375335f8fa\\clone with space\\scripts\\DevelopmentCandidate"
                   }
               ]
 }

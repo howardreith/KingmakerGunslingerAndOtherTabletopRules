@@ -1,8 +1,8 @@
 {
   "schema": "kingmaker.loader-api-audit.v1",
   "mod": "KingmakerGunslinger.dll",
-  "mod_sha256": "1ef167cca4135ef8f561ac437c55984ed59777c3962012bf90d738cdc4d1c0e9",
-  "mod_mvid": "7c7a1479-98af-4eea-af25-e88ea9986839",
+  "mod_sha256": "b1e07c2a3e0f28e6a19534e0a10c2cbc9e61c57f35d1ad08d79321c725a5e255",
+  "mod_mvid": "0cfcbddc-e648-4e89-b4d5-9d1c238ca0a5",
   "mod_assembly_references": [
     "mscorlib 4.0.0.0",
     "UnityModManager 0.31.1.0",
