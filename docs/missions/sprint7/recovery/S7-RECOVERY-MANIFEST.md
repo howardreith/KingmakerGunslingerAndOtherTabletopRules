@@ -34,9 +34,16 @@ disposition, the approved wording and the released Sickened mechanics. Visual an
 - R2-F4: one unselected failed post (playing ID 0) in a source inventory makes the whole inventory unreadable;
 - R2-F5: a negative stop count is read as an observed stop;
 - R2-F6: new rows still name the removed `CallbackLossSettled` as their evaluator.
-The owner instruction makes this a mandatory stop: no new enrollment or extra repair PR, no raised limit. C1 has no
-scoped handoff and no archive A, so **C2 and C3 were not started** (each is held at its prerequisite). C1's changed
-evaluator was never executed in game. Continuing needs a new owner decision.
+The owner instruction made this a mandatory stop: no new enrollment or extra repair PR, no raised limit. C1 had no
+scoped handoff and no archive A, so C2 and C3 were not started (each held at its prerequisite).
+
+**C1 amendment 1** (owner, 2026-11-25; `<lab>/owner-guidance/S7-RECOVERY-C1-AMENDMENT-1-2026-11-25.md`, controller
+amendment revision 1, sha256 `dd15fc44…6ebb`) raised C1's cap to four reviews on the same enrollment (applied with
+`resume --amend-mission`, then `resume --max-rounds 4`) and clarified the observation contract for R2-F1 to R2-F6. The
+shared allowance is unchanged: 45 minutes and two candidates across C1 to C3. C1 stays implementation/domain only; its
+changed evaluator is executed in game only by C3. The contract is written beside the evaluator in
+`Sprint7ObserverPolicy.cs` (one posting identified by playing ID, event, posting frame and time; lifecycle fields only
+advance; snapshots S0 inventory, S1 selection, S2 retirement frame, W samples, S3 settled and window end, S4 disposal).
 
 ## Finding map
 
@@ -87,5 +94,7 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C1 r2 | Focused gate `sprint7-visual` (local) | PASS, 22 tests | 3.4 s | 1 min 27.2 s | 43 min 32.8 s |
 | C1 r2 | Controller gates on `e4c9ed9c5e`: `sprint7-visual` 22 tests 4.1 s, `summon-playtest-r6` 11 tests 3.5 s, `sprint22-` 11 tests 4.0 s, `native-profile` 9 tests 3.5 s (receipts 2.3 + 1.8 + 2.2 + 1.8 = 8.1 s) | PASS | 16.2 s batch wall | 1 min 43.4 s | 43 min 16.6 s |
 
-No product package, harness build or game session was run in the recovery. Cumulative ledger: 65 min 42 s in rounds 6
-and 7 (separate), plus 1 min 43.4 s of the recovery's 45 minutes; no new product candidate (0 of 2).
+| C1 r3 | Focused gate `sprint7-visual` (local, amendment-1 source) | PASS, 22 tests | 19.1 s | 2 min 2.5 s | 42 min 57.5 s |
+
+No product package, harness build or game session has run in the recovery. Earlier spend stays separate (65 min 42 s in
+rounds 6 and 7); new product candidates used: 0 of 2.

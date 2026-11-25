@@ -1287,9 +1287,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             const string Owner = "callback-withhold";
             const double WindowSeconds = 12, DisposalSeconds = 6, OverlapSeconds = 16;
-            var row = new JObject { ["synthetic"] = "the product's end-of-event callback for one exact survivor record is withheld from the product by the observer; native playback is untouched and read separately",
-                ["declaredWindowSeconds"] = WindowSeconds, ["declaredDisposalSeconds"] = DisposalSeconds, ["declaredOverlapSeconds"] = OverlapSeconds,
-                ["evaluator"] = "Sprint7ObserverPolicy.CallbackLossSettled" };
+            // Recovery C1 (R2-F6): the row header names the entry point this row's verdict comes from (CallbackLossRound7).
+            JObject row = Sprint7ObserverPolicy.NewCallbackLossRow(WindowSeconds, DisposalSeconds, OverlapSeconds);
             cell["callbackLoss"] = row;
             isolation.Opened(Owner);
             UnitEntityData keeper = null, other = null;

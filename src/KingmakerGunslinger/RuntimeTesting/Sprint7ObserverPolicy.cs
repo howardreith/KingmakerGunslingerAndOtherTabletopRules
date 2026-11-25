@@ -173,6 +173,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["stopResult"] = stopResult, ["seconds"] = endUtc.HasValue ? (endUtc.Value - utc).TotalSeconds : (double?)null };
         }
 
+        /// <summary>The round-7 entry point's language-bound identity, which new rows record (recovery C1, R2-F6).</summary>
+        internal const string Round7Evaluator = nameof(Sprint7ObserverPolicy) + "." + nameof(CallbackLossRound7);
+
+        /// <summary>The header of a new callback-loss row: what was synthetic, the declared windows and the evaluator the row's verdict comes from.</summary>
+        internal static JObject NewCallbackLossRow(double windowSeconds, double disposalSeconds, double overlapSeconds)
+        {
+            return new JObject { ["synthetic"] = "the product's end-of-event callback for one exact survivor record is withheld from the product by the observer; native playback is untouched and read separately",
+                ["declaredWindowSeconds"] = windowSeconds, ["declaredDisposalSeconds"] = disposalSeconds, ["declaredOverlapSeconds"] = overlapSeconds,
+                ["evaluator"] = Round7Evaluator };
+        }
+
         /// <summary>
         /// The round-7 entry point, for the in-game verdict and for every reader of a round-7 row alike: the retirement time
         /// (otherRetiredUtc) and the other source's settled record (otherRetirementSettled.other) are read from the row itself.
@@ -201,111 +212,182 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception error) { return "unreadable:" + error.GetType().Name; }
         }
 
-        /// <summary>
-        /// R4-F5 synthetic callback loss, the one settled evaluator (owner amendment 3 §4; recovery C1: R7-F1, R7-F6). It reads
-        /// the callback-loss row exactly as its collector emitted it, in memory or read back from its file. A required
-        /// property must be present: absent is "missing:&lt;path&gt;"; present but undefined, of the wrong type or out of range
-        /// is "unreadable:&lt;path&gt;"; neither is ever evidence. A value required to be unset must be an explicit null (a
-        /// JSON null, or the collector's String-typed JValue whose value is null). Every snapshot the collector emitted is
-        /// reconciled: the selected survivor and other IDs must be valid and distinct, match the retirement-frame other
-        /// record, the settled other record, both terminal survivor records and (where emitted) the per-source inventory;
-        /// the survivor must show no stop request, stop reason, stop result or end in any pre-disposal snapshot, a zero stop
-        /// count in the retirement frame and (round 7) through the window, no recorded end in any window sample, and
-        /// readable withheld-callback timestamps matching the window's withheld count. Only the survivor's own disposal may
-        /// then request its stop. Stop requests, completion callbacks and native playback queries stay separate inputs.
-        /// </summary>
+        // ---- The observation contract (recovery C1, amendment 1) -------------------------------------------------------
+        //
+        // One posted cue is identified by its immutable posting: a positive playing ID, its event, its posting frame and
+        // its posting time (CueRow: playingId, event, frame, utc). Its lifecycle fields can only advance: endUtc (the
+        // product received the completion callback), the stop request (stopReason, stopResult and stopRequestedUtc,
+        // written together) and the cumulative stopAttempts. Once observed, an end or stop never disappears or changes, and
+        // stopAttempts never decreases. Native playback (playing / inactive / unknown) is a separate query, true only at its
+        // own read. A playing ID of exactly 0 is the producer's own record of a failed post: it owns nothing.
+        //
+        // What the collector (S7CallbackLoss) observes, in recording order:
+        //   S0 cuesBeforeSelection  every cue of each source, after both selected cues were confirmed playing
+        //                           (Round6Second and Round7 only);
+        //   S1 before               the selected survivor and other cue records and their playback;
+        //   S2 afterOtherRetired    the other cue and both stop counts, in the retirement frame;
+        //   W  window[i]            per sample: utc read first, then playback, survivorEndUtc, tracked, the withheld count;
+        //   S3 otherRetirementSettled and survivorAtWindowEnd   after the window loop exits (no capture time recorded; it
+        //                           is not earlier than the last sample), the terminal withheld timestamps among them;
+        //   S4 survivorAfterDisposal after the survivor's own source was retired and observed destroyed.
+        //
+        // A required observation that is absent is "missing:<path>"; present but undefined, of the wrong type, negative or
+        // out of range is "unreadable:<path>". Neither is evidence of anything. A value that must be unset must be an
+        // explicit null (JSON null, or the collector's String-typed JValue whose value is null).
+        // ------------------------------------------------------------------------------------------------------------------
+
         private static string Settled(JObject row, CueCollector collector, JToken settledToken, string settledPath, JToken retiredToken, string retiredPath, string productStopRequested)
         {
             if (row == null) return "missing:row";
             JToken before = Child(row, "before"), windowEnd = Child(row, "survivorAtWindowEnd"), afterDisposal = Child(row, "survivorAfterDisposal");
             if (Text(before, "survivorPlayback") != PlaybackPlaying || Text(before, "otherPlayback") != PlaybackPlaying) return "not-both-playing";
 
-            // Identities, bound to every snapshot of the same cue the collector emitted.
+            // S1: the selected postings.
             JToken survivorCue = Child(before, "survivor"), otherCue = Child(before, "other");
-            long? survivorId = Id(survivorCue), otherId = Id(otherCue);
-            if (!survivorId.HasValue || !otherId.HasValue) return IdProblem(survivorCue, "before.survivor") ?? IdProblem(otherCue, "before.other") ?? "unreadable:before.ids";
-            if (survivorId.Value == otherId.Value) return "cue-identity-contradiction:survivor-is-other";
-            JToken retiredFrame = Child(row, "afterOtherRetired");
-            if (!(retiredFrame is JObject)) return retiredFrame == null ? "missing:afterOtherRetired" : "unreadable:afterOtherRetired";
-            if (Id(Child(retiredFrame, "other")) != otherId) return "cue-identity-contradiction:other-retirement-frame";
+            string problem = Posting(survivorCue, "before.survivor") ?? Posting(otherCue, "before.other");
+            if (problem != null) return problem;
+            long survivorId = Id(survivorCue).Value, otherId = Id(otherCue).Value;
+            if (survivorId == otherId) return "cue-identity-contradiction:survivor-is-other";
+
+            // S0 (where emitted): each selected posting is exactly one record of its own source, unended and unstopped there.
+            JToken survivorRecord = null, otherRecord = null;
             if (collector != CueCollector.Round6First)
             {
                 JToken sources = Child(row, "cuesBeforeSelection");
                 if (!(sources is JObject)) return sources == null ? "missing:cuesBeforeSelection" : "unreadable:cuesBeforeSelection";
-                List<long?> survivorSource = Ids(Child(sources, "survivorSource")), otherSource = Ids(Child(sources, "otherSource"));
-                if (survivorSource == null || otherSource == null) return "unreadable:cuesBeforeSelection";
-                if (!survivorSource.Contains(survivorId) || otherSource.Contains(survivorId)) return "cue-identity-contradiction:survivor-source";
-                if (!otherSource.Contains(otherId) || survivorSource.Contains(otherId)) return "cue-identity-contradiction:other-source";
+                problem = SourceRecord(Child(sources, "survivorSource"), "cuesBeforeSelection.survivorSource", survivorId, out survivorRecord) ??
+                    SourceRecord(Child(sources, "otherSource"), "cuesBeforeSelection.otherSource", otherId, out otherRecord);
+                if (problem != null) return problem;
+                JToken crossed;
+                problem = SourceRecord(Child(sources, "otherSource"), "cuesBeforeSelection.otherSource", survivorId, out crossed);
+                if (problem != null) return problem;
+                if (crossed != null) return "cue-identity-contradiction:survivor-source";
+                problem = SourceRecord(Child(sources, "survivorSource"), "cuesBeforeSelection.survivorSource", otherId, out crossed);
+                if (problem != null) return problem;
+                if (crossed != null) return "cue-identity-contradiction:other-source";
+                if (survivorRecord == null) return "cue-identity-contradiction:survivor-source";
+                if (otherRecord == null) return "cue-identity-contradiction:other-source";
+                problem = SamePosting(survivorRecord, survivorCue, "survivor-source") ?? SamePosting(otherRecord, otherCue, "other-source");
+                if (problem != null) return problem;
             }
 
-            // The other source's retirement, read once settled.
+            // S2: the retirement frame.
+            JToken retiredFrame = Child(row, "afterOtherRetired");
+            if (!(retiredFrame is JObject)) return retiredFrame == null ? "missing:afterOtherRetired" : "unreadable:afterOtherRetired";
+            JToken otherAtRetirement = Child(retiredFrame, "other");
+            problem = Posting(otherAtRetirement, "afterOtherRetired.other");
+            if (problem != null) return problem;
+            problem = SamePosting(otherCue, otherAtRetirement, "other-retirement-frame");
+            if (problem != null) return problem;
+
+            // S3: the other source's settled record and the retirement time.
             if (settledToken == null) return "missing:" + settledPath;
             if (!(settledToken is JObject)) return "unreadable:" + settledPath;
             JToken otherSettled = Child(settledToken, "other");
-            if (otherSettled == null) return "missing:" + settledPath + ".other";
-            if (!(otherSettled is JObject)) return "unreadable:" + settledPath + ".other";
-            if (Id(otherSettled) != otherId) return "cue-identity-contradiction:other-settled";
+            problem = Posting(otherSettled, settledPath + ".other");
+            if (problem != null) return problem;
+            problem = SamePosting(otherCue, otherSettled, "other-settled");
+            if (problem != null) return problem;
             if (retiredToken == null) return "missing:" + retiredPath;
             DateTime? retiredUtc = Utc(retiredToken);
             if (!retiredUtc.HasValue) return "unreadable:" + retiredPath;
+
+            // The other cue's lifecycle, S0 -> S1 -> S2 -> S3: nothing observed may disappear or change; attempts never fall.
+            problem = (otherRecord == null ? null : Advances(otherRecord, otherCue, "other")) ?? Advances(otherCue, otherAtRetirement, "other") ?? Advances(otherAtRetirement, otherSettled, "other");
+            if (problem != null) return problem;
+            int? otherFrameStops = Count(retiredFrame, "otherStopAttempts");
+            if (!otherFrameStops.HasValue) return Problem(retiredFrame, "otherStopAttempts", "afterOtherRetired");
             int? otherStops = Count(otherSettled, "stopAttempts");
             if (!otherStops.HasValue) return Problem(otherSettled, "stopAttempts", settledPath + ".other");
-            if (otherStops != 1 || !RetiredByOwnId(otherStops.Value, Text(otherSettled, "stopResult"), productStopRequested,
+            if (otherStops.Value < otherFrameStops.Value) return "lifecycle-contradiction:other.stopAttempts-decreased";
+            // An end or stop already recorded before the retirement cannot be the retirement's own.
+            foreach (var earlier in new[] { new { Cue = otherCue, Path = "before.other" } })
+            {
+                string end = Unset(earlier.Cue, "endUtc", earlier.Path, true);
+                if (end != null) return end == "set" ? "other-ended-before-retirement" : end;
+                string stop = Unset(earlier.Cue, "stopRequestedUtc", earlier.Path, true);
+                if (stop != null) return stop == "set" ? "other-stopped-before-retirement" : stop;
+            }
+            if (otherStops.Value != 1 || !RetiredByOwnId(otherStops.Value, Text(otherSettled, "stopResult"), productStopRequested,
                     Utc(Child(otherSettled, "stopRequestedUtc")), Utc(Child(otherSettled, "endUtc")), retiredUtc.Value))
                 return "other-not-stopped-by-own-id";
 
-            // No stop for the survivor before its own disposal, in any snapshot.
+            // The survivor through the window: no stop in any pre-disposal snapshot, counts cumulative and readable.
             int? frameStops = Count(retiredFrame, "survivorStopAttempts");
             if (!frameStops.HasValue) return Problem(retiredFrame, "survivorStopAttempts", "afterOtherRetired");
-            if (frameStops.Value != 0) return "survivor-stopped-by-other-retirement";
+            if (frameStops.Value > 0) return "survivor-stopped-by-other-retirement";
+            int windowStops = frameStops.Value;
             if (collector == CueCollector.Round7)
             {
-                int? windowStops = Count(settledToken, "survivorStopAttemptsThroughWindow");
-                if (!windowStops.HasValue) return Problem(settledToken, "survivorStopAttemptsThroughWindow", settledPath);
-                if (windowStops.Value != 0) return "survivor-stopped-by-other-retirement";
+                int? through = Count(settledToken, "survivorStopAttemptsThroughWindow");
+                if (!through.HasValue) return Problem(settledToken, "survivorStopAttemptsThroughWindow", settledPath);
+                if (through.Value > 0) return "survivor-stopped-by-other-retirement";
+                windowStops = through.Value;
             }
             JToken kept = Child(windowEnd, "cue");
-            if (!(kept is JObject)) return kept == null ? "missing:survivorAtWindowEnd.cue" : "unreadable:survivorAtWindowEnd.cue";
-            if (Id(kept) != survivorId) return "cue-identity-contradiction:survivor-window-end";
-            foreach (var snapshot in new[] { new { Cue = survivorCue, Path = "before.survivor" }, new { Cue = kept, Path = "survivorAtWindowEnd.cue" } })
+            problem = Posting(kept, "survivorAtWindowEnd.cue");
+            if (problem != null) return problem;
+            problem = SamePosting(survivorCue, kept, "survivor-window-end");
+            if (problem != null) return problem;
+            foreach (var snapshot in new[] { new { Cue = survivorRecord, Path = "cuesBeforeSelection.survivorSource[selected]" }, new { Cue = survivorCue, Path = "before.survivor" },
+                new { Cue = kept, Path = "survivorAtWindowEnd.cue" } })
             {
+                if (snapshot.Cue == null) continue;
                 string stop = Unset(snapshot.Cue, "stopReason", snapshot.Path, false) ?? Unset(snapshot.Cue, "stopResult", snapshot.Path, false) ??
                     Unset(snapshot.Cue, "stopRequestedUtc", snapshot.Path, true);
                 if (stop != null) return stop == "set" ? "survivor-stopped-by-other-retirement" : stop;
                 string end = Unset(snapshot.Cue, "endUtc", snapshot.Path, true);
                 if (end != null) return end == "set" ? "callback-not-withheld" : end;
             }
+            DateTime posted = Utc(Child(survivorCue, "utc")).Value;
 
-            // The withheld callback: readable timestamps, matching the window's own count.
+            // The withheld callback, at the times the collector observed it. Each sample reads its time before its count,
+            // so a callback timed before a sample's time must be in that sample's count, and a sample's count cannot
+            // include a callback first timed after the next sample's time; the terminal list is read after the last sample.
             JToken withheldToken = Child(windowEnd, "callbacksWithheld");
             if (withheldToken == null) return "missing:survivorAtWindowEnd.callbacksWithheld";
             if (!(withheldToken is JArray)) return "unreadable:survivorAtWindowEnd.callbacksWithheld";
-            var withheld = (JArray)withheldToken;
+            var withheld = new List<DateTime>();
+            foreach (JToken value in (JArray)withheldToken)
+            {
+                DateTime? at = Utc(value);
+                if (!at.HasValue) return "unreadable:survivorAtWindowEnd.callbacksWithheld";
+                if (at.Value < posted) return "callback-predates-cue";
+                withheld.Add(at.Value);
+            }
             if (withheld.Count < 1) return "callback-not-withheld";
-            if (withheld.Any(value => !Utc(value).HasValue)) return "unreadable:survivorAtWindowEnd.callbacksWithheld";
-
-            // Every window sample: a readable playback state, no recorded end, a non-decreasing withheld count.
             JToken windowToken = Child(row, "window");
             if (windowToken == null) return "missing:window";
             if (!(windowToken is JArray) || ((JArray)windowToken).Count == 0) return "unreadable:window";
+            var window = ((JArray)windowToken).ToList();
             var samples = new List<string>();
-            int previousWithheld = 0, index = 0;
-            foreach (JToken sample in (JArray)windowToken)
+            var times = new List<DateTime>();
+            var counts = new List<int>();
+            for (int index = 0; index < window.Count; index++)
             {
-                string path = "window[" + index++ + "]";
+                JToken sample = window[index];
+                string path = "window[" + index + "]";
                 if (!(sample is JObject)) return "unreadable:" + path;
+                DateTime? at = Utc(Child(sample, "utc"));
+                if (!at.HasValue) return Problem(sample, "utc", path);
+                if (times.Count > 0 && at.Value < times[times.Count - 1]) return "unreadable:" + path + ".utc";
                 string playback = Text(sample, "survivorPlayback");
                 if (playback == null) return Problem(sample, "survivorPlayback", path);
                 if (playback != PlaybackPlaying && playback != PlaybackInactive && playback != PlaybackUnknown) return "unreadable:" + path + ".survivorPlayback";
-                samples.Add(playback);
                 string end = Unset(sample, "survivorEndUtc", path, true);
                 if (end != null) return end == "set" ? "callback-not-withheld" : end;
                 int? count = Count(sample, "callbacksWithheld");
                 if (!count.HasValue) return Problem(sample, "callbacksWithheld", path);
-                if (count.Value < previousWithheld) return "unreadable:" + path + ".callbacksWithheld";
-                previousWithheld = count.Value;
+                if (counts.Count > 0 && count.Value < counts[counts.Count - 1]) return "callback-count-decreased";
+                samples.Add(playback); times.Add(at.Value); counts.Add(count.Value);
             }
-            if (previousWithheld != withheld.Count) return "callback-withheld-count-mismatch";
+            if (counts[counts.Count - 1] > withheld.Count) return "callback-count-exceeds-terminal";
+            for (int index = 0; index < times.Count; index++)
+            {
+                int before_ = withheld.Count(at => at < times[index]);
+                int notAfterNext = index + 1 < times.Count ? withheld.Count(at => at <= times[index + 1]) : withheld.Count;
+                if (counts[index] < before_ || counts[index] > notAfterNext) return "callback-count-contradiction:window[" + index + "]";
+            }
             int firstInactive = samples.IndexOf(PlaybackInactive);
             if (firstInactive < 0) return samples.Contains(PlaybackUnknown) ? "survivor-playback-unknown" : "survivor-playback-persisted";
             if (samples.Skip(firstInactive).Contains(PlaybackPlaying)) return "survivor-playback-contradictory";
@@ -315,17 +397,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!tracked.HasValue) return Problem(windowEnd, "tracked", "survivorAtWindowEnd");
             if (!tracked.Value) return "survivor-tracking-not-source-local";
 
-            // The survivor's own source disposal: observed, its stop is its own, no end manufactured.
+            // S4: the survivor's own source disposal. Its stop is its own only when later than the zero-stop interval, which
+            // reaches at least the last window sample (the terminal reads that still found no stop came after it).
             if (!(afterDisposal is JObject)) return afterDisposal == null ? "missing:survivorAfterDisposal" : "unreadable:survivorAfterDisposal";
             bool? viewDestroyed = Flag(afterDisposal, "viewDestroyed"), componentDestroyed = Flag(afterDisposal, "playbackComponentDestroyed");
             if (!viewDestroyed.HasValue) return Problem(afterDisposal, "viewDestroyed", "survivorAfterDisposal");
             if (!componentDestroyed.HasValue) return Problem(afterDisposal, "playbackComponentDestroyed", "survivorAfterDisposal");
             if (!viewDestroyed.Value || !componentDestroyed.Value) return "source-disposal-not-observed";
             JToken disposedCue = Child(afterDisposal, "cue");
-            if (!(disposedCue is JObject)) return disposedCue == null ? "missing:survivorAfterDisposal.cue" : "unreadable:survivorAfterDisposal.cue";
-            if (Id(disposedCue) != survivorId) return "cue-identity-contradiction:survivor-after-disposal";
+            problem = Posting(disposedCue, "survivorAfterDisposal.cue");
+            if (problem != null) return problem;
+            problem = SamePosting(survivorCue, disposedCue, "survivor-after-disposal") ?? Advances(kept, disposedCue, "survivor");
+            if (problem != null) return problem;
             string manufactured = Unset(disposedCue, "endUtc", "survivorAfterDisposal.cue", true);
             if (manufactured != null) return manufactured == "set" ? "end-manufactured" : manufactured;
+            string ownStop = Unset(disposedCue, "stopRequestedUtc", "survivorAfterDisposal.cue", true);
+            if (ownStop != null && ownStop != "set") return ownStop;
+            if (ownStop == "set" && Utc(Child(disposedCue, "stopRequestedUtc")).Value <= times[times.Count - 1]) return "survivor-stop-inside-zero-stop-interval";
+            int? disposedStops = Count(afterDisposal, "stopAttempts");
+            if (!disposedStops.HasValue) return Problem(afterDisposal, "stopAttempts", "survivorAfterDisposal");
+            if (disposedStops.Value < windowStops) return "lifecycle-contradiction:survivor.stopAttempts-decreased";
             int? unrelated = Count(afterDisposal, "unrelatedRecordsChanged");
             if (!unrelated.HasValue) return Problem(afterDisposal, "unrelatedRecordsChanged", "survivorAfterDisposal");
             if (unrelated.Value != 0) return "unrelated-record-affected";
@@ -341,6 +432,69 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (state == PlaybackInactive) return null;
             return state == PlaybackPlaying ? "survivor-playback-persisted:" + which : "survivor-playback-unknown:" + which;
+        }
+
+        /// <summary>A readable posting: an object with a valid playing ID, an event, a non-negative posting frame and a posting time.</summary>
+        private static string Posting(JToken cue, string path)
+        {
+            if (cue == null) return "missing:" + path;
+            if (!(cue is JObject)) return "unreadable:" + path;
+            if (!Id(cue).HasValue) return Problem(cue, "playingId", path);
+            if (Text(cue, "event") == null) return Problem(cue, "event", path);
+            if (!Count(cue, "frame").HasValue) return Problem(cue, "frame", path);
+            if (!Utc(Child(cue, "utc")).HasValue) return Problem(cue, "utc", path);
+            return null;
+        }
+
+        /// <summary>Two readable snapshots of the same posting: same playing ID, event, posting frame and posting time.</summary>
+        private static string SamePosting(JToken a, JToken b, string which)
+        {
+            return Id(a) == Id(b) && Text(a, "event") == Text(b, "event") && Count(a, "frame") == Count(b, "frame") && Utc(Child(a, "utc")) == Utc(Child(b, "utc"))
+                ? null : "cue-identity-contradiction:" + which;
+        }
+
+        /// <summary>
+        /// The one record of a source inventory with the given playing ID. Records whose playing ID is exactly 0 are the
+        /// producer's failed posts and own nothing; any other unreadable record makes the inventory unreadable; two records
+        /// with the same ID are ambiguous. A found record must be a readable posting.
+        /// </summary>
+        private static string SourceRecord(JToken inventory, string path, long id, out JToken found)
+        {
+            found = null;
+            var array = inventory as JArray;
+            if (array == null) return inventory == null ? "missing:" + path : "unreadable:" + path;
+            int index = 0;
+            foreach (JToken record in array)
+            {
+                string at = path + "[" + index++ + "]";
+                decimal? raw = Integer(Child(record, "playingId"));
+                if (raw.HasValue && raw.Value == 0m) continue;
+                if (!Id(record).HasValue) return "unreadable:" + at + ".playingId";
+                if (Id(record).Value != id) continue;
+                if (found != null) return "cue-identity-ambiguous:" + path;
+                string posting = Posting(record, at);
+                if (posting != null) return posting;
+                found = record;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// The lifecycle of one posting from an earlier to a later snapshot: an end or a stop observed earlier is still the
+        /// same later (it cannot disappear or change); fields still unset earlier may be set later.
+        /// </summary>
+        private static string Advances(JToken earlier, JToken later, string which)
+        {
+            foreach (var field in new[] { new { Name = "endUtc", Time = true }, new { Name = "stopRequestedUtc", Time = true }, new { Name = "stopReason", Time = false }, new { Name = "stopResult", Time = false } })
+            {
+                string first = Unset(earlier, field.Name, which, field.Time);
+                if (first == null) continue;
+                if (first != "set") return first;
+                string second = Unset(later, field.Name, which, field.Time);
+                bool same = second == "set" && (field.Time ? Utc(Child(earlier, field.Name)) == Utc(Child(later, field.Name)) : Text(earlier, field.Name) == Text(later, field.Name));
+                if (!same) return "lifecycle-contradiction:" + which + "." + field.Name;
+            }
+            return null;
         }
 
         /// <summary>
@@ -396,10 +550,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception) { return null; }
         }
 
+        /// <summary>A count or frame: a non-negative integer within Int32; negative, malformed or oversized is unreadable (null), never an observation.</summary>
         private static int? Count(JToken parent, string name)
         {
             decimal? value = Integer(Child(parent, name));
-            return value.HasValue && value.Value >= int.MinValue && value.Value <= int.MaxValue ? (int?)(int)value.Value : null;
+            return value.HasValue && value.Value >= 0 && value.Value <= int.MaxValue ? (int?)(int)value.Value : null;
         }
 
         /// <summary>A cue record's playing ID: a positive integer within the UInt32 range, otherwise unknown.</summary>
@@ -407,21 +562,6 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             decimal? value = Integer(Child(cue, "playingId"));
             return value.HasValue && value.Value > 0 && value.Value <= uint.MaxValue ? (long?)(long)value.Value : null;
-        }
-
-        private static string IdProblem(JToken cue, string path)
-        {
-            if (cue == null) return "missing:" + path;
-            if (!(cue is JObject)) return "unreadable:" + path;
-            return Id(cue).HasValue ? null : Problem(cue, "playingId", path);
-        }
-
-        private static List<long?> Ids(JToken cues)
-        {
-            var array = cues as JArray;
-            if (array == null) return null;
-            var ids = array.Select(Id).ToList();
-            return ids.Any(id => !id.HasValue) ? null : ids;
         }
 
         /// <summary>A recorded time: an ISO-8601 string as the collector writes it, or a date token as a parser reads it; anything else is unreadable (null).</summary>
