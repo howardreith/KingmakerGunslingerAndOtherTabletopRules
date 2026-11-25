@@ -24,9 +24,13 @@ disposition, the approved wording and the released Sickened mechanics. Visual an
 
 ## Recovery status (2026-11-25)
 
-**C1 is BLOCKED at its two-review cap** (enrollment `kmg-codex-s7-recovery-c1-cue-evaluator-20261125045625-4a34`, PR #221,
-"review-round cap reached for final (2/2)"). Round 1 on `10802bc0ea` raised R1-F1 to R1-F8; round 2 on the reviewed head
-**`e4c9ed9c5e`** verified all eight and raised six more evaluator findings, which stay open:
+**Current state:** C1's enrollment (`kmg-codex-s7-recovery-c1-cue-evaluator-20261125045625-4a34`, PR #221) is ACTIVE
+under C1 amendment 1 with a four-review cap (three spent: rounds 1 to 3); round 3 on `d71bdf2e60` verified R2-F1, R2-F2
+and R2-F4 to R2-F6, kept R2-F3 open and raised R3-F1 to R3-F6, all addressed for round 4.
+
+**Round-2 state (historical, before C1 amendment 1):** C1 was BLOCKED at its two-review cap ("review-round cap reached for
+final (2/2)", branch head `bb670b13f4`). Round 1 on `10802bc0ea` raised R1-F1 to R1-F8; round 2 on the reviewed head
+`e4c9ed9c5e` verified all eight and raised six more evaluator findings:
 - R2-F1: a selected ID is matched to its source inventory by ID only, not to the actual cue record (posting frame and time);
 - R2-F2: withheld callbacks are compared with the periodic samples by count, not at the times the collector sampled them
   (a valid late callback is refused; a callback predating the cue is accepted);
@@ -95,6 +99,12 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C1 r2 | Controller gates on `e4c9ed9c5e`: `sprint7-visual` 22 tests 4.1 s, `summon-playtest-r6` 11 tests 3.5 s, `sprint22-` 11 tests 4.0 s, `native-profile` 9 tests 3.5 s (receipts 2.3 + 1.8 + 2.2 + 1.8 = 8.1 s) | PASS | 16.2 s batch wall | 1 min 43.4 s | 43 min 16.6 s |
 
 | C1 r3 | Focused gate `sprint7-visual` (local, amendment-1 source) | PASS, 22 tests | 19.1 s | 2 min 2.5 s | 42 min 57.5 s |
+| C1 r3 | Controller gates on `d71bdf2e60`: `sprint7-visual` 22 tests 4.9 s, `summon-playtest-r6` 11 tests 4.5 s, `sprint22-` 11 tests 4.9 s, `native-profile` 9 tests 4.2 s (receipts 2.8 + 2.1 + 2.9 + 2.2 = 10.0 s) | PASS | 19.7 s batch wall | 2 min 22.2 s | 42 min 37.8 s |
+| C1 r4 | Focused gate `sprint7-visual` (local) | FAIL: compile error (a local name clash) | 11.4 s | 2 min 33.6 s | 42 min 26.4 s |
+| C1 r4 | Focused gate `sprint7-visual` (local) | FAIL: an expectation superseded by the stricter stop/count agreement | 17.8 s | 2 min 51.4 s | 42 min 8.6 s |
+| C1 r4 | Focused gate `sprint7-visual` (local) | FAIL: a path label in one expectation | 3.4 s | 2 min 54.8 s | 42 min 5.2 s |
+| C1 r4 | Focused gate `sprint7-visual` (local) | FAIL: check order (a pre-disposal stop reported as inconsistent fields) | 17.6 s | 3 min 12.4 s | 41 min 47.6 s |
+| C1 r4 | Focused gate `sprint7-visual` (local) | PASS, 22 tests | 17.4 s | 3 min 29.8 s | 41 min 30.2 s |
 
 No product package, harness build or game session has run in the recovery. Earlier spend stays separate (65 min 42 s in
 rounds 6 and 7); new product candidates used: 0 of 2.

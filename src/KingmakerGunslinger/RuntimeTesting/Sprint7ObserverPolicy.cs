@@ -176,6 +176,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// <summary>The round-7 entry point's language-bound identity, which new rows record (recovery C1, R2-F6).</summary>
         internal const string Round7Evaluator = nameof(Sprint7ObserverPolicy) + "." + nameof(CallbackLossRound7);
 
+        /// <summary>The round-6 reader's language-bound identity, for current reinterpretations of retained round-6 rows.</summary>
+        internal const string Round6Evaluator = nameof(Sprint7ObserverPolicy) + "." + nameof(CallbackLossRound6);
+
         /// <summary>The header of a new callback-loss row: what was synthetic, the declared windows and the evaluator the row's verdict comes from.</summary>
         internal static JObject NewCallbackLossRow(double windowSeconds, double disposalSeconds, double overlapSeconds)
         {
@@ -214,26 +217,35 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         // ---- The observation contract (recovery C1, amendment 1) -------------------------------------------------------
         //
-        // One posted cue is identified by its immutable posting: a positive playing ID, its event, its posting frame and
-        // its posting time (CueRow: playingId, event, frame, utc). Its lifecycle fields can only advance: endUtc (the
-        // product received the completion callback), the stop request (stopReason, stopResult and stopRequestedUtc,
-        // written together) and the cumulative stopAttempts. Once observed, an end or stop never disappears or changes, and
-        // stopAttempts never decreases. Native playback (playing / inactive / unknown) is a separate query, true only at its
-        // own read. A playing ID of exactly 0 is the producer's own record of a failed post: it owns nothing.
+        // One posted cue is identified by its immutable posting: a positive playing ID, a non-empty event, its posting
+        // frame and its posting time (CueRow: playingId, event, frame, utc). Its lifecycle fields can only advance: endUtc
+        // (the product received the completion callback) and one stop attempt (SummonCastCueLifecycle.Retire: stopAttempts
+        // becomes 1 and stopReason is set first; on success stopRequestedUtc and stopResult "stop-requested" follow; on
+        // failure stopResult "failed:..." with no request time; at most one attempt per playing ID). Once observed, an end
+        // or stop never disappears or changes and stopAttempts never decreases. A snapshot and the counts read with it are
+        // read in one main-thread frame, so they agree exactly. Native playback (playing / inactive / unknown) is a separate
+        // query, true only at its own read. A playing ID of exactly 0 is the producer's record of a failed post: it owns
+        // nothing.
         //
         // What the collector (S7CallbackLoss) observes, in recording order:
-        //   S0 cuesBeforeSelection  every cue of each source, after both selected cues were confirmed playing
-        //                           (Round6Second and Round7 only);
+        //   S0 cuesBeforeSelection  every cue of each source, after both selected cues were confirmed playing and the
+        //                           withholding target was armed on the survivor (Round6Second and Round7 only);
         //   S1 before               the selected survivor and other cue records and their playback;
-        //   S2 afterOtherRetired    the other cue and both stop counts, in the retirement frame;
-        //   W  window[i]            per sample: utc read first, then playback, survivorEndUtc, tracked, the withheld count;
-        //   S3 otherRetirementSettled and survivorAtWindowEnd   after the window loop exits (no capture time recorded; it
-        //                           is not earlier than the last sample), the terminal withheld timestamps among them;
-        //   S4 survivorAfterDisposal after the survivor's own source was retired and observed destroyed.
+        //   S2 afterOtherRetired    retirement time recorded first (otherRetiredUtc, Round7), the other source retired,
+        //                           then the other cue and both stop counts, in the retirement frame;
+        //   W  window[i]            per sample: the survivor's playback queried, then utc stamped, then survivorEndUtc,
+        //                           tracked and the withheld count read; samples run while now < retirement + window;
+        //   S3 otherRetirementSettled and survivorAtWindowEnd   after the loop exits, so not earlier than retirement +
+        //                           declaredWindowSeconds (the exact time is not recorded), the terminal withheld timestamps
+        //                           copied among them;
+        //   S4 survivorAfterDisposal after the survivor's own source was then retired and observed destroyed.
+        // Round6First (f3bfab1303) armed the target before both cues were confirmed playing: only the survivor's posting
+        // bounds its withheld callback from below.
         //
-        // A required observation that is absent is "missing:<path>"; present but undefined, of the wrong type, negative or
-        // out of range is "unreadable:<path>". Neither is evidence of anything. A value that must be unset must be an
-        // explicit null (JSON null, or the collector's String-typed JValue whose value is null).
+        // A required observation that is absent is "missing:<path>"; present but undefined, of the wrong type, negative,
+        // out of range, an empty event or a time without a recorded date and zone is "unreadable:<path>". Neither is
+        // evidence of anything. A value that must be unset must be an explicit null (JSON null, or the collector's
+        // String-typed JValue whose value is null).
         // ------------------------------------------------------------------------------------------------------------------
 
         private static string Settled(JObject row, CueCollector collector, JToken settledToken, string settledPath, JToken retiredToken, string retiredPath, string productStopRequested)
@@ -291,6 +303,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (retiredToken == null) return "missing:" + retiredPath;
             DateTime? retiredUtc = Utc(retiredToken);
             if (!retiredUtc.HasValue) return "unreadable:" + retiredPath;
+            DateTime survivorPosted = Utc(Child(survivorCue, "utc")).Value, otherPosted = Utc(Child(otherCue, "utc")).Value;
+            if (retiredUtc.Value < survivorPosted || retiredUtc.Value < otherPosted) return "retirement-before-posting";
+            double? declaredWindow = Seconds(Child(row, "declaredWindowSeconds"));
+            if (!declaredWindow.HasValue) return Problem(row, "declaredWindowSeconds", "row");
+            // The zero-stop terminal reads came after the loop, so not before this instant.
+            DateTime terminalNotBefore = retiredUtc.Value.AddSeconds(declaredWindow.Value);
 
             // The other cue's lifecycle, S0 -> S1 -> S2 -> S3: nothing observed may disappear or change; attempts never fall.
             problem = (otherRecord == null ? null : Advances(otherRecord, otherCue, "other")) ?? Advances(otherCue, otherAtRetirement, "other") ?? Advances(otherAtRetirement, otherSettled, "other");
@@ -300,6 +318,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             int? otherStops = Count(otherSettled, "stopAttempts");
             if (!otherStops.HasValue) return Problem(otherSettled, "stopAttempts", settledPath + ".other");
             if (otherStops.Value < otherFrameStops.Value) return "lifecycle-contradiction:other.stopAttempts-decreased";
+            // R3-F2: each stop observation agrees with the attempt count read with it.
+            problem = StopAgrees(otherRecord, null, "cuesBeforeSelection.otherSource[selected]") ?? StopAgrees(otherCue, null, "before.other") ??
+                StopAgrees(otherAtRetirement, otherFrameStops, "afterOtherRetired.other") ?? StopAgrees(otherSettled, otherStops, settledPath + ".other");
+            if (problem != null) return problem;
             // An end or stop already recorded before the retirement cannot be the retirement's own.
             foreach (var earlier in new[] { new { Cue = otherCue, Path = "before.other" } })
             {
@@ -339,7 +361,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string end = Unset(snapshot.Cue, "endUtc", snapshot.Path, true);
                 if (end != null) return end == "set" ? "callback-not-withheld" : end;
             }
-            DateTime posted = Utc(Child(survivorCue, "utc")).Value;
+            // The arming lower bound for the withheld callback: Round6First armed on the survivor alone; later
+            // collectors armed only once both selected cues were confirmed playing, so after both were posted.
+            DateTime armedNotBefore = collector == CueCollector.Round6First || survivorPosted >= otherPosted ? survivorPosted : otherPosted;
 
             // The withheld callback, at the times the collector observed it. Each sample reads its time before its count,
             // so a callback timed before a sample's time must be in that sample's count, and a sample's count cannot
@@ -352,7 +376,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 DateTime? at = Utc(value);
                 if (!at.HasValue) return "unreadable:survivorAtWindowEnd.callbacksWithheld";
-                if (at.Value < posted) return "callback-predates-cue";
+                if (at.Value < survivorPosted) return "callback-predates-cue";
+                if (at.Value < armedNotBefore) return "callback-predates-arming";
+                if (withheld.Count > 0 && at.Value < withheld[withheld.Count - 1]) return "unreadable:survivorAtWindowEnd.callbacksWithheld";
                 withheld.Add(at.Value);
             }
             if (withheld.Count < 1) return "callback-not-withheld";
@@ -371,6 +397,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DateTime? at = Utc(Child(sample, "utc"));
                 if (!at.HasValue) return Problem(sample, "utc", path);
                 if (times.Count > 0 && at.Value < times[times.Count - 1]) return "unreadable:" + path + ".utc";
+                if (at.Value < retiredUtc.Value) return "window-before-retirement";
                 string playback = Text(sample, "survivorPlayback");
                 if (playback == null) return Problem(sample, "survivorPlayback", path);
                 if (playback != PlaybackPlaying && playback != PlaybackInactive && playback != PlaybackUnknown) return "unreadable:" + path + ".survivorPlayback";
@@ -411,12 +438,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (problem != null) return problem;
             string manufactured = Unset(disposedCue, "endUtc", "survivorAfterDisposal.cue", true);
             if (manufactured != null) return manufactured == "set" ? "end-manufactured" : manufactured;
-            string ownStop = Unset(disposedCue, "stopRequestedUtc", "survivorAfterDisposal.cue", true);
-            if (ownStop != null && ownStop != "set") return ownStop;
-            if (ownStop == "set" && Utc(Child(disposedCue, "stopRequestedUtc")).Value <= times[times.Count - 1]) return "survivor-stop-inside-zero-stop-interval";
             int? disposedStops = Count(afterDisposal, "stopAttempts");
             if (!disposedStops.HasValue) return Problem(afterDisposal, "stopAttempts", "survivorAfterDisposal");
             if (disposedStops.Value < windowStops) return "lifecycle-contradiction:survivor.stopAttempts-decreased";
+            problem = StopAgrees(disposedCue, disposedStops, "survivorAfterDisposal.cue");
+            if (problem != null) return problem;
+            string ownStop = Unset(disposedCue, "stopRequestedUtc", "survivorAfterDisposal.cue", true);
+            if (ownStop != null && ownStop != "set") return ownStop;
+            if (ownStop == "set")
+            {
+                DateTime stoppedAt = Utc(Child(disposedCue, "stopRequestedUtc")).Value;
+                // R2-F3: the through-window reads that still found no stop came at or after retirement + window.
+                if (stoppedAt <= terminalNotBefore || stoppedAt <= times[times.Count - 1]) return "survivor-stop-inside-zero-stop-interval";
+                // R3-F1: the terminal withheld list was copied before the survivor's disposal began.
+                if (withheld.Any(at => at >= stoppedAt)) return "callback-after-terminal-capture";
+            }
             int? unrelated = Count(afterDisposal, "unrelatedRecordsChanged");
             if (!unrelated.HasValue) return Problem(afterDisposal, "unrelatedRecordsChanged", "survivorAfterDisposal");
             if (unrelated.Value != 0) return "unrelated-record-affected";
@@ -440,7 +476,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (cue == null) return "missing:" + path;
             if (!(cue is JObject)) return "unreadable:" + path;
             if (!Id(cue).HasValue) return Problem(cue, "playingId", path);
-            if (Text(cue, "event") == null) return Problem(cue, "event", path);
+            if (string.IsNullOrEmpty(Text(cue, "event"))) return Problem(cue, "event", path);
             if (!Count(cue, "frame").HasValue) return Problem(cue, "frame", path);
             if (!Utc(Child(cue, "utc")).HasValue) return Problem(cue, "utc", path);
             return null;
@@ -469,11 +505,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string at = path + "[" + index++ + "]";
                 decimal? raw = Integer(Child(record, "playingId"));
                 if (raw.HasValue && raw.Value == 0m) continue;
-                if (!Id(record).HasValue) return "unreadable:" + at + ".playingId";
-                if (Id(record).Value != id) continue;
-                if (found != null) return "cue-identity-ambiguous:" + path;
+                // Every positive record is inventory evidence: it must be a readable posting, selected or not.
                 string posting = Posting(record, at);
                 if (posting != null) return posting;
+                if (Id(record).Value != id) continue;
+                if (found != null) return "cue-identity-ambiguous:" + path;
                 found = record;
             }
             return null;
@@ -495,6 +531,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!same) return "lifecycle-contradiction:" + which + "." + field.Name;
             }
             return null;
+        }
+
+        /// <summary>
+        /// R3-F2: one snapshot's stop fields against the attempt count read with it (null when the collector read no count
+        /// with this snapshot). Without an attempt every stop field is unset; with the one attempt the reason is set and
+        /// either the request succeeded (time and "stop-requested") or failed ("failed:..." without a time). The fields
+        /// also agree among themselves.
+        /// </summary>
+        private static string StopAgrees(JToken cue, int? attempts, string path)
+        {
+            if (cue == null) return null;
+            string reason = Unset(cue, "stopReason", path, false), time = Unset(cue, "stopRequestedUtc", path, true), result = Unset(cue, "stopResult", path, false);
+            foreach (string state in new[] { reason, time, result }) if (state != null && state != "set") return state;
+            string text = Text(cue, "stopResult");
+            bool any = reason != null || time != null || result != null;
+            bool succeeded = reason != null && result != null && text == SummonCastCueStopRequested && time != null;
+            bool failed = reason != null && result != null && text.StartsWith("failed:", StringComparison.Ordinal) && time == null;
+            if (any && !succeeded && !failed) return "stop-fields-inconsistent:" + path;
+            if (attempts.HasValue)
+            {
+                if (attempts.Value > 1) return "stop-attempts-impossible:" + path;
+                if (attempts.Value == 0 && any) return "stop-without-attempt:" + path;
+                if (attempts.Value == 1 && !any) return "attempt-without-stop:" + path;
+            }
+            return null;
+        }
+
+        // The producer's successful stop result (SummonCastCueLifecycle.StopRequested), kept here so the evaluator stays pure.
+        private const string SummonCastCueStopRequested = "stop-requested";
+
+        /// <summary>A declared duration: a finite positive number of seconds, otherwise unreadable (null).</summary>
+        private static double? Seconds(JToken token)
+        {
+            var value = token as JValue;
+            if (value == null || (value.Type != JTokenType.Float && value.Type != JTokenType.Integer) || value.Value == null) return null;
+            double seconds;
+            try { seconds = Convert.ToDouble(value.Value, System.Globalization.CultureInfo.InvariantCulture); }
+            catch (Exception) { return null; }
+            return seconds > 0 && !double.IsInfinity(seconds) && !double.IsNaN(seconds) ? (double?)seconds : null;
         }
 
         /// <summary>
@@ -564,15 +639,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             return value.HasValue && value.Value > 0 && value.Value <= uint.MaxValue ? (long?)(long)value.Value : null;
         }
 
-        /// <summary>A recorded time: an ISO-8601 string as the collector writes it, or a date token as a parser reads it; anything else is unreadable (null).</summary>
+        /// <summary>
+        /// A recorded instant: the collector's round-trip string (ToString("o"): full date, time and zone) or the date token
+        /// a parser makes of it. A value without a recorded date and zone is unreadable (null): the replay machine's date or
+        /// offset is never supplied (R3-F3).
+        /// </summary>
         internal static DateTime? Utc(JToken token)
         {
             if (token == null || ExplicitNull(token)) return null;
-            if (token.Type == JTokenType.Date) return ((DateTime)token).ToUniversalTime();
+            if (token.Type == JTokenType.Date)
+            {
+                object raw = ((JValue)token).Value;
+                if (raw is DateTimeOffset) return ((DateTimeOffset)raw).UtcDateTime;
+                if (!(raw is DateTime) || ((DateTime)raw).Kind == DateTimeKind.Unspecified) return null;
+                return ((DateTime)raw).ToUniversalTime();
+            }
             if (token.Type != JTokenType.String) return null;
             DateTime parsed;
-            return DateTime.TryParse((string)((JValue)token).Value, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind, out parsed)
-                ? parsed.ToUniversalTime() : (DateTime?)null;
+            if (!DateTime.TryParseExact((string)((JValue)token).Value, "o", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind, out parsed) ||
+                parsed.Kind == DateTimeKind.Unspecified) return null;
+            return parsed.ToUniversalTime();
         }
     }
 
