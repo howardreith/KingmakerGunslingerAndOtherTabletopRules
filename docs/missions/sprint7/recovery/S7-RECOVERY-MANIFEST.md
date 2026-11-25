@@ -24,9 +24,24 @@ disposition, the approved wording and the released Sickened mechanics. Visual an
 
 ## Recovery status (2026-11-25)
 
-**Current state:** C1's enrollment (`kmg-codex-s7-recovery-c1-cue-evaluator-20261125045625-4a34`, PR #221) is ACTIVE
-under C1 amendment 1 with a four-review cap (three spent: rounds 1 to 3); round 3 on `d71bdf2e60` verified R2-F1, R2-F2
-and R2-F4 to R2-F6, kept R2-F3 open and raised R3-F1 to R3-F6, all addressed for round 4.
+**Current state (after round 4): C1 is BLOCKED at its amended four-review cap** ("review-round cap reached for final
+(4/4)"; enrollment `kmg-codex-s7-recovery-c1-cue-evaluator-20261125045625-4a34`, PR #221). Round 3 on `d71bdf2e60`
+verified R2-F1, R2-F2 and R2-F4 to R2-F6, kept R2-F3 open and raised R3-F1 to R3-F6. Round 4 on the reviewed head
+**`2f975db075`** verified R2-F3 and R3-F1 to R3-F6 and raised seven more evaluator findings, which stay open:
+- R4-F1: a first stop credited after the cue had already completed (Retire skips a completed cue), and a stop already
+  present in the retirement frame before the first sample, still characterize;
+- R4-F2: window samples that would require re-entering the expired window loop are accepted;
+- R4-F3: for round-6 rows the phase timeline mark plus the declared window is used as a proven lower bound, although the
+  mark is not the loop's start;
+- R4-F4: equal UTC readings are treated as a reversed observation order;
+- R4-F5: the one-attempt limit is not applied to the pre-disposal survivor counts;
+- R4-F6: an unavailable settled completion is not kept distinct from a recorded null;
+- R4-F7: the recorded stop cause is not checked before a stop is credited to the retirement.
+C1 amendment 1 authorized two additional reviews only; this is a mandatory stop. C1 has no scoped handoff and no
+archive A, so **C2 and C3 are not started** (held at their prerequisites). The changed evaluator was never executed in
+game. Before round 4 the controller paused once on a failed PR-comment publication (`r03-dispositions`); it was confirmed
+absent on the PR and resent through `resume --resend-undelivered`, as the controller directs. Continuing needs a new
+owner decision.
 
 **Round-2 state (historical, before C1 amendment 1):** C1 was BLOCKED at its two-review cap ("review-round cap reached for
 final (2/2)", branch head `bb670b13f4`). Round 1 on `10802bc0ea` raised R1-F1 to R1-F8; round 2 on the reviewed head
@@ -105,6 +120,7 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C1 r4 | Focused gate `sprint7-visual` (local) | FAIL: a path label in one expectation | 3.4 s | 2 min 54.8 s | 42 min 5.2 s |
 | C1 r4 | Focused gate `sprint7-visual` (local) | FAIL: check order (a pre-disposal stop reported as inconsistent fields) | 17.6 s | 3 min 12.4 s | 41 min 47.6 s |
 | C1 r4 | Focused gate `sprint7-visual` (local) | PASS, 22 tests | 17.4 s | 3 min 29.8 s | 41 min 30.2 s |
+| C1 r4 | Controller gates on `2f975db075`: `sprint7-visual` 22 tests 4.2 s, `summon-playtest-r6` 11 tests 4.1 s, `sprint22-` 11 tests 4.5 s, `native-profile` 9 tests 3.8 s (receipts 2.3 + 2.1 + 2.4 + 1.9 = 8.7 s) | PASS | 17.5 s batch wall | 3 min 47.3 s | 41 min 12.7 s |
 
 No product package, harness build or game session has run in the recovery. Earlier spend stays separate (65 min 42 s in
 rounds 6 and 7); new product candidates used: 0 of 2.
