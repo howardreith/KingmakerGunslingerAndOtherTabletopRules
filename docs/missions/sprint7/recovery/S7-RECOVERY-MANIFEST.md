@@ -22,6 +22,22 @@ Every parent finding, amendment, session, FAIL, budget and package identity stay
 not a retrospective parent PASS. Accepted scope stays accepted: R4-F5, the bounded Ghaele scope, the controller-admission
 disposition, the approved wording and the released Sickened mechanics. Visual and listening acceptance remain the owner's.
 
+## Recovery status (2026-11-25)
+
+**C1 is BLOCKED at its two-review cap** (enrollment `kmg-codex-s7-recovery-c1-cue-evaluator-20261125045625-4a34`, PR #221,
+"review-round cap reached for final (2/2)"). Round 1 on `10802bc0ea` raised R1-F1 to R1-F8; round 2 on the reviewed head
+**`e4c9ed9c5e`** verified all eight and raised six more evaluator findings, which stay open:
+- R2-F1: a selected ID is matched to its source inventory by ID only, not to the actual cue record (posting frame and time);
+- R2-F2: withheld callbacks are compared with the periodic samples by count, not at the times the collector sampled them
+  (a valid late callback is refused; a callback predating the cue is accepted);
+- R2-F3: an earlier recorded completion of the other cue, and the survivor's stop time after disposal, are not reconciled;
+- R2-F4: one unselected failed post (playing ID 0) in a source inventory makes the whole inventory unreadable;
+- R2-F5: a negative stop count is read as an observed stop;
+- R2-F6: new rows still name the removed `CallbackLossSettled` as their evaluator.
+The owner instruction makes this a mandatory stop: no new enrollment or extra repair PR, no raised limit. C1 has no
+scoped handoff and no archive A, so **C2 and C3 were not started** (each is held at its prerequisite). C1's changed
+evaluator was never executed in game. Continuing needs a new owner decision.
+
 ## Finding map
 
 | Parent finding | Repair PR | Scope | Evidence (to be filled by the child) | Depends on | Remaining integration gate |
@@ -69,3 +85,7 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C1 r2 | Focused gate `sprint7-visual` (local) | FAIL: one new assertion (an ID-problem reader reported a valid ID) | 19.0 s | 1 min 7.2 s | 43 min 52.8 s |
 | C1 r2 | Focused gate `sprint7-visual` (local) | FAIL: this Newtonsoft build cannot parse an integer above Int64 (test fixture) | 16.6 s | 1 min 23.8 s | 43 min 36.2 s |
 | C1 r2 | Focused gate `sprint7-visual` (local) | PASS, 22 tests | 3.4 s | 1 min 27.2 s | 43 min 32.8 s |
+| C1 r2 | Controller gates on `e4c9ed9c5e`: `sprint7-visual` 22 tests 4.1 s, `summon-playtest-r6` 11 tests 3.5 s, `sprint22-` 11 tests 4.0 s, `native-profile` 9 tests 3.5 s (receipts 2.3 + 1.8 + 2.2 + 1.8 = 8.1 s) | PASS | 16.2 s batch wall | 1 min 43.4 s | 43 min 16.6 s |
+
+No product package, harness build or game session was run in the recovery. Cumulative ledger: 65 min 42 s in rounds 6
+and 7 (separate), plus 1 min 43.4 s of the recovery's 45 minutes; no new product candidate (0 of 2).
