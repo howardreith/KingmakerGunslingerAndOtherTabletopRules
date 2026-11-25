@@ -5,6 +5,12 @@ the enrollment at the review cap ("review-round cap reached for final (7/7)"). O
 stop: it authorizes no further review, candidate or resumption. Nothing is merged or released, and no visual or listening
 choice has been accepted.**
 
+**Recovery (owner instruction of 2026-11-25).** The remaining findings are repaired in three scoped, dependent PRs against
+this frozen branch; this enrollment stays BLOCKED at 7/7 and its findings stay historically open until reconciled. Map,
+dependencies and the shared 45-minute ledger: `docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md`. C1 (PR #221,
+R7-F1 and R7-F6) is a code and domain correction only: its changed compiled evaluator is not executed in game until C3's
+combined qualification.
+
 Round-7 review outcome:
 - verified: R5-F3, R6-F1, R6-F2, R6-F3 and R6-F4 (the final collector was executed natively in `…224949Z`);
 - still open: R4-F1 (the abandonment drivers' recovery decisions check selected fields, not the complete child outcome,

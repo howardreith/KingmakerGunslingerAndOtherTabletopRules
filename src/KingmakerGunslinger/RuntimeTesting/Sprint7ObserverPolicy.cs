@@ -150,46 +150,105 @@ namespace KingmakerGunslinger.RuntimeTesting
                 endUtc.Value >= stopRequestedUtc.Value && endUtc.Value <= stopRequestedUtc.Value.AddSeconds(1);
         }
 
-        /// <summary>
-        /// R4-F5 synthetic callback loss, the one settled evaluator (owner amendment 3 §4, R6-F3/R6-F4). It reads the
-        /// callback-loss row exactly as the collector emitted it, with the other source's settled cue record and the
-        /// retirement time, and is used both for the in-game verdict and for re-evaluating retained rows. Null only when:
-        /// both IDs were confirmed playing; the other source's retirement stopped its own ID; the survivor received no
-        /// stop through the window; its callback was withheld and no end was recorded; the native query found it
-        /// inactive in the window, never playing again after that, and inactive at both required terminal reads (window
-        /// end and after its own source's disposal); it was still tracked by its own source at the window end; that
-        /// source's view and playback component were observed destroyed; no end was manufactured; no other record changed;
-        /// and the observer's hook is gone. A missing or unreadable required field is never evidence. Query states,
-        /// callbacks, stop requests and tracking are separate inputs.
-        /// </summary>
-        internal static string CallbackLossSettled(JObject row, JObject otherSettled, DateTime retiredUtc, string productStopRequested)
+        /// <summary>The callback-loss collector that produced a row: what it emitted decides what the evaluator may require.</summary>
+        internal enum CueCollector
         {
-            if (row == null) return "no-row";
-            JToken before = row["before"], windowEnd = row["survivorAtWindowEnd"], afterDisposal = row["survivorAfterDisposal"];
+            /// <summary>Round-6 collectors (f3bfab1303, 740d94a995): no explicit survivor stop count was emitted.</summary>
+            Round6,
+            /// <summary>From candidate 3 (9c39b1ff7f) on: emits otherRetirementSettled with survivorStopAttemptsThroughWindow.</summary>
+            Round7
+        }
+
+        /// <summary>
+        /// One cue record as the collector writes it (the runner's S7Cue delegates here). Absent values are written as
+        /// explicit nulls; in memory they are String-typed JValues whose value is null, after a file round trip JSON nulls.
+        /// </summary>
+        internal static JObject CueRow(string eventName, uint playingId, int frame, DateTime utc, DateTime? endUtc, string stopReason, DateTime? stopRequestedUtc, string stopResult)
+        {
+            return new JObject { ["event"] = eventName, ["playingId"] = playingId, ["frame"] = frame, ["utc"] = utc.ToString("o"),
+                ["endUtc"] = endUtc.HasValue ? endUtc.Value.ToString("o") : null, ["stopReason"] = stopReason,
+                ["stopRequestedUtc"] = stopRequestedUtc.HasValue ? stopRequestedUtc.Value.ToString("o") : null,
+                ["stopResult"] = stopResult, ["seconds"] = endUtc.HasValue ? (endUtc.Value - utc).TotalSeconds : (double?)null };
+        }
+
+        /// <summary>
+        /// R4-F5 synthetic callback loss, the one settled evaluator (owner amendment 3 §4; recovery C1: R7-F1, R7-F6). It reads
+        /// the callback-loss row exactly as the collector emitted it, in memory or read back from its file, with the other
+        /// source's settled cue record and the retirement time; it is the in-game verdict and the reader of retained rows.
+        /// A required property must be present: an absent or unreadable one is "missing:&lt;path&gt;", never evidence. A value
+        /// required to be unset must be an explicit null in either representation. The selected survivor and other playing
+        /// IDs must be valid and distinct, and the settled other record and both terminal survivor records must carry those
+        /// same IDs. A Round7 row must carry the explicit survivor stop count through the window (absent is unknown, not
+        /// zero); a Round6 row, whose collector emitted no count, is judged on the window-end cue's own stop fields. Null only
+        /// when: both IDs were confirmed playing; the other source's retirement stopped its own ID; the survivor received no
+        /// stop through the window; its callback was withheld and no end was recorded; the native query found it inactive in
+        /// the window, never playing again, and inactive at both terminal reads (window end, after its own source's
+        /// disposal); it was still tracked by its own source at the window end; that source's view and playback component
+        /// were observed destroyed; no end was manufactured; no other record changed; and the observer's hook is gone. Stop
+        /// requests, completion callbacks and native playback queries stay separate inputs.
+        /// </summary>
+        internal static string CallbackLossSettled(JObject row, JObject otherSettled, DateTime retiredUtc, string productStopRequested, CueCollector collector)
+        {
+            if (row == null) return "missing:row";
+            JToken before = Child(row, "before"), windowEnd = Child(row, "survivorAtWindowEnd"), afterDisposal = Child(row, "survivorAfterDisposal");
             if (Text(before, "survivorPlayback") != PlaybackPlaying || Text(before, "otherPlayback") != PlaybackPlaying) return "not-both-playing";
+            // R7-F6: the selected identities, bound to every later record of the same cue.
+            long? survivorId = Id(Child(before, "survivor")), otherId = Id(Child(before, "other"));
+            if (!survivorId.HasValue || !otherId.HasValue) return "missing:before.ids";
+            if (survivorId.Value == otherId.Value) return "cue-identity-contradiction:survivor-is-other";
+            if (otherSettled == null) return "missing:otherSettled";
+            if (Id(otherSettled) != otherId) return "cue-identity-contradiction:other-settled";
             int? otherStops = Number(otherSettled, "stopAttempts");
-            if (otherSettled == null || otherStops != 1 || !RetiredByOwnId(otherStops.Value, Text(otherSettled, "stopResult"), productStopRequested,
-                    Utc(otherSettled["stopRequestedUtc"]), Utc(otherSettled["endUtc"]), retiredUtc))
+            if (!otherStops.HasValue) return "missing:otherSettled.stopAttempts";
+            if (otherStops != 1 || !RetiredByOwnId(otherStops.Value, Text(otherSettled, "stopResult"), productStopRequested,
+                    Utc(Child(otherSettled, "stopRequestedUtc")), Utc(Child(otherSettled, "endUtc")), retiredUtc))
                 return "other-not-stopped-by-own-id";
-            JToken kept = windowEnd == null ? null : windowEnd["cue"];
-            if (kept == null || kept.Type != JTokenType.Object) return "survivor-window-end-unrecorded";
-            if (!Null(kept["stopResult"]) || !Null(kept["stopRequestedUtc"])) return "survivor-stopped-by-other-retirement";
-            JArray withheld = windowEnd["callbacksWithheld"] as JArray;
-            if (withheld == null || withheld.Count < 1 || !Null(kept["endUtc"])) return "callback-not-withheld";
-            var samples = (row["window"] as JArray ?? new JArray()).Select(sample => Text(sample, "survivorPlayback")).ToList();
+            JToken kept = Child(windowEnd, "cue");
+            if (kept == null || kept.Type != JTokenType.Object) return "missing:survivorAtWindowEnd.cue";
+            if (Id(kept) != survivorId) return "cue-identity-contradiction:survivor-window-end";
+            // R7-F6: the explicit count where the collector emitted one; otherwise (Round6) the window-end stop fields.
+            if (collector == CueCollector.Round7)
+            {
+                JToken settled = Child(row, "otherRetirementSettled");
+                if (settled == null || settled.Type != JTokenType.Object) return "missing:otherRetirementSettled";
+                if (Id(Child(settled, "other")) != otherId) return "cue-identity-contradiction:other-retirement-settled";
+                int? survivorStops = Number(settled, "survivorStopAttemptsThroughWindow");
+                if (!survivorStops.HasValue) return "missing:otherRetirementSettled.survivorStopAttemptsThroughWindow";
+                if (survivorStops.Value != 0) return "survivor-stopped-by-other-retirement";
+            }
+            string unset = Unset(kept, "stopResult", "survivorAtWindowEnd.cue") ?? Unset(kept, "stopRequestedUtc", "survivorAtWindowEnd.cue");
+            if (unset != null) return unset == "set" ? "survivor-stopped-by-other-retirement" : unset;
+            JToken withheldToken = Child(windowEnd, "callbacksWithheld");
+            if (withheldToken == null || withheldToken.Type != JTokenType.Array) return "missing:survivorAtWindowEnd.callbacksWithheld";
+            if (((JArray)withheldToken).Count < 1) return "callback-not-withheld";
+            unset = Unset(kept, "endUtc", "survivorAtWindowEnd.cue");
+            if (unset != null) return unset == "set" ? "callback-not-withheld" : unset;
+            JToken windowToken = Child(row, "window");
+            if (windowToken == null || windowToken.Type != JTokenType.Array) return "missing:window";
+            var samples = ((JArray)windowToken).Select(sample => Text(sample, "survivorPlayback")).ToList();
             int firstInactive = samples.IndexOf(PlaybackInactive);
             if (firstInactive < 0) return samples.Contains(PlaybackUnknown) ? "survivor-playback-unknown" : "survivor-playback-persisted";
             if (samples.Skip(firstInactive).Contains(PlaybackPlaying)) return "survivor-playback-contradictory";
             string terminal = Terminal(Text(windowEnd, "playback"), "window-end") ?? Terminal(Text(afterDisposal, "playback"), "after-disposal");
             if (terminal != null) return terminal;
-            if (Flag(windowEnd, "tracked") != true) return "survivor-tracking-not-source-local";
-            if (Flag(afterDisposal, "viewDestroyed") != true || Flag(afterDisposal, "playbackComponentDestroyed") != true) return "source-disposal-not-observed";
-            JToken disposedCue = afterDisposal["cue"];
-            if (disposedCue == null || disposedCue.Type != JTokenType.Object || !Null(disposedCue["endUtc"])) return "end-manufactured";
-            if (Number(afterDisposal, "unrelatedRecordsChanged") != 0) return "unrelated-record-affected";
+            bool? tracked = Flag(windowEnd, "tracked");
+            if (!tracked.HasValue) return "missing:survivorAtWindowEnd.tracked";
+            if (!tracked.Value) return "survivor-tracking-not-source-local";
+            bool? viewDestroyed = Flag(afterDisposal, "viewDestroyed"), componentDestroyed = Flag(afterDisposal, "playbackComponentDestroyed");
+            if (!viewDestroyed.HasValue || !componentDestroyed.HasValue) return "missing:survivorAfterDisposal.destroyed";
+            if (!viewDestroyed.Value || !componentDestroyed.Value) return "source-disposal-not-observed";
+            JToken disposedCue = Child(afterDisposal, "cue");
+            if (disposedCue == null || disposedCue.Type != JTokenType.Object) return "missing:survivorAfterDisposal.cue";
+            if (Id(disposedCue) != survivorId) return "cue-identity-contradiction:survivor-after-disposal";
+            unset = Unset(disposedCue, "endUtc", "survivorAfterDisposal.cue");
+            if (unset != null) return unset == "set" ? "end-manufactured" : unset;
+            int? unrelated = Number(afterDisposal, "unrelatedRecordsChanged");
+            if (!unrelated.HasValue) return "missing:survivorAfterDisposal.unrelatedRecordsChanged";
+            if (unrelated.Value != 0) return "unrelated-record-affected";
             int? hooks = Number(row, "interventionHooksAfter");
-            JArray hookFailures = row["interventionDisposeFailures"] as JArray;
-            if (hooks != 0 || hookFailures == null || hookFailures.Count != 0) return "intervention-not-restored";
+            JToken hookFailures = Child(row, "interventionDisposeFailures");
+            if (!hooks.HasValue || hookFailures == null || hookFailures.Type != JTokenType.Array) return "intervention-not-restored";
+            if (hooks.Value != 0 || ((JArray)hookFailures).Count != 0) return "intervention-not-restored";
             return null;
         }
 
@@ -200,16 +259,46 @@ namespace KingmakerGunslinger.RuntimeTesting
             return state == PlaybackPlaying ? "survivor-playback-persisted:" + which : "survivor-playback-unknown:" + which;
         }
 
-        private static bool Null(JToken token) { return token == null || token.Type == JTokenType.Null; }
-        private static string Text(JToken parent, string name) { JToken token = parent == null || parent.Type != JTokenType.Object ? null : parent[name]; return Null(token) ? null : (string)token; }
-        private static bool? Flag(JToken parent, string name) { JToken token = parent == null || parent.Type != JTokenType.Object ? null : parent[name]; return token == null || token.Type != JTokenType.Boolean ? (bool?)null : (bool)token; }
-        private static int? Number(JToken parent, string name) { JToken token = parent == null || parent.Type != JTokenType.Object ? null : parent[name]; return token == null || token.Type != JTokenType.Integer ? (int?)null : (int)token; }
+        /// <summary>
+        /// An explicit null in either representation: a JSON null as read back from a file, or the String-typed JValue
+        /// (any JValue) whose value is null that the collector builds in memory. An absent token is not explicit null.
+        /// </summary>
+        internal static bool ExplicitNull(JToken token)
+        {
+            if (token == null) return false;
+            if (token.Type == JTokenType.Null || token.Type == JTokenType.Undefined) return true;
+            var value = token as JValue;
+            return value != null && value.Value == null;
+        }
 
-        /// <summary>A recorded time: an ISO-8601 string as the collector writes it, or a date token as a parser reads it.</summary>
+        /// <summary>A property that must be recorded as unset: null when explicitly null, "set" when it has a value, "missing:&lt;path&gt;" when absent.</summary>
+        private static string Unset(JToken parent, string name, string path)
+        {
+            var owner = parent as JObject;
+            if (owner == null || owner.Property(name) == null) return "missing:" + path + "." + name;
+            return ExplicitNull(owner[name]) ? null : "set";
+        }
+
+        private static JToken Child(JToken parent, string name) { var owner = parent as JObject; return owner == null ? null : owner[name]; }
+        private static string Text(JToken parent, string name) { JToken token = Child(parent, name); return token == null || ExplicitNull(token) || token.Type != JTokenType.String ? null : (string)token; }
+        private static bool? Flag(JToken parent, string name) { JToken token = Child(parent, name); return token == null || token.Type != JTokenType.Boolean ? (bool?)null : (bool)token; }
+        private static int? Number(JToken parent, string name) { JToken token = Child(parent, name); return token == null || token.Type != JTokenType.Integer ? (int?)null : (int)token; }
+
+        /// <summary>A cue record's playing ID: a positive integer, otherwise unknown.</summary>
+        private static long? Id(JToken cue)
+        {
+            JToken token = Child(cue, "playingId");
+            if (token == null || token.Type != JTokenType.Integer) return null;
+            long id = (long)token;
+            return id > 0 && id <= uint.MaxValue ? id : (long?)null;
+        }
+
+        /// <summary>A recorded time: an ISO-8601 string as the collector writes it, or a date token as a parser reads it; explicit null or unreadable is null.</summary>
         internal static DateTime? Utc(JToken token)
         {
-            if (Null(token)) return null;
+            if (token == null || ExplicitNull(token)) return null;
             if (token.Type == JTokenType.Date) return ((DateTime)token).ToUniversalTime();
+            if (token.Type != JTokenType.String) return null;
             DateTime parsed;
             return DateTime.TryParse((string)token, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind, out parsed)
                 ? parsed.ToUniversalTime() : (DateTime?)null;

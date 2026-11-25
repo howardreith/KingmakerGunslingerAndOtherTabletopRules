@@ -1412,7 +1412,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             mark("anky-loss-end");
             JObject settledOther = row["otherRetirementSettled"] == null ? null : row["otherRetirementSettled"]["other"] as JObject;
-            string verdict = Sprint7ObserverPolicy.CallbackLossSettled(row, settledOther, retiredAt, SummonCastCueLifecycle.StopRequested);
+            string verdict = Sprint7ObserverPolicy.CallbackLossSettled(row, settledOther, retiredAt, SummonCastCueLifecycle.StopRequested, Sprint7ObserverPolicy.CueCollector.Round7);
             row["verdict"] = verdict;
             row["disposition"] = verdict == null
                 ? "Established under the synthetic loss: the survivor's playback ended normally (confirmed inactive by the native query, including at the window end and after its own source's disposal), the other source was unaffected, and the only residual was the survivor's tracking on its own source's playback component, which went away when that component was destroyed with the source. Owner amendment 2 section 4 accepts this as a documented development limitation; no product change."
@@ -1511,10 +1511,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static JObject S7Cue(SummonCastCueRecord cue)
         {
-            return new JObject { ["event"] = cue.EventName, ["playingId"] = cue.PlayingId, ["frame"] = cue.Frame, ["utc"] = cue.Utc.ToString("o"),
-                ["endUtc"] = cue.EndUtc.HasValue ? cue.EndUtc.Value.ToString("o") : null, ["stopReason"] = cue.StopReason,
-                ["stopRequestedUtc"] = cue.StopRequestedUtc.HasValue ? cue.StopRequestedUtc.Value.ToString("o") : null,
-                ["stopResult"] = cue.StopResult, ["seconds"] = cue.EndUtc.HasValue ? (cue.EndUtc.Value - cue.Utc).TotalSeconds : (double?)null };
+            // Recovery C1: the one cue-row producer, shared with the evaluator's tests.
+            return Sprint7ObserverPolicy.CueRow(cue.EventName, cue.PlayingId, cue.Frame, cue.Utc, cue.EndUtc, cue.StopReason, cue.StopRequestedUtc, cue.StopResult);
         }
 
         private IEnumerable<int> S7AttackUntil(UnitEntityData unit, UnitEntityData target, Func<bool> done, int attempts)

@@ -26,8 +26,8 @@ disposition, the approved wording and the released Sickened mechanics. Visual an
 
 | Parent finding | Repair PR | Scope | Evidence (to be filled by the child) | Depends on | Remaining integration gate |
 |---|---|---|---|---|---|
-| R7-F1 live and persisted callback verdicts disagree | C1 `codex/s7-recovery-c1-cue-evaluator` | Strict evaluator: absent vs explicit null in both representations | C1 focused tests | #219 | Native execution of the changed evaluator: C3's combined qualification |
-| R7-F6 settled verdict not bound to cue IDs and stop count | C1 | Identity binding; explicit survivor stop count consumed | C1 focused tests | #219 | As R7-F1 |
+| R7-F1 live and persisted callback verdicts disagree | C1 `codex/s7-recovery-c1-cue-evaluator` (PR #221) | Strict evaluator: absent vs explicit null in both representations | `sprint7-visual.impact-cue-playback-verdicts`: the persisted `…224949Z` row and its collector-shaped live counterpart (cue records through the collector's own `CueRow`, String-typed nulls, never serialized) both characterize; omitted fields are "missing" in both | #219 | Native execution of the changed evaluator: C3's combined qualification |
+| R7-F6 settled verdict not bound to cue IDs and stop count | C1 (PR #221) | Identity binding; explicit survivor stop count consumed | Same case: substituted window-end, disposal and settled-other IDs, the same ID selected twice, an invalid ID, a nonzero or omitted explicit stop count all refuse, in both forms; retained round-6 rows judged by their own collector's fields (`Round6`) | #219 | As R7-F1 |
 | R6-F5 round-7 expenditure and harness suffix | C1 (records disposition only) | Confirm the frozen head's record and planning row from existing receipts | This manifest, below | #219 | Parent records reconciliation at integration |
 | R5-F1 unaccounted late Ghaele | C2 `codex/s7-recovery-c2-ghaele-late-units` | Caller reconciles every correlated late unit with the destruction owner; outstanding units fail ProbeSlot isolation | C2 tests and short lifecycle session on candidate 3 with a rebuilt harness | C1 | C2 harness identity carried into C3 and the parent |
 | R4-F1 independent release failures past the abandonment drivers | C3 `codex/s7-recovery-c3-effects-ownership` | Complete child outcome in both drivers | C3 tests and combined native qualification | C2 | Combined candidate |
@@ -55,3 +55,4 @@ two new product candidates (one targeted). The old unused 9 min 18 s is not adde
 
 | Child | Command | Result | Time | Running total |
 |---|---|---|---|---|
+| C1 | Focused gate `sprint7-visual` (local, uncommitted C1 source) | PASS, 22 tests | 25.3 s | 25.3 s |
