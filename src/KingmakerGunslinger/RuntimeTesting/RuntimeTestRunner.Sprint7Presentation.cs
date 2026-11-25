@@ -1411,8 +1411,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 isolation.Reported(Owner);
             }
             mark("anky-loss-end");
-            JObject settledOther = row["otherRetirementSettled"] == null ? null : row["otherRetirementSettled"]["other"] as JObject;
-            string verdict = Sprint7ObserverPolicy.CallbackLossSettled(row, settledOther, retiredAt, SummonCastCueLifecycle.StopRequested, Sprint7ObserverPolicy.CueCollector.Round7);
+            // Recovery C1: the one round-7 entry point, reading the retirement time and settled record from this row itself.
+            string verdict = Sprint7ObserverPolicy.CallbackLossRound7(row, SummonCastCueLifecycle.StopRequested);
             row["verdict"] = verdict;
             row["disposition"] = verdict == null
                 ? "Established under the synthetic loss: the survivor's playback ended normally (confirmed inactive by the native query, including at the window end and after its own source's disposal), the other source was unaffected, and the only residual was the survivor's tracking on its own source's playback component, which went away when that component was destroyed with the source. Owner amendment 2 section 4 accepts this as a documented development limitation; no product change."

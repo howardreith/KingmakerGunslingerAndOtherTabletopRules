@@ -1340,108 +1340,36 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(Sprint7ObserverPolicy.RetiredByOwnId(1, "stop-requested", "stop-requested", retire.AddSeconds(-1), retire.AddMilliseconds(53), retire), "A stop before the retirement is not caused by it.");
             Assertions.False(Sprint7ObserverPolicy.RetiredByOwnId(1, "failed:X", "stop-requested", retire.AddMilliseconds(4), retire.AddMilliseconds(53), retire), "A failed stop is not a retirement.");
 
-            // Owner amendment 3 (R6-F3/R6-F4): the one settled evaluator, CallbackLossSettled, is the in-game verdict of
-            // the final collector and the reader of the retained rows. For a retained row it reads fields that the
-            // collector that ran (candidate 740d94a995 for 202648Z, f3bfab1303 for 200320Z) already emitted: the row
-            // itself, the other source's cue record in the phase's cuesAtEnd and the retirement mark. That is a reader
-            // over existing fields; it did not execute the later live-sampling path. The in-run verdicts stay as recorded.
+            // Recovery C1 (R7-F1, R7-F6): the callback-loss evaluator has two entry points, one per collector generation. A
+            // round-7 row is judged by CallbackLossRound7 alone, which reads the retirement time and the settled other record
+            // from the row itself; the in-game collector and every reader use it. The round-6 collectors emitted neither, so
+            // CallbackLossRound6 takes the phase's end-of-phase record of the other ID and the timeline's retirement mark:
+            // a reader over fields those collectors (f3bfab1303 for 200320Z, 740d94a995 for 202648Z) already emitted; it
+            // executed no later live-sampling path. Every in-run verdict stays as recorded (history).
+            const string stop = "stop-requested";
             Func<string, JObject> phaseOf = name => (JObject)JObject.Parse(File.ReadAllText(Path.Combine("docs/evidence/sprint7/r6", name)))["records"]["summon-s7-effects.json"];
-            Func<JObject, JObject> otherOf = phaseRecord => phaseRecord["cuesAtEnd"].OfType<JObject>().First(cue => (uint)cue["playingId"] == (uint)phaseRecord["ankylosaurus"]["callbackLoss"]["before"]["other"]["playingId"]);
-            Func<JObject, DateTime> retiredOf = phaseRecord => Sprint7ObserverPolicy.Utc(phaseRecord["timeline"].First(mark => (string)mark["mark"] == "anky-loss-retire-other")["utc"]).Value;
+            Func<JObject, JToken> otherOf = phaseRecord => phaseRecord["cuesAtEnd"].OfType<JObject>().First(cue => (uint)cue["playingId"] == (uint)phaseRecord["ankylosaurus"]["callbackLoss"]["before"]["other"]["playingId"]);
+            Func<JObject, JToken> markOf = phaseRecord => phaseRecord["timeline"].First(mark => (string)mark["mark"] == "anky-loss-retire-other")["utc"];
             foreach (var retained in new[] {
-                new { Name = "20261124T202648Z-owner-0.33.0-s7-fx-01-fx.json", Recorded = "other-not-stopped-by-own-id", Settled = (string)null },
-                new { Name = "20261124T200320Z-owner-0.33.0-s7-fx-01-fx.json", Recorded = "not-both-playing", Settled = "not-both-playing" } })
+                new { Name = "20261124T202648Z-owner-0.33.0-s7-fx-01-fx.json", Collector = Sprint7ObserverPolicy.CueCollector.Round6Second, Recorded = "other-not-stopped-by-own-id", Settled = (string)null },
+                new { Name = "20261124T200320Z-owner-0.33.0-s7-fx-01-fx.json", Collector = Sprint7ObserverPolicy.CueCollector.Round6First, Recorded = "not-both-playing", Settled = "not-both-playing" } })
             {
                 JObject phase = phaseOf(retained.Name);
                 JObject row = (JObject)phase["ankylosaurus"]["callbackLoss"];
                 Assertions.Equal(retained.Recorded, (string)row["verdict"], retained.Name + ": the in-run verdict is retained as recorded.");
-                string settled = Sprint7ObserverPolicy.CallbackLossSettled(row, otherOf(phase), retiredOf(phase), "stop-requested", Sprint7ObserverPolicy.CueCollector.Round6);
-                Console.WriteLine("ANKY-CALLBACK-LOSS-REEVALUATION " + retained.Name + " recorded=" + row["verdict"] + " settled=" + (settled ?? "characterized") +
-                    " windowEnd=" + (row["survivorAtWindowEnd"] == null ? null : row["survivorAtWindowEnd"]["playback"]) + " afterDisposal=" + (row["survivorAfterDisposal"] == null ? null : row["survivorAfterDisposal"]["playback"]) +
-                    " withheld=" + (row["survivorAtWindowEnd"] == null ? "" : row["survivorAtWindowEnd"]["callbacksWithheld"].ToString(Newtonsoft.Json.Formatting.None)) + " firstInactive=" + row["survivorFirstInactiveUtc"]);
-                Assertions.Equal(retained.Settled, settled, retained.Name + ": the settled evaluation of the retained row.");
+                string settled = Sprint7ObserverPolicy.CallbackLossRound6(row, retained.Collector, otherOf(phase), markOf(phase), stop);
+                Console.WriteLine("ANKY-CALLBACK-LOSS-REEVALUATION " + retained.Name + " recorded=" + row["verdict"] + " settled=" + (settled ?? "characterized"));
+                Assertions.Equal(retained.Settled, settled, retained.Name + ": the round-6 reader over the retained row.");
             }
-
-            // Round 7, the final collector (candidate 9c39b1ff7f, package 49f8b88c…) in game: 223809Z found no overlap (the
-            // in-run "not-both-playing" stands); 224949Z reached overlap and ran the whole live path. Its in-run verdict,
-            // "survivor-stopped-by-other-retirement", is history and stays recorded: candidate 3's evaluator misread the
-            // collector's in-memory String-typed nulls (R7-F1). Recovery C1's evaluator reads both representations alike.
-            Func<string, JObject> r7 = name => (JObject)JObject.Parse(File.ReadAllText(Path.Combine("docs/evidence/sprint7/r7", name)))["records"]["summon-s7-effects.json"];
-            Func<JObject, string> judge7 = row => Sprint7ObserverPolicy.CallbackLossSettled(row, row["otherRetirementSettled"] == null ? null : row["otherRetirementSettled"]["other"] as JObject,
-                Sprint7ObserverPolicy.Utc(row["otherRetiredUtc"]) ?? DateTime.MinValue, "stop-requested", Sprint7ObserverPolicy.CueCollector.Round7);
-            foreach (var run in new[] {
-                new { Name = "20261124T223809Z-owner-0.33.0-s7-fx-01-fx.json", Recorded = "not-both-playing", Settled = "not-both-playing" },
-                new { Name = "20261124T224949Z-owner-0.33.0-s7-fx-01-fx.json", Recorded = "survivor-stopped-by-other-retirement", Settled = (string)null } })
-            {
-                JObject row = (JObject)r7(run.Name)["ankylosaurus"]["callbackLoss"];
-                Assertions.Equal(run.Recorded, (string)row["verdict"], run.Name + ": the in-run verdict is retained as recorded (history).");
-                string settled = judge7(row);
-                Console.WriteLine("ANKY-CALLBACK-LOSS-R7 " + run.Name + " recorded=" + row["verdict"] + " corrected=" + (settled ?? "characterized"));
-                Assertions.Equal(run.Settled, settled, run.Name + ": the corrected evaluator over the collector's recorded row.");
-            }
-
-            // Recovery C1 (R7-F1, R7-F6): the immutable 224949Z row and its collector-shaped live counterpart. The live
-            // counterpart is built the way the collector builds it in memory: every cue record through the collector's own
-            // producer (CueRow, which S7Cue delegates to) and every other unset value as the String-typed null JValue a null
-            // C# string becomes. It is never serialized. Both must characterize; every negative must refuse in both.
-            JObject persisted = (JObject)r7("20261124T224949Z-owner-0.33.0-s7-fx-01-fx.json")["ankylosaurus"]["callbackLoss"];
-            Func<JObject> persistedCopy = () => (JObject)persisted.DeepClone();
-            Func<JObject> liveCopy = () => (JObject)LiveCollectorShape(persisted.DeepClone());
-            JObject live = liveCopy();
-            Assertions.True(live["survivorAtWindowEnd"]["cue"]["stopResult"].Type == JTokenType.String && ((JValue)live["survivorAtWindowEnd"]["cue"]["stopResult"]).Value == null &&
-                live["survivorAtWindowEnd"]["cue"]["endUtc"].Type == JTokenType.String && persisted["survivorAtWindowEnd"]["cue"]["stopResult"].Type == JTokenType.Null,
-                "The live counterpart carries the collector's String-typed nulls; the persisted row carries JSON nulls.");
-            Assertions.True(Sprint7ObserverPolicy.ExplicitNull(live["survivorAtWindowEnd"]["cue"]["stopResult"]) && Sprint7ObserverPolicy.ExplicitNull(persisted["survivorAtWindowEnd"]["cue"]["stopResult"]) &&
-                !Sprint7ObserverPolicy.ExplicitNull(null) && !Sprint7ObserverPolicy.ExplicitNull(new JValue("stop-requested")), "Explicit null is recognized in both forms; an absent token is not explicit null.");
-            Assertions.Equal(null, judge7(persistedCopy()), "The persisted 224949Z row characterizes.");
-            Assertions.Equal(null, judge7(live), "Its collector-shaped live counterpart characterizes identically.");
-            foreach (var shape in new[] { new { Name = "persisted", Make = persistedCopy }, new { Name = "live", Make = liveCopy } })
-            {
-                Func<Action<JObject>, string> with = change => { JObject row = shape.Make(); change(row); return judge7(row); };
-                string n = shape.Name + ": ";
-                // Missing required properties are unknown, never an unset value.
-                Assertions.Equal("missing:survivorAtWindowEnd.cue.endUtc", with(row => ((JObject)row["survivorAtWindowEnd"]["cue"]).Remove("endUtc")), n + "an omitted endUtc is not an unset callback.");
-                Assertions.Equal("missing:survivorAtWindowEnd.cue.stopResult", with(row => ((JObject)row["survivorAtWindowEnd"]["cue"]).Remove("stopResult")), n + "an omitted stop result is not an absent stop.");
-                Assertions.Equal("missing:survivorAtWindowEnd.cue.stopRequestedUtc", with(row => ((JObject)row["survivorAtWindowEnd"]["cue"]).Remove("stopRequestedUtc")), n + "an omitted stop request time is unknown.");
-                Assertions.Equal("missing:survivorAfterDisposal.cue.endUtc", with(row => ((JObject)row["survivorAfterDisposal"]["cue"]).Remove("endUtc")), n + "an omitted end after disposal is unknown.");
-                Assertions.Equal("missing:otherRetirementSettled.survivorStopAttemptsThroughWindow", with(row => ((JObject)row["otherRetirementSettled"]).Remove("survivorStopAttemptsThroughWindow")), n + "an omitted survivor stop count is unknown, not zero.");
-                Assertions.Equal("missing:otherSettled", with(row => ((JObject)row["otherRetirementSettled"]).Remove("other")), n + "no settled other record, no verdict.");
-                Assertions.Equal("missing:before.ids", with(row => ((JObject)row["before"]["survivor"]).Remove("playingId")), n + "a selected cue without its playing ID is unknown.");
-                // Actual stop and end observations prevent characterization.
-                Assertions.Equal("survivor-stopped-by-other-retirement", with(row => row["otherRetirementSettled"]["survivorStopAttemptsThroughWindow"] = 1), n + "a nonzero explicit survivor stop count fails.");
-                Assertions.Equal("survivor-stopped-by-other-retirement", with(row => { row["survivorAtWindowEnd"]["cue"]["stopResult"] = "stop-requested"; row["survivorAtWindowEnd"]["cue"]["stopRequestedUtc"] = "2026-11-24T22:51:57.0000000Z"; }), n + "a recorded stop request fails.");
-                Assertions.Equal("survivor-stopped-by-other-retirement", with(row => row["survivorAtWindowEnd"]["cue"]["stopRequestedUtc"] = "2026-11-24T22:51:57.0000000Z"), n + "a recorded stop request time alone fails.");
-                Assertions.Equal("callback-not-withheld", with(row => row["survivorAtWindowEnd"]["cue"]["endUtc"] = "2026-11-24T22:51:56.7000000Z"), n + "a received completion callback (end recorded) fails.");
-                Assertions.Equal("end-manufactured", with(row => row["survivorAfterDisposal"]["cue"]["endUtc"] = "2026-11-24T22:52:08.5000000Z"), n + "an end after disposal fails.");
-                // Substituted or contradictory cue identities.
-                Assertions.Equal("cue-identity-contradiction:survivor-window-end", with(row => row["survivorAtWindowEnd"]["cue"]["playingId"] = 999), n + "a substituted window-end cue fails.");
-                Assertions.Equal("cue-identity-contradiction:survivor-after-disposal", with(row => row["survivorAfterDisposal"]["cue"]["playingId"] = 999), n + "a substituted disposal cue fails.");
-                Assertions.Equal("cue-identity-contradiction:other-settled", with(row => row["otherRetirementSettled"]["other"]["playingId"] = 999), n + "a substituted settled other record fails.");
-                Assertions.Equal("cue-identity-contradiction:survivor-is-other", with(row => row["before"]["other"]["playingId"] = (long)row["before"]["survivor"]["playingId"]), n + "the same ID selected twice fails.");
-                Assertions.Equal("missing:before.ids", with(row => row["before"]["other"]["playingId"] = 0), n + "an invalid playing ID is not an identity.");
-                // The accepted terminal playback rules stay.
-                Assertions.Equal("survivor-playback-persisted:window-end", with(row => row["survivorAtWindowEnd"]["playback"] = Sprint7ObserverPolicy.PlaybackPlaying), n + "terminal playing is persistence.");
-                Assertions.Equal("survivor-playback-unknown:after-disposal", with(row => ((JObject)row["survivorAfterDisposal"]).Remove("playback")), n + "a missing terminal read is unknown.");
-            }
-            // The separate evidence stays separate: the other source's own stop request without its native end is not its retirement.
-            {
-                JObject row = liveCopy();
-                row["otherRetirementSettled"]["other"]["endUtc"] = new JValue((string)null);
-                Assertions.Equal("other-not-stopped-by-own-id", judge7(row), "A stop request is not completion: the other source's native end is required separately.");
-            }
-
-            // Copies of the retained 202648Z row: each required terminal read set to playing, unknown or removed prevents
-            // characterization, although the earlier window samples stay inactive; every other input is exercised too.
             JObject basePhase = phaseOf("20261124T202648Z-owner-0.33.0-s7-fx-01-fx.json");
             JObject baseRow = (JObject)basePhase["ankylosaurus"]["callbackLoss"];
-            JObject baseOther = otherOf(basePhase);
-            DateTime baseRetired = retiredOf(basePhase);
             Func<Action<JObject, JObject>, string> mutated = change =>
             {
-                var row = (JObject)baseRow.DeepClone(); var other = (JObject)baseOther.DeepClone();
+                var row = (JObject)baseRow.DeepClone(); var other = (JObject)otherOf(basePhase).DeepClone();
                 change(row, other);
-                return Sprint7ObserverPolicy.CallbackLossSettled(row, other, baseRetired, "stop-requested", Sprint7ObserverPolicy.CueCollector.Round6);
+                return Sprint7ObserverPolicy.CallbackLossRound6(row, Sprint7ObserverPolicy.CueCollector.Round6Second, other, markOf(basePhase), stop);
             };
+            Assertions.Equal(null, mutated((row, other) => { }), "The unaltered 202648Z copy is characterized.");
             foreach (string terminal in new[] { "survivorAtWindowEnd", "survivorAfterDisposal" })
             {
                 string which = terminal == "survivorAtWindowEnd" ? "window-end" : "after-disposal";
@@ -1449,7 +1377,7 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.Equal("survivor-playback-unknown:" + which, mutated((row, other) => row[terminal]["playback"] = unknown), terminal + " unknown is not completion.");
                 Assertions.Equal("survivor-playback-unknown:" + which, mutated((row, other) => ((JObject)row[terminal]).Remove("playback")), terminal + " missing is not completion.");
             }
-            Assertions.Equal(null, mutated((row, other) => { }), "The unaltered copy is characterized.");
+            Assertions.Equal("survivor-stopped-by-other-retirement", mutated((row, other) => row["afterOtherRetired"]["survivorStopAttempts"] = 1), "R1-F1: a positive retirement-frame survivor count refuses (round 6).");
             Assertions.Equal("not-both-playing", mutated((row, other) => row["before"]["otherPlayback"] = inactive), "Both IDs must be confirmed playing first.");
             Assertions.Equal("other-not-stopped-by-own-id", mutated((row, other) => other["stopAttempts"] = 0), "The other source must request its own stop.");
             Assertions.Equal("other-not-stopped-by-own-id", mutated((row, other) => other["endUtc"] = null), "A stop request without the native end is not its own retirement.");
@@ -1458,7 +1386,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("callback-not-withheld", mutated((row, other) => row["survivorAtWindowEnd"]["cue"]["endUtc"] = "2026-11-24T20:29:03.0000000Z"), "A product that recorded the end did not lose the callback.");
             Assertions.Equal("survivor-playback-persisted", mutated((row, other) => { foreach (JObject sample in row["window"]) sample["survivorPlayback"] = playing; }), "No inactive sample in the window is persistence.");
             Assertions.Equal("survivor-playback-unknown", mutated((row, other) => { foreach (JObject sample in row["window"]) sample["survivorPlayback"] = unknown; }), "Only unknown samples are not completion.");
-            Assertions.Equal("survivor-playback-contradictory", mutated((row, other) => ((JArray)row["window"]).Add(new JObject { ["survivorPlayback"] = playing })), "Playing again after inactivity contradicts.");
+            Assertions.Equal("survivor-playback-contradictory", mutated((row, other) => { var again = (JObject)row["window"].Last.DeepClone(); again["survivorPlayback"] = playing; ((JArray)row["window"]).Add(again); }), "Playing again after inactivity contradicts.");
             Assertions.Equal("survivor-tracking-not-source-local", mutated((row, other) => row["survivorAtWindowEnd"]["tracked"] = false), "The residual must be the survivor's own source tracking.");
             Assertions.Equal("source-disposal-not-observed", mutated((row, other) => row["survivorAfterDisposal"]["viewDestroyed"] = false), "A destroy request with disposal pending is insufficient.");
             Assertions.Equal("end-manufactured", mutated((row, other) => row["survivorAfterDisposal"]["cue"]["endUtc"] = "2026-11-24T20:29:15.0000000Z"), "An end the callback never delivered must not appear.");
@@ -1466,9 +1394,113 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("intervention-not-restored", mutated((row, other) => row["interventionHooksAfter"] = 1), "The observer's hook must be gone.");
             Assertions.Equal("intervention-not-restored", mutated((row, other) => row.Remove("interventionHooksAfter")), "An unread hook count is not restoration.");
             Assertions.Equal("intervention-not-restored", mutated((row, other) => row["interventionDisposeFailures"] = new JArray("cue callback hook: InvalidOperationException: x")), "A failed unpatch is not restoration.");
+            Assertions.Equal("cue-identity-contradiction:other-retirement-frame", mutated((row, other) => row["afterOtherRetired"]["other"]["playingId"] = (long)row["before"]["survivor"]["playingId"]), "Round 6: the retirement-frame other record is bound too.");
+            Assertions.Equal("wrong-entry:round7-row", Sprint7ObserverPolicy.CallbackLossRound6(baseRow, Sprint7ObserverPolicy.CueCollector.Round7, otherOf(basePhase), markOf(basePhase), stop), "A round-7 row has one entry point.");
+
+            // Round 7, the final collector (candidate 9c39b1ff7f, package 49f8b88c…) in game: 223809Z found no overlap (the
+            // in-run "not-both-playing" stands); 224949Z reached overlap and ran the whole live path. Its in-run verdict,
+            // "survivor-stopped-by-other-retirement", is history and stays recorded: candidate 3's evaluator misread the
+            // collector's in-memory String-typed nulls (R7-F1). The recovery evaluator reads both representations alike.
+            Func<string, JObject> r7 = name => (JObject)JObject.Parse(File.ReadAllText(Path.Combine("docs/evidence/sprint7/r7", name)))["records"]["summon-s7-effects.json"];
+            Func<JObject, string> judge7 = row => Sprint7ObserverPolicy.CallbackLossRound7(row, stop);
+            foreach (var run in new[] {
+                new { Name = "20261124T223809Z-owner-0.33.0-s7-fx-01-fx.json", Recorded = "not-both-playing", Settled = "not-both-playing" },
+                new { Name = "20261124T224949Z-owner-0.33.0-s7-fx-01-fx.json", Recorded = "survivor-stopped-by-other-retirement", Settled = (string)null } })
+            {
+                JObject row = (JObject)r7(run.Name)["ankylosaurus"]["callbackLoss"];
+                Assertions.Equal(run.Recorded, (string)row["verdict"], run.Name + ": the in-run verdict is retained as recorded (history).");
+                string settled = judge7(row);
+                Console.WriteLine("ANKY-CALLBACK-LOSS-R7 " + run.Name + " recorded=" + row["verdict"] + " corrected=" + (settled ?? "characterized"));
+                Assertions.Equal(run.Settled, settled, run.Name + ": the round-7 entry point over the collector's recorded row.");
+            }
+
+            // The immutable 224949Z row and its collector-shaped live counterpart, both through CallbackLossRound7, which the
+            // in-game collector calls with its in-memory row. The live counterpart is built as the collector builds it in
+            // memory: every cue record through the collector's own producer (CueRow, which S7Cue delegates to), every other
+            // unset value as the String-typed null JValue a null C# string becomes, times as the strings it writes. It is
+            // never serialized. Both must characterize; every negative must refuse, identically, in both.
+            JObject persisted = (JObject)r7("20261124T224949Z-owner-0.33.0-s7-fx-01-fx.json")["ankylosaurus"]["callbackLoss"];
+            Func<JObject> persistedCopy = () => (JObject)persisted.DeepClone();
+            Func<JObject> liveCopy = () => (JObject)LiveCollectorShape(persisted.DeepClone());
+            JObject live = liveCopy();
+            Assertions.True(live["survivorAtWindowEnd"]["cue"]["stopResult"].Type == JTokenType.String && ((JValue)live["survivorAtWindowEnd"]["cue"]["stopResult"]).Value == null &&
+                live["otherRetiredUtc"].Type == JTokenType.String && persisted["survivorAtWindowEnd"]["cue"]["stopResult"].Type == JTokenType.Null && persisted["otherRetiredUtc"].Type == JTokenType.Date,
+                "The live counterpart carries the collector's String-typed nulls and string times; the persisted row carries JSON nulls and parsed dates.");
+            Assertions.True(Sprint7ObserverPolicy.ExplicitNull(live["survivorAtWindowEnd"]["cue"]["stopResult"]) && Sprint7ObserverPolicy.ExplicitNull(JValue.CreateNull()) &&
+                !Sprint7ObserverPolicy.ExplicitNull(null) && !Sprint7ObserverPolicy.ExplicitNull(JValue.CreateUndefined()) && !Sprint7ObserverPolicy.ExplicitNull(new JValue("stop-requested")) &&
+                !Sprint7ObserverPolicy.ExplicitNull(new JObject()), "Explicit null: JSON null or a null-valued String JValue; absent, undefined, a value or an object are not.");
+            Assertions.Equal(null, judge7(persistedCopy()), "The persisted 224949Z row characterizes.");
+            Assertions.Equal(null, judge7(live), "Its collector-shaped live counterpart characterizes identically.");
+            long survivorPlaying = (long)persisted["before"]["survivor"]["playingId"], otherPlaying = (long)persisted["before"]["other"]["playingId"];
+            long otherSourceOnly = persisted["cuesBeforeSelection"]["otherSource"].Select(cue => (long)cue["playingId"]).First(id => id != otherPlaying);
+            foreach (var shape in new[] { new { Name = "persisted", Make = persistedCopy, Null = (Func<JToken>)(() => JValue.CreateNull()) },
+                new { Name = "live", Make = liveCopy, Null = (Func<JToken>)(() => new JValue((string)null)) } })
+            {
+                var current = shape;
+                Func<Action<JObject>, string> with = change => { JObject row = current.Make(); change(row); return judge7(row); };
+                string n = shape.Name + ": ";
+                // Missing required properties are unknown, never an unset value or zero.
+                Assertions.Equal("missing:survivorAtWindowEnd.cue.endUtc", with(row => ((JObject)row["survivorAtWindowEnd"]["cue"]).Remove("endUtc")), n + "an omitted endUtc is not an unset callback.");
+                Assertions.Equal("missing:survivorAtWindowEnd.cue.stopResult", with(row => ((JObject)row["survivorAtWindowEnd"]["cue"]).Remove("stopResult")), n + "an omitted stop result is not an absent stop.");
+                Assertions.Equal("missing:survivorAtWindowEnd.cue.stopRequestedUtc", with(row => ((JObject)row["survivorAtWindowEnd"]["cue"]).Remove("stopRequestedUtc")), n + "an omitted stop request time is unknown.");
+                Assertions.Equal("missing:survivorAfterDisposal.cue.endUtc", with(row => ((JObject)row["survivorAfterDisposal"]["cue"]).Remove("endUtc")), n + "an omitted end after disposal is unknown.");
+                Assertions.Equal("missing:otherRetirementSettled.survivorStopAttemptsThroughWindow", with(row => ((JObject)row["otherRetirementSettled"]).Remove("survivorStopAttemptsThroughWindow")), n + "an omitted survivor stop count is unknown, not zero.");
+                Assertions.Equal("missing:afterOtherRetired.survivorStopAttempts", with(row => ((JObject)row["afterOtherRetired"]).Remove("survivorStopAttempts")), n + "an omitted retirement-frame count is unknown.");
+                Assertions.Equal("missing:otherRetirementSettled.other", with(row => ((JObject)row["otherRetirementSettled"]).Remove("other")), n + "no settled other record, no verdict.");
+                Assertions.Equal("missing:before.survivor.playingId", with(row => ((JObject)row["before"]["survivor"]).Remove("playingId")), n + "a selected cue without its playing ID is unknown.");
+                Assertions.Equal("missing:window[3].survivorPlayback", with(row => ((JObject)row["window"][3]).Remove("survivorPlayback")), n + "R1-F2: an omitted sample playback is unknown, not skipped.");
+                Assertions.Equal("missing:window[3].survivorEndUtc", with(row => ((JObject)row["window"][3]).Remove("survivorEndUtc")), n + "an omitted sample end is unknown.");
+                // R1-F4: the retirement time and the settled record come from the row, alike for both shapes.
+                Assertions.Equal("missing:otherRetiredUtc", with(row => row.Remove("otherRetiredUtc")), n + "R1-F4: an omitted retirement time refuses in either shape.");
+                Assertions.Equal("unreadable:otherRetiredUtc", with(row => row["otherRetiredUtc"] = "not a time"), n + "an unreadable retirement time refuses.");
+                Assertions.Equal("unreadable:otherRetirementSettled", with(row => row["otherRetirementSettled"] = current.Null()), n + "a null settled record refuses without throwing.");
+                Assertions.Equal("unreadable:otherRetirementSettled", with(row => row["otherRetirementSettled"] = 5), n + "a scalar settled record refuses without throwing.");
+                // R1-F1: actual stop observations in any pre-disposal snapshot prevent characterization.
+                Assertions.Equal("survivor-stopped-by-other-retirement", with(row => row["afterOtherRetired"]["survivorStopAttempts"] = 1), n + "R1-F1: a positive retirement-frame count refuses although the window count is zero.");
+                Assertions.Equal("survivor-stopped-by-other-retirement", with(row => row["otherRetirementSettled"]["survivorStopAttemptsThroughWindow"] = 1), n + "a nonzero through-window count refuses.");
+                Assertions.Equal("survivor-stopped-by-other-retirement", with(row => row["survivorAtWindowEnd"]["cue"]["stopReason"] = "view-destroyed"), n + "R1-F1: a recorded stop reason before disposal refuses.");
+                Assertions.Equal("survivor-stopped-by-other-retirement", with(row => row["before"]["survivor"]["stopReason"] = "view-destroyed"), n + "a stop reason already on the selected cue refuses.");
+                Assertions.Equal("survivor-stopped-by-other-retirement", with(row => { row["survivorAtWindowEnd"]["cue"]["stopResult"] = "stop-requested"; row["survivorAtWindowEnd"]["cue"]["stopRequestedUtc"] = "2026-11-24T22:51:57.0000000Z"; }), n + "a recorded stop request refuses.");
+                Assertions.Equal("survivor-stopped-by-other-retirement", with(row => row["survivorAtWindowEnd"]["cue"]["stopRequestedUtc"] = "2026-11-24T22:51:57.0000000Z"), n + "a recorded stop request time alone refuses.");
+                // R1-F2: callback and end observations in the window.
+                Assertions.Equal("callback-not-withheld", with(row => row["window"][1]["survivorEndUtc"] = "2026-11-24T22:51:56.9000000Z"), n + "R1-F2: an end recorded in a window sample refuses although both terminal ends are null.");
+                Assertions.Equal("unreadable:survivorAtWindowEnd.callbacksWithheld", with(row => { row["survivorAtWindowEnd"]["callbacksWithheld"] = new JArray(current.Null()); foreach (JObject sample in row["window"]) sample["callbacksWithheld"] = 0; }), n + "R1-F2: a placeholder withheld timestamp refuses.");
+                Assertions.Equal("callback-withheld-count-mismatch", with(row => { foreach (JObject sample in row["window"]) sample["callbacksWithheld"] = 0; }), n + "a withheld timestamp the window never counted refuses.");
+                Assertions.Equal("callback-not-withheld", with(row => row["survivorAtWindowEnd"]["cue"]["endUtc"] = "2026-11-24T22:51:56.7000000Z"), n + "a received completion callback (end recorded) refuses.");
+                Assertions.Equal("end-manufactured", with(row => row["survivorAfterDisposal"]["cue"]["endUtc"] = "2026-11-24T22:52:08.5000000Z"), n + "an end after disposal refuses.");
+                // R1-F3 / R7-F6: substituted or contradictory cue identities.
+                Assertions.Equal("cue-identity-contradiction:other-retirement-frame", with(row => row["afterOtherRetired"]["other"]["playingId"] = survivorPlaying), n + "R1-F3: the retirement-frame other cue substituted with the survivor refuses.");
+                Assertions.Equal("cue-identity-contradiction:survivor-source", with(row => { row["before"]["survivor"]["playingId"] = otherSourceOnly; row["survivorAtWindowEnd"]["cue"]["playingId"] = otherSourceOnly; row["survivorAfterDisposal"]["cue"]["playingId"] = otherSourceOnly; }),
+                    n + "R1-F3: a consistent survivor substitution that the recorded source inventory contradicts refuses.");
+                Assertions.Equal("cue-identity-contradiction:survivor-window-end", with(row => row["survivorAtWindowEnd"]["cue"]["playingId"] = 999), n + "a substituted window-end cue refuses.");
+                Assertions.Equal("cue-identity-contradiction:survivor-after-disposal", with(row => row["survivorAfterDisposal"]["cue"]["playingId"] = 999), n + "a substituted disposal cue refuses.");
+                Assertions.Equal("cue-identity-contradiction:other-settled", with(row => row["otherRetirementSettled"]["other"]["playingId"] = 999), n + "a substituted settled other record refuses.");
+                Assertions.Equal("cue-identity-contradiction:survivor-is-other", with(row => row["before"]["other"]["playingId"] = survivorPlaying), n + "the same ID selected twice refuses.");
+                Assertions.Equal("unreadable:before.other.playingId", with(row => row["before"]["other"]["playingId"] = 0), n + "an invalid playing ID is not an identity.");
+                // R1-F5: undefined and wrong-type stop or end fields are unreadable, never an unset value or an observation.
+                Assertions.Equal("unreadable:survivorAfterDisposal.cue.endUtc", with(row => row["survivorAfterDisposal"]["cue"]["endUtc"] = JValue.CreateUndefined()), n + "R1-F5: an undefined end is unreadable.");
+                Assertions.Equal("unreadable:survivorAtWindowEnd.cue.endUtc", with(row => row["survivorAtWindowEnd"]["cue"]["endUtc"] = new JObject()), n + "an object in an end field is unreadable, not a recorded end.");
+                Assertions.Equal("unreadable:survivorAtWindowEnd.cue.endUtc", with(row => row["survivorAtWindowEnd"]["cue"]["endUtc"] = "not a time"), n + "an unparsable end is unreadable.");
+                Assertions.Equal("unreadable:survivorAtWindowEnd.cue.stopResult", with(row => row["survivorAtWindowEnd"]["cue"]["stopResult"] = new JArray()), n + "an array in a stop field is unreadable.");
+                Assertions.Equal("unreadable:survivorAtWindowEnd.cue.stopReason", with(row => row["survivorAtWindowEnd"]["cue"]["stopReason"] = JValue.CreateUndefined()), n + "an undefined stop reason is unreadable.");
+                // R1-F6: out-of-range integers are unreadable, never an exception.
+                Assertions.Equal("unreadable:otherRetirementSettled.survivorStopAttemptsThroughWindow", with(row => row["otherRetirementSettled"]["survivorStopAttemptsThroughWindow"] = 2147483648L), n + "R1-F6: a count above Int32.MaxValue is unreadable.");
+                Assertions.Equal("unreadable:before.survivor.playingId", with(row => row["before"]["survivor"]["playingId"] = new JValue(ulong.MaxValue)), n + "R1-F6: a playing ID above Int64.MaxValue is unreadable.");
+                Assertions.Equal("cue-identity-contradiction:survivor-window-end", with(row => row["survivorAtWindowEnd"]["cue"]["playingId"] = new JValue(ulong.MaxValue)), n + "an oversized terminal ID refuses without throwing.");
+                // The accepted terminal playback rules stay.
+                Assertions.Equal("survivor-playback-persisted:window-end", with(row => row["survivorAtWindowEnd"]["playback"] = Sprint7ObserverPolicy.PlaybackPlaying), n + "terminal playing is persistence.");
+                Assertions.Equal("survivor-playback-unknown:after-disposal", with(row => ((JObject)row["survivorAfterDisposal"]).Remove("playback")), n + "a missing terminal read is unknown.");
+                // The survivor's own disposal may request its stop (preserved).
+                Assertions.Equal(null, with(row => { row["survivorAfterDisposal"]["cue"]["stopReason"] = "view-destroyed"; row["survivorAfterDisposal"]["cue"]["stopResult"] = "stop-requested"; }), n + "the stop requested by the survivor's own disposal is legitimate.");
+                // A stop request is not completion: the other source's native end is required separately.
+                Assertions.Equal("other-not-stopped-by-own-id", with(row => row["otherRetirementSettled"]["other"]["endUtc"] = current.Null()), n + "the other source's stop request without its native end is not its retirement.");
+            }
+            Assertions.Equal("not-both-playing", Sprint7ObserverPolicy.CallbackLossRound7(new JObject(), stop), "An empty row is not characterized and does not throw.");
+            Assertions.Equal("missing:row", Sprint7ObserverPolicy.CallbackLossRound7(null, stop), "No row, no verdict.");
             string collector = File.ReadAllText("src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.Sprint7Presentation.cs");
-            Assertions.True(collector.Contains("Sprint7ObserverPolicy.CallbackLossSettled(row, settledOther, retiredAt, SummonCastCueLifecycle.StopRequested, Sprint7ObserverPolicy.CueCollector.Round7)") && collector.Contains("Sprint7ObserverPolicy.CueRow(") && !collector.Contains("CallbackLossVerdict("),
-                "The in-game collector's verdict is the same evaluator, over the row it emitted.");
+            Assertions.True(collector.Contains("Sprint7ObserverPolicy.CallbackLossRound7(row, SummonCastCueLifecycle.StopRequested)") && collector.Contains("Sprint7ObserverPolicy.CueRow(") &&
+                !collector.Contains("CallbackLossSettled(") && !collector.Contains("CallbackLossVerdict("),
+                "The in-game collector judges its own in-memory row through the same round-7 entry point the readers use.");
         }
 
         // Recovery C1: a collector-shaped in-memory counterpart of a recorded callback-loss row. Each cue record is rebuilt

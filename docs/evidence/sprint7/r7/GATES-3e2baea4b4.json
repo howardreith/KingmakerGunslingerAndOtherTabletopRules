@@ -1,0 +1,147 @@
+{
+ "description": "Sanitized extract of the eleven required controller gate receipts on the round-7 reviewed head 3e2baea4b486f3f416895127e4c67797968a8f28 (parent enrollment kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1, controller-recorded, not model-authored). Selected counts are read from each gate log; receipt durations from each receipt duration_s. Wrapper wall times are the operator measurement around each controller verify call in the same session (time from before to after the call); the 40.1 s batch total also includes the loop and JSON-parsing overhead between calls.",
+ "candidate": "3e2baea4b486f3f416895127e4c67797968a8f28",
+ "gates": [
+  {
+   "filter": "sprint7-visual",
+   "selected": 22,
+   "receipt_duration_s": 2.0,
+   "passed": true,
+   "started": "2026-11-24T23:02:34Z",
+   "receipt": "gate-focused-3e2baea4b486-d88e49a1250-a10f9d5aef1-20261124T230236842571Z.json",
+   "receipt_sha256": "fe8481f1bde84ce831a6565ff5f8c66a22c6fd7a15032351d10af6c7d9151122",
+   "log": "gate-focused-3e2baea4b486-d88e49a1250-a10f9d5aef1-20261124T230236842571Z.log",
+   "log_sha256": "eaafdd28f8b0caf605db686e7f0673fa249cad8f1c2ca6b4f3140f8316c1e1f6",
+   "wrapper_wall_s": 3.7
+  },
+  {
+   "filter": "summon-playtest-r3",
+   "selected": 5,
+   "receipt_duration_s": 1.6,
+   "passed": true,
+   "started": "2026-11-24T23:02:38Z",
+   "receipt": "gate-focused-3e2baea4b486-d88e49a1250-a1bcb02cb43-20261124T230240460028Z.json",
+   "receipt_sha256": "3d540b4df70726a583643f59205bbc7774ef37ca01e01cf06478e0bee299e845",
+   "log": "gate-focused-3e2baea4b486-d88e49a1250-a1bcb02cb43-20261124T230240460028Z.log",
+   "log_sha256": "71b02baee6d78025520da74011b786f21a63a8ab18370a914ac1b5054c38de98",
+   "wrapper_wall_s": 3.4
+  },
+  {
+   "filter": "summon-playtest-r4",
+   "selected": 4,
+   "receipt_duration_s": 1.6,
+   "passed": true,
+   "started": "2026-11-24T23:02:42Z",
+   "receipt": "gate-focused-3e2baea4b486-d88e49a1250-a0b3cd20adf-20261124T230243954898Z.json",
+   "receipt_sha256": "f114bf973f32c25a29cfe08b89a5060a2d329cc9f35b08b79f32e5ff95168923",
+   "log": "gate-focused-3e2baea4b486-d88e49a1250-a0b3cd20adf-20261124T230243954898Z.log",
+   "log_sha256": "e200330abb58cc75f7bbed9311d66234a4abb059c4bc5636bad8f0ac99227111",
+   "wrapper_wall_s": 3.3
+  },
+  {
+   "filter": "summon-playtest-r6",
+   "selected": 11,
+   "receipt_duration_s": 1.6,
+   "passed": true,
+   "started": "2026-11-24T23:02:45Z",
+   "receipt": "gate-focused-3e2baea4b486-d88e49a1250-aa231d60233-20261124T230247456198Z.json",
+   "receipt_sha256": "93bd4d4c7cabf3a3da5073b936f0bf583f3eef9dd91fca9f17d19c5d326f3cb2",
+   "log": "gate-focused-3e2baea4b486-d88e49a1250-aa231d60233-20261124T230247456198Z.log",
+   "log_sha256": "ff2a06d6938a11f79fe895aab400fec1a9b53c42904a7b393deb9c3045c69f64",
+   "wrapper_wall_s": 3.3
+  },
+  {
+   "filter": "summon-playtest-r7",
+   "selected": 2,
+   "receipt_duration_s": 1.9,
+   "passed": true,
+   "started": "2026-11-24T23:02:49Z",
+   "receipt": "gate-focused-3e2baea4b486-d88e49a1250-a9ff3279996-20261124T230251329095Z.json",
+   "receipt_sha256": "3520fa670c5b434cabae305f1ee45d8301f4005b28411f9298a3842e2da5aa08",
+   "log": "gate-focused-3e2baea4b486-d88e49a1250-a9ff3279996-20261124T230251329095Z.log",
+   "log_sha256": "63ac88ef3ebb67c0e89b371f7212df604e7d8a00e5a23fca0c3fb2b0ba7b7cbb",
+   "wrapper_wall_s": 3.6
+  },
+  {
+   "filter": "sprint22-",
+   "selected": 11,
+   "receipt_duration_s": 2.0,
+   "passed": true,
+   "started": "2026-11-24T23:02:53Z",
+   "receipt": "gate-focused-3e2baea4b486-d88e49a1250-acc571aa833-20261124T230255263259Z.json",
+   "receipt_sha256": "c46d97695cb28f7ff3bd73a39f69820aa1523a8b8a6b8495b14a14236ba7b484",
+   "log": "gate-focused-3e2baea4b486-d88e49a1250-acc571aa833-20261124T230255263259Z.log",
+   "log_sha256": "49c34f1e5b162c59e3cc57346200ab95a25bfcc172b116e75ac738f9ec64ef45",
+   "wrapper_wall_s": 3.7
+  },
+  {
+   "filter": "sprint5-",
+   "selected": 4,
+   "receipt_duration_s": 1.8,
+   "passed": true,
+   "started": "2026-11-24T23:02:57Z",
+   "receipt": "gate-focused-3e2baea4b486-d88e49a1250-a64c4a0fae9-20261124T230259039712Z.json",
+   "receipt_sha256": "3cdc7b87e5d1d633b3ecb7bc1ae092785d3012305af785834a6bf0a5651f14c1",
+   "log": "gate-focused-3e2baea4b486-d88e49a1250-a64c4a0fae9-20261124T230259039712Z.log",
+   "log_sha256": "cea243cbcbf2326b8c3f3aff429a59cab5a65093bcb8a78d1934e66c4e55ff0e",
+   "wrapper_wall_s": 3.5
+  },
+  {
+   "filter": "salamander",
+   "selected": 42,
+   "receipt_duration_s": 1.7,
+   "passed": true,
+   "started": "2026-11-24T23:03:00Z",
+   "receipt": "gate-focused-3e2baea4b486-d88e49a1250-a31206b7cf7-20261124T230302634488Z.json",
+   "receipt_sha256": "4cae5a26d5fb5a521bb5489eb191727e9ac917f0ea64861f3154a4aa3afca781",
+   "log": "gate-focused-3e2baea4b486-d88e49a1250-a31206b7cf7-20261124T230302634488Z.log",
+   "log_sha256": "8545aa41cdea8e87a41f0d73b67383d93343240021c6a2ce5fb0b28e9d311c2e",
+   "wrapper_wall_s": 3.4
+  },
+  {
+   "filter": "native-admission",
+   "selected": 3,
+   "receipt_duration_s": 1.6,
+   "passed": true,
+   "started": "2026-11-24T23:03:04Z",
+   "receipt": "gate-focused-3e2baea4b486-d88e49a1250-a5b2fa1bfbe-20261124T230305987583Z.json",
+   "receipt_sha256": "5f6d25ef00948f59b387c3fcf9350edf80e3e0f75542fb839ce3a71686da3949",
+   "log": "gate-focused-3e2baea4b486-d88e49a1250-a5b2fa1bfbe-20261124T230305987583Z.log",
+   "log_sha256": "22bbbb10647fd3f8518d291df91caf7853af07713f0ce4d5a55e9f68d5d45f22",
+   "wrapper_wall_s": 3.1
+  },
+  {
+   "filter": "native-profile",
+   "selected": 9,
+   "receipt_duration_s": 1.7,
+   "passed": true,
+   "started": "2026-11-24T23:03:07Z",
+   "receipt": "gate-focused-3e2baea4b486-d88e49a1250-a00db325ebf-20261124T230309606876Z.json",
+   "receipt_sha256": "982e82d29b6a6e97ea8cdb8039398d084296b099d2d321c14b6251f40939df80",
+   "log": "gate-focused-3e2baea4b486-d88e49a1250-a00db325ebf-20261124T230309606876Z.log",
+   "log_sha256": "297b470d2070fc14e5f4c5ea4a76fc69d4abb1a475d622e3827039dc6fde1abc",
+   "wrapper_wall_s": 3.4
+  },
+  {
+   "filter": "loader-compat-probe",
+   "selected": 5,
+   "receipt_duration_s": 1.6,
+   "passed": true,
+   "started": "2026-11-24T23:03:11Z",
+   "receipt": "gate-focused-3e2baea4b486-d88e49a1250-a2d890207db-20261124T230313081058Z.json",
+   "receipt_sha256": "eec08374052e04c7795428f71a04cc5112c44929d2bd37eec77a5a82d46750d3",
+   "log": "gate-focused-3e2baea4b486-d88e49a1250-a2d890207db-20261124T230313081058Z.log",
+   "log_sha256": "f969570189207c0261faf9712c971a86f017feec9019c929f4ae531b82c7c246",
+   "wrapper_wall_s": 3.2
+  }
+ ],
+ "totals": {
+  "selected": 118,
+  "sprint7_visual": 22,
+  "neighbour": 96,
+  "receipt_duration_s": 19.1,
+  "wrapper_wall_s_sum": 37.6,
+  "batch_wall_s": 40.1,
+  "all_passed": true
+ }
+}
