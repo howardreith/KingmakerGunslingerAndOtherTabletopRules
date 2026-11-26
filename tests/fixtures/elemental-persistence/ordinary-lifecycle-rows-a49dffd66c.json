@@ -1,0 +1,1517 @@
+{
+  "source": "Derived from runtime run 20261126T1328558287358Z-elemental-race-module-restored-persistence (development candidate a49dffd66c, ordinary scope): only fixture, phase, exact and traits of each physical lifecycle row.",
+  "rows": [
+    {
+      "fixture": "ifrit-male",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInTheBlood",
+        "EfreetiMagic"
+      ]
+    },
+    {
+      "fixture": "ifrit-male",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInTheBlood",
+        "EfreetiMagic"
+      ]
+    },
+    {
+      "fixture": "ifrit-male",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInTheBlood",
+        "EfreetiMagic"
+      ]
+    },
+    {
+      "fixture": "ifrit-male",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInTheBlood",
+        "EfreetiMagic"
+      ]
+    },
+    {
+      "fixture": "ifrit-male",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInTheBlood",
+        "EfreetiMagic"
+      ]
+    },
+    {
+      "fixture": "ifrit-male",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInTheBlood",
+        "EfreetiMagic"
+      ]
+    },
+    {
+      "fixture": "ifrit-male",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInTheBlood",
+        "EfreetiMagic"
+      ]
+    },
+    {
+      "fixture": "ifrit-female",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "BrazenFlame",
+        "FireInTheBlood"
+      ]
+    },
+    {
+      "fixture": "ifrit-female",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "BrazenFlame",
+        "FireInTheBlood"
+      ]
+    },
+    {
+      "fixture": "ifrit-female",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "BrazenFlame",
+        "FireInTheBlood"
+      ]
+    },
+    {
+      "fixture": "ifrit-female",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "BrazenFlame",
+        "FireInTheBlood"
+      ]
+    },
+    {
+      "fixture": "ifrit-female",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "BrazenFlame",
+        "FireInTheBlood"
+      ]
+    },
+    {
+      "fixture": "ifrit-female",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "BrazenFlame",
+        "FireInTheBlood"
+      ]
+    },
+    {
+      "fixture": "ifrit-female",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "BrazenFlame",
+        "FireInTheBlood"
+      ]
+    },
+    {
+      "fixture": "oread-male",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "StoneInTheBlood"
+      ]
+    },
+    {
+      "fixture": "oread-male",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "StoneInTheBlood"
+      ]
+    },
+    {
+      "fixture": "oread-male",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "StoneInTheBlood"
+      ]
+    },
+    {
+      "fixture": "oread-male",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "StoneInTheBlood"
+      ]
+    },
+    {
+      "fixture": "oread-male",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "StoneInTheBlood"
+      ]
+    },
+    {
+      "fixture": "oread-male",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "StoneInTheBlood"
+      ]
+    },
+    {
+      "fixture": "oread-male",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "StoneInTheBlood"
+      ]
+    },
+    {
+      "fixture": "oread-female",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "StoneInTheBlood"
+      ]
+    },
+    {
+      "fixture": "oread-female",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "StoneInTheBlood"
+      ]
+    },
+    {
+      "fixture": "oread-female",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "StoneInTheBlood"
+      ]
+    },
+    {
+      "fixture": "oread-female",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "StoneInTheBlood"
+      ]
+    },
+    {
+      "fixture": "oread-female",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "StoneInTheBlood"
+      ]
+    },
+    {
+      "fixture": "oread-female",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "StoneInTheBlood"
+      ]
+    },
+    {
+      "fixture": "oread-female",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "StoneInTheBlood"
+      ]
+    },
+    {
+      "fixture": "sylph-male",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "LikeTheWind",
+        "StormInTheBlood",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-male",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "LikeTheWind",
+        "StormInTheBlood",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-male",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "LikeTheWind",
+        "StormInTheBlood",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-male",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "LikeTheWind",
+        "StormInTheBlood",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-male",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "LikeTheWind",
+        "StormInTheBlood",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-male",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "LikeTheWind",
+        "StormInTheBlood",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-male",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "LikeTheWind",
+        "StormInTheBlood",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-female",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "ThunderousResilience",
+        "StormInTheBlood",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-female",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "ThunderousResilience",
+        "StormInTheBlood",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-female",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "ThunderousResilience",
+        "StormInTheBlood",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-female",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "ThunderousResilience",
+        "StormInTheBlood",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-female",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "ThunderousResilience",
+        "StormInTheBlood",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-female",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "ThunderousResilience",
+        "StormInTheBlood",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-female",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "ThunderousResilience",
+        "StormInTheBlood",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "undine-male",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "ifrit-male-lavasoul",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "BrazenFlame",
+        "FireInsight"
+      ]
+    },
+    {
+      "fixture": "ifrit-male-lavasoul",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "BrazenFlame",
+        "FireInsight"
+      ]
+    },
+    {
+      "fixture": "ifrit-male-lavasoul",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "BrazenFlame",
+        "FireInsight"
+      ]
+    },
+    {
+      "fixture": "ifrit-male-lavasoul",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "BrazenFlame",
+        "FireInsight"
+      ]
+    },
+    {
+      "fixture": "ifrit-male-lavasoul",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "BrazenFlame",
+        "FireInsight"
+      ]
+    },
+    {
+      "fixture": "ifrit-male-lavasoul",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "BrazenFlame",
+        "FireInsight"
+      ]
+    },
+    {
+      "fixture": "ifrit-male-lavasoul",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "BrazenFlame",
+        "FireInsight"
+      ]
+    },
+    {
+      "fixture": "ifrit-female-lavasoul",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInsight",
+        "EfreetiMagic"
+      ]
+    },
+    {
+      "fixture": "ifrit-female-lavasoul",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInsight",
+        "EfreetiMagic"
+      ]
+    },
+    {
+      "fixture": "ifrit-female-lavasoul",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInsight",
+        "EfreetiMagic"
+      ]
+    },
+    {
+      "fixture": "ifrit-female-lavasoul",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInsight",
+        "EfreetiMagic"
+      ]
+    },
+    {
+      "fixture": "ifrit-female-lavasoul",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInsight",
+        "EfreetiMagic"
+      ]
+    },
+    {
+      "fixture": "ifrit-female-lavasoul",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInsight",
+        "EfreetiMagic"
+      ]
+    },
+    {
+      "fixture": "ifrit-female-lavasoul",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInsight",
+        "EfreetiMagic"
+      ]
+    },
+    {
+      "fixture": "oread-male-gemsoul",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "EarthInsight"
+      ]
+    },
+    {
+      "fixture": "oread-male-gemsoul",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "EarthInsight"
+      ]
+    },
+    {
+      "fixture": "oread-male-gemsoul",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "EarthInsight"
+      ]
+    },
+    {
+      "fixture": "oread-male-gemsoul",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "EarthInsight"
+      ]
+    },
+    {
+      "fixture": "oread-male-gemsoul",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "EarthInsight"
+      ]
+    },
+    {
+      "fixture": "oread-male-gemsoul",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "EarthInsight"
+      ]
+    },
+    {
+      "fixture": "oread-male-gemsoul",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "EarthInsight"
+      ]
+    },
+    {
+      "fixture": "oread-female-gemsoul",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "EarthInsight"
+      ]
+    },
+    {
+      "fixture": "oread-female-gemsoul",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "EarthInsight"
+      ]
+    },
+    {
+      "fixture": "oread-female-gemsoul",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "EarthInsight"
+      ]
+    },
+    {
+      "fixture": "oread-female-gemsoul",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "EarthInsight"
+      ]
+    },
+    {
+      "fixture": "oread-female-gemsoul",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "EarthInsight"
+      ]
+    },
+    {
+      "fixture": "oread-female-gemsoul",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "EarthInsight"
+      ]
+    },
+    {
+      "fixture": "oread-female-gemsoul",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "EarthInsight"
+      ]
+    },
+    {
+      "fixture": "sylph-male-smokesoul",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "ThunderousResilience",
+        "BreezeKissed",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-male-smokesoul",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "ThunderousResilience",
+        "BreezeKissed",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-male-smokesoul",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "ThunderousResilience",
+        "BreezeKissed",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-male-smokesoul",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "ThunderousResilience",
+        "BreezeKissed",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-male-smokesoul",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "ThunderousResilience",
+        "BreezeKissed",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-male-smokesoul",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "ThunderousResilience",
+        "BreezeKissed",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-male-smokesoul",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "ThunderousResilience",
+        "BreezeKissed",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-female-smokesoul",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "LikeTheWind",
+        "BreezeKissed",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-female-smokesoul",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "LikeTheWind",
+        "BreezeKissed",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-female-smokesoul",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "LikeTheWind",
+        "BreezeKissed",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-female-smokesoul",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "LikeTheWind",
+        "BreezeKissed",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-female-smokesoul",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "LikeTheWind",
+        "BreezeKissed",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-female-smokesoul",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "LikeTheWind",
+        "BreezeKissed",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "sylph-female-smokesoul",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "LikeTheWind",
+        "BreezeKissed",
+        "WhisperingWind"
+      ]
+    },
+    {
+      "fixture": "undine-male-mistsoul",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male-mistsoul",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male-mistsoul",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male-mistsoul",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male-mistsoul",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male-mistsoul",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male-mistsoul",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female-mistsoul",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female-mistsoul",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female-mistsoul",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female-mistsoul",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female-mistsoul",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female-mistsoul",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female-mistsoul",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "ifrit-male-sunsoul",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInTheBlood",
+        "ForgeHardened"
+      ]
+    },
+    {
+      "fixture": "ifrit-male-sunsoul",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInTheBlood",
+        "ForgeHardened"
+      ]
+    },
+    {
+      "fixture": "ifrit-male-sunsoul",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInTheBlood",
+        "ForgeHardened"
+      ]
+    },
+    {
+      "fixture": "ifrit-male-sunsoul",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInTheBlood",
+        "ForgeHardened"
+      ]
+    },
+    {
+      "fixture": "ifrit-male-sunsoul",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInTheBlood",
+        "ForgeHardened"
+      ]
+    },
+    {
+      "fixture": "ifrit-male-sunsoul",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInTheBlood",
+        "ForgeHardened"
+      ]
+    },
+    {
+      "fixture": "ifrit-male-sunsoul",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "WildfireHeart",
+        "FireInTheBlood",
+        "ForgeHardened"
+      ]
+    },
+    {
+      "fixture": "ifrit-female-sunsoul",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "FireInsight",
+        "ForgeHardened"
+      ]
+    },
+    {
+      "fixture": "ifrit-female-sunsoul",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "FireInsight",
+        "ForgeHardened"
+      ]
+    },
+    {
+      "fixture": "ifrit-female-sunsoul",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "FireInsight",
+        "ForgeHardened"
+      ]
+    },
+    {
+      "fixture": "ifrit-female-sunsoul",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "FireInsight",
+        "ForgeHardened"
+      ]
+    },
+    {
+      "fixture": "ifrit-female-sunsoul",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "FireInsight",
+        "ForgeHardened"
+      ]
+    },
+    {
+      "fixture": "ifrit-female-sunsoul",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "FireInsight",
+        "ForgeHardened"
+      ]
+    },
+    {
+      "fixture": "ifrit-female-sunsoul",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "FireInsight",
+        "ForgeHardened"
+      ]
+    },
+    {
+      "fixture": "oread-male-ironsoul",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "CrystallineForm"
+      ]
+    },
+    {
+      "fixture": "oread-male-ironsoul",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "CrystallineForm"
+      ]
+    },
+    {
+      "fixture": "oread-male-ironsoul",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "CrystallineForm"
+      ]
+    },
+    {
+      "fixture": "oread-male-ironsoul",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "CrystallineForm"
+      ]
+    },
+    {
+      "fixture": "oread-male-ironsoul",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "CrystallineForm"
+      ]
+    },
+    {
+      "fixture": "oread-male-ironsoul",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "CrystallineForm"
+      ]
+    },
+    {
+      "fixture": "oread-male-ironsoul",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "CrystallineForm"
+      ]
+    },
+    {
+      "fixture": "oread-female-ironsoul",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "CrystallineForm"
+      ]
+    },
+    {
+      "fixture": "oread-female-ironsoul",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "CrystallineForm"
+      ]
+    },
+    {
+      "fixture": "oread-female-ironsoul",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "CrystallineForm"
+      ]
+    },
+    {
+      "fixture": "oread-female-ironsoul",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "CrystallineForm"
+      ]
+    },
+    {
+      "fixture": "oread-female-ironsoul",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "CrystallineForm"
+      ]
+    },
+    {
+      "fixture": "oread-female-ironsoul",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "CrystallineForm"
+      ]
+    },
+    {
+      "fixture": "oread-female-ironsoul",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "GraniteSkin",
+        "CrystallineForm"
+      ]
+    },
+    {
+      "fixture": "sylph-male-stormsoul",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "Secretive",
+        "AirInsight"
+      ]
+    },
+    {
+      "fixture": "sylph-male-stormsoul",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "Secretive",
+        "AirInsight"
+      ]
+    },
+    {
+      "fixture": "sylph-male-stormsoul",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "Secretive",
+        "AirInsight"
+      ]
+    },
+    {
+      "fixture": "sylph-male-stormsoul",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "Secretive",
+        "AirInsight"
+      ]
+    },
+    {
+      "fixture": "sylph-male-stormsoul",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "Secretive",
+        "AirInsight"
+      ]
+    },
+    {
+      "fixture": "sylph-male-stormsoul",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "Secretive",
+        "AirInsight"
+      ]
+    },
+    {
+      "fixture": "sylph-male-stormsoul",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "Secretive",
+        "AirInsight"
+      ]
+    },
+    {
+      "fixture": "sylph-female-stormsoul",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "Secretive",
+        "AirInsight"
+      ]
+    },
+    {
+      "fixture": "sylph-female-stormsoul",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "Secretive",
+        "AirInsight"
+      ]
+    },
+    {
+      "fixture": "sylph-female-stormsoul",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "Secretive",
+        "AirInsight"
+      ]
+    },
+    {
+      "fixture": "sylph-female-stormsoul",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "Secretive",
+        "AirInsight"
+      ]
+    },
+    {
+      "fixture": "sylph-female-stormsoul",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "Secretive",
+        "AirInsight"
+      ]
+    },
+    {
+      "fixture": "sylph-female-stormsoul",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "Secretive",
+        "AirInsight"
+      ]
+    },
+    {
+      "fixture": "sylph-female-stormsoul",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "Secretive",
+        "AirInsight"
+      ]
+    },
+    {
+      "fixture": "undine-male-rimesoul",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male-rimesoul",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male-rimesoul",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male-rimesoul",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male-rimesoul",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male-rimesoul",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-male-rimesoul",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "AcidBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female-rimesoul",
+      "phase": "before-death",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female-rimesoul",
+      "phase": "native-dead",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female-rimesoul",
+      "phase": "native-resurrected",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female-rimesoul",
+      "phase": "native-polymorphed",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female-rimesoul",
+      "phase": "native-polymorph-return",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female-rimesoul",
+      "phase": "native-armor-equipped",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    },
+    {
+      "fixture": "undine-female-rimesoul",
+      "phase": "native-equipment-and-doll-restored",
+      "exact": true,
+      "traits": [
+        "OozeBreath"
+      ]
+    }
+  ]
+}

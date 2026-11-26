@@ -4060,7 +4060,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "24 sidecars, 48 PNGs, and 120 labelled module-restored post-respec views",
                     "captured=" + _captured + ";images=" +
                         _imageCount + ";views=" + _viewCount +
-                        ";files=" + _evidenceFiles.Count,
+                        ";files=" + _evidenceFiles.Count + ";lifecycle=" +
+                        (_physicalLifecycleCoverageFailure ?? "exact"),
                     capturesExact,
                     "post-respec four-view previews and ordinary isometric captures");
                 Add(_assertions,

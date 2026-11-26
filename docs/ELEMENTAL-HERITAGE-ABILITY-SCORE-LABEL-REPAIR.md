@@ -22,8 +22,9 @@ product code at `adcba2f314` with the installed mod set), actual ability scores 
 intended values for all twelve heritages. All eight alternate heritages produced incorrect racial
 labels through the native PC score-entry and console view-model paths (the save-free method
 probes under Regression coverage). The Sylph creator panel also visibly reproduced the defect.
-The rendered character sheet does not show a racial bonus at all (its ability entries have no
-`RaceBonus` field; observed on candidates, see Verification), so the defect is visible only in
+The rendered character sheet does not show a racial bonus at all (on its observed ability
+entries the `RaceBonus` reference is null, although the native `CharSScoreEntry` type has that
+member; observed on candidates, see Verification), so the defect is visible only in
 the creator/level-up ability panel and, by the same method, the console stat view. The console
 screen itself was not rendered. The reporter's version and mod environment are unknown,
 so this classification is bounded to the tested environment.
@@ -38,12 +39,16 @@ committed.
 - `CharSScoreEntry.SetData(UnitDescriptor, Color32, bool)` sets `RaceBonus.text` to
   `UIUtility.AddSign(first Racial modifier in Stat.Modifiers)`, or `-` when there is none.
   `CharBScoresEntry`, the creator and level-up ability panel, calls this base method. The
-  character sheet's `CharSScores` also calls it (`showPermanentValue: false`), but the sheet's
-  entries have no `RaceBonus` component, so native `SetData` skips the label there: the sheet
-  shows totals only. This was observed natively on 2026-11-26, not inferred from the
-  decompilation. On the final candidate `a49dffd66c`, every bound sheet entry had a null
-  `RaceBonus`: 48 in the eight respec visits, 36 in the six module-OFF sheets and 36 in the six
-  module-ON sheets, 120 in total.
+  character sheet's `CharSScores` also calls it (`showPermanentValue: false`). On the sheet's
+  observed entries the `RaceBonus` reference is null (the type still declares the member), so
+  native `SetData` skips the label there and the entries display totals only. This was observed
+  natively on 2026-11-26, not inferred from the decompilation. Counts of bound sheet entries with
+  a null `RaceBonus` reference:
+  - final candidate `a49dffd66c`: 48 in the eight creation/respec visits (8 x 6), 36 in the six
+    module-OFF sheets (6 x 6) and 36 in the six module-ON sheets (6 x 6), 120 in total;
+  - the 84-entry figure in the 2026-11-26 handoff message counted the earlier candidate
+    `925181dddb` only: 48 respec-visit entries plus 36 module-OFF entries (its chain stopped
+    before module ON).
 - The console `CharInfoStatVM.OnStatUpdated` applies the same first-modifier rule to `RaceBonus`.
 - `ModifiableValue.AddModifier` keeps each descriptor's list sorted ascending by value, so the
   label is the most negative Racial modifier.
@@ -125,7 +130,8 @@ migration is needed.
 - `RuntimeTesting/NativeSheetRacialLabelProbe.cs` reads the rendered native character sheet
   (`CharacterScreenController.AbilityScores`): six visible entries bound to the owner's live
   stats, each displayed total equal to `ModifiedValue`, and the racial label compared where the
-  sheet renders one (it does not; recorded per entry as `raceBonusFieldPresent`). The sheet's
+  sheet renders one (its entries' `RaceBonus` reference is null; recorded per entry as
+  `raceBonusFieldPresent`). The sheet's
   character, section, window, group, selection and pause are restored and asserted.
 - The committed-sheet capture runs in `working-save-elemental-native-respec` (Fighter point-buy,
   a registered native mercenary) on the respec original after every `Player.RespecCompanion`
@@ -258,8 +264,9 @@ Candidate5 results (`a49dffd66c`):
 2. Pre-existing persistence capture check. `elemental-race-persistence-restored-captures` fails
    only through `PhysicalLifecycleEvidenceExact`. It requires the lifecycle rows to cover every
    published alternate trait. Since v0.0.120 that is 21 traits. `NereidFascination`
-   was published in `d5aa78b615`; `TreacherousEarth` became published in the merge
-   `c5fc5ab3b8`, the commit the v0.0.120 tag references. The ordinary 24-fixture matrix exercises
+   was published in `d5aa78b615`, which publishes Nereid Fascination only; `TreacherousEarth`
+   was published by `c5fc5ab3b81071ad3fa51f8a819d853241699d9e`, the commit the `v0.0.120` tag
+   references. The ordinary 24-fixture matrix exercises
    19; those two belong to the separate `qualificationTrait`/`qualificationEffect` scopes. All
    168 lifecycle rows were present and exact; only the trait-set comparison fails. This was
    classified by inspecting that deterministic contract, not by rerunning unchanged code; it is

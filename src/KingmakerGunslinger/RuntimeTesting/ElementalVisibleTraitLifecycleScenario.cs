@@ -296,26 +296,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!exact) throw new InvalidOperationException("Visible-trait physical lifecycle diverged: " + row);
             }
 
+            // Null when the module-restored lifecycle evidence is complete and exact;
+            // otherwise the reason (reported with the capture assertion).
+            private string _physicalLifecycleCoverageFailure;
+
             private bool PhysicalLifecycleEvidenceExact()
             {
                 if (!_moduleRestored) return _physicalLifecycleRecords.Count == 0;
                 string path = Path.Combine(_request.EvidenceDirectory, "elemental-visible-trait-physical-lifecycle.json");
                 var phases = new[] { "before-death", "native-dead", "native-resurrected", "native-polymorphed",
                     "native-polymorph-return", "native-armor-equipped", "native-equipment-and-doll-restored" };
-                var rows = _physicalLifecycleRecords.OfType<JObject>().ToArray();
-                return rows.Length == _fixtures.Length * phases.Length && rows.All(value => value.Value<bool>("exact")) &&
-                    _evidenceFiles.Count(value => string.Equals(value, path, StringComparison.OrdinalIgnoreCase)) == 1 && File.Exists(path) &&
-                    _fixtures.All(fixture => rows.Where(value => value.Value<string>("fixture") == fixture.Label)
-                        .Select(value => value.Value<string>("phase")).SequenceEqual(phases)) &&
-                    rows.SelectMany(value => value["traits"].Values<string>()).Distinct().OrderBy(value => value, StringComparer.Ordinal)
-                        .SequenceEqual(Enum.GetValues(typeof(ElementalAlternateTraitId)).Cast<ElementalAlternateTraitId>()
-                            .Where(ElementalAlternateTraitPolicy.IsPublished)
-                            // This explicit scope substitutes all six Undine SLA
-                            // fixtures with Nereid; breath lifecycle coverage stays
-                            // in the unchanged ordinary nineteen-trait matrix.
-                            .Where(value => !_nereidPersistence ||
-                                (value != ElementalAlternateTraitId.AcidBreath && value != ElementalAlternateTraitId.OozeBreath))
-                            .Select(value => value.ToString()).OrderBy(value => value, StringComparer.Ordinal));
+                var rows = _physicalLifecycleRecords.OfType<JObject>().Select(value => new LifecycleCoverageRow(
+                    value.Value<string>("fixture"), value.Value<string>("phase"), value.Value<bool>("exact"),
+                    value["traits"] == null ? null : value["traits"].Values<string>())).ToArray();
+                // Each scope must exercise exactly the traits its matrix is declared to
+                // cover; published traits outside it (Nereid Fascination or the breath
+                // replacements, and Treacherous Earth) are owned by named routes in
+                // ElementalPersistenceTraitCoverage, never by an observed subset.
+                _physicalLifecycleCoverageFailure = ElementalPersistenceTraitCoverage.LifecycleFailure(
+                    _nereidPersistence, _fixtures.Select(fixture => fixture.Label).ToArray(), phases, rows);
+                if (_physicalLifecycleCoverageFailure == null &&
+                    (_evidenceFiles.Count(value => string.Equals(value, path, StringComparison.OrdinalIgnoreCase)) != 1 || !File.Exists(path)))
+                    _physicalLifecycleCoverageFailure = "lifecycle evidence file missing or not recorded exactly once";
+                return _physicalLifecycleCoverageFailure == null;
             }
 
             private string PhysicalWaitDiagnostic()
