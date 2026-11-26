@@ -971,7 +971,10 @@ namespace KingmakerGunslinger.DomainTests
             internal readonly LateUnit ForeignQueued = new LateUnit("foreign-queued") { Registered = false };
             internal LateUnit CastSummoned, CastRegistered;
             internal int CastRequests;
-            internal bool HoldCast;
+            internal bool HoldCast, TickBeforeSummonRead;
+            // The cast boundary the shared held release reads: the retained summon reference. The control mode models the
+            // removed creator tick at exactly this point (before the read), so an advance there registers the queued foreign unit.
+            internal LateUnit ReadCastSummon() { if (TickBeforeSummonRead) Creation.Tick(); return CastSummoned; }
             internal readonly JObject Row = new JObject();
             internal int Pause, Unsubscribes;
             internal bool Subscribed, FailUnsubscribe, ExtraArrives, StrangerArrives, StrangerRegisteredForTeardown, ShiftyArrives, DeliverAfterRelease, AbandonBeforeSettle,
@@ -994,7 +997,7 @@ namespace KingmakerGunslinger.DomainTests
                 if (HoldCast)
                 {
                     Creation.Queued.Add(ForeignQueued);
-                    KmgLoaderCompatHarness.OwnedCastRelease.Hold(Owned, "cast: unregistered summons", Units, () => CastSummoned, () => CastRegistered, u => u.Destroyed, () => CastRequests++);
+                    KmgLoaderCompatHarness.OwnedCastRelease.Hold(Owned, "cast: unregistered summons", Units, ReadCastSummon, () => CastRegistered, u => u.Destroyed, () => CastRequests++);
                 }
                 Subscribed = true;
                 Callers.Add(new KmgLoaderCompatHarness.WitnessCaller<LateUnit>(Owned, Units, Observed, Attribution, "late-result witness",
@@ -1153,6 +1156,11 @@ namespace KingmakerGunslinger.DomainTests
             Func<LateUnitProbe, bool> queueUntouched = probe => probe.Creation.Ticks == 0 && !probe.ForeignQueued.Registered && probe.ForeignQueued.DestroyRequests == 0 &&
                 probe.Creation.Queued.Contains(probe.ForeignQueued);
             // No owned summon: cleanup requests nothing and does not run the creation queue to look for one.
+            // Detector control: the former tick modelled at the retained-summon read through the same ProbeSlot.Abandon path registers
+            // the queued foreign unit, so a tick reintroduced at that boundary is visible to the assertions below.
+            KeyValuePair<LateUnitProbe, KmgLoaderCompatHarness.ProbeOutcome> ticking = abandonCast(probe => probe.TickBeforeSummonRead = true);
+            Assertions.True(ticking.Key.Creation.Ticks == 1 && ticking.Key.ForeignQueued.Registered && !ticking.Key.Creation.Queued.Contains(ticking.Key.ForeignQueued) &&
+                !queueUntouched(ticking.Key), "R3-F1 detector: an advance at the cast-release boundary registers the queued foreign unit and fails the untouched check.");
             KeyValuePair<LateUnitProbe, KmgLoaderCompatHarness.ProbeOutcome> none = abandonCast(probe => { });
             Assertions.True(queueUntouched(none.Key) && none.Key.CastRequests == 0 && none.Value.TestFailure == "step timeout after 240s" && none.Value.IsolationRestored &&
                 none.Value.Cleanup.Attempted.Contains("cast: unregistered summons"), "R3-F1: with no owned summon the held cast release requests nothing and leaves the foreign creation queued.");
@@ -1195,8 +1203,11 @@ namespace KingmakerGunslinger.DomainTests
                         string label = " (" + (bFirst ? "B created first" : "A created first") + ", " + (abandon ? "held unwind on abandonment" : "early release, then final") +
                             (foreignTornDown ? ", foreign also registered for fixture teardown" : "") + ")";
                         Assertions.True(shared.Summon.DestroyRequests == 1 && shared.Summon.Destroyed && shared.ForeignRequestsDuringReconciliation == 0 &&
-                            shared.Foreign.DestroyRequests == (foreignTornDown ? 1 : 0) && shared.Unknown.DestroyRequests == 0,
-                            "R3-F2: one request for the summon B matched, the foreign control B identifies untouched by reconciliation (only fixture teardown may remove it)" + label);
+                            shared.Foreign.DestroyRequests == (foreignTornDown ? 1 : 0) && shared.Unknown.DestroyRequests == 0 &&
+                            (foreignTornDown
+                                ? shared.Requests.SequenceEqual(new[] { "summon", "teardown-sentinel", "foreign" })
+                                : shared.Requests.SequenceEqual(new[] { "summon" })),
+                            "R3-F2 / R4-F1: one request for the summon B matched; the foreign control B identifies is requested only by fixture teardown, after the teardown-sentinel registered ahead of it (so no early, held or final witness reconciliation requested it)" + label);
                         Assertions.True(!outcome.Cleanup.Failures.Any(value => value.Contains("unit summon: ownership unknown") || value.Contains("unit foreign: ownership unknown")) &&
                             outcome.Cleanup.Failures.Count(value => value == "witness witness A: unit unknown: ownership unknown, left in place") == 1 &&
                             outcome.Cleanup.Failures.Count(value => value == "witness A subscription: InvalidOperationException: injected unsubscribe failure") == 1 &&
@@ -1219,14 +1230,17 @@ namespace KingmakerGunslinger.DomainTests
             internal readonly KmgLoaderCompatHarness.LateResultObservation<LateUnit> A = new KmgLoaderCompatHarness.LateResultObservation<LateUnit>(),
                 B = new KmgLoaderCompatHarness.LateResultObservation<LateUnit>();
             internal readonly List<KmgLoaderCompatHarness.WitnessCaller<LateUnit>> Callers = new List<KmgLoaderCompatHarness.WitnessCaller<LateUnit>>();
-            internal readonly LateUnit Summon = new LateUnit("summon"), Foreign = new LateUnit("foreign"), Unknown = new LateUnit("unknown");
+            internal readonly LateUnit Summon = new LateUnit("summon"), Foreign = new LateUnit("foreign"), Unknown = new LateUnit("unknown"), Sentinel = new LateUnit("teardown-sentinel");
+            // Every destruction request in order (R4-F1): the sentinel is registered for fixture teardown ahead of the foreign
+            // control, so a final witness request for the foreign control (made before the teardown step) would precede it.
+            internal readonly List<string> Requests = new List<string>();
             internal readonly JObject Row = new JObject();
             internal bool BFirst, Abandon, ForeignRegisteredForTeardown, ASubscribed, BSubscribed, Reconciling;
             internal int ForeignRequestsDuringReconciliation;
             internal SharedWitnessProbe()
             {
                 Units = new KmgLoaderCompatHarness.OwnedDisposables<LateUnit>("disposable unit", u => u.Id,
-                    u => { u.DestroyRequests++; if (ReferenceEquals(u, Foreign) && Reconciling) ForeignRequestsDuringReconciliation++; if (u.DestroyCompletes) u.Destroyed = true; },
+                    u => { u.DestroyRequests++; Requests.Add(u.Id); if (ReferenceEquals(u, Foreign) && Reconciling) ForeignRequestsDuringReconciliation++; if (u.DestroyCompletes) u.Destroyed = true; },
                     Owned.Outcome, u => u.Terminal());
                 Life = new KmgLoaderCompatHarness.YieldedProbeLifecycle(Owned, lifecycle => Body());
             }
@@ -1240,7 +1254,7 @@ namespace KingmakerGunslinger.DomainTests
             }
             private IEnumerable<object> Body()
             {
-                if (ForeignRegisteredForTeardown) Units.Add(Foreign);   // independently owned by the fixture: teardown may remove it
+                if (ForeignRegisteredForTeardown) { Units.Add(Sentinel); Units.Add(Foreign); }   // independently owned by the fixture: teardown may remove it
                 if (BFirst) { Watch("witness B"); Watch("witness A"); } else { Watch("witness A"); Watch("witness B"); }
                 try
                 {

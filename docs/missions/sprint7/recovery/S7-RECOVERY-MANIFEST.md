@@ -132,6 +132,16 @@ reconciliations ran; nothing unsettled; zero cleanup failures; isolation restore
 verified, registry restored. `024816Z` stays tied to `56e359f2cc` / harness `4180621b…db61` at its own scope. The queued
 foreign creation and failed-unsubscribe controls are domain-only, by design.
 
+Review 4 of 5 on H `fd5a009a575cc282bcb90e96113c3d3c98fa449b` returned changes_required: R3-F2 and R3-F3 verified; two
+domain-evidence gaps open, **R3-F1** (P2, the simulated creation queue was not connected to the exercised cast boundary) and
+**R4-F1** (P2, the registered foreign control's final request had no observable origin). Round-5 correction (domain test
+only; harness source and session bytes unchanged, so session `20261126T033419Z` with harness `d77754ba…b4f1` is reused under
+C2 amendment 2): the fixture's cast boundary is the retained-summon read the shared held release performs, and a detector
+control that models the former tick there registers the queued foreign unit through the same `ProbeSlot.Abandon` path,
+while the actual no-summon, conclusive and pending-creation cases leave it queued; the two-witness fixture registers a
+teardown-only sentinel ahead of the foreign control and records request order, which must be summon, sentinel, foreign
+(or summon alone when the control is not registered) in all eight variants.
+
 ## C1 history
 
 **Current state (C1 amendment 2, 2026-11-25):** the owner narrowed C1's acceptance boundary for bounded closure and
@@ -261,6 +271,8 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C2 r4 | Focused gate `sprint7-visual` (local, amendment-2 source) | PASS, 23 tests | 4.0 s | 12 min 10.5 s | 32 min 49.5 s |
 | C2 r4 | Harness build (amendment-2 source) | PASS, `d77754bad4377734e87c9a70aaf0c980a306db82dbee25e335b9e9ba47ebb4f1` | 1.2 s | 12 min 11.7 s | 32 min 48.3 s |
 | C2 r4 | Session `20261126T033419Z-…-s7-ghaele-lifecycle` (candidate-3 package, harness `d77754ba…b4f1` from `d631d283aa`) | PASS | 2 min 7 s | 14 min 18.7 s | 30 min 41.3 s |
+| C2 r4 | Controller gates on `fd5a009a57`: `sprint7-visual` 23 tests 4.2 s, `loader-compat-probe` 5 tests 3.4 s (receipts 2.4 + 1.7 = 4.1 s) | PASS | 7.6 s batch wall | 14 min 26.3 s | 30 min 33.7 s |
+| C2 r5 | Focused gate `sprint7-visual` (local, round-5 domain-test source) | PASS, 23 tests | 3.8 s | 14 min 30.1 s | 30 min 29.9 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
