@@ -142,7 +142,6 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C1 r2 | Focused gate `sprint7-visual` (local) | FAIL: this Newtonsoft build cannot parse an integer above Int64 (test fixture) | 16.6 s | 1 min 23.8 s | 43 min 36.2 s |
 | C1 r2 | Focused gate `sprint7-visual` (local) | PASS, 22 tests | 3.4 s | 1 min 27.2 s | 43 min 32.8 s |
 | C1 r2 | Controller gates on `e4c9ed9c5e`: `sprint7-visual` 22 tests 4.1 s, `summon-playtest-r6` 11 tests 3.5 s, `sprint22-` 11 tests 4.0 s, `native-profile` 9 tests 3.5 s (receipts 2.3 + 1.8 + 2.2 + 1.8 = 8.1 s) | PASS | 16.2 s batch wall | 1 min 43.4 s | 43 min 16.6 s |
-
 | C1 r3 | Focused gate `sprint7-visual` (local, amendment-1 source) | PASS, 22 tests | 19.1 s | 2 min 2.5 s | 42 min 57.5 s |
 | C1 r3 | Controller gates on `d71bdf2e60`: `sprint7-visual` 22 tests 4.9 s, `summon-playtest-r6` 11 tests 4.5 s, `sprint22-` 11 tests 4.9 s, `native-profile` 9 tests 4.2 s (receipts 2.8 + 2.1 + 2.9 + 2.2 = 10.0 s) | PASS | 19.7 s batch wall | 2 min 22.2 s | 42 min 37.8 s |
 | C1 r4 | Focused gate `sprint7-visual` (local) | FAIL: compile error (a local name clash) | 11.4 s | 2 min 33.6 s | 42 min 26.4 s |
@@ -153,10 +152,16 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C1 r4 | Controller gates on `2f975db075`: `sprint7-visual` 22 tests 4.2 s, `summon-playtest-r6` 11 tests 4.1 s, `sprint22-` 11 tests 4.5 s, `native-profile` 9 tests 3.8 s (receipts 2.3 + 2.1 + 2.4 + 1.9 = 8.7 s) | PASS | 17.5 s batch wall | 3 min 47.3 s | 41 min 12.7 s |
 | C1 r5 | Focused gate `sprint7-visual` (local, amendment-2 source) | FAIL: an existing diagnostic-only assertion (input kept; now asserts refusal) | 18.4 s | 4 min 5.7 s | 40 min 54.3 s |
 | C1 r5 | Focused gate `sprint7-visual` (local) | PASS, 22 tests | 3.4 s | 4 min 9.1 s | 40 min 50.9 s |
-
-No product package, harness build or game session has run in the recovery. Earlier spend stays separate (65 min 42 s in
-rounds 6 and 7); new product candidates used: 0 of 2.
 | C1 r5 | Controller gates on `5a56d480a2`: `sprint7-visual` 22 tests 4.1 s, `summon-playtest-r6` 11 tests 3.4 s, `sprint22-` 11 tests 3.9 s, `native-profile` 9 tests 3.3 s (receipts 2.1 + 1.7 + 2.1 + 1.7 = 7.6 s) | PASS | 15.5 s batch wall | 4 min 24.6 s | 40 min 35.4 s |
 | C2 | Harness build (`c5fe26d146` source) | PASS, `0a038e40c6c1da95e59bd943e5972df8940e3b74158eacebe88dcab7ed571ca9` | 2.4 s | 4 min 27.0 s | 40 min 33.0 s |
 | C2 | Focused gate `sprint7-visual` (local, C2 source) | PASS, 23 tests | 18.3 s | 4 min 45.3 s | 40 min 14.7 s |
 | C2 | Session `20261126T002852Z-…-s7-ghaele-lifecycle` (candidate-3 package, harness `0a038e40…`) | PASS | 2 min 20 s | 7 min 5.3 s | 37 min 54.7 s |
+| C2 r1 | Controller gates on `192166b9ba`: `sprint7-visual` 23 tests 3.8 s, `loader-compat-probe` 5 tests 3.3 s (receipts 2.1 + 1.7 = 3.8 s) | PASS | 7.7 s batch wall | 7 min 13.0 s | 37 min 47.0 s |
+| C2 r2 | Harness build (C2 round-2 source) | PASS | 2.2 s | 7 min 15.2 s | 37 min 44.8 s |
+| C2 r2 | Focused gate `sprint7-visual` (local, C2 round-2 source) | PASS, 23 tests | 3.9 s | 7 min 19.1 s | 37 min 40.9 s |
+
+Notes:
+- Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
+  built its harness and ran one short lifecycle session on the existing candidate-3 package (rows above).
+- Failed validation attempts so far: seven (two in C1 round 2, four in C1 round 4, one in C1 round 5).
+- Earlier spend stays separate: 65 min 42 s in parent rounds 6 and 7. New product candidates used: 0 of 2.

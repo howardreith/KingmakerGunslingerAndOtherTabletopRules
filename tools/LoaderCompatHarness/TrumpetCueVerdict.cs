@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace KmgLoaderCompatHarness
 {
@@ -274,45 +275,101 @@ namespace KmgLoaderCompatHarness
             catch (Exception) { return null; }
         }
 
-        /// <summary>Requested units not read gone, each with its reason; without a settlement reader every request is unsettled.</summary>
-        internal List<KeyValuePair<T, string>> Unsettled()
+        /// <summary>
+        /// One settlement read of every requested unit (each unit read once): the units not read conclusively gone, each with
+        /// its reason. Without a settlement reader every request is unresolved.
+        /// </summary>
+        internal List<KeyValuePair<T, string>> ReadSettlement()
         {
             var list = new List<KeyValuePair<T, string>>();
             foreach (T item in requested)
             {
                 bool? state = Gone(item);
                 if (state == true) continue;
-                list.Add(new KeyValuePair<T, string>(item, state == false ? "destruction requested, unit still present" : "destruction requested, settlement unreadable"));
+                list.Add(new KeyValuePair<T, string>(item, state == false ? "destruction requested, unit still present" : "destruction requested, terminal state unresolved"));
             }
             return list;
         }
 
-        /// <summary>Records every requested unit not read gone as a named cleanup failure (once per unit); returns how many are unsettled.</summary>
-        internal int RecordUnsettled()
+        /// <summary>Kept for callers that only wait: whether one read still finds an unresolved request.</summary>
+        internal List<KeyValuePair<T, string>> Unsettled() { return ReadSettlement(); }
+
+        /// <summary>
+        /// Records each unit of one settlement snapshot as a named cleanup failure (once per unit), so the evidence row and the
+        /// cleanup outcome consume the same terminal observation (R1-F5); returns how many it names.
+        /// </summary>
+        internal int RecordUnsettled(List<KeyValuePair<T, string>> snapshot)
         {
-            List<KeyValuePair<T, string>> unsettled = Unsettled();
-            foreach (KeyValuePair<T, string> entry in unsettled)
+            foreach (KeyValuePair<T, string> entry in snapshot ?? new List<KeyValuePair<T, string>>())
                 if (!Has(unsettledReported, entry.Key))
                 {
                     unsettledReported.Add(entry.Key);
                     outcome.Failures.Add(name + " " + identity(entry.Key) + ": " + entry.Value);
                 }
-            return unsettled.Count;
+            return snapshot == null ? 0 : snapshot.Count;
         }
 
-        /// <summary>Records each unit whose ownership is unknown as a named cleanup failure (once per unit); it is left alone.</summary>
+        /// <summary>Takes one settlement snapshot and records it.</summary>
+        internal int RecordUnsettled() { return RecordUnsettled(ReadSettlement()); }
+
+        /// <summary>
+        /// Records each identity still classified as unknown (neither positively correlated nor a known control) as a named
+        /// cleanup failure, once per unit, whether or not the unit is also registered for fixture teardown (R1-F2): that
+        /// registration authorizes teardown, not attribution. The unit is left in place by the witness's caller.
+        /// </summary>
         internal int RecordUncertain(IEnumerable<T> unknown, string context)
         {
             int count = 0;
             foreach (T item in (unknown ?? Enumerable.Empty<T>()).ToList())
             {
-                if (item == null || Has(items, item)) continue;
+                if (item == null) continue;
                 count++;
                 if (Has(uncertainReported, item)) continue;
                 uncertainReported.Add(item);
                 outcome.Failures.Add(context + " " + identity(item) + ": ownership unknown, left in place");
             }
             return count;
+        }
+    }
+
+    /// <summary>
+    /// Recovery C2 (R5-F1): what a read-only late-result witness has observed: the units positively correlated to the
+    /// watched cast, the controls its caller knows (for example the foreign same-caster Ghaele) and the same-caster units it
+    /// could not attribute. Unknown is read at release: an unattributed unit the caller came to know is not unknown.
+    /// </summary>
+    internal sealed class LateResultObservation<T> where T : class
+    {
+        internal readonly List<T> Owned = new List<T>();
+        internal readonly List<T> Known = new List<T>();
+        internal readonly List<T> Unattributed = new List<T>();
+
+        internal List<T> Unknown { get { return Unattributed.Where(unit => !Known.Any(known => ReferenceEquals(known, unit))).ToList(); } }
+    }
+
+    /// <summary>
+    /// Recovery C2 (R1-F3): the caller of a read-only witness. Releasing it is two independently attempted held releases:
+    /// the subscription, then the reconciliation of everything the witness observed with the destruction owner. A failed
+    /// unsubscribe never skips the reconciliation; both outcomes reach the probe's cumulative cleanup result. The same two
+    /// releases run on an early release, on iterator unwind and on the slot's final release, each at most once.
+    /// </summary>
+    internal sealed class WitnessCaller<T> where T : class
+    {
+        private readonly OwnedProbeResources owned;
+        private readonly string name;
+
+        internal WitnessCaller(OwnedProbeResources owned, OwnedDisposables<T> units, LateResultObservation<T> observed, string name, Action unsubscribe)
+        {
+            this.owned = owned;
+            this.name = name;
+            // Held newest last: on unwind the subscription is released first, then the reconciliation.
+            owned.Hold(name + " reconciliation", () => LateResultReconciliation.Release(units, observed.Owned, observed.Unknown, "witness " + name + ": unit"));
+            owned.Hold(name + " subscription", unsubscribe);
+        }
+
+        internal void ReleaseNow(List<string> failures)
+        {
+            owned.ReleaseNow(name + " subscription", failures);
+            owned.ReleaseNow(name + " reconciliation", failures);
         }
     }
 
@@ -336,6 +393,18 @@ namespace KmgLoaderCompatHarness
                 catch (Exception) { }
             }
             units.RecordUncertain(unattributed, witness);
+        }
+
+        /// <summary>
+        /// The terminal settlement observation (R1-F5): one read of every requested unit, written to the evidence row and
+        /// recorded in the cleanup outcome from the same snapshot.
+        /// </summary>
+        internal static List<KeyValuePair<T, string>> Settle<T>(OwnedDisposables<T> units, JObject row, string field, Func<T, string> identity) where T : class
+        {
+            List<KeyValuePair<T, string>> snapshot = units.ReadSettlement();
+            if (row != null) row[field] = new JArray(snapshot.Select(entry => (object)(identity(entry.Key) + ": " + entry.Value)).ToArray());
+            units.RecordUnsettled(snapshot);
+            return snapshot;
         }
     }
 
