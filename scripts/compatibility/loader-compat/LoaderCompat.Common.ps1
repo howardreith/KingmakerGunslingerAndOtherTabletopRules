@@ -252,7 +252,8 @@ function Get-LcTreeManifest([string]$Directory) {
 # Stages the copy's Mods: the owner set from the pristine copy, the admitted product tree and the harness. The complete
 # replacement is prepared and verified beside Mods (every product file, Info.json and the non-DLL files included, must be
 # the admitted archive's), then swapped in; any failure before the swap leaves the previous Mods untouched, and a failed
-# swap restores it. The admitted private copy is removed in every outcome.
+# swap restores it. The admitted private copy is removed in every outcome; after a swap its removal is part of the rollback
+# scope, so a cleanup failure restores the previous Mods.
 function Set-LcGameCopyMods($Paths, [string[]]$OwnerMods, $Admitted, [string]$HarnessDir) {
     # The owner set is checked before anything is prepared: the product never comes from it, and every named mod exists.
     foreach ($name in @($OwnerMods | Where-Object { $_ })) {
@@ -260,6 +261,7 @@ function Set-LcGameCopyMods($Paths, [string[]]$OwnerMods, $Admitted, [string]$Ha
         if (-not (Test-Path -LiteralPath (Join-Path $Paths.Pristine "Mods\$name"))) { throw "Mod not found in the pristine set: $name" }
     }
     $staged = [ordered]@{}
+    $copyCleanupAttempted = $false
     try {
         if ((Get-LcSha256 ([string]$Admitted.privateCopy)) -cne [string]$Admitted.packageSha256) { throw 'The admitted candidate copy changed; nothing was staged.' }
         $expectedTree = (Get-LcArchiveTreeManifest ([string]$Admitted.privateCopy) 'KingmakerGunslinger') -join "`n"
@@ -295,8 +297,9 @@ function Set-LcGameCopyMods($Paths, [string[]]$OwnerMods, $Admitted, [string]$Ha
             if ($preparedDllSha256 -cne [string]$Admitted.dllSha256) { throw 'The prepared candidate DLL is not the admitted DLL; nothing was staged.' }
             $preparedManagerVersion = (Get-Content -LiteralPath (Join-Path $product 'Info.json') -Raw | ConvertFrom-Json).ManagerVersion
             $preparedHarnessSha256 = Get-LcSha256 (Join-Path $harnessTarget 'KmgLoaderCompatHarness.dll')
-            # The previous tree is kept until the destination check after the swap has passed; any failure from the swap
-            # through that check moves the new tree back and restores the previous one.
+            # The previous tree is kept until the destination check after the swap and the removal of the admitted private
+            # copy (its last read was before the swap) have both succeeded; any failure from the swap through that cleanup
+            # moves the new tree back and restores the previous one, and the restoration is verified before it is reported.
             $previous = $null
             if (Test-Path -LiteralPath $Paths.ModsDir) {
                 $previous = Join-Path $modsParent ('Mods.kmg-previous-' + [Guid]::NewGuid().ToString('N'))
@@ -307,18 +310,27 @@ function Set-LcGameCopyMods($Paths, [string[]]$OwnerMods, $Admitted, [string]$Ha
                 Move-Item -LiteralPath $preparing -Destination $Paths.ModsDir
                 $placed = $true
                 if ((Get-LcSha256 (Join-Path $Paths.ModsDir 'KingmakerGunslinger\KingmakerGunslinger.dll')) -cne $preparedDllSha256) { throw 'The staged candidate DLL is not the admitted DLL.' }
+                $copyCleanupAttempted = $true
+                Remove-LcAdmittedCopy $Admitted
             }
             catch {
                 $stagingError = $_
-                if ($placed -and (Test-Path -LiteralPath $Paths.ModsDir)) { Move-Item -LiteralPath $Paths.ModsDir -Destination $preparing }
-                if ($previous -and -not (Test-Path -LiteralPath $Paths.ModsDir)) { Move-Item -LiteralPath $previous -Destination $Paths.ModsDir }
+                try {
+                    if ($placed -and (Test-Path -LiteralPath $Paths.ModsDir)) { Move-Item -LiteralPath $Paths.ModsDir -Destination $preparing }
+                    if ($previous -and -not (Test-Path -LiteralPath $Paths.ModsDir)) { Move-Item -LiteralPath $previous -Destination $Paths.ModsDir }
+                }
+                catch { throw "Staging failed ($($stagingError.Exception.Message)) and restoring the previous Mods failed ($($_.Exception.Message)); the previous tree is kept at $previous." }
+                if ($previous -and ((Test-Path -LiteralPath $previous) -or -not (Test-Path -LiteralPath $Paths.ModsDir -PathType Container))) {
+                    throw "Staging failed ($($stagingError.Exception.Message)) and the previous Mods was not restored; it is kept at $previous."
+                }
                 throw $stagingError
             }
             if ($previous) { Remove-Item -LiteralPath $previous -Recurse -Force }
         }
         catch { if (Test-Path -LiteralPath $preparing) { Remove-Item -LiteralPath $preparing -Recurse -Force }; throw }
     }
-    finally { Remove-LcAdmittedCopy $Admitted }
+    # The private copy is removed in every outcome; a cleanup already attempted inside the rollback scope is not repeated.
+    finally { if (-not $copyCleanupAttempted) { Remove-LcAdmittedCopy $Admitted } }
     # Recorded from the measurements of the prepared tree (verified at the destination before the previous tree was
     # removed); nothing fallible runs after the owner's previous Mods tree is gone.
     $staged['KingmakerGunslinger'] = [ordered]@{ zipSha256 = [string]$Admitted.packageSha256

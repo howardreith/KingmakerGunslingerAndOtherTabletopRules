@@ -24,6 +24,7 @@ $source = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $commit = (& git -C $source rev-parse HEAD).Trim()
 $purpose = 'umm-0311-admission'
 $cases = [Collections.Generic.List[object]]::new()
+#region focused-helpers
 function Add-Case([string]$Name, [bool]$Passed, [string]$Detail) {
     $cases.Add([ordered]@{ name = $Name; passed = $Passed; detail = $Detail })
     Write-Host ("{0} {1} :: {2}" -f $(if ($Passed) { 'PASS' } else { 'FAIL' }), $Name, $Detail)
@@ -46,6 +47,7 @@ function New-ZipVariant([string]$From, [string]$To, [hashtable]$Replace = @{}, [
         foreach ($name in $Add.Keys) { $target = $out.CreateEntry($name); $writer = $target.Open(); try { $b = [byte[]]$Add[$name]; $writer.Write($b, 0, $b.Length) } finally { $writer.Dispose() } }
     } finally { $out.Dispose(); $in.Dispose() }
 }
+#endregion focused-helpers
 
 # Build-Local's repository validation requires a checkout inside the lab, so the disposable clone lives under the lab's
 # worktrees folder (and is removed afterwards).
@@ -440,6 +442,7 @@ finally { [IO.File]::WriteAllBytes($Package, $original) }
     $r = & $admit $package
     Add-Case 'candidate-admitted-again-after-the-unstamped-case' ($r.ExitCode -eq 0 -and $r.Output -match 'ADMITTED [0-9a-f]{64}') "exit $($r.ExitCode)"
 
+    #region focused-tree-probe
     # --- Loader staging verifies the whole admitted tree before Mods changes (R2-F3). A disposable target whose Mods
     #     holds a sentinel: a changed non-DLL file, and separately a removed Info.json, in the extracted tree after
     #     admission are refused with the sentinel and the supplied ZIP intact; the genuine tree then stages completely.
@@ -473,6 +476,17 @@ function Get-LcSha256 { param([string]$Path) if ([IO.Path]::GetFullPath($Path).S
 try { $null = Set-LcGameCopyMods $paths @() $a $HarnessDir; 'DEST-CHECK STAGED' } catch { 'DEST-CHECK REFUSED ' + $_.Exception.Message }
 Set-Item -Path function:Get-LcSha256 -Value $realSha
 Show-State 'AFTER-DEST-CHECK'
+# R6-F3: the destination check passes, then removing the admitted private copy fails (the admitted ZIP held open for
+# reading without delete sharing). The failure is reported, the new tree is moved back and the previous Mods, with its
+# sentinel, is restored at Mods.
+$a = Assert-LcSessionInputs $Package $HarnessDir $Purpose
+$copyDirectory = Split-Path -Parent ([string]$a.privateCopy)
+$hold = [IO.File]::Open([string]$a.privateCopy, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
+try { $null = Set-LcGameCopyMods $paths @() $a $HarnessDir; 'CLEANUP STAGED' } catch { 'CLEANUP REFUSED ' + $_.Exception.Message } finally { $hold.Dispose() }
+Show-State 'AFTER-CLEANUP-FAILURE'
+'CLEANUP SENTINEL-TEXT ' + ((Test-Path -LiteralPath (Join-Path $paths.ModsDir 'sentinel.txt')) -and [IO.File]::ReadAllText((Join-Path $paths.ModsDir 'sentinel.txt')) -ceq 'previous Mods') + ' product-at-mods=' + (Test-Path -LiteralPath (Join-Path $paths.ModsDir 'KingmakerGunslinger'))
+Remove-LcAdmittedCopy $a
+'CLEANUP COPY-REMOVED-AFTER-RELEASE ' + (-not (Test-Path -LiteralPath $copyDirectory))
 $a = Assert-LcSessionInputs $Package $HarnessDir $Purpose
 $expected = (Get-LcArchiveTreeManifest ([string]$a.privateCopy) 'KingmakerGunslinger') -join "`n"
 $staged = Set-LcGameCopyMods $paths @() $a $HarnessDir
@@ -484,6 +498,8 @@ Show-State 'AFTER-GENUINE'
     Add-Case 'loader-staging-refuses-a-removed-info-json-with-the-previous-mods-intact' ($tp.Output -match 'REMOVED-INFO REFUSED The extracted candidate tree is not the admitted archive' -and $tp.Output -match 'AFTER-REMOVED-INFO sentinel=True modsEntries=1 zipIntact=True leftovers=0') ([regex]::Match($tp.Output, 'AFTER-REMOVED-INFO [^A]+').Value)
     Add-Case 'loader-staging-failed-destination-check-restores-the-previous-mods' ($tp.Output -match 'DEST-CHECK REFUSED injected destination verification failure' -and $tp.Output -match 'AFTER-DEST-CHECK sentinel=True modsEntries=1 zipIntact=True leftovers=0') (([regex]::Matches($tp.Output, '(DEST-CHECK \S+ [^\r\n]{0,80}|AFTER-DEST-CHECK[^\r\n]*)') | ForEach-Object { $_.Value }) -join ' / ')
     Add-Case 'loader-staging-stages-the-genuine-tree-completely' ($tp.ExitCode -eq 0 -and $tp.Output -match 'GENUINE STAGED tree=True dll=True harness=True' -and $tp.Output -match 'AFTER-GENUINE sentinel=False modsEntries=2 zipIntact=True leftovers=0') (([regex]::Match($tp.Output, 'GENUINE STAGED [^A]+').Value) + ' ' + [regex]::Match($tp.Output, 'AFTER-GENUINE .*').Value)
+    Add-Case 'loader-staging-private-copy-cleanup-failure-restores-the-previous-mods' ($tp.Output -match 'CLEANUP REFUSED ' -and $tp.Output -notmatch 'CLEANUP STAGED' -and $tp.Output -match 'AFTER-CLEANUP-FAILURE sentinel=True modsEntries=1 zipIntact=True leftovers=0' -and $tp.Output -match 'CLEANUP SENTINEL-TEXT True product-at-mods=False' -and $tp.Output -match 'CLEANUP COPY-REMOVED-AFTER-RELEASE True') (([regex]::Matches($tp.Output, '(CLEANUP REFUSED .{0,400}?(?= AFTER-CLEANUP-FAILURE)|AFTER-CLEANUP-FAILURE sentinel=\S+ modsEntries=\S+ zipIntact=\S+ leftovers=\S+|CLEANUP SENTINEL-TEXT \S+ \S+|CLEANUP COPY-REMOVED-AFTER-RELEASE \w+)') | ForEach-Object { $_.Value }) -join ' / ')
+    #endregion focused-tree-probe
 
     # --- The admission mode for each route (R4-F3): the child result for the development and historical routes, the
     #     mode function for all three (an ordinary Build-Local release receipt cannot be produced on this development
@@ -520,34 +536,69 @@ foreach ($mode in @('build-local', 'development', 'historical-release')) {
     Add-Case 'package-measurement-call-returns-exactly-one-value' ($pm.ExitCode -eq 0 -and $pm.Output -match 'MEASUREMENT-COUNT 1\b' -and $pd.ExitCode -eq 0 -and $pd.Output -match 'DEFAULT-COUNT 1\b') ([regex]::Match($pm.Output, 'MEASUREMENT-COUNT \d+').Value + '; ' + [regex]::Match($pd.Output, 'DEFAULT-COUNT \d+').Value)
     Add-Case 'package-measurement-return-leaves-the-zip-equal-to-its-checksum' ($pm.ExitCode -eq 0 -and $pmMatch.Success -and $pmMatch.Groups[1].Value -ceq (Get-Sha $measuredZip) -and $checksumText -match ('^' + $pmMatch.Groups[1].Value) -and $pd.Output -match 'DEFAULT-OUTPUT True True') ("measured $($pmMatch.Groups[1].Value); file $(Get-Sha $measuredZip); checksum file '$($checksumText.Trim())'; " + [regex]::Match($pd.Output, 'DEFAULT-OUTPUT \w+ \w+').Value)
 
-    # --- R1-F4 at the real packaging boundary. The build's starting fingerprint is taken on the clean clone; a shipped
-    #     document (README.md) then changes before package.ps1 copies it. The ZIP carries the changed document, the
-    #     consumed-source check that every Build-Local route runs before writing a receipt refuses, and after the checkout
-    #     is restored the receiptless ZIP is not admitted. Control: on the unchanged clone the same check passes.
+    #region focused-packaged-content
+    # --- R1-F4, decided on the packaged content. A receipt naming a clean producer claims that the producer commit's own
+    #     files are what the ZIP ships; the decision reads the ZIP and the commit, never the working tree. The clone is
+    #     clean; README.md is edited; the real package.ps1 packages it (the ZIP carries the edit); README.md is restored
+    #     BEFORE the receipt decision, so the start/end working-tree fingerprint comparison passes again. Build-Local's
+    #     clean-start packaged-content check (the step before it writes a receipt) and the ordinary receipt reader then refuse
+    #     the ZIP because its README is not the producer's. Controls: a clean package from the same route passes the writer
+    #     check and is admitted, and an unshipped review note committed afterwards keeps it admitted.
+    $devReceipt = Get-Content -LiteralPath $receiptPath -Raw | ConvertFrom-Json
+    $packageScript = Join-Path $clone 'scripts\package.ps1'
+    $provenance = Join-Path $clone 'scripts\ReferenceProvenance.Common.ps1'
+    $ordinaryPackage = [regex]::Match((Invoke-PS @('-Command', ". '$((Join-Path $clone 'scripts\common.ps1').Replace("'", "''"))'; 'ORDINARY ' + (Get-KmgLocalCandidateLayout -RepositoryRoot '$($clone.Replace("'", "''"))' -Commit '$($devReceipt.commit)' -Id KingmakerGunslinger -Version '$($devReceipt.version)').PackagePath")).Output, 'ORDINARY (.+?\.zip)').Groups[1].Value
+    $readFingerprint = { [regex]::Match((Invoke-PS @('-Command', ". '$($harness.Replace("'", "''"))'; 'FINGERPRINT ' + (Get-KmgSourceStateFingerprint -RepositoryRoot '$($clone.Replace("'", "''"))')")).Output, 'FINGERPRINT ([0-9a-f]{64})').Groups[1].Value }
+    # Build-Local's sequence before a receipt: the consumed-source comparison, then (for a clean start) the packaged files
+    # against the commit the build started from.
+    $writerCheck = { param([string]$zip, [string]$state, [string]$startCommit) Invoke-PS @('-Command', ". '$($harness.Replace("'", "''"))'; . '$($provenance.Replace("'", "''"))'; Assert-KmgConsumedSourceState -RepositoryRoot '$($clone.Replace("'", "''"))' -SourceStateSha256 '$state'; 'CONSUMED-STATE-CURRENT'; if ('$state' -ceq (Get-KmgCleanSourceStateFingerprint -Commit '$startCommit')) { 'CLEAN-START'; 'PACKAGED-FILES-MATCH ' + (Assert-KmgPackagedRepositoryFilesMatchCommit -PackagePath '$($zip.Replace("'", "''"))' -RepositoryRoot '$($clone.Replace("'", "''"))' -Commit '$startCommit') }") }
+    $admitOrdinary = { param([string]$zip) Invoke-PS @('-Command', ". '$($harness.Replace("'", "''"))'; `$r = Read-KmgBuildLocalManifest -PackagePath '$($zip.Replace("'", "''"))' -RepositoryRoot '$($clone.Replace("'", "''"))' -RequireCurrentMaterialInputs; 'ADMITTED ' + `$r.packageSha256") }
+    $writeOrdinaryReceipt = { param([string]$zip)
+        $o = [ordered]@{ schemaVersion = 1; generatedAtUtc = [DateTime]::UtcNow.ToString('o'); generator = 'scripts/Build-Local.ps1'
+            offlineFixture = 'Test-CandidateAdmission R1-F4: ordinary-format receipt naming the clean producer for a ZIP from the real package.ps1; not produced by Build-Local'
+            repositoryRoot = $clone; commit = [string]$devReceipt.commit; branch = [string]$devReceipt.branch; sourceStateSha256 = [string]$devReceipt.sourceStateSha256
+            version = [string]$devReceipt.version; packagePath = $zip; packageSha256 = Get-Sha $zip; dllSha256 = [string]$devReceipt.dllSha256; dllMvid = [string]$devReceipt.dllMvid
+            firearmManifestSha256 = [string]$devReceipt.firearmManifestSha256; firearmSoundBankSha256 = [string]$devReceipt.firearmSoundBankSha256; validated = $true }
+        foreach ($field in @('packagedDllSha256', 'compilerDllSha256', 'compilerDllMvid', 'embeddedGitCommit')) { if ($devReceipt.PSObject.Properties[$field]) { $o[$field] = $devReceipt.$field } }
+        [IO.File]::WriteAllText("$zip.build-local.json", ($o | ConvertTo-Json -Depth 6)) }
+    $readZipReadme = { param([string]$zip) $text = ''; if (Test-Path -LiteralPath $zip) { $za = [IO.Compression.ZipFile]::OpenRead($zip); try { $entry = $za.GetEntry('KingmakerGunslinger/README.md'); if ($entry) { $sr = [IO.StreamReader]::new($entry.Open()); try { $text = $sr.ReadToEnd() } finally { $sr.Dispose() } } } finally { $za.Dispose() } }; $text }
+    [void][IO.Directory]::CreateDirectory((Split-Path -Parent $ordinaryPackage))
+    $startCommit = (& git -C $clone rev-parse HEAD).Trim()
+    $startState = & $readFingerprint
+    $statusAtStart = @(& git -C $clone status --porcelain).Count
     $shippedReadme = Join-Path $clone 'README.md'
-    $readmeOriginal = [IO.File]::ReadAllText($shippedReadme)
-    $consumedCheck = { param([string]$state) Invoke-PS @('-Command', ". '$($harness.Replace("'", "''"))'; Assert-KmgConsumedSourceState -RepositoryRoot '$($clone.Replace("'", "''"))' -SourceStateSha256 '$state'; 'CONSUMED-STATE-CURRENT'") }
-    $startState = [regex]::Match((Invoke-PS @('-Command', ". '$($harness.Replace("'", "''"))'; 'FINGERPRINT ' + (Get-KmgSourceStateFingerprint -RepositoryRoot '$($clone.Replace("'", "''"))')")).Output, 'FINGERPRINT ([0-9a-f]{64})').Groups[1].Value
-    $cleanControl = & $consumedCheck $startState
-    $boundaryZip = Join-Path $clone 'artifacts\packages\boundary-package.zip'
+    $readmeBytes = [IO.File]::ReadAllBytes($shippedReadme)
     try {
-        [IO.File]::WriteAllText($shippedReadme, $readmeOriginal + "`r`n<!-- changed after the build's starting fingerprint -->`r`n")
-        $boundaryPackage = Invoke-PS @('-File', $packageScript, '-Configuration', 'Release', '-PackagePath', $boundaryZip)
-        $zipReadme = ''
-        if (Test-Path -LiteralPath $boundaryZip) {
-            $za = [IO.Compression.ZipFile]::OpenRead($boundaryZip)
-            try { $entry = $za.GetEntry('KingmakerGunslinger/README.md'); if ($entry) { $sr = [IO.StreamReader]::new($entry.Open()); try { $zipReadme = $sr.ReadToEnd() } finally { $sr.Dispose() } } } finally { $za.Dispose() }
-        }
-        $changedCheck = & $consumedCheck $startState
+        [IO.File]::WriteAllText($shippedReadme, [Text.Encoding]::UTF8.GetString($readmeBytes) + "`n<!-- edited after the build's starting fingerprint -->`n")
+        $editedPackage = Invoke-PS @('-File', $packageScript, '-Configuration', 'Release', '-PackagePath', $ordinaryPackage)
     }
-    finally { [IO.File]::WriteAllText($shippedReadme, $readmeOriginal) }
-    $restoredAdmission = & $admit $boundaryZip
-    $ok = $startState -cmatch '^[0-9a-f]{64}$' -and $cleanControl.ExitCode -eq 0 -and $cleanControl.Output -match 'CONSUMED-STATE-CURRENT' -and
-        $boundaryPackage.ExitCode -eq 0 -and $zipReadme -match "changed after the build's starting fingerprint" -and
-        $changedCheck.ExitCode -ne 0 -and $changedCheck.Output -match 'The source state changed during the build' -and $changedCheck.Output -notmatch 'CONSUMED-STATE-CURRENT' -and
-        $restoredAdmission.ExitCode -ne 0
-    Add-Case 'shipped-input-changed-before-packaging-gets-no-receipt-and-is-not-admitted' $ok ("starting fingerprint $startState; clean control: $($cleanControl.Output -match 'CONSUMED-STATE-CURRENT'); package exit $($boundaryPackage.ExitCode), ZIP README carries the change: $($zipReadme -match "changed after the build's starting fingerprint"); consumed-source check: " + (Get-Reason $changedCheck.Output) + "; admission after restore: " + (Get-Reason $restoredAdmission.Output))
-    Remove-Item -LiteralPath $boundaryZip, "$boundaryZip.sha256" -Force -ErrorAction SilentlyContinue
+    finally { [IO.File]::WriteAllBytes($shippedReadme, $readmeBytes) }
+    # README.md is restored: the receipt decision follows.
+    $statusAtDecision = @(& git -C $clone status --porcelain).Count
+    $editedInZip = (& $readZipReadme $ordinaryPackage) -match "edited after the build's starting fingerprint"
+    $editedWriter = & $writerCheck $ordinaryPackage $startState $startCommit
+    & $writeOrdinaryReceipt $ordinaryPackage
+    $editedReader = & $admitOrdinary $ordinaryPackage
+    Add-Case 'packaged-readme-edit-restored-before-the-decision-refused-by-the-writer-check' ($statusAtStart -eq 0 -and $editedPackage.ExitCode -eq 0 -and $editedInZip -and $statusAtDecision -eq 0 -and
+        $editedWriter.ExitCode -ne 0 -and $editedWriter.Output -match 'CONSUMED-STATE-CURRENT' -and $editedWriter.Output -match 'CLEAN-START' -and $editedWriter.Output -notmatch 'PACKAGED-FILES-MATCH' -and
+        $editedWriter.Output -match 'The packaged content does not match its producing commit [0-9a-f]{10}: README\.md differ') ("status entries at start $statusAtStart, at the decision $statusAtDecision; package exit $($editedPackage.ExitCode); ZIP README carries the edit: $editedInZip; consumed-source check passed: $($editedWriter.Output -match 'CONSUMED-STATE-CURRENT'); " + (Get-Reason $editedWriter.Output))
+    Add-Case 'packaged-readme-edit-restored-before-the-decision-refused-by-the-ordinary-reader' ($editedInZip -and $editedReader.ExitCode -ne 0 -and $editedReader.Output -match 'The packaged content does not match its producing commit [0-9a-f]{10}: README\.md differ' -and $editedReader.Output -notmatch 'ADMITTED') ("ZIP $(Get-Sha $ordinaryPackage); " + (Get-Reason $editedReader.Output))
+    Remove-Item -LiteralPath $ordinaryPackage, "$ordinaryPackage.sha256", "$ordinaryPackage.build-local.json" -Force -ErrorAction SilentlyContinue
+    # Controls: the same route with README.md unchanged, then an unshipped review note committed after the producer.
+    $cleanState = & $readFingerprint
+    $cleanPackage = Invoke-PS @('-File', $packageScript, '-Configuration', 'Release', '-PackagePath', $ordinaryPackage)
+    $cleanWriter = & $writerCheck $ordinaryPackage $cleanState $startCommit
+    & $writeOrdinaryReceipt $ordinaryPackage
+    $cleanReader = & $admitOrdinary $ordinaryPackage
+    Add-Case 'clean-package-from-the-same-route-passes-the-writer-check-and-is-admitted' ($cleanPackage.ExitCode -eq 0 -and $cleanWriter.ExitCode -eq 0 -and $cleanWriter.Output -match 'CLEAN-START' -and $cleanWriter.Output -match 'PACKAGED-FILES-MATCH (\d+)' -and
+        $cleanReader.ExitCode -eq 0 -and $cleanReader.Output -match ('ADMITTED ' + (Get-Sha $ordinaryPackage))) ("package exit $($cleanPackage.ExitCode); " + [regex]::Match($cleanWriter.Output, 'PACKAGED-FILES-MATCH \d+').Value + ' repository files compared; reader: ' + [regex]::Match($cleanReader.Output, 'ADMITTED [0-9a-f]{64}').Value)
+    $packagedNote = Join-Path $clone 'docs\agent-reviews\packaged-content-review-note.md'
+    [void][IO.Directory]::CreateDirectory((Split-Path -Parent $packagedNote)); [IO.File]::WriteAllText($packagedNote, "unshipped review note`n")
+    & $git @('add', 'docs/agent-reviews/packaged-content-review-note.md') | Out-Null; & $git @('commit', '-q', '-m', 'test: unshipped review note after the producer') | Out-Null
+    $noteReader = & $admitOrdinary $ordinaryPackage
+    Add-Case 'clean-package-admitted-after-an-unshipped-review-note' ($noteReader.ExitCode -eq 0 -and $noteReader.Output -match ('ADMITTED ' + (Get-Sha $ordinaryPackage))) ("HEAD $((& git -C $clone rev-parse --short HEAD).Trim()); " + [regex]::Match($noteReader.Output, 'ADMITTED [0-9a-f]{64}').Value)
+    Remove-Item -LiteralPath (Split-Path -Parent $ordinaryPackage) -Recurse -Force -ErrorAction SilentlyContinue
+    #endregion focused-packaged-content
 
     # --- R4-F3: the ordinary (non-development) admission route through the child, with an explicitly identified offline
     #     fixture (no ordinary release receipt can be produced on this development branch): the development candidate's

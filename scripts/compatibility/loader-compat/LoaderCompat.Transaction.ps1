@@ -84,7 +84,11 @@ function Acquire-LcSharedLock([string]$RunId) {
 function Remove-LcAdmittedCopy($Admitted) {
     if ($null -eq $Admitted -or -not $Admitted.PSObject.Properties['privateCopy']) { return }
     $copyDirectory = Split-Path -Parent ([string]$Admitted.privateCopy)
-    if ((Split-Path -Leaf $copyDirectory) -like 'kmg-lc-admitted-*' -and (Test-Path -LiteralPath $copyDirectory)) { Remove-Item -LiteralPath $copyDirectory -Recurse -Force }
+    if ((Split-Path -Leaf $copyDirectory) -like 'kmg-lc-admitted-*' -and (Test-Path -LiteralPath $copyDirectory)) {
+        # A cleanup failure is reported to the caller (never silently left behind).
+        Remove-Item -LiteralPath $copyDirectory -Recurse -Force -ErrorAction Stop
+        if (Test-Path -LiteralPath $copyDirectory) { throw "The admitted private copy could not be removed: $copyDirectory" }
+    }
 }
 
 # The session's step between admission and staging: the host preflight, then the journaled transaction. A refusal at

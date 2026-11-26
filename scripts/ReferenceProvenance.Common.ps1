@@ -328,3 +328,70 @@ function Assert-KmgCandidateMaterialInputsCurrent {
         throw "The candidate is stale: material inputs changed since its producing commit $($Commit.Substring(0, 10)): $($all -join ', '). Build a new candidate."
     }
 }
+
+# Raw stdout bytes of one git command (no console decoding, no line splitting).
+function Invoke-KmgGitBytes {
+    param([Parameter(Mandatory = $true)][string]$RepositoryRoot, [Parameter(Mandatory = $true)][string[]]$Arguments)
+    $info = New-Object Diagnostics.ProcessStartInfo
+    $info.FileName = 'git'
+    $info.Arguments = (@('-C', $RepositoryRoot.TrimEnd('\')) + $Arguments | ForEach-Object { '"' + $_ + '"' }) -join ' '
+    $info.UseShellExecute = $false; $info.RedirectStandardOutput = $true; $info.RedirectStandardError = $true; $info.CreateNoWindow = $true
+    $process = [Diagnostics.Process]::Start($info)
+    try {
+        $errors = $process.StandardError.ReadToEndAsync()
+        $buffer = New-Object IO.MemoryStream
+        $process.StandardOutput.BaseStream.CopyTo($buffer)
+        $process.WaitForExit()
+        if ($process.ExitCode -ne 0) { throw "git $($Arguments -join ' ') failed ($($process.ExitCode)): $($errors.Result.Trim())" }
+        return , $buffer.ToArray()
+    }
+    finally { $process.Dispose() }
+}
+
+# The receipt's producing commit must describe the repository files the package actually ships (R1-F4). Every ZIP entry
+# under the mod folder whose path is a file tracked at that commit must equal that commit's file as checked out:
+# git archive of the commit writes each file with the conversion a checkout of it performs (this repository's attributes
+# and line-ending configuration) and nothing else. The working tree is not read, so a source restored after packaging
+# cannot hide a packaged change. Entries the commit does not track (the compiled DLL, generated icons) are bound by the
+# receipt's other identity checks. Returns the number of entries compared.
+function Assert-KmgPackagedRepositoryFilesMatchCommit {
+    param([Parameter(Mandatory = $true)][string]$PackagePath, [Parameter(Mandatory = $true)][string]$RepositoryRoot,
+        [Parameter(Mandatory = $true)][string]$Commit, [string]$ModFolder = 'KingmakerGunslinger')
+    if ($Commit -cnotmatch '^[0-9a-f]{40}$') { throw 'The candidate receipt does not name a producing commit.' }
+    $root = (Resolve-Path -LiteralPath $RepositoryRoot).Path
+    $tracked = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    $listing = Invoke-KmgGitBytes -RepositoryRoot $root -Arguments @('ls-tree', '-r', '-z', '--name-only', $Commit)
+    foreach ($name in ([Text.Encoding]::UTF8.GetString($listing) -split "`0")) { if ($name) { [void]$tracked.Add($name) } }
+    Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
+    $sha = [Security.Cryptography.SHA256]::Create()
+    $packaged = [Collections.Generic.Dictionary[string, string]]::new([StringComparer]::Ordinal)
+    $package = [IO.Compression.ZipFile]::OpenRead((Resolve-Path -LiteralPath $PackagePath).Path)
+    try {
+        foreach ($entry in $package.Entries) {
+            $name = $entry.FullName.Replace('\', '/')
+            if ($name.EndsWith('/') -or -not $name.StartsWith($ModFolder + '/', [StringComparison]::Ordinal)) { continue }
+            $relative = $name.Substring($ModFolder.Length + 1)
+            if (-not $tracked.Contains($relative)) { continue }
+            $stream = $entry.Open()
+            try { $packaged[$relative] = [BitConverter]::ToString($sha.ComputeHash($stream)) } finally { $stream.Dispose() }
+        }
+    }
+    finally { $package.Dispose() }
+    if ($packaged.Count -eq 0) { $sha.Dispose(); throw "The package ships no file tracked at its producing commit $($Commit.Substring(0, 10)), so that producer cannot be verified." }
+    $checkout = [Collections.Generic.Dictionary[string, string]]::new([StringComparer]::Ordinal)
+    $archiveBytes = Invoke-KmgGitBytes -RepositoryRoot $root -Arguments (@('archive', '--format=zip', '-0', $Commit, '--') + @($packaged.Keys | ForEach-Object { ':(literal)' + $_ }))
+    $commitArchive = New-Object IO.Compression.ZipArchive((New-Object IO.MemoryStream(, $archiveBytes)), [IO.Compression.ZipArchiveMode]::Read)
+    try {
+        foreach ($entry in $commitArchive.Entries) {
+            if ($entry.FullName.EndsWith('/')) { continue }
+            $stream = $entry.Open()
+            try { $checkout[$entry.FullName] = [BitConverter]::ToString($sha.ComputeHash($stream)) } finally { $stream.Dispose() }
+        }
+    }
+    finally { $commitArchive.Dispose(); $sha.Dispose() }
+    $differing = @($packaged.Keys | Where-Object { -not $checkout.ContainsKey($_) -or $checkout[$_] -cne $packaged[$_] })
+    if ($differing.Count -ne 0) {
+        throw "The packaged content does not match its producing commit $($Commit.Substring(0, 10)): $($differing -join ', ') differ from that commit's files as checked out; the package was not produced from that commit's inputs."
+    }
+    return $packaged.Count
+}
