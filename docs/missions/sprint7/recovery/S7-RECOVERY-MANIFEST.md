@@ -37,7 +37,12 @@ review.
 candidate-3 package with the rebuilt harness (no product candidate): the positive pending verdict null; the post-disposal
 late control "late-owned-summon" with the late unit requested once by the witness reconciliation and observed destroyed;
 the real-spawn witness's foreign Ghaele known, not unknown; nothing unsettled after any witness or at the end; isolation
-restored; transaction completed and owner files verified. Window agreed with the other Kingmaker session (00:28Z–00:31Z).
+restored; transaction completed and owner files verified. Window agreed with the other Kingmaker session (00:28Z–00:31Z). After C2's
+first review (R1-F1 to R1-F8), the round-2 harness `bf5d74a12487a92ac4d00a792a17a1ecaa41407308728ee7cc3d4d9f405163cd`
+(built from `44fd90a8d1`) was requalified by `20261126T005206Z-…-s7-ghaele-lifecycle` PASS on the same package: settlement now
+the engine's Destroyed mark; the late unit requested by the witness reconciliation and destroyed; both foreign controls alive
+and unrequested after reconciliation; nothing unsettled after any witness, at the end or at final release; isolation
+restored; transaction completed, owner files verified, registry restored (window 00:52Z–00:54Z).
 
 ## C1 history
 
@@ -159,6 +164,7 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C2 r1 | Controller gates on `192166b9ba`: `sprint7-visual` 23 tests 3.8 s, `loader-compat-probe` 5 tests 3.3 s (receipts 2.1 + 1.7 = 3.8 s) | PASS | 7.7 s batch wall | 7 min 13.0 s | 37 min 47.0 s |
 | C2 r2 | Harness build (C2 round-2 source) | PASS | 2.2 s | 7 min 15.2 s | 37 min 44.8 s |
 | C2 r2 | Focused gate `sprint7-visual` (local, C2 round-2 source) | PASS, 23 tests | 3.9 s | 7 min 19.1 s | 37 min 40.9 s |
+| C2 r2 | Session `20261126T005206Z-…-s7-ghaele-lifecycle` (candidate-3 package, harness `bf5d74a1…63cd` from `44fd90a8d1`) | PASS | 2 min 14 s | 9 min 33.1 s | 35 min 26.9 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
