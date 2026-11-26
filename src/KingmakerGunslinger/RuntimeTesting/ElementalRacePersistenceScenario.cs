@@ -4060,7 +4060,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "24 sidecars, 48 PNGs, and 120 labelled module-restored post-respec views",
                     "captured=" + _captured + ";images=" +
                         _imageCount + ";views=" + _viewCount +
-                        ";files=" + _evidenceFiles.Count,
+                        ";files=" + _evidenceFiles.Count + ";lifecycle=" +
+                        (_physicalLifecycleCoverageFailure ?? "exact"),
                     capturesExact,
                     "post-respec four-view previews and ordinary isometric captures");
                 Add(_assertions,
@@ -4165,6 +4166,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             private bool CaptureSetExact(JObject[] records)
             {
                 int expectedFixtureCount = _fixtures.Length;
+                // Evaluated unconditionally so the capture diagnostic always reports the
+                // lifecycle evaluator's own verdict, even when an earlier term fails.
+                bool lifecycleExact = PhysicalLifecycleEvidenceExact();
                 return _normalPathComplete && records.Length ==
                         expectedFixtureCount &&
                     _captured == expectedFixtureCount &&
@@ -4172,7 +4176,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _viewCount == expectedFixtureCount * 5 &&
                     _indexWritten && _evidenceFiles.Count ==
                         expectedFixtureCount * 3 + 1 + (_moduleRestored ? 1 : 0) &&
-                    PhysicalLifecycleEvidenceExact() &&
+                    lifecycleExact &&
                     _evidenceFiles.All(File.Exists) &&
                     records.All(value =>
                         value["preview"] != null &&

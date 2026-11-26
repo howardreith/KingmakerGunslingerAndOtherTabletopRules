@@ -1098,8 +1098,7 @@ namespace KingmakerGunslinger.DomainTests
                 "_physicalActor.Body.Armor.InsertItem(_physicalArmor)", "CurrentAvatar().RebuildOutfit()",
                 "JToken.DeepEquals(stable, _physicalStableBefore)", "blood.Spent(value)",
                 "_physicalInventory.SequenceEqual(Snapshot(_inventory))", "_physicalComplete",
-                "PhysicalLifecycleEvidenceExact()", "rows.Length == _fixtures.Length * phases.Length",
-                ".Where(ElementalAlternateTraitPolicy.IsPublished)", "SequenceEqual(phases)" })
+                "PhysicalLifecycleEvidenceExact()", "ElementalPersistenceTraitCoverage.LifecycleFailure(" })
                 Assertions.True(physical.Contains(token), "Physical lifecycle lost its native transition or exact ownership guard: " + token);
             Assertions.False(Regex.IsMatch(physical, @"\.(?:IsCheater|IsDead)\s*=(?!=)") ||
                 physical.Contains("SetLifeState(") || physical.Contains("ElementalHeritageRuntime.Reconcile("),
