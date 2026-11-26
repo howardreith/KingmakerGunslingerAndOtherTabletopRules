@@ -231,6 +231,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool RevisitOrQualifyFinalReview()
         {
             VerifySelectedRacialGraph("native-final-review");
+            ObserveFinalReviewRacialLabels();
             int[] bases = AbilityStats.Select(stat => _controller.Preview.Stats.GetStat(stat).BaseValue).ToArray();
             JToken distribution = JToken.FromObject(_controller.State.StatsDistribution.StatValues);
             if (_allocatedBases == null)

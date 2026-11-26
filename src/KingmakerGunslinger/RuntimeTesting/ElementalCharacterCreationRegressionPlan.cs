@@ -65,7 +65,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             switch (character)
             {
-                case 0: return new[] { 0, 1, 0 };
+                // General -> A -> B -> General after allocation: alternates must
+                // replace, not accumulate, racial adjustments and labels.
+                case 0: return new[] { 0, 1, 2, 0 };
                 case 1: return new[] { 1, 2 };
                 case 2: return new[] { 2, 0, 1 };
                 default: throw new ArgumentOutOfRangeException("character");
