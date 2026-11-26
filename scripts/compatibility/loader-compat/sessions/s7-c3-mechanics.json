@@ -1,0 +1,21 @@
+{
+  "name": "s7-c3-mechanics",
+  "description": "Sprint 7 recovery C3 qualification (C3 amendment 1): the effects phase's mechanics-only selection (summon-s7-effects-mechanics). Required parent cells, declared before the run: s7-ankylosaurus, s7-callback-abandoned, s7-callback-setup-failed, s7-trace-setup-failed, s7-dust, s7-dust-pre-delivery-disposed, s7-dust-abandoned; each must be admitted and complete (s7-effects-required-cells-completed) separately from physical restoration (s7-effects-owned-state-restored). No frame captures, native-look comparison or listening samples. No other mods.",
+  "ownerMods": [],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "mechanics",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-expanded-summoning-sprint32-native-review",
+        "parameters": {
+          "reviewPhase": "summon-s7-effects-mechanics"
+        },
+        "timeoutSeconds": 1500
+      }
+    }
+  ]
+}

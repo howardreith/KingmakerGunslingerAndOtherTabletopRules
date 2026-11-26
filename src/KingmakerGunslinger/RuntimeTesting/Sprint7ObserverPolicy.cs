@@ -97,11 +97,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>The failure a partly built observer reports: the original cause, with any incomplete rollback.</summary>
-        internal static InvalidOperationException SetupFailure(string observer, Exception original, IList<string> rollbackFailures, int remainingOwned)
+        internal static InvalidOperationException SetupFailure(string observer, Exception original, IList<string> rollbackFailures, int? remainingOwned)
         {
             string rollback = (rollbackFailures == null || rollbackFailures.Count == 0) && remainingOwned == 0
                 ? "rollback complete"
-                : "rollback INCOMPLETE: " + remainingOwned + " owned item(s) remain; " + string.Join("; ", (rollbackFailures ?? new List<string>()).ToArray());
+                : "rollback INCOMPLETE: " + (remainingOwned.HasValue ? remainingOwned.Value + " owned item(s) remain" : "owned items unknown (readback failed)") + "; " +
+                    string.Join("; ", (rollbackFailures ?? new List<string>()).ToArray());
             return new InvalidOperationException(observer + " setup failed (" + rollback + "): " +
                 (original == null ? "unknown" : original.GetType().Name + ": " + original.Message), original);
         }
@@ -712,6 +713,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<string> unreadable = new List<string>();
         internal readonly List<string> Recoveries = new List<string>();
         internal readonly List<string> Admitted = new List<string>();
+        /// <summary>Recovery C3 (R1-F8): cells that ran to their end with no exception (IsolatedCell).</summary>
+        internal readonly List<string> Completed = new List<string>();
         internal string Refused;
 
         internal List<string> Failures { get { return failures.ToList(); } }
@@ -755,22 +758,29 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return new JObject { ["restored"] = Restored, ["failures"] = new JArray(failures.ToArray()), ["unreported"] = new JArray(unreported.ToArray()),
                 ["pending"] = new JArray(Pending.ToArray()), ["unreadable"] = new JArray(unreadable.ToArray()), ["recoveries"] = new JArray(Recoveries.ToArray()),
-                ["admitted"] = new JArray(Admitted.ToArray()), ["refused"] = Refused };
+                ["admitted"] = new JArray(Admitted.ToArray()), ["completed"] = new JArray(Completed.ToArray()), ["refused"] = Refused };
         }
     }
 
     /// <summary>
-    /// Recovery C3 (R7-F4): requests an observer makes directly (for example retiring a cue source) and their results, kept
-    /// apart. A request is recorded before it is made, so it is never issued twice; a request that throws is a named failure
-    /// and is rethrown to its caller (the original error). Publication sends every failure to the enclosing isolation as a
-    /// sticky failure and every requested item not read settled as a residual the admission guard re-reads.
+    /// Recovery C3 (R7-F4, C3 review R1-F1): the retirement requests of one phase's disposable units and their results, kept
+    /// apart, in one record shared by every layer that can release a unit (a cell's direct retirement, its unwinding release,
+    /// the phase's teardown). A request is recorded before it is made, so no layer issues it again, whether it threw or
+    /// returned; a returned request is not an observed retirement, which is read separately by identity. Failures and
+    /// unsettled results are published once each, to the isolation that publishes them first.
     /// </summary>
     internal sealed class Sprint7OwnedRequests<T> where T : class
     {
         private readonly List<KeyValuePair<T, string>> requested = new List<KeyValuePair<T, string>>();
+        private readonly List<T> completed = new List<T>();
+        private readonly List<T> publishedResiduals = new List<T>();
+        private int publishedFailures;
         internal readonly List<string> Failures = new List<string>();
 
         internal bool Requested(T item) { return item != null && requested.Any(entry => ReferenceEquals(entry.Key, item)); }
+
+        /// <summary>True when the request was made and returned without throwing (still not proof of disappearance).</summary>
+        internal bool Returned(T item) { return item != null && completed.Any(value => ReferenceEquals(value, item)); }
 
         internal int Count { get { return requested.Count; } }
 
@@ -785,23 +795,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Failures.Add(label + ": " + error.GetType().Name + ": " + error.Message);
                 throw;
             }
+            completed.Add(item);
             return true;
         }
 
-        /// <summary>As <see cref="Request"/>, for an unwinding release: the failure is recorded, not rethrown.</summary>
+        /// <summary>As <see cref="Request"/>, for an unwinding release: a failure is recorded, not rethrown. True only when this call's request returned.</summary>
         internal bool RequestRecorded(T item, string label, Action<T> request)
         {
+            if (item == null || Requested(item)) return false;
             try { return Request(item, label, request); }
-            catch (Exception) { return true; }
+            catch (Exception) { return false; }
         }
 
-        /// <summary>Failures become sticky isolation failures; each request whose result is not read settled stays a residual.</summary>
+        /// <summary>Requests each given unit not yet requested, each on its own; returns how many requests returned.</summary>
+        internal int ReleaseOutstanding(IEnumerable<T> items, Func<T, string> label, Action<T> request)
+        {
+            int returned = 0;
+            foreach (T item in (items ?? Enumerable.Empty<T>()).ToList())
+                if (RequestRecorded(item, label(item), request)) returned++;
+            return returned;
+        }
+
+        /// <summary>
+        /// Publishes the failures not yet published (sticky) and, for each request not yet published, its settlement read by
+        /// identity: settled leaves; live or unreadable stays a residual the admission guard re-reads.
+        /// </summary>
         internal void Publish(Sprint7CellIsolation isolation, string owner, Func<T, bool?> settled)
         {
-            isolation.Fail(owner, Failures);
-            foreach (KeyValuePair<T, string> entry in requested)
+            for (; publishedFailures < Failures.Count; publishedFailures++) isolation.Fail(owner, Failures[publishedFailures]);
+            foreach (KeyValuePair<T, string> entry in requested.ToList())
             {
                 T item = entry.Key;
+                if (publishedResiduals.Any(value => ReferenceEquals(value, item))) continue;
+                publishedResiduals.Add(item);
                 bool? state;
                 try { state = settled(item); } catch (Exception) { state = null; }
                 if (state != true) isolation.Residual(owner, entry.Value + " settled", () => settled(item));
@@ -810,54 +836,77 @@ namespace KingmakerGunslinger.RuntimeTesting
     }
 
     /// <summary>
-    /// Recovery C3 (R7-F2): the commands a cell issued and the exact execution processes they started. A process is retained
-    /// when first seen and before any interruption can clear the command's field; each command is released on its own, so an
-    /// interruption that throws never skips another command; a retained process not read ended (running, or unreadable) is a
-    /// live execution the cell publishes as a residual.
+    /// Recovery C3 (R7-F2, C3 review R1-F3, R1-F4): the commands a cell issued and the exact execution processes they started.
+    /// A process is retained when first seen and before any interruption can clear the command's field; a command whose
+    /// process cannot be read is a named unknown (never a known null). Each command is released on its own, so an interruption
+    /// that throws never skips another; every release failure is published the moment it happens and kept cumulatively, so a
+    /// later successful cleanup cannot erase it.
     /// </summary>
     internal sealed class Sprint7OwnedCommands<TCommand, TProcess> where TCommand : class where TProcess : class
     {
         private readonly List<TCommand> commands = new List<TCommand>();
         private readonly List<TProcess> processes = new List<TProcess>();
+        private readonly List<TCommand> unknown = new List<TCommand>();
         private readonly Func<TCommand, TProcess> processOf;
         private readonly Func<TProcess, bool?> ended;
+        private readonly Action<string> publish;
+        internal readonly List<string> Failures = new List<string>();
 
-        internal Sprint7OwnedCommands(Func<TCommand, TProcess> processOf, Func<TProcess, bool?> ended)
+        internal Sprint7OwnedCommands(Func<TCommand, TProcess> processOf, Func<TProcess, bool?> ended, Action<string> publish = null)
         {
             this.processOf = processOf;
             this.ended = ended;
+            this.publish = publish;
         }
 
         internal List<TCommand> Commands { get { return commands.ToList(); } }
         internal List<TProcess> Processes { get { return processes.ToList(); } }
+        /// <summary>Owned commands whose execution process could not be read (and was not later read).</summary>
+        internal List<TCommand> Unknown { get { return unknown.ToList(); } }
 
         internal void Own(TCommand command) { if (command != null && !commands.Any(value => ReferenceEquals(value, command))) commands.Add(command); }
 
-        /// <summary>Retains the current process of an owned command (of every owned command when null).</summary>
+        /// <summary>Retains the current process of an owned command (of every owned command when null); an unreadable one is a named unknown.</summary>
         internal void Capture(TCommand command = null)
         {
             foreach (TCommand owned in command == null ? commands.ToList() : new List<TCommand> { command })
             {
                 TProcess process;
-                try { process = processOf(owned); } catch (Exception) { process = null; }
-                if (process != null && !processes.Any(value => ReferenceEquals(value, process))) processes.Add(process);
+                try { process = processOf(owned); }
+                catch (Exception) { if (!unknown.Any(value => ReferenceEquals(value, owned))) unknown.Add(owned); continue; }
+                if (process == null) continue;
+                unknown.RemoveAll(value => ReferenceEquals(value, owned));
+                if (!processes.Any(value => ReferenceEquals(value, process))) processes.Add(process);
             }
         }
 
         internal bool Retains(TProcess process) { return process != null && processes.Any(value => ReferenceEquals(value, process)); }
 
+        private void Failed(string failure)
+        {
+            Failures.Add(failure);
+            if (publish != null) publish(failure);
+        }
+
         /// <summary>
         /// Releases each given owned command (every owned command when null) on its own: its process is captured first, then
-        /// the interruption runs when <paramref name="unfinished"/> says the command still runs. Returns the named failures.
+        /// the interruption runs when <paramref name="unfinished"/> says the command still runs. Returns this call's failures,
+        /// which are also published at once and kept cumulatively.
         /// </summary>
         internal List<string> ReleaseEach(Func<TCommand, bool> unfinished, Action<TCommand> interrupt, Func<TCommand, string> label, IEnumerable<TCommand> only = null)
         {
             var failures = new List<string>();
             foreach (TCommand command in (only ?? commands).ToList())
             {
+                Own(command);
                 Capture(command);
                 try { if (unfinished(command)) interrupt(command); }
-                catch (Exception error) { failures.Add(label(command) + ": " + error.GetType().Name + ": " + error.Message); }
+                catch (Exception error)
+                {
+                    string failure = label(command) + ": " + error.GetType().Name + ": " + error.Message;
+                    failures.Add(failure);
+                    Failed(failure);
+                }
             }
             return failures;
         }
@@ -873,13 +922,48 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             try { return process == null ? (bool?)null : ended(process); } catch (Exception) { return null; }
         }
+
+        /// <summary>The state of an unknown command's execution read again: its process's end, or null while still unreadable.</summary>
+        internal bool? EndedOf(TCommand command)
+        {
+            Capture(command);
+            TProcess process;
+            try { process = processOf(command); } catch (Exception) { return null; }
+            return process == null ? (bool?)null : Ended(process);
+        }
     }
 
     /// <summary>
-    /// Recovery C3 (R7-F3): one attempt to install an observer's hooks. The attempt is registered before the constructor can
-    /// partly succeed and throw; neither a constructor failure nor a null result implies zero acquisition. Publication reads
-    /// the owned hooks back explicitly (by the observer's own identity, not through the returned object) and sends the setup
-    /// failure, an unreadable readback and any remaining hook to the enclosing isolation as sticky failures.
+    /// Recovery C3 (R7-F3, C3 review R1-F9): the acquisitions of a cell's or phase's set-up. Each release is registered before
+    /// its acquisition runs, so a partly successful acquisition that throws keeps the identity needed to release it; every
+    /// release is attempted on its own, newest first; the acquisition's own error is the caller's.
+    /// </summary>
+    internal sealed class Sprint7SetupScope
+    {
+        private readonly List<KeyValuePair<string, Action>> releases = new List<KeyValuePair<string, Action>>();
+        internal readonly List<string> Attempted = new List<string>();
+
+        internal void Acquire(string name, Action acquire, Action release)
+        {
+            releases.Add(new KeyValuePair<string, Action>(name, release));
+            Attempted.Add(name);
+            acquire();
+        }
+
+        internal List<string> ReleaseAll()
+        {
+            var list = new List<KeyValuePair<string, Action>>(releases);
+            list.Reverse();
+            releases.Clear();
+            return Sprint7ObserverPolicy.RunReleases(list);
+        }
+    }
+
+    /// <summary>
+    /// Recovery C3 (R7-F3, C3 review R1-F5): one attempt to install an observer's hooks. The attempt is registered before the
+    /// constructor can partly succeed and throw; neither a constructor failure nor a null result implies zero acquisition.
+    /// Publication reads the owned hooks back explicitly (by the observer's own identity, not through the returned object):
+    /// the setup failure, an unreadable readback (unknown, never zero) and any remaining hook are sticky failures.
     /// </summary>
     internal sealed class Sprint7HookAttempt<T> where T : class
     {
@@ -915,7 +999,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             try { return readback(); } catch (Exception) { return null; }
         }
 
-        /// <summary>Reads the hooks back once and publishes; returns the readback (0 when never attempted).</summary>
+        /// <summary>Reads the hooks back once and publishes; returns the readback (0 when never attempted, null when unreadable).</summary>
         internal int? Publish(Sprint7CellIsolation isolation, string owner)
         {
             if (!Attempted) return 0;
@@ -928,16 +1012,16 @@ namespace KingmakerGunslinger.RuntimeTesting
     }
 
     /// <summary>
-    /// Recovery C3 (R4-F1, R7-F5): the one abandonment driver every effects driver uses. It runs the phase's own cell sequence
-    /// over a child isolation (the inner cell, then a next cell). In the abandonment mode it disposes that sequence once the
-    /// inner cell is ready, with its injected fault set at that moment; in the run-to-completion mode the fault is set before
-    /// the inner cell starts and the sequence runs to its end. The same admission guard then re-reads the child's residuals and
-    /// refuses the next cell, and the driver repairs its own intervention. The child's complete outcome decides: every child
-    /// failure is either one of the declared expected failures (the injected fault and its known residual) or unexpected, and
-    /// an unexpected failure reaches the enclosing phase by name and is never exempted by the repair. The repair is attempted
-    /// once on every exit, including the driver's own disposal during its recovery wait; a failed repair is kept. The driver
-    /// reports the fixture safe only when every expected failure was seen, nothing unexpected failed, no residual remains, the
-    /// next cell was refused and never started, the repair succeeded and the driver's explicit safety readback is clean.
+    /// Recovery C3 (R4-F1, R7-F5, C3 review R1-F6, R1-F7): the one driver every effects negative control uses. It runs the
+    /// phase's own cell sequence over a child isolation (the inner cell, then a next cell). In the abandonment mode it disposes
+    /// that sequence once the inner cell is ready, with its injected fault set at that moment; in the run-to-completion mode
+    /// the fault is set before the inner cell starts. The same admission guard then re-reads the child's residuals and decides
+    /// the next cell, and the driver repairs its own intervention once on every exit (including its own disposal during the
+    /// recovery wait), publishing the repair's exact result (a repair that returns without establishing disappearance is a
+    /// failure). The child's complete outcome decides: every owner reported; every child failure is exactly one of the
+    /// declared expected failures (operation, identity and outcome in one exact string), anything else is unexpected and
+    /// reaches the phase by name, never exempted by the repair. In the expect-admitted mode (an ordinary disposal) the next
+    /// cell must be admitted and complete with the child restored.
     /// </summary>
     internal sealed class Sprint7Abandonment
     {
@@ -945,18 +1029,27 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal Sprint7CellIsolation Phase;
         internal readonly Sprint7CellIsolation Child = new Sprint7CellIsolation();
         internal Func<bool> Ready;               // null: run to completion
+        internal bool ExpectAdmitted;
         internal Action Inject, Clear;
         internal Func<List<string>> Repair;
         internal Func<IEnumerable<int>> AfterRepair;   // a declared settle wait between the repair and the safety readback
         internal Func<List<string>> Unsafe;
-        internal string[] Expected = new string[0];
+        internal Func<IEnumerable<string>> Expected = () => new string[0];
         internal readonly JObject Row = new JObject();
         internal bool Proven { get; private set; }
         internal bool Repaired { get; private set; }
         internal readonly List<string> RepairFailures = new List<string>();
+        private List<string> expected;
 
-        internal List<string> Unexpected { get { return Child.Failures.Where(failure => !Expected.Any(marker => failure.Contains(marker))).ToList(); } }
-        internal List<string> ExpectedMissing { get { return Expected.Where(marker => !Child.Failures.Any(failure => failure.Contains(marker))).ToList(); } }
+        private List<string> ExpectedNow()
+        {
+            if (expected != null) return expected;
+            try { return (Expected == null ? Enumerable.Empty<string>() : Expected()).Where(value => value != null).ToList(); }
+            catch (Exception error) { return new List<string> { "expected failures unreadable: " + error.GetType().Name }; }
+        }
+
+        internal List<string> Unexpected { get { List<string> known = ExpectedNow(); return Child.Failures.Where(failure => !known.Contains(failure)).ToList(); } }
+        internal List<string> ExpectedMissing { get { List<string> failures = Child.Failures; return ExpectedNow().Where(value => !failures.Contains(value)).ToList(); } }
 
         private void RepairOnce(string when)
         {
@@ -965,6 +1058,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Row["repairedWhen"] = when;
             try { RepairFailures.AddRange(Repair == null ? new List<string>() : (Repair() ?? new List<string>())); }
             catch (Exception error) { RepairFailures.Add("repair: " + error.GetType().Name + ": " + error.Message); }
+            Row["repairFailures"] = new JArray(RepairFailures.ToArray());
         }
 
         private void ClearInjection()
@@ -978,7 +1072,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             Phase.Opened(Owner);
             Row["isolationRestored"] = false;
-            Row["mode"] = Ready == null ? "run-to-completion" : "abandon-when-ready";
+            Row["mode"] = (Ready == null ? "run-to-completion" : "abandon-when-ready") + (ExpectAdmitted ? ", next cell expected admitted" : ", next cell expected refused");
             IEnumerator<int> sequence = Sprint7ObserverPolicy.Sequence(Child, new[] { inner, next }, run, settle).GetEnumerator();
             try
             {
@@ -1003,27 +1097,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Row["readyBeforeAbandon"] = ready;
                 Row["childAfterDisposal"] = Child.Describe();
                 // The same admission guard over the next cell, on the same child result (the recovery wait).
-                foreach (int step in Sprint7ObserverPolicy.Sequence(Child, new[] { next }, run, settle)) yield return step;
+                if (!Child.Admitted.Contains(next.Key))
+                    foreach (int step in Sprint7ObserverPolicy.Sequence(Child, new[] { next }, run, settle)) yield return step;
                 Row["childAfterResume"] = Child.Describe();
                 RepairOnce("after the guard");
                 if (AfterRepair != null) foreach (int step in AfterRepair()) yield return step;
+                Child.Settle();
                 List<string> unsafeReasons;
                 try { unsafeReasons = Unsafe == null ? new List<string>() : (Unsafe() ?? new List<string>()); }
                 catch (Exception error) { unsafeReasons = new List<string> { "safety readback: " + error.GetType().Name + ": " + error.Message }; }
                 Row["unsafe"] = new JArray(unsafeReasons.ToArray());
-                Proven = ready && ExpectedMissing.Count == 0 && Unexpected.Count == 0 && Child.Pending.Count == 0 && Child.Refused == next.Key &&
-                    !Child.Admitted.Contains(next.Key) && RepairFailures.Count == 0 && unsafeReasons.Count == 0;
+                expected = ExpectedNow();
+                bool decided = ExpectAdmitted
+                    ? Child.Restored && Child.Refused == null && Child.Admitted.Contains(next.Key) && Child.Completed.Contains(next.Key)
+                    : Child.Refused == next.Key && !Child.Admitted.Contains(next.Key);
+                Proven = ready && decided && Child.Unreported.Count == 0 && ExpectedMissing.Count == 0 && Unexpected.Count == 0 && Child.Pending.Count == 0 &&
+                    RepairFailures.Count == 0 && unsafeReasons.Count == 0;
             }
             finally
             {
                 ClearInjection();
                 sequence.Dispose();
                 RepairOnce("on unwind");
+                if (expected == null) expected = ExpectedNow();
+                Row["expected"] = new JArray(expected.ToArray());
                 Row["expectedMissing"] = new JArray(ExpectedMissing.ToArray());
                 Row["unexpected"] = new JArray(Unexpected.ToArray());
                 Row["repairFailures"] = new JArray(RepairFailures.ToArray());
                 Row["child"] = Child.Describe();
                 Row["isolationRestored"] = Proven;
+                foreach (string owner in Child.Unreported) Phase.Fail(Owner, "child owner never reported: " + owner);
                 foreach (string failure in Unexpected) Phase.Fail(Owner, "unexpected child failure: " + failure);
                 foreach (string failure in RepairFailures) Phase.Fail(Owner, "repair failed: " + failure);
                 if (!Proven) Phase.Fail(Owner, "the fixture was not proven safe after the driver's repair");
@@ -1053,33 +1156,164 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// Recovery C3 (R7-F3): the effects phase's cell runner. A cell's setup, execution and disposal exceptions become sticky
-        /// failures of the isolation it reports to (a cell that later loses its visible resource is still failed), and the
-        /// cell's own finally always runs. <paramref name="completed"/> receives the cell's name and its exception (null when it
-        /// ran to its end); it is not called when the runner itself is disposed mid-cell.
+        /// Recovery C3 (R7-F3, C3 review R1-F10): the effects phase's cell runner. A cell's setup, enumeration, Current, disposal
+        /// and completion-publication exceptions become sticky failures of the isolation it reports to, and the cell's own
+        /// finally always runs. A cell that ran to its end with no exception (disposal included) is recorded completed;
+        /// <paramref name="completed"/> receives the cell's name and its exception (a disposal-only failure included; both,
+        /// when both occurred); it is not called when the runner itself is disposed mid-cell.
         /// </summary>
         internal static IEnumerable<int> IsolatedCell(Sprint7CellIsolation isolation, string name, Func<IEnumerable<int>> body, Action<string, Exception> completed)
         {
-            IEnumerator<int> steps = null; Exception failure = null;
+            IEnumerator<int> steps = null; Exception failure = null, disposal = null;
             try
             {
                 try { steps = body().GetEnumerator(); } catch (Exception error) { failure = error; }
                 while (failure == null)
                 {
-                    bool more = false;
-                    try { more = steps.MoveNext(); } catch (Exception error) { failure = error; }
+                    bool more = false; int current = 0;
+                    try { more = steps.MoveNext(); if (more) current = steps.Current; } catch (Exception error) { failure = error; more = false; }
                     if (!more) break;
-                    yield return steps.Current;
+                    yield return current;
                 }
             }
             finally
             {
                 if (steps != null)
                     try { steps.Dispose(); }
-                    catch (Exception error) { isolation.Fail(name, "cell disposal: " + error.GetType().Name + ": " + error.Message); }
+                    catch (Exception error) { disposal = error; isolation.Fail(name, "cell disposal: " + error.GetType().Name + ": " + error.Message); }
             }
             if (failure != null) isolation.Fail(name, "cell exception: " + failure.GetType().Name + ": " + failure.Message);
-            if (completed != null) completed(name, failure);
+            Exception outcome = failure != null && disposal != null ? new AggregateException(failure, disposal) : failure ?? disposal;
+            if (outcome == null) isolation.Completed.Add(name);
+            if (completed != null)
+                try { completed(name, outcome); }
+                catch (Exception error) { isolation.Fail(name, "completion publication: " + error.GetType().Name + ": " + error.Message); }
+        }
+
+        /// <summary>
+        /// Recovery C3 (R7-F2, C3 review R1-F2, R1-F3, R1-F4): a cell's release of the commands it issued and of the conditions
+        /// their executions introduced, shared by the Dust cell and its focused tests. Each command is released on its own (its
+        /// process captured first; failures published at once by the command owner); the currently owned conditions are released
+        /// (each failure named); every retained execution not read ended, and every command whose execution cannot be read, is a
+        /// residual. While any of those remain, the condition ledger stays subscribed and one more residual reconciles at
+        /// settlement: once every execution has ended it releases the conditions they delivered late, names any late owned
+        /// condition still present, then unsubscribes and runs the after-settlement steps (for example the cell's foreign-control
+        /// check). Otherwise that settlement happens now. A condition already reported remaining is not reported twice.
+        /// </summary>
+        internal static JObject ReleaseOwnedEffects<TCommand, TProcess>(Sprint7CellIsolation isolation, string owner, Sprint7OwnedCommands<TCommand, TProcess> commands,
+            Func<TCommand, bool> unfinished, Action<TCommand> interrupt, Func<TCommand, string> commandLabel, Func<TProcess, string> processLabel,
+            Func<List<string>> releaseConditions, Func<List<string>> remainingIdentities, Action unsubscribe, Func<List<string>> afterSettlement)
+            where TCommand : class where TProcess : class
+        {
+            var row = new JObject();
+            List<string> commandFailures = commands.ReleaseEach(unfinished, interrupt, commandLabel);
+            row["commandFailures"] = new JArray(commandFailures.ToArray());
+            List<string> conditionFailures;
+            try { conditionFailures = releaseConditions(); }
+            catch (Exception error) { conditionFailures = new List<string> { "condition release: " + error.GetType().Name + ": " + error.Message }; }
+            foreach (string failure in conditionFailures) isolation.Fail(owner, "release failure: " + failure);
+            row["conditionFailures"] = new JArray(conditionFailures.ToArray());
+            var reported = new List<string>();
+            Func<List<string>> remaining = () => { try { return remainingIdentities(); } catch (Exception) { return null; } };
+            List<string> now = remaining();
+            if (now == null) isolation.Fail(owner, "owned conditions unread");
+            else if (now.Count != 0) { reported.AddRange(now); isolation.Fail(owner, "owned conditions remaining: " + now.Count + " (" + string.Join(", ", now.ToArray()) + ")"); }
+            row["remainingAtCleanup"] = now == null ? null : new JArray(now.ToArray());
+            List<TProcess> live = commands.Live();
+            List<TCommand> unknown = commands.Unknown;
+            var executions = new JArray();
+            foreach (TProcess process in commands.Processes)
+            {
+                TProcess exact = process;
+                bool? ended = commands.Ended(exact);
+                executions.Add(new JObject { ["execution"] = processLabel(exact), ["endedAtCleanup"] = ended });
+                if (ended != true) isolation.Residual(owner, "owned execution " + processLabel(exact), () => commands.Ended(exact));
+            }
+            foreach (TCommand command in unknown)
+            {
+                TCommand exact = command;
+                executions.Add(new JObject { ["execution"] = "unreadable execution of " + commandLabel(exact), ["endedAtCleanup"] = null });
+                isolation.Residual(owner, "unreadable execution of " + commandLabel(exact), () => commands.EndedOf(exact));
+            }
+            row["ownedExecutions"] = executions;
+            row["ownedExecutionsLive"] = live.Count + unknown.Count;
+            bool settledNow = false;
+            Func<bool?> settle = () =>
+            {
+                if (settledNow) { List<string> again = remaining(); return again == null ? (bool?)null : again.Count == 0; }
+                foreach (TProcess process in commands.Processes) { bool? ended = commands.Ended(process); if (ended != true) return ended; }
+                foreach (TCommand command in commands.Unknown) { bool? ended = commands.EndedOf(command); if (ended != true) return ended; }
+                settledNow = true;
+                List<string> late;
+                try { late = releaseConditions(); }
+                catch (Exception error) { late = new List<string> { "condition release: " + error.GetType().Name + ": " + error.Message }; }
+                foreach (string failure in late) isolation.Fail(owner, "late release failure: " + failure);
+                List<string> after = remaining();
+                if (after == null) isolation.Fail(owner, "owned conditions unread after settlement");
+                else foreach (string identity in after.Where(value => !reported.Contains(value)).ToList()) { reported.Add(identity); isolation.Fail(owner, "late owned condition remaining after settlement: " + identity); }
+                try { unsubscribe(); } catch (Exception error) { isolation.Fail(owner, "condition ledger unsubscribe: " + error.GetType().Name + ": " + error.Message); }
+                List<string> steps;
+                try { steps = afterSettlement == null ? new List<string>() : (afterSettlement() ?? new List<string>()); }
+                catch (Exception error) { steps = new List<string> { "after settlement: " + error.GetType().Name + ": " + error.Message }; }
+                foreach (string failure in steps) isolation.Fail(owner, failure);
+                row["settledAtCleanup"] = live.Count + unknown.Count == 0;
+                row["lateReleaseFailures"] = new JArray(late.ToArray());
+                row["remainingAfterSettlement"] = after == null ? null : new JArray(after.ToArray());
+                return after == null ? (bool?)null : after.Count == 0;
+            };
+            if (live.Count + unknown.Count == 0) { settle(); row["ledgerHeldUntilSettlement"] = false; }
+            else { isolation.Residual(owner, "owned conditions reconciled after settlement", settle); row["ledgerHeldUntilSettlement"] = true; }
+            return row;
+        }
+
+        /// <summary>
+        /// Recovery C3 (C3 review R1-F5): the rollback of a partly installed observer, shared by the callback and trace
+        /// constructors. The unhook runs whatever the counts read; a count that cannot be read is unknown (null), never zero; an
+        /// unhook that throws is a named rollback failure. The caller keeps its original set-up error.
+        /// </summary>
+        internal static List<string> RollbackSetup(Func<int> count, Func<List<string>> unhook, out int? installed, out int? remaining)
+        {
+            try { installed = count(); } catch (Exception) { installed = null; }
+            List<string> failures;
+            try { failures = unhook() ?? new List<string>(); }
+            catch (Exception error) { failures = new List<string> { "rollback: " + error.GetType().Name + ": " + error.Message }; }
+            try { remaining = count(); } catch (Exception) { remaining = null; }
+            return failures;
+        }
+
+        /// <summary>
+        /// Recovery C3 (C3 review R1-F7): a driver's repair of its exact injected items. Each item still present is removed and
+        /// read again: a removal that throws, a removal that returns with the item still present and an unreadable result are
+        /// named failures of that item's identity (captured at injection, so a later clearing of the injection bookkeeping
+        /// cannot lose it). An item already gone is not touched.
+        /// </summary>
+        internal static List<string> RepairExact<T>(IList<T> items, IList<string> identities, Func<T, bool?> present, Action<T> remove) where T : class
+        {
+            var failures = new List<string>();
+            for (int index = 0; index < items.Count; index++)
+            {
+                T item = items[index];
+                string identity = identities != null && index < identities.Count ? identities[index] : "unidentified item " + index;
+                bool? before;
+                try { before = present(item); } catch (Exception) { before = null; }
+                if (before == false) continue;
+                try { remove(item); }
+                catch (Exception error) { failures.Add(identity + ": " + error.GetType().Name + ": " + error.Message); continue; }
+                bool? after;
+                try { after = present(item); } catch (Exception) { after = null; }
+                if (after == null) failures.Add(identity + ": repair result unreadable");
+                else if (after.Value) failures.Add(identity + ": still present after the repair returned");
+            }
+            return failures;
+        }
+
+        /// <summary>
+        /// Recovery C3 (C3 review R1-F8): whether the declared qualification completed: no cell was refused and every required
+        /// cell was admitted and ran to its end. Physical restoration is decided separately (<see cref="Sprint7CellIsolation.Restored"/>).
+        /// </summary>
+        internal static bool RequiredCellsComplete(Sprint7CellIsolation isolation, IEnumerable<string> required)
+        {
+            return isolation.Refused == null && (required ?? Enumerable.Empty<string>()).All(cell => isolation.Admitted.Contains(cell) && isolation.Completed.Contains(cell));
         }
 
         /// <summary>Re-reads the residuals every step until none remains or the limit passes.</summary>
@@ -1106,6 +1340,8 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private readonly List<T> _preexisting;
         internal readonly List<T> Acquired = new List<T>();
+        /// <summary>Recovery C3: acquired instances whose removal failed; a later release does not request them again.</summary>
+        internal readonly List<T> FailedRemovals = new List<T>();
 
         /// <summary>How many acquired instances the last release removed.</summary>
         internal int LastRemoved { get; private set; }
@@ -1133,15 +1369,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             Observe(now, ownedOrigin);
             var failures = new List<string>();
             LastRemoved = 0;
-            foreach (T value in now.Where(item => item != null && Contains(Acquired, item)))
+            foreach (T value in now.Where(item => item != null && Contains(Acquired, item) && !Contains(FailedRemovals, item)))
             {
                 try { remove(value); LastRemoved++; }
-                catch (Exception error) { failures.Add(error.GetType().Name + ": " + error.Message); }
+                catch (Exception error) { FailedRemovals.Add(value); failures.Add(error.GetType().Name + ": " + error.Message); }
             }
             return failures;
         }
 
         /// <summary>Present instances with an owned origin that were not there at the start.</summary>
+        /// <summary>Present owned instances that were not there at the start, themselves.</summary>
+        internal List<T> RemainingItems(IEnumerable<T> present, Func<T, bool> ownedOrigin)
+        {
+            return (present ?? Enumerable.Empty<T>()).Where(value => value != null && !Contains(_preexisting, value) && ownedOrigin(value)).ToList();
+        }
+
         internal int Remaining(IEnumerable<T> present, Func<T, bool> ownedOrigin)
         {
             return (present ?? Enumerable.Empty<T>()).Count(value => value != null && !Contains(_preexisting, value) && ownedOrigin(value));

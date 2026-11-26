@@ -223,7 +223,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in ReviewSprint7Ui(fixture, phase, mode)) yield return frame;
                 yield break;
             }
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39S7EffectsPhase)
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39S7EffectsPhase || phase == ExpandedSummoningNativeProfilePolicy.Sprint39S7EffectsMechanicsPhase)
             {
                 CreateSprint32TurnHostile(fixture);
                 using (var mode = Cleanup2EnterNativeDefault(fixture, phase))
