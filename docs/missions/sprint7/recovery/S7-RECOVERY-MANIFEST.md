@@ -292,12 +292,13 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C3 | Build-Local `-DevelopmentPurpose s7-recovery-c3 -DevelopmentTestFilter sprint7-visual` on `988d40bb1e` (product candidate 1 of 2: package `424240171ea7e16c529d423dd61267a90e2c14c97ac214bfbd715d7f519d9484`, DLL `eac800c3ed003cd2e3aab03008d6aeb5c43f0ecf4b3bf690cd87d0518df3c339`; 24 selected tests) | PASS | 7 min 48.6 s | 23 min 6.1 s | 21 min 53.9 s |
 | C3 | Session `20261126T051633Z-…-s7-c3-fx` (candidate `42424017…9484`, C2 harness `d77754ba…b4f1`) | FAIL: 3 checks (Dust cell unowned-execution control expired before cleanup, displaced by the new pre-delivery step; Dust abandonment driver read recolours live before their release wait; hence phase isolation, samples refused); restoration completed, owner files verified | 5 min 28 s | 28 min 34.1 s | 16 min 25.9 s |
 | C3 | Focused gate `sprint7-visual` (local, contingency correction) | PASS, 24 tests | 20.2 s | 28 min 54.3 s | 16 min 5.7 s |
+| C3 | Build-Local (same arguments) on `6abd692fa7` (product candidate 2 of 2, the authorized contingency: package `de63d6f4d155cb7844f120355c20a73d77e0fc8626b63eb3200b5474a4b24b46`, DLL `ef66c870150fa7e100597fc8c57c8833b39d10b5c7afaa7d0fd4c4f078acb57a`; 24 selected tests) | PASS | 6 min 58.4 s | 35 min 52.7 s | 9 min 7.3 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
   built its harness four times and ran four short lifecycle sessions on the existing candidate-3 package (rows above).
 - Failed validation attempts so far: ten (two in C1 round 2, four in C1 round 4, one in C1 round 5, three in C3).
-- Earlier spend stays separate: 65 min 42 s in parent rounds 6 and 7. New product candidates used: 1 of 2 (C3's combined candidate).
+- Earlier spend stays separate: 65 min 42 s in parent rounds 6 and 7. New product candidates used: 2 of 2 (C3's combined candidate and its contingency).
 - Reserve before the C2 round-3 session: C3 still needs one combined Build-Local candidate and its affected native
   qualification (the effects session, estimated at about 18 minutes, plus the build and gates). After the planned C2 short
   session (about 2 min 15 s) and controller gates, about 32 minutes remain for C3.
