@@ -248,6 +248,31 @@ A new native control, `s7-dust-pre-delivery-disposed`, disposes an ordinary Dust
 before delivery and expects the next cell admitted after settlement. **The newly changed compiled code has not run in the
 game**; C3 still needs its native qualification on recovery candidate 3.
 
+**C3 review 2 (of 4)** on H `89d4efa34732aa85c0a3975c5770865e245e6766` returned changes_required: R1-F1 to R1-F4, R1-F6 to R1-F8 and
+R1-F12 verified; R1-F5, R1-F9, R1-F10, R1-F11, R1-F13 rejected; new R2-F1 (native qualification outstanding) and R2-F2 to R2-F9.
+Offline corrections before recovery candidate 3 (not yet run in game):
+- R2-F2: residuals carry a bounded teardown action; a driver hands its child's pending residuals to the phase on exit; the
+  phase terminates any still pending at teardown (owned conditions released, ledger unsubscribed, uncertainty named).
+- R2-F3: the driver disposes in the same step the inner cell establishes readiness and reads the exact execution at the
+  disposal itself (`AtDisposal`); the pre-delivery control rejects a later frame, a delivery at disposal or another execution,
+  and re-reads that execution's conditions after settlement.
+- R2-F4: both foreign controls and the outside target stay in place through the owned release and settlement; they are read by
+  identity (`ControlsKept`, missing or unreadable is a failure) and only then released; the settlement read must be true.
+- R2-F5: the Ankylosaurus normal-control retirement, the Dust source-loss retirement and the outside target go through the
+  phase's one retirement record (`S7Retire`), with settlement published.
+- R2-F6: `Sprint7OwnedCommands` binds each command's exact process once observed; delivery attribution reads retained processes
+  first, each guarded, and each command field on its own.
+- R2-F7: phase combat teardown per actor (`ReleaseEach`); only the phase's own summons have their commands interrupted.
+- R2-F8: condition-release failures (between casts and in the early-exit cast) are published where they happen.
+- R2-F9: the casts expectation is profile-specific (`DustCastsExpectation`); the required cells come from `RequiredEffectsCells`.
+- R1-F5: `RollbackSetup` and `S7DisposeTrace` keep each count failure; the hook readback keeps its error text.
+- R1-F9: `Sprint26Saves` can be constructed without subscribing; the phase's and Dust cell's saves are listed, then subscribed
+  through the set-up scope; the attack log is under a scope; phase set-up failures are named in the phase result.
+- R1-F10: a cell is a successful completion only after its completion publication succeeds.
+- R1-F11: the focused case adds the fixture's own teardown decision (`FixtureTeardownCandidates`), a real handler identity with a
+  partial subscription, and a failing unpatch beside an independent release through `RunReleases`.
+- R1-F13: the integration pre-checks and identities above are corrected.
+
 R1-F12 (scope disclosure, records only): the `s7-c3-fx` selection ran the whole inherited effects phase. Besides the
 mechanical ownership and evaluator observations, its passing run `20261126T054228Z` also produced the phase's presentation
 material: the Dust cast frame captures (`r6-frames/s7-dust-cast-0..2`, `s7-dust-native-look`; the reviewer counts 56, 58
@@ -271,9 +296,11 @@ Frozen inputs and reviewed identities (product source, reviewed head and control
 | #223 C3 | `codex/s7-recovery-c3-effects-ownership` | `7fff8b34f6` (round 1; later rounds below) | none yet | ACTIVE under C3 amendment 1 (cap 4) | `6abd692fa7` (candidate `de63d6f4…4b46`) for the earlier run; the corrected source still to be qualified |
 
 Dependency checks (2026-11-26): `0542b0592a` is an ancestor of `2c67a049ee`, which is an ancestor of `eab90a5ac8`, which is
-an ancestor of `7fff8b34f6`; every remote branch head matched the identities above when checked. Each branch's current head
-differs from its reviewed H by the controller's archive records (C1, C2) or later records (C3), and the product source that ran
-natively is a third identity. The stack is linear on the frozen parent, so stacking the children onto #219 needs no conflict
+an ancestor of `7fff8b34f6`; every remote branch head matched the identities above when checked (2026-11-26, before C3
+amendment 1). C1's and C2's current heads differ from their reviewed H only by the controller's archive records. C3's head at
+that check (`254c08c53d`) differed from its round-1 H by records only; since then C3 amendment 1 changed compiled code:
+`82dc667c93` and `89d4efa347` (reviewed in round 2) and the round-2 corrections after it, still to be built and qualified as
+recovery candidate 3. The product source that ran natively is a separate identity in each case. The stack is linear on the frozen parent, so stacking the children onto #219 needs no conflict
 resolution while #219 stays frozen; that says nothing about integration with `master`, which has moved independently and may
 conflict.
 
@@ -283,12 +310,15 @@ review findings R1-F1 to R1-F11 open). Historical native FAILs and accepted inte
 
 Proposed integration operation (to run only under a later owner authorization; one authorization may cover the routine
 read-only checks):
-1. Pre-checks (read-only): each PR's remote head equals its recorded archive A (C1 `2c67a049ee`, C2 `eab90a5ac8`, C3 its final
-   A); each child's base is its predecessor's archive A; `status --remote` shows C2 and C3 AWAITING_OWNER_REVIEW with
-   handoff_current=true; #219 is still `0542b0592a`.
-2. Integrate bottom-up onto the frozen parent without rewriting reviewed history: fast-forward `codex/s7-visual-audio-remediation`
-   to C1's archive A, then to C2's, then to C3's (each a strict descendant), or equivalently merge #221, #222, #223 in that order
-   with merge commits that keep every reviewed commit. Either keeps every reviewed H and A reachable.
+1. Pre-checks (read-only): #219's head is still its frozen records head `0542b0592a` (it has no archive A); C1's remote head is
+   its archive A `2c67a049ee` and its base is #219's frozen head `0542b0592a`; C2's remote head is its archive A `eab90a5ac8`
+   and its base is C1's archive A; C3's remote head is its final archive A and its base is C2's archive A `eab90a5ac8`;
+   `status --remote` shows C2 and C3 AWAITING_OWNER_REVIEW with handoff_current=true.
+2. Integrate bottom-up onto the frozen parent without rewriting reviewed history, with the destination named at each step:
+   fast-forward the parent branch `codex/s7-visual-audio-remediation` (PR #219's head) to C1's archive A, then to C2's archive
+   A, then to C3's final archive A (each a strict descendant of the last), or equivalently merge #221 into #219's branch, then
+   #222, then #223, with merge commits that keep every reviewed commit. Either keeps every reviewed H and A reachable; no child
+   is merged into its prerequisite's branch.
 3. Then the remaining gates, each an owner decision: resuming or re-reviewing #219 (its 7/7 enrollment is BLOCKED; any
    continuation needs owner authority), the parent's own final validation boundary on the integrated head (its records:
    65 min 42 s in rounds 6–7, kept apart from this recovery's ledger), and the separate integration of #219 with `master`
@@ -445,11 +475,18 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C3 a1 | Focused gate `sprint7-visual` (local, settle windows shortened) | PASS, 25 tests | 5.4 s | 43 min 44.7 s | 31 min 15.3 s |
 | C3 a1 | Focused gate `sprint7-visual` (local, immediate-settlement correction) | FAIL: compile error (a test assertion inserted between if and else) | 17.1 s | 44 min 1.8 s | 30 min 58.2 s |
 | C3 a1 | Focused gate `sprint7-visual` (local) | PASS, 25 tests | 4.9 s | 44 min 6.7 s | 30 min 53.3 s |
+| C3 r2 | Controller gates on `89d4efa347`: `sprint7-visual` 25 tests 5.2 s, `summon-playtest-r6` 11 tests 3.4 s, `native-profile` 9 tests 3.8 s, `loader-compat-probe` 5 tests 3.8 s (receipts 3.5 + 1.7 + 2.1 + 2.0 = 9.3 s) | PASS | 16.7 s batch wall | 44 min 23.4 s | 30 min 36.6 s |
+| C3 r2 | (A first round-2 report submission was refused by the controller, nothing launched: a required validation marked not_run) | refused | 0 s | 44 min 23.4 s | 30 min 36.6 s |
+| C3 r2+ | Focused gate `sprint7-visual` (local, round-2 corrections) | FAIL: compile error (new driver hook unassigned in the domain project) | 24.4 s | 44 min 47.8 s | 30 min 12.2 s |
+| C3 r2+ | Focused gate `sprint7-visual` (local) | FAIL: compile error (a test local name clash) | 4.2 s | 44 min 52.0 s | 30 min 8.0 s |
+| C3 r2+ | Focused gate `sprint7-visual` (local) | FAIL: one test assumption (the ledger never acquires a preexisting instance) | 6.9 s | 44 min 58.9 s | 30 min 1.1 s |
+| C3 r2+ | Focused gate `sprint7-visual` (local) | FAIL: one test reused another case's out variables | 6.2 s | 45 min 5.1 s | 29 min 54.9 s |
+| C3 r2+ | Focused gate `sprint7-visual` (local) | PASS, 25 tests | 5.9 s | 45 min 10.0 s | 29 min 50.0 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
   built its harness four times and ran four short lifecycle sessions on the existing candidate-3 package (rows above).
-- Failed validation attempts so far: thirteen (two in C1 round 2, four in C1 round 4, one in C1 round 5, six in C3).
+- Failed validation attempts so far: seventeen (two in C1 round 2, four in C1 round 4, one in C1 round 5, ten in C3); refused controller submissions with no validation launched are listed in their rows.
 - Earlier spend stays separate: 65 min 42 s in parent rounds 6 and 7. New product candidates used: 2 of 2 (C3's combined candidate and its contingency).
 - Reserve before the C2 round-3 session: C3 still needs one combined Build-Local candidate and its affected native
   qualification (the effects session, estimated at about 18 minutes, plus the build and gates). After the planned C2 short

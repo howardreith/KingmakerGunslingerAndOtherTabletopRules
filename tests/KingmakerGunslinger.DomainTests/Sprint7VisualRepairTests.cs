@@ -1442,7 +1442,12 @@ namespace KingmakerGunslinger.DomainTests
                     Present.Remove(condition);
                 });
             }
-            internal List<string> RemainingIds() { return Ledger.RemainingItems(Present.ToList(), condition => condition.Owned).Select(condition => condition.Id).ToList(); }
+            internal bool RemainingUnreadable;
+            internal List<string> RemainingIds()
+            {
+                if (RemainingUnreadable) throw new InvalidOperationException("remaining read failed");
+                return Ledger.RemainingItems(Present.ToList(), condition => condition.Owned).Select(condition => condition.Id).ToList();
+            }
             internal JObject ReleaseAll(Sprint7CellIsolation isolation, string owner)
             {
                 return Sprint7ObserverPolicy.ReleaseOwnedEffects(isolation, owner, Commands, command => !command.Finished, command =>
@@ -1455,7 +1460,7 @@ namespace KingmakerGunslinger.DomainTests
                     Release, RemainingIds, () => { Unsubscribes++; Subscribed = false; }, () =>
                     {
                         ForeignKeptAtSettlement = Present.Contains(Foreign);
-                        return new List<string>();
+                        return Sprint7ObserverPolicy.ControlsKept(new[] { new KeyValuePair<string, Func<bool?>>("foreign", () => Present.Contains(Foreign)) });
                     });
             }
         }
@@ -1582,6 +1587,116 @@ namespace KingmakerGunslinger.DomainTests
                     phase.Failures.Contains("dust driver: repair failed: L: still present after the repair returned") &&
                     phase.Failures.Contains("dust driver: the fixture was not proven safe after the driver's repair") && phase.Unreported.Count == 0,
                     "R7-F5 / R1-F7: disposal in the recovery wait attempts the exact repair once; a removal that returns with the leftover present is a published failed repair; the foreign control and the child failure are kept.");
+                // R2-F2: the child's pending reconciliation moved to the phase; a late condition then arrives and the execution ends;
+                // only the phase's own settlement runs it: the exact late condition is released, the ledger unsubscribes once, the
+                // foreign control is kept, and the original failure stays.
+                Assertions.True(phase.Pending.Contains("dust driver child s7-dust: owned conditions reconciled after settlement") && effects.Subscribed,
+                    "R2-F2: the pending reconciliation was handed to the phase; the ledger is still subscribed.");
+                var late = new FakeCondition("late");
+                effects.Present.Add(late);
+                live.Ended = true;
+                phase.Settle();
+                Assertions.True(late.Removes == 1 && !effects.Present.Contains(late) && effects.Unsubscribes == 1 && !effects.Subscribed && effects.ForeignKeptAtSettlement &&
+                    !phase.Restored && phase.Failures.Contains("dust driver: the fixture was not proven safe after the driver's repair"),
+                    "R2-F2: the phase's settlement releases the late condition, unsubscribes once and keeps the foreign control; the original failed verdict stays.");
+            }
+
+            // R2-F2: a pending reconciliation whose execution never settles is terminated by the phase's teardown: owned conditions
+            // released, the ledger unsubscribed, the controls read, and the unestablished settlement named.
+            {
+                var phase = new Sprint7CellIsolation();
+                FakeEffects effects = new FakeEffects(phase, "s7-dust");
+                effects.Commands.Own(new FakeCommand("C") { Process = new FakeExecution() });
+                foreach (int step in EffectCell(phase, "s7-dust", effects, () => { }, 1)) { }
+                var late = new FakeCondition("late");
+                effects.Present.Add(late);
+                phase.TerminatePending();
+                Assertions.True(late.Removes == 1 && effects.Unsubscribes == 1 && phase.Pending.Count == 0 &&
+                    phase.Failures.Contains("s7-dust: owned conditions reconciled after settlement: not settled at teardown") &&
+                    phase.Failures.Contains("s7-dust: owned conditions reconciled after settlement: reconciled at teardown before every owned execution settled") && !phase.Restored,
+                    "R2-F2: terminal teardown runs the bounded reconciliation once and records the uncertainty.");
+            }
+
+            // R2-F3: the disposal happens in the same step that establishes readiness; a delivery scheduled for the next step has
+            // not happened at the disposal-time readback. A delivery before readiness is seen by that readback and the control fails.
+            foreach (bool deliveredFirst in new[] { false, true })
+            {
+                var phase = new Sprint7CellIsolation();
+                bool ready = false, delivered = false; int stepsSeen = 0;
+                JObject atDisposal = null;
+                var driver = new Sprint7Abandonment
+                {
+                    Owner = "pre-delivery driver", Phase = phase, ExpectAdmitted = true, Ready = () => ready,
+                    AtDisposal = () => atDisposal = new JObject { ["delivered"] = delivered, ["steps"] = stepsSeen },
+                    Unsafe = () => atDisposal == null || (bool)atDisposal["delivered"] ? new List<string> { "delivered before disposal" } : new List<string>(),
+                };
+                FakeEffects effects = new FakeEffects(driver.Child, "s7-dust");
+                foreach (int step in driver.Run(Sprint7ObserverPolicy.Cell("inner", () => PreDeliveryCell(driver.Child, effects, deliveredFirst, () => ready = true, () => delivered = true, () => stepsSeen++)),
+                    Sprint7ObserverPolicy.Cell("next", () => Counting(() => { })), cells(driver.Child), TimeSpan.FromSeconds(1), none)) { }
+                Assertions.True(atDisposal != null && (bool)atDisposal["delivered"] == deliveredFirst && driver.Proven == !deliveredFirst,
+                    "R2-F3 (" + (deliveredFirst ? "delivered before readiness: rejected" : "delivery scheduled after readiness: not yet delivered at disposal") + ").");
+            }
+
+            // R2-F4: a release that wrongly removes the foreign control fails the result consumed by admission.
+            {
+                var phase = new Sprint7CellIsolation();
+                int later = 0;
+                FakeEffects effects = new FakeEffects(phase, "s7-dust");
+                // A faulty cleanup removes the foreign control during the cell (the ledger itself never acquires a preexisting instance).
+                foreach (int step in Sprint7ObserverPolicy.Sequence(phase, new[] {
+                    Sprint7ObserverPolicy.Cell("s7-dust", () => EffectCell(phase, "s7-dust", effects, () => effects.Present.Remove(effects.Foreign), 1)),
+                    Sprint7ObserverPolicy.Cell("s7-later", () => Counting(() => later++)) }, cells(phase), limit)) { }
+                Assertions.True(!effects.Present.Contains(effects.Foreign) && phase.Failures.Contains("s7-dust: control missing after the owned release: foreign") &&
+                    phase.Refused == "s7-later" && later == 0, "R2-F4: removing the foreign control in the owned release is a named failure and the next cell is refused.");
+            }
+
+            // R2-F6: the command-to-process association, and delivery attribution isolated from an unreadable command.
+            {
+                var flaky = new FakeCommand("flaky") { ProcessUnreadable = true };
+                var owned = new Sprint7OwnedCommands<FakeCommand, FakeExecution>(command => { if (command.ProcessUnreadable) throw new InvalidOperationException("unreadable"); return command.Process; },
+                    process => process.Read());
+                owned.Own(flaky);
+                Assertions.True(owned.EndedOf(flaky) == null && owned.Unknown.Contains(flaky), "R2-F6: an unreadable command is unknown.");
+                var recovered = new FakeExecution();
+                flaky.ProcessUnreadable = false; flaky.Process = recovered;
+                Assertions.True(owned.EndedOf(flaky) == false && !owned.Unknown.Contains(flaky) && ReferenceEquals(owned.ProcessFor(flaky), recovered), "R2-F6: once readable its process is bound.");
+                flaky.Process = null; recovered.Ended = true;
+                Assertions.True(owned.EndedOf(flaky) == true, "R2-F6: after its field clears, the bound process still answers and settles.");
+                var other = new FakeExecution();
+                var second = new FakeCommand("second") { Process = other };
+                owned.Own(second); owned.Capture(second);
+                var broken = new FakeExecution();
+                owned.Own(new FakeCommand("broken") { Process = broken }); owned.Capture();
+                Assertions.True(owned.RetainsContext(other, value => { if (ReferenceEquals(value, broken)) throw new InvalidOperationException("context unreadable"); return value; }),
+                    "R2-F6: delivery by a known retained execution is attributed although another process's context read throws.");
+            }
+
+            // R2-F7: per-actor teardown: one failure does not skip the others; an actor not listed is untouched.
+            {
+                var released = new List<string>();
+                List<string> failures = Sprint7ObserverPolicy.ReleaseEach(new[] { "a", "b", "c" }, actor => "combat " + actor, actor =>
+                {
+                    if (actor == "a") throw new InvalidOperationException("interruption failed");
+                    released.Add(actor);
+                });
+                Assertions.True(failures.SequenceEqual(new[] { "combat a: InvalidOperationException: interruption failed" }) && released.SequenceEqual(new[] { "b", "c" }) && !released.Contains("foreign"),
+                    "R2-F7: the failing actor is named, the later owned actors are still released, and the unlisted foreign actor is untouched.");
+            }
+
+            // R2-F8: an early condition-release failure enters the result at the boundary; a later cleanup read then throws; both
+            // remain, and the next cell is refused.
+            {
+                var phase = new Sprint7CellIsolation();
+                int later = 0;
+                FakeEffects effects = new FakeEffects(phase, "s7-dust");
+                var stuck = new FakeCondition("stuck") { RemoveThrows = true };
+                effects.Present.Add(stuck);
+                foreach (int step in Sprint7ObserverPolicy.Sequence(phase, new[] {
+                    Sprint7ObserverPolicy.Cell("s7-dust", () => EarlyClearThenFailingRead(phase, effects)),
+                    Sprint7ObserverPolicy.Cell("s7-later", () => Counting(() => later++)) }, cells(phase), limit)) { }
+                Assertions.True(phase.Failures.Contains("s7-dust: release failure: InvalidOperationException: " + removal + "stuck") &&
+                    phase.Failures.Contains("s7-dust: owned conditions unread") && phase.Refused == "s7-later" && later == 0 && stuck.Removes == 1,
+                    "R2-F8: the early removal failure was published where it happened and survives the later unreadable read; the next cell is refused.");
             }
 
             // R1-F2: an ordinary cell disposed after its execution started and before delivery; a condition is delivered late and
@@ -1692,8 +1807,9 @@ namespace KingmakerGunslinger.DomainTests
                     Assertions.True(called && reported != null && isolation.Failures.Contains("cell: cell exception: InvalidOperationException: current failed") && !isolation.Completed.Contains("cell"),
                         "R1-F10: a throwing Current is the cell's exception.");
                 if (mode == "completion")
-                    Assertions.True(called && reported == null && isolation.Completed.Contains("cell") && isolation.Failures.Contains("cell: completion publication: InvalidOperationException: completion receipt failed") && !isolation.Restored,
-                        "R1-F10: a failed completion publication is a sticky isolation failure.");
+                    Assertions.True(called && reported == null && !isolation.Completed.Contains("cell") && isolation.Failures.Contains("cell: completion publication: InvalidOperationException: completion receipt failed") &&
+                        !isolation.Restored && !Sprint7ObserverPolicy.RequiredCellsComplete(isolation, new[] { "cell" }),
+                        "R1-F10: a failed completion publication is a sticky isolation failure and the cell is not a successful completion.");
             }
 
             // R1-F1: one retirement record across the cell's direct retirement, its unwinding release and the phase teardown, for
@@ -1714,6 +1830,9 @@ namespace KingmakerGunslinger.DomainTests
                 // The phase teardown: every phase unit not yet requested, each on its own, then settlement by identity.
                 int teardown = sources.ReleaseOutstanding(new[] { other, keeper, extra }, unit => "phase unit", retire);
                 sources.Publish(phase, "phase teardown", unit => unit.Read());
+                // The fixture's outer teardown: the production decision skips every unit whose retirement was attempted.
+                var attempted = new[] { other, keeper, extra }.Where(sources.Requested).ToList();
+                foreach (FakeExecution unit in Sprint7ObserverPolicy.FixtureTeardownCandidates(new[] { other, keeper, extra }, attempted)) retire(unit);
                 string label = failing == "other" ? "other source" : "survivor source";
                 Assertions.True(attempts[bad] == 1 && attempts[failing == "other" ? keeper : other] == 1 && attempts[extra] == 1 && teardown == 1 &&
                     phase.Failures.Count(value => value.EndsWith(label + ": InvalidOperationException: injected retirement failure")) == 1 &&
@@ -1728,12 +1847,13 @@ namespace KingmakerGunslinger.DomainTests
                 var phase = new Sprint7CellIsolation();
                 var order = new List<string>();
                 int later = 0;
+                var bus = new List<FakeHandler>();
                 foreach (int step in Sprint7ObserverPolicy.Sequence(phase, new[] {
-                    Sprint7ObserverPolicy.Cell("s7-dust", () => SetupThenFail(phase, order)),
+                    Sprint7ObserverPolicy.Cell("s7-dust", () => SetupThenFail(phase, order, bus)),
                     Sprint7ObserverPolicy.Cell("s7-later", () => Counting(() => later++)) }, cells(phase), limit)) { }
-                Assertions.True(order.SequenceEqual(new[] { "save log subscribed", "ledger subscribed", "ledger unsubscribed", "save log unsubscribed" }) &&
-                    phase.Failures.Contains("s7-dust: cell exception: InvalidOperationException: ledger subscription failed after subscribing") && phase.Refused == "s7-later" && later == 0,
-                    "R1-F9: the partially subscribed ledger and the earlier save log are both released, newest first; the original error stays; the next cell is refused.");
+                Assertions.True(order.SequenceEqual(new[] { "recorder subscribed", "saves subscribed", "saves unsubscribed", "recorder unsubscribed" }) && bus.Count == 0 &&
+                    phase.Failures.Contains("s7-dust: cell exception: InvalidOperationException: saves subscription failed after registering") && phase.Refused == "s7-later" && later == 0,
+                    "R1-F9: the exact handler (constructed and listed before its subscription) and the earlier recorder are both unsubscribed, newest first; the original error stays; the next cell is refused.");
             }
 
             // R1-F5: the shared rollback runs the unhook whatever the counts read; unreadable counts are unknown, never zero; the
@@ -1741,8 +1861,24 @@ namespace KingmakerGunslinger.DomainTests
             {
                 int unhooks = 0;
                 int? installed, remaining;
-                List<string> failures = Sprint7ObserverPolicy.RollbackSetup(() => { throw new InvalidOperationException("count failed"); }, () => { unhooks++; return new List<string> { "hook: InvalidOperationException: rollback unpatch failed" }; },
-                    out installed, out remaining);
+                // The unhook is the production per-release runner: one failing unpatch beside an independent release.
+                bool independentReleased = false;
+                List<string> failures = Sprint7ObserverPolicy.RollbackSetup(() => { throw new InvalidOperationException("count failed"); }, () =>
+                    {
+                        unhooks++;
+                        return Sprint7ObserverPolicy.RunReleases(new[] {
+                            new KeyValuePair<string, Action>("hook", () => { throw new InvalidOperationException("rollback unpatch failed"); }),
+                            new KeyValuePair<string, Action>("second hook", () => independentReleased = true) });
+                    }, out installed, out remaining);
+                Assertions.True(independentReleased && failures.Contains("hook: InvalidOperationException: rollback unpatch failed") &&
+                    failures.Contains("count before rollback: InvalidOperationException: count failed") && failures.Contains("count after rollback: InvalidOperationException: count failed"),
+                    "R1-F5: the independent unpatch still ran; the failing unpatch and both read errors are kept individually.");
+                int reads = 0; int? firstInstalled, laterRemaining;
+                List<string> recovered = Sprint7ObserverPolicy.RollbackSetup(() => { if (reads++ == 0) throw new InvalidOperationException("first read failed"); return 0; }, () => new List<string>(),
+                    out firstInstalled, out laterRemaining);
+                Assertions.True(firstInstalled == null && laterRemaining == 0 && recovered.SequenceEqual(new[] { "count before rollback: InvalidOperationException: first read failed" }) &&
+                    Sprint7ObserverPolicy.SetupFailure("Observer", new InvalidOperationException("original"), recovered, laterRemaining).Message.Contains("rollback INCOMPLETE"),
+                    "R1-F5: a first read that failed is not hidden by a later zero: the rollback is not reported complete.");
                 string message = Sprint7ObserverPolicy.SetupFailure("Observer", new InvalidOperationException("original set-up failure"), failures, remaining).Message;
                 Assertions.True(unhooks == 1 && installed == null && remaining == null && message.Contains("owned items unknown (readback failed)") && message.EndsWith("InvalidOperationException: original set-up failure") &&
                     message.Contains("rollback unpatch failed"), "R1-F5: with both counts unreadable the rollback still ran; the result is unknown and the original error and rollback error are kept.");
@@ -1750,8 +1886,51 @@ namespace KingmakerGunslinger.DomainTests
                 var attempt = new Sprint7HookAttempt<object>("trace", () => { throw new InvalidOperationException("count failed"); });
                 try { attempt.Acquire(() => { throw new InvalidOperationException("original set-up failure"); }); } catch (InvalidOperationException) { }
                 attempt.Publish(isolation, "trace-setup");
-                Assertions.True(isolation.Failures.SequenceEqual(new[] { "trace-setup: trace setup failed: InvalidOperationException: original set-up failure", "trace-setup: trace hook readback unreadable" }) && !isolation.Restored,
+                Assertions.True(isolation.Failures.SequenceEqual(new[] { "trace-setup: trace setup failed: InvalidOperationException: original set-up failure", "trace-setup: trace hook readback unreadable: InvalidOperationException: count failed" }) && !isolation.Restored,
                     "R1-F5: the set-up error and the unknown readback are both kept, and isolation is not restored.");
+            }
+
+            // R1-F8, R1-F12, R2-F9: the selections' required cells and the casts expectation the runner emits.
+            Assertions.True(!Sprint7ObserverPolicy.RequiredEffectsCells(true).Contains("s7-samples") && Sprint7ObserverPolicy.RequiredEffectsCells(false).Contains("s7-samples") &&
+                Sprint7ObserverPolicy.RequiredEffectsCells(true).Contains("s7-dust-pre-delivery-disposed") && Sprint7ObserverPolicy.RequiredEffectsCells(true).Length == 7,
+                "The mechanics-only selection requires the seven mechanical cells and not the samples cell; the presentation selection adds the samples.");
+            Assertions.True(!Sprint7ObserverPolicy.DustCastsExpectation(true).Contains("framed on an unobstructed bearing") &&
+                Sprint7ObserverPolicy.DustCastsExpectation(false).Contains("framed on an unobstructed bearing"),
+                "R2-F9: the mechanics-only Dust casts check asserts no framing; the presentation profile keeps its framing clause.");
+        }
+
+        // The Dust cell's pre-delivery mode: readiness established in one step, a delivery possible in the next.
+        private static IEnumerable<int> PreDeliveryCell(Sprint7CellIsolation isolation, FakeEffects effects, bool deliveredFirst, Action ready, Action deliver, Action step)
+        {
+            isolation.Opened("s7-dust");
+            try
+            {
+                step();
+                if (deliveredFirst) deliver();
+                ready();
+                yield return 0;
+                step();
+                deliver(); // would happen in the next frame
+                yield return 0;
+            }
+            finally { effects.ReleaseAll(isolation, "s7-dust"); isolation.Reported("s7-dust"); }
+        }
+
+        // An early between-casts clear whose failure is published where it happens (as the Dust cell's clearSickened does), then
+        // a final release whose remaining read throws.
+        private static IEnumerable<int> EarlyClearThenFailingRead(Sprint7CellIsolation isolation, FakeEffects effects)
+        {
+            isolation.Opened("s7-dust");
+            try
+            {
+                foreach (string failure in effects.Release()) isolation.Fail("s7-dust", "release failure: " + failure);
+                yield return 0;
+            }
+            finally
+            {
+                effects.RemainingUnreadable = true;
+                effects.ReleaseAll(isolation, "s7-dust");
+                isolation.Reported("s7-dust");
             }
         }
 
@@ -1795,15 +1974,30 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
-        private static IEnumerable<int> SetupThenFail(Sprint7CellIsolation isolation, List<string> order)
+        // A rule handler as the effects callers now hold one: constructed (and listed) first; its subscription registers it on the
+        // bus and may then throw; its disposal removes exactly it.
+        private sealed class FakeHandler
+        {
+            private readonly List<FakeHandler> bus; private readonly List<string> order; private readonly string name; internal bool ThrowAfterRegistering;
+            internal FakeHandler(List<FakeHandler> bus, List<string> order, string name) { this.bus = bus; this.order = order; this.name = name; }
+            internal void Subscribe()
+            {
+                bus.Add(this); order.Add(name + " subscribed");
+                if (ThrowAfterRegistering) throw new InvalidOperationException(name + " subscription failed after registering");
+            }
+            internal void Dispose() { bus.Remove(this); order.Add(name + " unsubscribed"); }
+        }
+
+        private static IEnumerable<int> SetupThenFail(Sprint7CellIsolation isolation, List<string> order, List<FakeHandler> bus)
         {
             isolation.Opened("s7-dust");
             var setup = new Sprint7SetupScope();
             try
             {
-                setup.Acquire("save log subscription", () => order.Add("save log subscribed"), () => order.Add("save log unsubscribed"));
-                setup.Acquire("condition ledger subscription", () => { order.Add("ledger subscribed"); throw new InvalidOperationException("ledger subscription failed after subscribing"); },
-                    () => order.Add("ledger unsubscribed"));
+                var recorder = new FakeHandler(bus, order, "recorder");
+                setup.Acquire("recorder subscription", recorder.Subscribe, recorder.Dispose);
+                var saves = new FakeHandler(bus, order, "saves") { ThrowAfterRegistering = true };
+                setup.Acquire("saves subscription", saves.Subscribe, saves.Dispose);
                 yield return 0;
             }
             finally

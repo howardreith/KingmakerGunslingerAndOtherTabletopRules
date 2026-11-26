@@ -710,6 +710,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<string> failures = new List<string>();
         private readonly List<string> unreported = new List<string>();
         private readonly List<KeyValuePair<string, Func<bool?>>> pending = new List<KeyValuePair<string, Func<bool?>>>();
+        // Recovery C3 (R2-F2): a residual's bounded teardown action (run once if it is still pending when its owner ends).
+        private readonly Dictionary<string, Func<List<string>>> terminators = new Dictionary<string, Func<List<string>>>();
         private readonly List<string> unreadable = new List<string>();
         internal readonly List<string> Recoveries = new List<string>();
         internal readonly List<string> Admitted = new List<string>();
@@ -733,10 +735,56 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (string reason in reasons ?? Enumerable.Empty<string>()) Fail(owner, reason);
         }
 
-        /// <summary>A residual the owner still holds: settled() is true once settled, false while live, null when unreadable.</summary>
-        internal void Residual(string owner, string what, Func<bool?> settled)
+        /// <summary>
+        /// A residual the owner still holds: settled() is true once settled, false while live, null when unreadable. An optional
+        /// <paramref name="terminate"/> is its bounded teardown action, run by <see cref="TerminatePending"/> if it never settles.
+        /// </summary>
+        internal void Residual(string owner, string what, Func<bool?> settled, Func<List<string>> terminate = null)
         {
-            pending.Add(new KeyValuePair<string, Func<bool?>>(owner + ": " + what, settled));
+            string name = owner + ": " + what;
+            pending.Add(new KeyValuePair<string, Func<bool?>>(name, settled));
+            if (terminate != null) terminators[name] = terminate;
+        }
+
+        /// <summary>
+        /// Recovery C3 (R2-F2): moves every pending residual (with its teardown action) to an enclosing isolation, so the
+        /// cleanup it stands for keeps an owner after this one ends; returns their new names.
+        /// </summary>
+        internal List<string> TransferPendingTo(Sprint7CellIsolation target, string prefix)
+        {
+            var moved = new List<string>();
+            foreach (KeyValuePair<string, Func<bool?>> item in pending.ToList())
+            {
+                Func<List<string>> terminate;
+                terminators.TryGetValue(item.Key, out terminate);
+                target.pending.Add(new KeyValuePair<string, Func<bool?>>(prefix + item.Key, item.Value));
+                if (terminate != null) target.terminators[prefix + item.Key] = terminate;
+                moved.Add(prefix + item.Key);
+                pending.Remove(item);
+                terminators.Remove(item.Key);
+            }
+            return moved;
+        }
+
+        /// <summary>
+        /// Recovery C3 (R2-F2): terminal teardown. Each residual still pending after one more read runs its teardown action once;
+        /// the residual leaves the pending set as a named failure (settlement never established), with any teardown failure.
+        /// </summary>
+        internal void TerminatePending()
+        {
+            Settle();
+            foreach (KeyValuePair<string, Func<bool?>> item in pending.ToList())
+            {
+                Func<List<string>> terminate;
+                List<string> failures = new List<string>();
+                if (terminators.TryGetValue(item.Key, out terminate))
+                    try { failures.AddRange(terminate() ?? new List<string>()); }
+                    catch (Exception error) { failures.Add("teardown: " + error.GetType().Name + ": " + error.Message); }
+                pending.Remove(item);
+                terminators.Remove(item.Key);
+                failures.Insert(0, "not settled at teardown");
+                foreach (string failure in failures) this.failures.Add(item.Key + ": " + failure);
+            }
         }
 
         /// <summary>Re-reads every residual once; a settled one leaves with a recovery observation. True when none remains.</summary>
@@ -748,7 +796,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool? state;
                 try { state = item.Value == null ? null : item.Value(); }
                 catch (Exception) { state = null; }
-                if (state == true) { pending.Remove(item); Recoveries.Add(item.Key + " observed settled"); }
+                if (state == true) { pending.Remove(item); terminators.Remove(item.Key); Recoveries.Add(item.Key + " observed settled"); }
                 else if (state == null) unreadable.Add(item.Key);
             }
             return pending.Count == 0;
@@ -847,6 +895,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<TCommand> commands = new List<TCommand>();
         private readonly List<TProcess> processes = new List<TProcess>();
         private readonly List<TCommand> unknown = new List<TCommand>();
+        // Recovery C3 (R2-F6): each command's exact process once observed; later reads use it, never the mutable field again.
+        private readonly List<KeyValuePair<TCommand, TProcess>> bound = new List<KeyValuePair<TCommand, TProcess>>();
         private readonly Func<TCommand, TProcess> processOf;
         private readonly Func<TProcess, bool?> ended;
         private readonly Action<string> publish;
@@ -871,16 +921,41 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             foreach (TCommand owned in command == null ? commands.ToList() : new List<TCommand> { command })
             {
+                if (ProcessFor(owned) != null) continue;
                 TProcess process;
                 try { process = processOf(owned); }
                 catch (Exception) { if (!unknown.Any(value => ReferenceEquals(value, owned))) unknown.Add(owned); continue; }
                 if (process == null) continue;
                 unknown.RemoveAll(value => ReferenceEquals(value, owned));
+                bound.Add(new KeyValuePair<TCommand, TProcess>(owned, process));
                 if (!processes.Any(value => ReferenceEquals(value, process))) processes.Add(process);
             }
         }
 
         internal bool Retains(TProcess process) { return process != null && processes.Any(value => ReferenceEquals(value, process)); }
+
+        /// <summary>The command's retained process, or null when none was observed yet.</summary>
+        internal TProcess ProcessFor(TCommand command)
+        {
+            foreach (KeyValuePair<TCommand, TProcess> entry in bound) if (ReferenceEquals(entry.Key, command)) return entry.Value;
+            return null;
+        }
+
+        /// <summary>
+        /// Recovery C3 (R2-F6): whether a retained process has the given context (read per process, so one unreadable process
+        /// cannot hide another's delivery); the mutable command fields are not read.
+        /// </summary>
+        internal bool RetainsContext(object context, Func<TProcess, object> contextOf)
+        {
+            if (context == null) return false;
+            foreach (TProcess process in processes.ToList())
+            {
+                object value;
+                try { value = contextOf(process); } catch (Exception) { continue; }
+                if (ReferenceEquals(value, context)) return true;
+            }
+            return false;
+        }
 
         private void Failed(string failure)
         {
@@ -927,8 +1002,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal bool? EndedOf(TCommand command)
         {
             Capture(command);
-            TProcess process;
-            try { process = processOf(command); } catch (Exception) { return null; }
+            TProcess process = ProcessFor(command);
             return process == null ? (bool?)null : Ended(process);
         }
     }
@@ -993,10 +1067,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             return Acquired;
         }
 
-        /// <summary>The owned hooks read now; null when the read throws.</summary>
+        internal string ReadError { get; private set; }
+
+        /// <summary>The owned hooks read now; null when the read throws (its error kept in <see cref="ReadError"/>).</summary>
         internal int? Remaining()
         {
-            try { return readback(); } catch (Exception) { return null; }
+            try { return readback(); } catch (Exception error) { ReadError = error.GetType().Name + ": " + error.Message; return null; }
         }
 
         /// <summary>Reads the hooks back once and publishes; returns the readback (0 when never attempted, null when unreadable).</summary>
@@ -1005,7 +1081,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!Attempted) return 0;
             int? remaining = Remaining();
             if (SetupFailure != null) isolation.Fail(owner, SetupFailure);
-            if (remaining == null) isolation.Fail(owner, name + " hook readback unreadable");
+            if (remaining == null) isolation.Fail(owner, name + " hook readback unreadable: " + ReadError);
             else if (remaining.Value != 0) isolation.Fail(owner, name + " hooks remaining: " + remaining.Value);
             return remaining;
         }
@@ -1031,6 +1107,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal Func<bool> Ready;               // null: run to completion
         internal bool ExpectAdmitted;
         internal Action Inject, Clear;
+        /// <summary>Recovery C3 (R2-F3): runs in the same step as the disposal, immediately before it (a disposal-time readback).</summary>
+        internal Action AtDisposal;
         internal Func<List<string>> Repair;
         internal Func<IEnumerable<int>> AfterRepair;   // a declared settle wait between the repair and the safety readback
         internal Func<List<string>> Unsafe;
@@ -1089,8 +1167,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 else
                 {
-                    while (DateTime.UtcNow < limit && !Ready() && sequence.MoveNext()) yield return sequence.Current;
+                    // R2-F3: readiness is checked right after each step of the child sequence and before that step is yielded to
+                    // the engine, so the disposal happens in the same frame the inner cell established readiness.
                     ready = Ready();
+                    while (!ready && DateTime.UtcNow < limit)
+                    {
+                        if (!sequence.MoveNext()) break;
+                        ready = Ready();
+                        if (ready) break;
+                        yield return sequence.Current;
+                    }
+                    if (AtDisposal != null)
+                        try { AtDisposal(); } catch (Exception error) { RepairFailures.Add("disposal-time readback: " + error.GetType().Name + ": " + error.Message); }
                     if (Inject != null) Inject();
                     try { sequence.Dispose(); } finally { ClearInjection(); }
                 }
@@ -1126,6 +1214,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Row["repairFailures"] = new JArray(RepairFailures.ToArray());
                 Row["child"] = Child.Describe();
                 Row["isolationRestored"] = Proven;
+                // R2-F2: cleanup the child still owes keeps an owner: its pending residuals move to the phase.
+                Row["transferredResiduals"] = new JArray(Child.TransferPendingTo(Phase, Owner + " child ").ToArray());
                 foreach (string owner in Child.Unreported) Phase.Fail(Owner, "child owner never reported: " + owner);
                 foreach (string failure in Unexpected) Phase.Fail(Owner, "unexpected child failure: " + failure);
                 foreach (string failure in RepairFailures) Phase.Fail(Owner, "repair failed: " + failure);
@@ -1184,10 +1274,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (failure != null) isolation.Fail(name, "cell exception: " + failure.GetType().Name + ": " + failure.Message);
             Exception outcome = failure != null && disposal != null ? new AggregateException(failure, disposal) : failure ?? disposal;
-            if (outcome == null) isolation.Completed.Add(name);
+            bool published = true;
             if (completed != null)
                 try { completed(name, outcome); }
-                catch (Exception error) { isolation.Fail(name, "completion publication: " + error.GetType().Name + ": " + error.Message); }
+                catch (Exception error) { published = false; isolation.Fail(name, "completion publication: " + error.GetType().Name + ": " + error.Message); }
+            // R1-F10: a successful completion needs a clean end, a clean disposal and a successful publication.
+            if (outcome == null && published) isolation.Completed.Add(name);
         }
 
         /// <summary>
@@ -1238,11 +1330,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["ownedExecutions"] = executions;
             row["ownedExecutionsLive"] = live.Count + unknown.Count;
             bool settledNow = false, lateRelease = true;
+            Func<bool?> reconcile = null;
             Func<bool?> settle = () =>
             {
                 if (settledNow) { List<string> again = remaining(); return again == null ? (bool?)null : again.Count == 0; }
                 foreach (TProcess process in commands.Processes) { bool? ended = commands.Ended(process); if (ended != true) return ended; }
                 foreach (TCommand command in commands.Unknown) { bool? ended = commands.EndedOf(command); if (ended != true) return ended; }
+                return reconcile();
+            };
+            reconcile = () =>
+            {
                 settledNow = true;
                 // Nothing can be delivered late when no execution was live at cleanup: the release above stands.
                 List<string> late = new List<string>();
@@ -1264,7 +1361,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return after == null ? (bool?)null : after.Count == 0;
             };
             if (live.Count + unknown.Count == 0) { lateRelease = false; settle(); row["ledgerHeldUntilSettlement"] = false; }
-            else { isolation.Residual(owner, "owned conditions reconciled after settlement", settle); row["ledgerHeldUntilSettlement"] = true; }
+            else
+            {
+                // R2-F2: if the executions never settle while an owner remains, terminal teardown still releases what is owned,
+                // unsubscribes and checks the controls, and records that settlement was not established.
+                isolation.Residual(owner, "owned conditions reconciled after settlement", settle, () =>
+                {
+                    if (settledNow) return new List<string>();
+                    reconcile();
+                    row["reconciledAtTeardown"] = true;
+                    return new List<string> { "reconciled at teardown before every owned execution settled" };
+                });
+                row["ledgerHeldUntilSettlement"] = true;
+            }
             return row;
         }
 
@@ -1275,12 +1384,64 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal static List<string> RollbackSetup(Func<int> count, Func<List<string>> unhook, out int? installed, out int? remaining)
         {
-            try { installed = count(); } catch (Exception) { installed = null; }
+            var reads = new List<string>();
+            try { installed = count(); } catch (Exception error) { installed = null; reads.Add("count before rollback: " + error.GetType().Name + ": " + error.Message); }
             List<string> failures;
             try { failures = unhook() ?? new List<string>(); }
             catch (Exception error) { failures = new List<string> { "rollback: " + error.GetType().Name + ": " + error.Message }; }
-            try { remaining = count(); } catch (Exception) { remaining = null; }
+            try { remaining = count(); } catch (Exception error) { remaining = null; reads.Add("count after rollback: " + error.GetType().Name + ": " + error.Message); }
+            // R1-F5: a failed read is kept beside the rollback errors, so a later zero cannot hide it.
+            failures.AddRange(reads);
             return failures;
+        }
+
+        /// <summary>
+        /// Recovery C3 (R2-F4): reads each exact control after an owned release; a control that is missing or unreadable is a
+        /// named failure. Returns the failures (the caller publishes them).
+        /// </summary>
+        internal static List<string> ControlsKept(IEnumerable<KeyValuePair<string, Func<bool?>>> controls)
+        {
+            var failures = new List<string>();
+            foreach (KeyValuePair<string, Func<bool?>> control in controls ?? Enumerable.Empty<KeyValuePair<string, Func<bool?>>>())
+            {
+                bool? present;
+                try { present = control.Value(); } catch (Exception) { present = null; }
+                if (present == null) failures.Add("control unreadable after the owned release: " + control.Key);
+                else if (!present.Value) failures.Add("control missing after the owned release: " + control.Key);
+            }
+            return failures;
+        }
+
+        /// <summary>Recovery C3 (R2-F7): one release per item, each attempted on its own and named by its identity.</summary>
+        internal static List<string> ReleaseEach<T>(IEnumerable<T> items, Func<T, string> label, Action<T> release)
+        {
+            return RunReleases((items ?? Enumerable.Empty<T>()).ToList().Select(item => { T exact = item; return new KeyValuePair<string, Action>(label(exact), () => release(exact)); }).ToList());
+        }
+
+        /// <summary>
+        /// Recovery C3 (R1-F1, R1-F11): the units an outer fixture teardown may still release: those it created that no other
+        /// layer attempted to retire (an attempted unit stays owned and accounted for, but is not requested again).
+        /// </summary>
+        internal static List<T> FixtureTeardownCandidates<T>(IEnumerable<T> created, IEnumerable<T> attempted) where T : class
+        {
+            List<T> skip = (attempted ?? Enumerable.Empty<T>()).ToList();
+            return (created ?? Enumerable.Empty<T>()).Where(value => value != null && !skip.Any(other => ReferenceEquals(other, value))).Distinct().ToList();
+        }
+
+        /// <summary>Recovery C3 (R1-F8, R1-F12): the parent cells each effects selection must admit and complete.</summary>
+        internal static string[] RequiredEffectsCells(bool mechanics)
+        {
+            var cells = new List<string> { "s7-ankylosaurus", "s7-callback-abandoned", "s7-callback-setup-failed", "s7-trace-setup-failed", "s7-dust",
+                "s7-dust-pre-delivery-disposed", "s7-dust-abandoned" };
+            if (!mechanics) cells.Add("s7-samples");
+            return cells.ToArray();
+        }
+
+        /// <summary>Recovery C3 (R2-F9): the Dust casts check's expectation; the framing clause belongs to the presentation profile only.</summary>
+        internal static string DustCastsExpectation(bool mechanics)
+        {
+            string common = "Three consecutive Dust breaths executed from one unchanged position each produce one execution, one creation bound to the Dust breath, and exactly one cast effect oriented with the projectile and recoloured; on release each instance reads back exactly its pre-tint materials and particle colours";
+            return mechanics ? common + " (mechanics-only selection: no frames are captured and framing is not asserted)." : common + "; the first is framed on an unobstructed bearing with the targets.";
         }
 
         /// <summary>

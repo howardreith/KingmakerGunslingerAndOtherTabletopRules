@@ -269,7 +269,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (fixture == null) return;
             try
             {
-                foreach (UnitEntityData unit in fixture.Created.Distinct().Where(value => !fixture.RetirementAttempted.Contains(value)).ToArray())
+                foreach (UnitEntityData unit in Sprint7ObserverPolicy.FixtureTeardownCandidates(fixture.Created, fixture.RetirementAttempted))
                     CleanupExpandedSummoningUnit(unit);
                 if (fixture.Hostile != null && !fixture.Hostile.Destroyed)
                     fixture.Hostile.Destroy();
