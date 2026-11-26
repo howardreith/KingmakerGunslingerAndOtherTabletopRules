@@ -483,12 +483,13 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C3 r2+ | Focused gate `sprint7-visual` (local) | FAIL: one test reused another case's out variables | 6.2 s | 45 min 5.1 s | 29 min 54.9 s |
 | C3 r2+ | Focused gate `sprint7-visual` (local) | PASS, 25 tests | 5.9 s | 45 min 10.0 s | 29 min 50.0 s |
 | C3 r3 | (estimate before recovery candidate 3: build about 7 min, mechanics-only session about 7 min, final controller gates about 0.5 min; about 15 min left after, enough for one contingency) | | | 45 min 10.0 s | 29 min 50.0 s |
+| C3 r3 | Build-Local `-DevelopmentPurpose s7-recovery-c3 -DevelopmentTestFilter sprint7-visual` on `66b0ff3f14` (recovery candidate 3 of 4: package `473f2f5a78229f3e2e15c3d97b863f2201f44ae372d2485de1fdb05010618366`, DLL `8e574477cce11621ca2ec88fdeed358cb9f8f76ff8ced423e154e3c86d277d07`; 25 selected tests) | PASS | 8 min 0.9 s | 53 min 10.9 s | 21 min 49.1 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
   built its harness four times and ran four short lifecycle sessions on the existing candidate-3 package (rows above).
 - Failed validation attempts so far: seventeen (two in C1 round 2, four in C1 round 4, one in C1 round 5, ten in C3); refused controller submissions with no validation launched are listed in their rows.
-- Earlier spend stays separate: 65 min 42 s in parent rounds 6 and 7. New product candidates used: 2 of 2 (C3's combined candidate and its contingency).
+- Earlier spend stays separate: 65 min 42 s in parent rounds 6 and 7. New product candidates used: 3 of 4 (C3's first combined candidate, its contingency, and recovery candidate 3 under C3 amendment 1).
 - Reserve before the C2 round-3 session: C3 still needs one combined Build-Local candidate and its affected native
   qualification (the effects session, estimated at about 18 minutes, plus the build and gates). After the planned C2 short
   session (about 2 min 15 s) and controller gates, about 32 minutes remain for C3.
