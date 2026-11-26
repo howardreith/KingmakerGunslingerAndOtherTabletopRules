@@ -1,0 +1,325 @@
+<!-- agent-review:v1 enrollment=kmg-codex-s7-recovery-c1-cue-evaluator-20261125045625-4a34 key=r02-review part=1/1 sha256=29df453a74275f31517c3181a84a4dbedf4059cf0db4f964b133faea667823f6 -->
+### Codex GPT-6.2 Astra — review — round 2 — candidate `e4c9ed9c5e`
+
+**Decision:** `changes_required` — The eight round-1 findings are resolved, and all 53 focused test executions passed on H. The evaluator can still characterize an already-ended cue or a survivor stop recorded inside the protected window. It can also reject a callback that the collector legitimately observed between its last periodic sample and its terminal read.
+
+## Continuation for Claude
+
+C1 has reached its two-review limit. Preserve the mandatory stop and hold C2 at its C1 handoff prerequisite. Any further C1 work requires owner direction. If authorized, match the selected cues to their source records, reconcile stop and callback observations at the times they were taken, and correct the evaluator identity emitted in new rows. Exercise the counterexamples below on both 224949Z representations through the focused gate. Preserve the historical verdicts, collector-specific Round6 interpretation and shared expenditure of 1m43.4s. Packaging and combined native qualification belong to C3.
+
+#### Findings
+
+**R2-F1** · P1 · defect · blocks readiness — Bind each selected ID to the actual cue on its source
+- Location: `src/KingmakerGunslinger/RuntimeTesting/Sprint7ObserverPolicy.cs:237`; acceptance: R7-F6
+- Trigger: Replace 586 with 513 in before.survivor.playingId and both terminal survivor cue IDs on a 224949Z copy. Leave the source inventory intact.
+- Expected: The evaluator must refuse the substitution. The inventory records that cue 513 ended at 22:51:50.3334766Z, before cue 586 was posted and before the two sources overlapped.
+- Actual: Ids reduces each inventory record to its playing ID. Because 513 belongs to survivorSource, the membership test and all subsequent ID comparisons pass. The row characterizes even though its selected posting frame and time belong to 586.
+- Why it blocks / does not: The verdict can attribute playback and callback observations to a different cue on the correct source.
+- Requested correction: Match the selected cue to its source record using the recorded posting identity and stop/end observations. Apply that check to collector generations that emitted the inventory.
+- Requested evidence: On both 224949Z shapes, reject replacing survivor 586 with already-ended survivor-source cue 513. Exercise the corresponding other-source substitution of 539 for 622 and retain the original positive control.
+
+**R2-F2** · P1 · defect · blocks readiness — Compare withheld callbacks at the times the collector sampled them
+- Location: `src/KingmakerGunslinger/RuntimeTesting/Sprint7ObserverPolicy.cs:308`; acceptance: R7-F1
+- Trigger: In 224949Z the last sample is at 22:52:08.2900069Z and the declared window ends at 22:52:08.4293166Z. Set the sample counts to zero and the terminal callback time to 22:52:08.3500000Z. Separately, move the original callback before cue 586's posting time while retaining its original counts.
+- Expected: A callback after the last sample but inside the window can first appear in the terminal snapshot. A callback before the selected cue was posted must refuse characterization.
+- Actual: The evaluator requires the last periodic count to equal the later terminal array length, so it refuses the valid late callback. It checks timestamps only for parseability, so the callback predating the cue still characterizes.
+- Why it blocks / does not: The verdict can reject a valid collector observation and accept a timestamp that could never belong to the selected playback.
+- Requested correction: Reconcile cumulative counts with timestamped callback observations according to the collector's sampling order. Allow the count to advance between the last periodic sample and the terminal read.
+- Requested evidence: On both row shapes, accept a callback in the final unsampled interval. Reject a timestamp before the selected post and retain the existing refusal when a callback clearly preceded later samples whose counts are still zero.
+
+**R2-F3** · P1 · defect · blocks readiness — Reconcile stop and completion observations across retirement
+- Location: `src/KingmakerGunslinger/RuntimeTesting/Sprint7ObserverPolicy.cs:327`; acceptance: R7-F1, R7-F6
+- Trigger: Independently set before.other.endUtc to 22:51:56.4200000Z, before otherRetiredUtc, or set survivorAfterDisposal.cue.stopRequestedUtc to 22:51:56.4333170Z, inside the protected window. Keep the other 224949Z observations intact.
+- Expected: The other cue's completion history must be consistent with its retirement. A survivor stop timestamp inside the window must conflict with the reported zero through-window count.
+- Actual: The other retirement check uses the settled cue's stop and end fields while ignoring an earlier recorded completion. After survivor disposal, the evaluator checks the ID and endUtc while ignoring the recorded stop time. Both altered rows reach the characterized verdict.
+- Why it blocks / does not: The reader can credit retirement with stopping a cue that had already completed, or describe a protected-window stop as the survivor's later disposal stop.
+- Requested correction: Reconcile the other cue's before and retirement-frame observations with its settled stop and end, including the cumulative attempt count. Check the survivor's recorded stop time against the protected window while preserving its legitimate later disposal stop.
+- Requested evidence: Reject both timestamp contradictions and a retirement-frame other-stop count greater than the settled count on both 224949Z shapes. Keep the actual survivor disposal stop at 22:52:08.4634895Z accepted.
+
+**R2-F4** · P2 · defect · blocks readiness — Keep an unselected failed post from invalidating the selected pair
+- Location: `src/KingmakerGunslinger/RuntimeTesting/Sprint7ObserverPolicy.cs:424`; acceptance: R7-F6
+- Trigger: Include an earlier failed PostEvent with playingId zero in either source inventory, followed by the original successful selections.
+- Expected: A known zero-ID failed post cannot own either selected positive ID. The selected pair should retain its verdict.
+- Actual: Ids returns null for the entire array if any entry lacks a positive ID. SummonAbilityCastCueRuntime.Post adds a record to Recent even when PostEvent returns zero, and S7ImpactCues includes that record in the source inventory. A valid selected pair consequently receives unreadable:cuesBeforeSelection.
+- Why it blocks / does not: An unrelated failed post can invalidate a fully observed two-source run through the collector's ordinary path.
+- Requested correction: Account for explicit zero-ID failed posts when scanning unselected inventory entries. Continue to require valid, distinct selected IDs and reject conflicting ownership.
+- Requested evidence: Add an unselected collector-shaped zero-ID post to an otherwise valid inventory in both representations. Confirm that the original pair characterizes and selecting zero still refuses.
+
+**R2-F5** · P2 · defect · blocks readiness — Distinguish a negative attempt count from an observed stop
+- Location: `src/KingmakerGunslinger/RuntimeTesting/Sprint7ObserverPolicy.cs:260`; acceptance: R7-F6
+- Trigger: Set afterOtherRetired.survivorStopAttempts or otherRetirementSettled.survivorStopAttemptsThroughWindow to -1 while the pre-disposal stop fields remain explicitly null.
+- Expected: A negative attempt count should produce an unreadable-count verdict. A positive count establishes an observed attempt.
+- Actual: Count accepts the entire signed Int32 range. Both survivor-stop checks translate every nonzero value into survivor-stopped-by-other-retirement.
+- Why it blocks / does not: Although the row refuses characterization, its recorded reason attributes a real stop to the survivor without a valid observation.
+- Requested correction: Validate the nonnegative range of attempt counts before interpreting them as stop evidence.
+- Requested evidence: Exercise negative retirement-frame and through-window counts alongside zero, positive and oversized controls on both 224949Z representations.
+
+**R2-F6** · P2 · defect · blocks readiness — Record the evaluator that actually produced the live verdict
+- Location: `src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.Sprint7Presentation.cs:1292`; acceptance: R7-F1
+- Trigger: Inspect the evaluator field that S7CallbackLoss writes when constructing a new row.
+- Expected: New rows should identify the evaluator that generated their verdict.
+- Actual: The row still declares Sprint7ObserverPolicy.CallbackLossSettled. That method was removed. The live caller now invokes CallbackLossRound7 at line 1415.
+- Why it blocks / does not: A future C3 run would record the historical evaluator name for the changed live reader, undermining the required provenance of its verdict.
+- Requested correction: Update the identifier emitted by the current collector and bind it to the current entry point. Preserve the identifiers in historical evidence.
+- Requested evidence: Show that a newly constructed callback-loss row identifies CallbackLossRound7 and that the retained 224949Z row keeps its original evaluator identity.
+
+#### Prior finding assessments
+
+- **R1-F1** — `fix_verified` — The evaluator consumes the retirement-frame survivor count in both generations and the additional through-window count in Round7. The focused test rejects the positive-count reproductions on 202648Z and both 224949Z shapes.
+- **R1-F2** — `fix_verified` — The requested in-window end, unreadable withheld timestamp and omitted sample playback now refuse in both shapes. R2-F2 concerns the newly introduced relationship between periodic and terminal counts.
+- **R1-F3** — `fix_verified` — Both the retirement-frame swap and the consistent substitution of wrong-source ID 539 now refuse. R2-F1 concerns distinguishing two different cues on the same source.
+- **R1-F4** — `fix_verified` — The live caller and persisted reader both invoke CallbackLossRound7. It reads the retirement time and settlement from the row. The passing test covers missing or unreadable times, null or scalar settlement, and the retained no-overlap verdict.
+- **R1-F5** — `fix_verified` — ExplicitNull accepts JSON null and the null-valued String JValue. The focused cases distinguish absent, undefined, wrong-type and unparsable stop or end observations from the two accepted null encodings.
+- **R1-F6** — `fix_verified` — Numeric range checks precede narrowing. Both shapes return a refusal for a count above Int32.MaxValue and a playing ID above Int64.MaxValue.
+- **R1-F7** — `fix_verified` — The ledger accounts for the 1.6s round-1 batch overhead and both failed round-2 local attempts. The report carries the post-commit 16.2s batch. Cumulative recovery spend is 1m43.4s, leaving 43m16.6s of the shared allowance.
+- **R1-F8** — `fix_verified` — The sanitized extract identifies all eleven parent receipts and logs by hash and reconciles the counts and timings. The frozen record and planning row carry 65m42s, and the retained native session confirms the a373 harness.
+
+#### Evidence assessment
+
+- **Inspected:** The enrolled mission, repository validation and review instructions, full feature diff, round-2 correction diff, developer report, prior ledger and controller evidence.; The live S7CallbackLoss collector, CallbackLossRound7 and CallbackLossRound6, cue-row production, source inventories, playback selection, stop lifecycle and affected domain tests.; The retained Round6 and Round7 observations, frozen Sprint 7 record, planning row, recovery ledger, parent gate extract and 224949Z session identities.
+- **Executed verification:** Confirmed the detached HEAD, merge base and enrolled mission SHA-256 against the fixed inputs.; Matched all four controller receipts to H and verified the SHA-256 of each supplied log. Each gate compiled production code and exited successfully. sprint7-visual passed 22 tests, summon-playtest-r6 passed 11, sprint22- passed 11 and native-profile passed 9. Receipt durations total 8.1s.; The sprint7-visual log records 224949Z and 202648Z as characterized by the reader, and 223809Z and 200320Z as not-both-playing. The passing impact-cue-playback-verdicts test includes the live-shaped 224949Z control and the round-1 regression cases.; Recounted the eleven entries in the parent gate extract. They total 118 selected executions, 19.1s inside receipts and 37.6s across individual wrappers. The extract records 40.1s for the batch.; git diff --check flagged the seven Markdown hard breaks in the verbatim, hash-matched mission.
+- **Source inspection only:** The new counterexamples below were traced through H using values and sampling boundaries from the retained row. The supplied gate does not exercise these mutations.
+- **Required gaps:** Focused evidence is still needed for same-source cue substitution, an unrelated zero-ID post, callback timing between reads, contradictory retirement observations, negative stop counts and the evaluator identity emitted in new rows.
+- **Limitations:** The controller withheld the mixed foreground-session transcript. Local attempt durations and outer batch overhead come from the operator's ledger and report. Controller receipts independently establish the four committed-candidate gate results.; C1 covers implementation and domain behavior. The retained native sessions ran candidate 3. Native execution of this changed evaluator belongs to C3.
+
+#### Summary
+
+- **Delivered behavior:** The shared Round7 entry point characterizes both 224949Z representations, preserves the original native FAIL and retains the bounded Round6 dispositions. The remaining source-record, timing and provenance defects block the C1 handoff.
+- **Scope reviewed:** Final C1 implementation and domain review for inherited R7-F1 and R7-F6, the affected collector and readers, and the records-only R6-F5 disposition.
+- **Pending later-phase work:** C2's external-harness late-unit qualification depends on a current C1 handoff.; C3 owns effects isolation and combined native qualification, including agreement between the live and persisted verdicts on one identified run.
+- **Unresolved questions:** none
+- **Remaining owner review:** The owner controls disposition of C1 at its two-review stop and any authorization to continue.; Visual and listening acceptance, integration of the dependent stack with frozen PR #219, and release remain owner decisions.
+
+#### Provenance (controller-recorded)
+
+| | Requested | Observed |
+|---|---|---|
+| Model | `gpt-6.2-astra` | `gpt-6.2-astra` (turns ['gpt-6.2-astra']) |
+| Reasoning effort | `max` | `max` (turns ['max']) |
+| Sandbox / approvals | read-only / never | `read-only` / `never` |
+
+Owner guidance bound to this review: none.
+
+Owner amendments bound to this review: none.
+
+Codex CLI `0.170.0`, thread `01a21239-9a04-7920-86c3-a0d7f5125f87`, duration 776.3s, response sha256 `d2ad74c942d83ab109e9ff02f5eaa9736516fddd8934c1a7e8b06036be9e4889`, request `kmg-codex-s7-recovery-c1-cue-evaluator-20261125045625-4a34-r02-0a671c`. Observed values come from the Codex session rollout's recorded thread settings, not from the model's own statements; the serving backend's model identity is not separately exposed.
+
+<details><summary>Complete structured review (agent-review.review.v1)</summary>
+
+```json
+{
+  "candidate_commit": "e4c9ed9c5e1681ef7ba29419ba4e57dc495cc010",
+  "checkpoint_id": "final",
+  "checkpoint_type": "final",
+  "decision": "changes_required",
+  "decision_rationale": "The eight round-1 findings are resolved, and all 53 focused test executions passed on H. The evaluator can still characterize an already-ended cue or a survivor stop recorded inside the protected window. It can also reject a callback that the collector legitimately observed between its last periodic sample and its terminal read.\n\n## Continuation for Claude\n\nC1 has reached its two-review limit. Preserve the mandatory stop and hold C2 at its C1 handoff prerequisite. Any further C1 work requires owner direction. If authorized, match the selected cues to their source records, reconcile stop and callback observations at the times they were taken, and correct the evaluator identity emitted in new rows. Exercise the counterexamples below on both 224949Z representations through the focused gate. Preserve the historical verdicts, collector-specific Round6 interpretation and shared expenditure of 1m43.4s. Packaging and combined native qualification belong to C3.",
+  "evidence_assessment": {
+    "executed_verification": [
+      "Confirmed the detached HEAD, merge base and enrolled mission SHA-256 against the fixed inputs.",
+      "Matched all four controller receipts to H and verified the SHA-256 of each supplied log. Each gate compiled production code and exited successfully. sprint7-visual passed 22 tests, summon-playtest-r6 passed 11, sprint22- passed 11 and native-profile passed 9. Receipt durations total 8.1s.",
+      "The sprint7-visual log records 224949Z and 202648Z as characterized by the reader, and 223809Z and 200320Z as not-both-playing. The passing impact-cue-playback-verdicts test includes the live-shaped 224949Z control and the round-1 regression cases.",
+      "Recounted the eleven entries in the parent gate extract. They total 118 selected executions, 19.1s inside receipts and 37.6s across individual wrappers. The extract records 40.1s for the batch.",
+      "git diff --check flagged the seven Markdown hard breaks in the verbatim, hash-matched mission."
+    ],
+    "inspected": [
+      "The enrolled mission, repository validation and review instructions, full feature diff, round-2 correction diff, developer report, prior ledger and controller evidence.",
+      "The live S7CallbackLoss collector, CallbackLossRound7 and CallbackLossRound6, cue-row production, source inventories, playback selection, stop lifecycle and affected domain tests.",
+      "The retained Round6 and Round7 observations, frozen Sprint 7 record, planning row, recovery ledger, parent gate extract and 224949Z session identities."
+    ],
+    "limitations": [
+      "The controller withheld the mixed foreground-session transcript. Local attempt durations and outer batch overhead come from the operator's ledger and report. Controller receipts independently establish the four committed-candidate gate results.",
+      "C1 covers implementation and domain behavior. The retained native sessions ran candidate 3. Native execution of this changed evaluator belongs to C3."
+    ],
+    "required_gaps": [
+      "Focused evidence is still needed for same-source cue substitution, an unrelated zero-ID post, callback timing between reads, contradictory retirement observations, negative stop counts and the evaluator identity emitted in new rows."
+    ],
+    "source_inspection_only": [
+      "The new counterexamples below were traced through H using values and sampling boundaries from the retained row. The supplied gate does not exercise these mutations."
+    ]
+  },
+  "findings": [
+    {
+      "acceptance_ids": [
+        "R7-F6"
+      ],
+      "actual": "Ids reduces each inventory record to its playing ID. Because 513 belongs to survivorSource, the membership test and all subsequent ID comparisons pass. The row characterizes even though its selected posting frame and time belong to 586.",
+      "blocking_rationale": "The verdict can attribute playback and callback observations to a different cue on the correct source.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "The evaluator must refuse the substitution. The inventory records that cue 513 ended at 22:51:50.3334766Z, before cue 586 was posted and before the two sources overlapped.",
+      "id": "R2-F1",
+      "location": {
+        "file": "src/KingmakerGunslinger/RuntimeTesting/Sprint7ObserverPolicy.cs",
+        "line": 237
+      },
+      "priority": "P1",
+      "requested_correction": "Match the selected cue to its source record using the recorded posting identity and stop/end observations. Apply that check to collector generations that emitted the inventory.",
+      "requested_evidence": "On both 224949Z shapes, reject replacing survivor 586 with already-ended survivor-source cue 513. Exercise the corresponding other-source substitution of 539 for 622 and retain the original positive control.",
+      "title": "Bind each selected ID to the actual cue on its source",
+      "trigger": "Replace 586 with 513 in before.survivor.playingId and both terminal survivor cue IDs on a 224949Z copy. Leave the source inventory intact."
+    },
+    {
+      "acceptance_ids": [
+        "R7-F1"
+      ],
+      "actual": "The evaluator requires the last periodic count to equal the later terminal array length, so it refuses the valid late callback. It checks timestamps only for parseability, so the callback predating the cue still characterizes.",
+      "blocking_rationale": "The verdict can reject a valid collector observation and accept a timestamp that could never belong to the selected playback.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "A callback after the last sample but inside the window can first appear in the terminal snapshot. A callback before the selected cue was posted must refuse characterization.",
+      "id": "R2-F2",
+      "location": {
+        "file": "src/KingmakerGunslinger/RuntimeTesting/Sprint7ObserverPolicy.cs",
+        "line": 308
+      },
+      "priority": "P1",
+      "requested_correction": "Reconcile cumulative counts with timestamped callback observations according to the collector's sampling order. Allow the count to advance between the last periodic sample and the terminal read.",
+      "requested_evidence": "On both row shapes, accept a callback in the final unsampled interval. Reject a timestamp before the selected post and retain the existing refusal when a callback clearly preceded later samples whose counts are still zero.",
+      "title": "Compare withheld callbacks at the times the collector sampled them",
+      "trigger": "In 224949Z the last sample is at 22:52:08.2900069Z and the declared window ends at 22:52:08.4293166Z. Set the sample counts to zero and the terminal callback time to 22:52:08.3500000Z. Separately, move the original callback before cue 586's posting time while retaining its original counts."
+    },
+    {
+      "acceptance_ids": [
+        "R7-F1",
+        "R7-F6"
+      ],
+      "actual": "The other retirement check uses the settled cue's stop and end fields while ignoring an earlier recorded completion. After survivor disposal, the evaluator checks the ID and endUtc while ignoring the recorded stop time. Both altered rows reach the characterized verdict.",
+      "blocking_rationale": "The reader can credit retirement with stopping a cue that had already completed, or describe a protected-window stop as the survivor's later disposal stop.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "The other cue's completion history must be consistent with its retirement. A survivor stop timestamp inside the window must conflict with the reported zero through-window count.",
+      "id": "R2-F3",
+      "location": {
+        "file": "src/KingmakerGunslinger/RuntimeTesting/Sprint7ObserverPolicy.cs",
+        "line": 327
+      },
+      "priority": "P1",
+      "requested_correction": "Reconcile the other cue's before and retirement-frame observations with its settled stop and end, including the cumulative attempt count. Check the survivor's recorded stop time against the protected window while preserving its legitimate later disposal stop.",
+      "requested_evidence": "Reject both timestamp contradictions and a retirement-frame other-stop count greater than the settled count on both 224949Z shapes. Keep the actual survivor disposal stop at 22:52:08.4634895Z accepted.",
+      "title": "Reconcile stop and completion observations across retirement",
+      "trigger": "Independently set before.other.endUtc to 22:51:56.4200000Z, before otherRetiredUtc, or set survivorAfterDisposal.cue.stopRequestedUtc to 22:51:56.4333170Z, inside the protected window. Keep the other 224949Z observations intact."
+    },
+    {
+      "acceptance_ids": [
+        "R7-F6"
+      ],
+      "actual": "Ids returns null for the entire array if any entry lacks a positive ID. SummonAbilityCastCueRuntime.Post adds a record to Recent even when PostEvent returns zero, and S7ImpactCues includes that record in the source inventory. A valid selected pair consequently receives unreadable:cuesBeforeSelection.",
+      "blocking_rationale": "An unrelated failed post can invalidate a fully observed two-source run through the collector's ordinary path.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "A known zero-ID failed post cannot own either selected positive ID. The selected pair should retain its verdict.",
+      "id": "R2-F4",
+      "location": {
+        "file": "src/KingmakerGunslinger/RuntimeTesting/Sprint7ObserverPolicy.cs",
+        "line": 424
+      },
+      "priority": "P2",
+      "requested_correction": "Account for explicit zero-ID failed posts when scanning unselected inventory entries. Continue to require valid, distinct selected IDs and reject conflicting ownership.",
+      "requested_evidence": "Add an unselected collector-shaped zero-ID post to an otherwise valid inventory in both representations. Confirm that the original pair characterizes and selecting zero still refuses.",
+      "title": "Keep an unselected failed post from invalidating the selected pair",
+      "trigger": "Include an earlier failed PostEvent with playingId zero in either source inventory, followed by the original successful selections."
+    },
+    {
+      "acceptance_ids": [
+        "R7-F6"
+      ],
+      "actual": "Count accepts the entire signed Int32 range. Both survivor-stop checks translate every nonzero value into survivor-stopped-by-other-retirement.",
+      "blocking_rationale": "Although the row refuses characterization, its recorded reason attributes a real stop to the survivor without a valid observation.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "A negative attempt count should produce an unreadable-count verdict. A positive count establishes an observed attempt.",
+      "id": "R2-F5",
+      "location": {
+        "file": "src/KingmakerGunslinger/RuntimeTesting/Sprint7ObserverPolicy.cs",
+        "line": 260
+      },
+      "priority": "P2",
+      "requested_correction": "Validate the nonnegative range of attempt counts before interpreting them as stop evidence.",
+      "requested_evidence": "Exercise negative retirement-frame and through-window counts alongside zero, positive and oversized controls on both 224949Z representations.",
+      "title": "Distinguish a negative attempt count from an observed stop",
+      "trigger": "Set afterOtherRetired.survivorStopAttempts or otherRetirementSettled.survivorStopAttemptsThroughWindow to -1 while the pre-disposal stop fields remain explicitly null."
+    },
+    {
+      "acceptance_ids": [
+        "R7-F1"
+      ],
+      "actual": "The row still declares Sprint7ObserverPolicy.CallbackLossSettled. That method was removed. The live caller now invokes CallbackLossRound7 at line 1415.",
+      "blocking_rationale": "A future C3 run would record the historical evaluator name for the changed live reader, undermining the required provenance of its verdict.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "New rows should identify the evaluator that generated their verdict.",
+      "id": "R2-F6",
+      "location": {
+        "file": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.Sprint7Presentation.cs",
+        "line": 1292
+      },
+      "priority": "P2",
+      "requested_correction": "Update the identifier emitted by the current collector and bind it to the current entry point. Preserve the identifiers in historical evidence.",
+      "requested_evidence": "Show that a newly constructed callback-loss row identifies CallbackLossRound7 and that the retained 224949Z row keeps its original evaluator identity.",
+      "title": "Record the evaluator that actually produced the live verdict",
+      "trigger": "Inspect the evaluator field that S7CallbackLoss writes when constructing a new row."
+    }
+  ],
+  "prior_finding_assessments": [
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R1-F1",
+      "rationale": "The evaluator consumes the retirement-frame survivor count in both generations and the additional through-window count in Round7. The focused test rejects the positive-count reproductions on 202648Z and both 224949Z shapes."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R1-F2",
+      "rationale": "The requested in-window end, unreadable withheld timestamp and omitted sample playback now refuse in both shapes. R2-F2 concerns the newly introduced relationship between periodic and terminal counts."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R1-F3",
+      "rationale": "Both the retirement-frame swap and the consistent substitution of wrong-source ID 539 now refuse. R2-F1 concerns distinguishing two different cues on the same source."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R1-F4",
+      "rationale": "The live caller and persisted reader both invoke CallbackLossRound7. It reads the retirement time and settlement from the row. The passing test covers missing or unreadable times, null or scalar settlement, and the retained no-overlap verdict."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R1-F5",
+      "rationale": "ExplicitNull accepts JSON null and the null-valued String JValue. The focused cases distinguish absent, undefined, wrong-type and unparsable stop or end observations from the two accepted null encodings."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R1-F6",
+      "rationale": "Numeric range checks precede narrowing. Both shapes return a refusal for a count above Int32.MaxValue and a playing ID above Int64.MaxValue."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R1-F7",
+      "rationale": "The ledger accounts for the 1.6s round-1 batch overhead and both failed round-2 local attempts. The report carries the post-commit 16.2s batch. Cumulative recovery spend is 1m43.4s, leaving 43m16.6s of the shared allowance."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R1-F8",
+      "rationale": "The sanitized extract identifies all eleven parent receipts and logs by hash and reconciles the counts and timings. The frozen record and planning row carry 65m42s, and the retained native session confirms the a373 harness."
+    }
+  ],
+  "request_id": "kmg-codex-s7-recovery-c1-cue-evaluator-20261125045625-4a34-r02-0a671c",
+  "round": 2,
+  "schema_version": "agent-review.review.v1",
+  "summary": {
+    "delivered_behavior": "The shared Round7 entry point characterizes both 224949Z representations, preserves the original native FAIL and retains the bounded Round6 dispositions. The remaining source-record, timing and provenance defects block the C1 handoff.",
+    "pending_later_phase_work": [
+      "C2's external-harness late-unit qualification depends on a current C1 handoff.",
+      "C3 owns effects isolation and combined native qualification, including agreement between the live and persisted verdicts on one identified run."
+    ],
+    "remaining_owner_review": [
+      "The owner controls disposition of C1 at its two-review stop and any authorization to continue.",
+      "Visual and listening acceptance, integration of the dependent stack with frozen PR #219, and release remain owner decisions."
+    ],
+    "scope_reviewed": "Final C1 implementation and domain review for inherited R7-F1 and R7-F6, the affected collector and readers, and the records-only R6-F5 disposition.",
+    "unresolved_questions": []
+  }
+}
+```
+</details>
+
+_Model-generated review by Codex using the requested model, posted by the agent-review controller through the owner's GitHub account. Not a human review or approval._
