@@ -1,5 +1,46 @@
 # Build, package, and publish
 
+## 0.0.196 publication authorization
+
+On 2026-11-26, after approving PR #224 at `65a6a40367` ("approved for the focused repair"), Howie wrote: "I think
+this is ready for a merge and release of a new version. Could you please perform that?" The two nonblocking record
+corrections from that approval were committed as `f5c4fe9f5d`, and PR #224 merged into master as `b112793982`. No
+channel was named, so this follows v0.0.195 as the next stable patch, v0.0.196, from master `b112793982`.
+
+- **Reviewed product.** Master `b112793982`. The product change from v0.0.195 is eleven files under
+  `src/KingmakerGunslinger`, listed and pinned in `tools/validate_elemental_heritage_labels_release196.py`:
+  - `ElementalRaces/ElementalRacialBonusDisplay.cs` (the label repair) and its project entry;
+  - ten observer files under `RuntimeTesting/` (native label, creator panel, sheet totals, respec and persistence
+    checks) and their project entries;
+  - the product delta from the v0.0.195 tag target under `src/KingmakerGunslinger`, `assets`, `assets-source`,
+    `blueprints` and `Directory.Build.props` is exactly those eleven files, in both directions;
+  - the merged `src/KingmakerGunslinger` tree `469cd49484` equals the natively tested development candidate
+    `a49dffd66c`;
+  - `Info.json`, the UMM 0.31.1 loader pins and the build inputs are unchanged from v0.0.195;
+  - only the three AssemblyInfo version attributes and the Info and props version values change;
+  - all 7,935 released identities stay exact and in order, and none is appended;
+  - the creature catalog is unchanged, with only the owner-withdrawn Stirge withheld (1,208 public choices);
+  - v0.0.192's DEF-05 inherited-template policy stays;
+  - one static release record is added.
+- **Preparation.** The complete domain suite on the PR #224 head `f5c4fe9f5d` passed 3,188/3,188 with 0 failures
+  (88 s). The release-branch repository wrapper and complete suite are recorded in the release PR.
+- **Native evidence.** On development candidates, recorded in `docs/ELEMENTAL-HERITAGE-ABILITY-SCORE-LABEL-REPAIR.md`.
+  Baseline `adcba2f314` reproduced the defect. Final candidate `a49dffd66c` results:
+  - heritage mechanics 81/81;
+  - Sylph native respec 12/12;
+  - persistence prepare 66/66;
+  - fresh load with the module OFF 175/175;
+  - fresh load with the module ON plus native respec 254/255, with all label assertions passing and one pre-existing
+    trait-set capture check failing (unchanged since v0.0.120).
+
+  The release build is run in the game after publication, and the result is added here.
+- **Not established.** The console screen in controller mode was not rendered. The Ifrit, Oread and Undine creator
+  and respec routes were not run. `elemental-race-persistence-verify-absent` did not run on the final candidate. The
+  rolled creator route still pins Dice Roller 0.1.2. The release notes list the player-facing ones.
+- **Publication path.** The ordinary exact-reference publisher runs from clean, pushed master with
+  `docs/RELEASE-NOTES-0.0.196.md` and the explicit summon-overhaul-baseline reference bundle. It runs the complete
+  gate and two deterministic builds, then publishes.
+
 ## 0.0.195 publication authorization
 
 **Published (completed).** Stable

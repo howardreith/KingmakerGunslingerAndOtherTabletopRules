@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.195-gunslinger-remediation-sprint6",
+  "milestone": "0.0.196-elemental-heritage-racial-labels",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.195",
+  "version": "0.0.196",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -3079,5 +3079,15 @@
     "nativeEvidence": "Per checkpoint on its own development candidate in the disposable loader-compat game copy on Unity Mod Manager owner profile 0.33.0, fixture KMCS_AFTER_NORMAL_012_MODONLY.zks, product-only profile except A2 (Call of the Wild 1.14.4c-2.1 provider), as recorded in docs/GUNSLINGER-SPRINT6-DISPOSITION.md and the checkpoint records: A1 20261122T143026Z PASS (f9c2440651); A2 20261122T173603Z PASS 3/3 (caad210696); B 20261122T190544Z PASS 3/3 (4e11e6c25c, baseline 184839Z FAIL as expected); C1 200515Z, C2 205434Z, C2a R1 231045Z (044355c2a9), C3a R1 012518Z (9e902dfa80), C3b 015820Z, C3c 024057Z, G4 033626Z, G1/G2 144444Z, G1-R 162752Z; D1 20261123T173520Z PASS 3/3 (634a6efdd3, baseline 172326Z reproduced the loss); D2 diagnostic 182444Z PASS 2/2; D3 185954Z PASS 3/3 on an induced former source. Earlier owners were not requalified on the final D1 package; each PASS is evidence for the bytes and scope it ran on. Every Sprint 6 candidate was built on the v0.0.193 base without the v0.0.194 Bag of Tricks change; no session ran on the merged master product. The published release bytes are run in the game after publication; that result is recorded in docs/BUILD-AND-RELEASE.md, not here.",
     "deferredCoverage": "REP-05 (Tenebrous stalls) and REP-06 (November 11 buff-restoration failure) stay blocked on their original inputs and unattributed. LIM-02 authentic pre-fix-save qualification is unexecuted (old Earth Elemental preference and old Griffon duplicate Charge are retained until summon expiry; the Bebelith marker is kept, inert). LIM-03 is qualified only on an induced route. VER-02 stays open with G5 (real party exit) fixture-blocked. Unexecuted: turn-based mode, loader versions and profiles other than UMM owner 0.33.0, providers beyond Call of the Wild for A2, downgrade, party-member loads, 3-4 hold links, successful Dismissal. Accepted limitations: RISK-03 engine conversion losses before owner code (not universal malformed-save recovery), ambiguous vendor stock kept by policy, the Thornstep count limit, RISK-02 untested lifecycles. Earlier release disclosures stand.",
     "ownerPublicationAuthority": "Howie Reith, 2026-11-23, after the Sprint 6 disposition review of PR #216: 'This is accepted. Please merge this and all other sprint 6 PRs and cut a new release once they are all merged.' (PRs #198 to #216 merged bottom-up, ending with PR #216 as ee4df4e442). Published as the next stable patch, as v0.0.194 was."
+  },
+  "elementalHeritageRacialLabelsRelease196": {
+    "releaseVersion": "0.0.196",
+    "releaseInformationalVersion": "0.0.196-elemental-heritage-racial-labels",
+    "baseStableVersion": "0.0.195",
+    "reviewedProductSource": "b1127939821429483e3383061bda4bee4aa8e184",
+    "appendedIdentities": 0,
+    "releasedIdentityChanges": 0,
+    "visibleChoiceTotal": 1208,
+    "change": "Elemental heritage racial-bonus labels (PR #224, reviewed by the owner with ChatGPT at 2a69d3aac7 and approved at 65a6a40367, merged as b112793982). A report against the alternate elemental heritages ('+2 dex and Cha but -2 Con, Int, and Wis' for a Sylph) was traced to Kingmaker 2.1.7b's CharSScoreEntry.SetData and console CharInfoStatVM.OnStatUpdated, which label an ability with the first Racial modifier; per-descriptor lists sort ascending, so an alternate heritage (General race modifier plus the marker's NetDeltas, both Racial) showed its most negative entry. Racial stacks, so actual scores were correct. ElementalRaces/ElementalRacialBonusDisplay.cs postfixes both paths for the four registered elemental races only and shows the engine's effective Racial aggregate (ApplyModifiersFiltered over Racial, offset past the MinValueRaw clamp); zero renders '-'. Labels only: no stat, allocation, fact or save writes. The character sheet renders no racial label (null RaceBonus). Ten RuntimeTesting observer files add native label, creator-panel, sheet-total, respec and fresh-load persistence checks. Natively tested as development candidate a49dffd66c (product tree 469cd49484): mechanics 81/81, Sylph native respec 12/12, persistence prepare 66/66, module OFF 175/175, module ON 254/255 with one pre-existing trait-set capture check."
   }
 }
