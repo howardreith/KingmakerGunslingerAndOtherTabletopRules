@@ -1,0 +1,529 @@
+{
+ "harness": {
+  "conditions": {},
+  "exitRequested": true,
+  "failure": null,
+  "finishedUtc": "2026-11-26T00:31:05.3288671Z",
+  "isolation": "saves=<lab>/Saved Games; areas=<lab>/Areas",
+  "isolationRestored": true,
+  "kmgGhaeleLifetime_lifecycle": {
+   "area": "JamandisMansionThroneroom",
+   "cases": {
+    "abandonedAfterSpawn": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+     "abilityGrantRemains": false,
+     "borrowed": false,
+     "bystanderAfterAbandon": {
+      "finished": false,
+      "held": true,
+      "result": null
+     },
+     "bystanderBeforeAbandon": {
+      "finished": false,
+      "held": true,
+      "result": null
+     },
+     "bystanderCommandSurvived": true,
+     "commandReleased": true,
+     "earlySummonDestroyed": true,
+     "foreignGhaele": "b3cbf017-4e2f-400a-a466-ef7d653b54df",
+     "foreignPreserved": true,
+     "granted": true,
+     "lateSummonsDestroyed": 1,
+     "loanReleased": true,
+     "ownedCommandRemains": false,
+     "ownedSummon": "5425cf0c-d777-4e2d-afc2-7532761407a4",
+     "spawnSeenBeforeRegistration": true,
+     "unsettledAfterWitness": [],
+     "witness": {
+      "known": [
+       "b3cbf017-4e2f-400a-a466-ef7d653b54df"
+      ],
+      "matchedBy": [
+       "execution"
+      ],
+      "owned": [
+       "5425cf0c-d777-4e2d-afc2-7532761407a4"
+      ],
+      "retainedExecutions": 1,
+      "subscribed": false,
+      "unattributed": [
+       "b3cbf017-4e2f-400a-a466-ef7d653b54df"
+      ],
+      "unknown": []
+     }
+    },
+    "abandonedPending": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+     "abilityGrantRemains": false,
+     "beforeDispose": {
+      "commandPending": true,
+      "grantIsCastInstance": true,
+      "loanHeld": true,
+      "overrideCasterLevel": 20
+     },
+     "borrowed": false,
+     "bystanderAfterAbandon": {
+      "finished": false,
+      "held": true,
+      "result": null
+     },
+     "bystanderBeforeAbandon": {
+      "finished": false,
+      "held": true,
+      "result": null
+     },
+     "bystanderCommandSurvived": true,
+     "commandReleased": true,
+     "foreignGhaele": "ca208c4f-c181-43c4-b56a-233eb26d92cf",
+     "foreignPreserved": true,
+     "granted": true,
+     "lateSummonsDestroyed": 0,
+     "loanReleased": true,
+     "ownedCommandRemains": false,
+     "unsettledAfterWitness": [],
+     "verdict": null,
+     "witness": {
+      "known": [
+       "ca208c4f-c181-43c4-b56a-233eb26d92cf"
+      ],
+      "matchedBy": [],
+      "owned": [],
+      "retainedExecutions": 0,
+      "subscribed": false,
+      "unattributed": [],
+      "unknown": []
+     }
+    },
+    "abandonedPendingLateResult": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+     "abilityGrantRemains": false,
+     "beforeDispose": {
+      "commandPending": true,
+      "loanHeld": true,
+      "witnessOwned": 0
+     },
+     "borrowed": false,
+     "commandReleased": true,
+     "foreignPreserved": true,
+     "granted": true,
+     "injection": "controlled notification injection (labelled, owner amendment 3 section 4): the witness handler receives a RuleSummonUnit, never triggered, whose context is a fresh execution context of the abandoned cast's own AbilityData and whose summoned unit is a real disposable unit registered with the probe's destruction owner before delivery",
+     "lateSummonsDestroyed": 0,
+     "lateUnit": "77eaaa28-5a51-4564-b549-f57c09253587",
+     "lateUnitDestroyRequested": true,
+     "lateUnitDestroyRequestedByReconciliation": true,
+     "lateUnitDestroyed": true,
+     "lateUnitOwnedBeforeDelivery": true,
+     "loanReleased": true,
+     "order": [
+      {
+       "frame": 4741,
+       "step": "queued",
+       "witnessOwned": 0
+      },
+      {
+       "frame": 4741,
+       "step": "before-disposal",
+       "witnessOwned": 0
+      },
+      {
+       "frame": 4741,
+       "step": "cast-owner-disposed",
+       "witnessOwned": 0
+      },
+      {
+       "frame": 4741,
+       "step": "late-unit-registered",
+       "witnessOwned": 0
+      },
+      {
+       "frame": 4741,
+       "step": "late-result-delivered",
+       "witnessOwned": 1
+      }
+     ],
+     "ordered": true,
+     "ownedCommandRemains": false,
+     "unsettledAfterWitness": [],
+     "verdict": "late-owned-summon",
+     "witness": {
+      "known": [
+       "ca208c4f-c181-43c4-b56a-233eb26d92cf"
+      ],
+      "matchedBy": [
+       "ability-data"
+      ],
+      "owned": [
+       "77eaaa28-5a51-4564-b549-f57c09253587"
+      ],
+      "retainedExecutions": 0,
+      "subscribed": false,
+      "unattributed": [],
+      "unknown": []
+     }
+    },
+    "borrowedCl20Override": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+     "borrowed": true,
+     "commandReleased": true,
+     "finished": true,
+     "granted": false,
+     "injectedWrongRestore": {
+      "abilityPresent": true,
+      "grantRetained": null,
+      "overrideParams": {
+       "casterLevel": 20,
+       "spellLevel": 9
+      },
+      "reason": "parameters-not-restored",
+      "released": false,
+      "sameInstance": true
+     },
+     "lateSummonsDestroyed": 0,
+     "loan": {
+      "abilityPresent": true,
+      "grantRetained": null,
+      "overrideParams": {
+       "casterLevel": 20,
+       "spellLevel": 9
+      },
+      "reason": null,
+      "released": true,
+      "sameInstance": true
+     },
+     "loanReleased": true,
+     "overrideDuringCast": {
+      "casterLevel": 20,
+      "spellLevel": 9
+     },
+     "result": "Success",
+     "spawned": "KMG_Summoning_Unit_GhaeleAzata",
+     "summonedId": "e95ae74f-c509-4bf4-a710-848d72bfafed",
+     "verdictHeld": true
+    },
+    "borrowedMissing": {
+     "loan": {
+      "abilityPresent": false,
+      "grantRetained": null,
+      "overrideParams": null,
+      "reason": "borrowed-missing",
+      "released": false,
+      "sameInstance": false
+     },
+     "refused": true
+    },
+    "borrowedNonDefault": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+     "borrowed": true,
+     "commandReleased": true,
+     "finished": true,
+     "granted": false,
+     "injectedWrongRestore": {
+      "abilityPresent": true,
+      "grantRetained": null,
+      "overrideParams": {
+       "casterLevel": 7,
+       "spellLevel": 3
+      },
+      "reason": "parameters-not-restored",
+      "released": false,
+      "sameInstance": true
+     },
+     "lateSummonsDestroyed": 0,
+     "loan": {
+      "abilityPresent": true,
+      "grantRetained": null,
+      "overrideParams": {
+       "casterLevel": 7,
+       "spellLevel": 3
+      },
+      "reason": null,
+      "released": true,
+      "sameInstance": true
+     },
+     "loanReleased": true,
+     "overrideDuringCast": {
+      "casterLevel": 20,
+      "spellLevel": 9
+     },
+     "result": "Success",
+     "spawned": "KMG_Summoning_Unit_GhaeleAzata",
+     "summonedId": "ddaebcb6-2841-4d4b-be2c-e90b230ff67d",
+     "verdictHeld": true
+    },
+    "replacedGrant": {
+     "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+     "borrowed": false,
+     "commandReleased": true,
+     "finished": true,
+     "granted": true,
+     "lateSummonsDestroyed": 0,
+     "loan": {
+      "abilityPresent": true,
+      "grantRetained": false,
+      "overrideParams": null,
+      "reason": null,
+      "released": true,
+      "sameInstance": null
+     },
+     "loanReleased": true,
+     "overrideDuringCast": {
+      "casterLevel": 20,
+      "spellLevel": 9
+     },
+     "replacementSurvived": true,
+     "replacementUntouched": true,
+     "result": "Success",
+     "spawned": "KMG_Summoning_Unit_GhaeleAzata",
+     "summonedId": "990d2732-ff38-4e40-8559-124f60e0d0a8"
+    }
+   },
+   "mode": "lifecycle",
+   "pauseRestored": true,
+   "problems": [],
+   "productVersion": "0.0.195",
+   "termination": {
+    "cleanupAttempted": [
+     "probe iterator",
+     "borrowedNonDefault: summon ability loan",
+     "borrowedNonDefault: summon command",
+     "borrowedNonDefault: unregistered summons",
+     "borrowedNonDefault setup",
+     "disposable unit ddaebcb6-2841-4d4b-be2c-e90b230ff67d",
+     "borrowedCl20Override: summon ability loan",
+     "borrowedCl20Override: summon command",
+     "borrowedCl20Override: unregistered summons",
+     "borrowedCl20Override setup",
+     "disposable unit e95ae74f-c509-4bf4-a710-848d72bfafed",
+     "replaced: summon ability loan",
+     "replaced: summon command",
+     "replaced: unregistered summons",
+     "replacement setup",
+     "disposable unit 990d2732-ff38-4e40-8559-124f60e0d0a8",
+     "pending: summon command",
+     "pending: summon ability loan",
+     "pending: unregistered summons",
+     "pending late-spawn witness",
+     "pendingLate: summon command",
+     "pendingLate: summon ability loan",
+     "pendingLate: unregistered summons",
+     "disposable unit 77eaaa28-5a51-4564-b549-f57c09253587",
+     "late-result witness",
+     "disposable unit ca208c4f-c181-43c4-b56a-233eb26d92cf",
+     "spawned: summon command",
+     "spawned: summon ability loan",
+     "disposable unit 5425cf0c-d777-4e2d-afc2-7532761407a4",
+     "spawned: unregistered summons",
+     "spawn detection witness",
+     "disposable unit b3cbf017-4e2f-400a-a466-ef7d653b54df",
+     "disposable unit 4544ce27-8314-4da1-90f0-9d3fa39fc638",
+     "rule subscription",
+     "pause",
+     "disposable units",
+     "disposable units settled"
+    ],
+    "cleanupFailures": [],
+    "isolationRestored": true,
+    "passed": true,
+    "step": "2|kmgGhaeleLifetime_lifecycle",
+    "testFailure": ""
+   },
+   "unsettledAtEnd": []
+  },
+  "kmgInitialization_create": {
+   "blueprintsFailed": false,
+   "blueprintsInitialized": true,
+   "contextFailed": false,
+   "environment": {
+    "conditions": {
+     "blankResolutions": 0,
+     "events": [],
+     "gritUiPass": {
+      "firstPassStillOpen": false,
+      "firstPassStoppedOnDescriptionOf": null,
+      "installed": false,
+      "passesCompleted": 0,
+      "passesOpened": 0,
+      "projectAbilitiesRead": 0,
+      "projectAbilityDescriptionReads": 0,
+      "substituted": [],
+      "thrown": []
+     },
+     "libraryPrepared": false,
+     "nativeDescriptions": [],
+     "nullResolutions": 0
+    },
+    "currentLocale": "enGB",
+    "currentPackLocale": "enGB",
+    "currentPackStrings": 41552,
+    "emptyKeyResolvesTo": "",
+    "unassignedStringResolvesTo": "<null>",
+    "unknownKeyResolvesTo": "[unknown key: KmgLoaderCompatHarness.UnknownKeyProbe]"
+   },
+   "failureChain": [],
+   "loaderEntryActive": true,
+   "mainState": "Loaded"
+  },
+  "kmgModules_all-on": {
+   "active": {
+    "AcadamaeGraduate": true,
+    "BodyguardFeats": true,
+    "BrownFurTransmuter": true,
+    "EasternWeapons": true,
+    "ElementalRaces": true,
+    "ElvenBranchedSpears": true,
+    "ExpandedSummoning": true,
+    "Gunslinger": true,
+    "MagicCircleSpells": true,
+    "ProtectionFromAlignmentControlImmunity": true,
+    "ShieldOther": true,
+    "TeleportationSpells": true,
+    "UrbanBarbarian": true
+   },
+   "file": null,
+   "fileSha256": null,
+   "pending": {
+    "AcadamaeGraduate": true,
+    "BodyguardFeats": true,
+    "BrownFurTransmuter": true,
+    "EasternWeapons": true,
+    "ElementalRaces": true,
+    "ElvenBranchedSpears": true,
+    "ExpandedSummoning": true,
+    "Gunslinger": true,
+    "MagicCircleSpells": true,
+    "ProtectionFromAlignmentControlImmunity": true,
+    "ShieldOther": true,
+    "TeleportationSpells": true,
+    "UrbanBarbarian": true
+   },
+   "restartRequired": false
+  },
+  "loggerExceptionHooks": 4,
+  "requestPath": "<lab>/harness-request.json",
+  "runId": "20261126T002852Z-owner-0.33.0-s7-ghaele-lifecycle-01-ghaele",
+  "startedUtc": "2026-11-26T00:29:21.3428278Z",
+  "status": "passed",
+  "steps": [
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgModules[all-on]()"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgInitialization[create]"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgGhaeleLifetime[lifecycle](lifecycle)"
+   }
+  ]
+ },
+ "harnessEvents": [
+  {
+   "detail": {
+    "ummWindowOpen": true
+   },
+   "event": "mainMenu",
+   "t": 58.66204,
+   "utc": "2026-11-26T00:30:16.6803922Z"
+  },
+  {
+   "detail": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+   "event": "loadSave",
+   "t": 58.6657143,
+   "utc": "2026-11-26T00:30:16.6833936Z"
+  },
+  {
+   "detail": "JamandisMansionThroneroom",
+   "event": "saveLoaded",
+   "t": 67.16417,
+   "utc": "2026-11-26T00:30:25.1819557Z"
+  },
+  {
+   "detail": "kmgModules[all-on]()",
+   "event": "stepBegin",
+   "t": 69.20848,
+   "utc": "2026-11-26T00:30:27.2263821Z"
+  },
+  {
+   "detail": "kmgModules[all-on]()",
+   "event": "stepDone",
+   "t": 69.2251,
+   "utc": "2026-11-26T00:30:27.2434930Z"
+  },
+  {
+   "detail": "kmgInitialization[create]",
+   "event": "stepBegin",
+   "t": 69.2409,
+   "utc": "2026-11-26T00:30:27.2591406Z"
+  },
+  {
+   "detail": "kmgInitialization[create]",
+   "event": "stepDone",
+   "t": 69.2442856,
+   "utc": "2026-11-26T00:30:27.2621382Z"
+  },
+  {
+   "detail": "kmgGhaeleLifetime[lifecycle](lifecycle)",
+   "event": "stepBegin",
+   "t": 69.2755,
+   "utc": "2026-11-26T00:30:27.2930327Z"
+  },
+  {
+   "detail": "kmgGhaeleLifetime[lifecycle](lifecycle)",
+   "event": "stepDone",
+   "t": 107.281281,
+   "utc": "2026-11-26T00:31:05.2996383Z"
+  }
+ ],
+ "launch": "01-ghaele",
+ "launchSummary": {
+  "conditions": {},
+  "gameArguments": [
+   "locale=enGB"
+  ],
+  "harness": "passed",
+  "identity": {
+   "activeMods": [
+    "KingmakerGunslinger 0.0.195",
+    "KmgLoaderCompatHarness 0.1.0"
+   ],
+   "harmony12Sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+   "harmony2": [
+    "2.3.6.0 df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80"
+   ],
+   "productSha256": "5969f596811984eaaf69014bc3bc8ddb39d733d8837cce280a76655abd98e2c3",
+   "umm": "0.33.0.0",
+   "ummReported": "0.33.0.0",
+   "ummSha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
+  },
+  "label": "01-ghaele",
+  "log": {
+   "absent": [
+    "[initialize.failed] x0"
+   ],
+   "once": [],
+   "present": [
+    "[blueprints][initialize.complete] x1"
+   ]
+  },
+  "pid": 41916,
+  "problems": [],
+  "seconds": 115,
+  "verdict": "PASS"
+ },
+ "session": "20261126T002852Z-owner-0.33.0-s7-ghaele-lifecycle",
+ "sources": {
+  "harness-result.json": "b48cf87555a131172f4c49976ab3856a4fa1d94dbdf5632401c906b7501df8e2"
+ }
+}

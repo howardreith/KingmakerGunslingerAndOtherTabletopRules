@@ -1,0 +1,22 @@
+[
+ {
+  "file": "20261126T002852Z-owner-0.33.0-s7-ghaele-lifecycle-session.json",
+  "session": "20261126T002852Z-owner-0.33.0-s7-ghaele-lifecycle",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "6c9351ad39337a5616d2099163fe3d108179daf45d08f750d64861bfba84b345"
+  }
+ },
+ {
+  "file": "20261126T002852Z-owner-0.33.0-s7-ghaele-lifecycle-01-ghaele.json",
+  "session": "20261126T002852Z-owner-0.33.0-s7-ghaele-lifecycle",
+  "launch": "01-ghaele",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "b48cf87555a131172f4c49976ab3856a4fa1d94dbdf5632401c906b7501df8e2"
+  }
+ }
+]
