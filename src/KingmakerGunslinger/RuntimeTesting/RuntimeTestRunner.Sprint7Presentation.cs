@@ -2987,29 +2987,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (int)early["ownedExecutionsLiveAfterWait"] == 0, (JObject)early.DeepClone(),
                     "A Dust cast of the cell, owned by the cell's own ledger, whose owner exits as soon as its Sickened is applied (enumerator disposed mid-cast) interrupts only its own command and removes exactly the Sickened instance its execution introduced (none was owned before it): none remains, its release reports no failure into the cell's failure list, its execution has ended after the settle wait, and the foreign control survives.");
 
-                // 9b. R4-F4: a separate execution by the same Dust Mephit that the
-                // cell does not issue (standing for another owner's command), on the
-                // enemy outside the cone: its Sickened is not the cell's.
-                var unowned = new JObject(); row["unownedExecution"] = unowned;
-                outsideSaves.DesiredRoll = 1;
-                // Beside that enemy, facing away from the hostile and the caster behind.
-                PlaceExpandedSummoningUnit(late, ground(outside.Position + Vector3.right * 2f));
-                foreach (int step in R6Wait(20)) yield return step;
-                unowned["canTarget"] = abilityData(late, breath).CanTarget(new TargetWrapper(outside));
-                var separate = new UnitUseAbility(abilityData(late, breath), new TargetWrapper(outside));
-                late.Commands.Run(separate);
-                DateTime separateDeadline = DateTime.UtcNow.AddSeconds(15);
-                while (DateTime.UtcNow < separateDeadline && !(separate.IsFinished && (separate.ExecutionProcess == null || separate.ExecutionProcess.IsEnded))) yield return 0;
-                AbilityExecutionContext separateContext = separate.ExecutionProcess == null ? null : separate.ExecutionProcess.Context;
-                unownedSickened = outside.Descriptor.Buffs.Enumerable.FirstOrDefault(buff => ReferenceEquals(buff.Blueprint, sickened) && buff.Context != null &&
-                    (ReferenceEquals(buff.Context, separateContext) || ReferenceEquals(buff.Context.SourceAbilityContext, separateContext)));
-                unowned["sickenedApplied"] = unownedSickened != null;
-                unowned["ownedByLedger"] = unownedSickened != null && conditions.Owns(unownedSickened);
-                foreach (int step in S7WaitDustReleased()) yield return step;
-                PlaceExpandedSummoningUnit(late, spot);
-                foreach (int step in R6Wait(20)) yield return step;
-
-                // 9c. Recovery C3 (R7-F2): an ordinary owned Dust cast released after its execution starts and before its first
+                // 9a. Recovery C3 (R7-F2): an ordinary owned Dust cast released after its execution starts and before its first
                 // effect delivery, through the cell's own command release. The exact process is retained before the
                 // interruption can clear the command's field, stays under observation and is observed ended.
                 var preDelivery = new JObject(); row["preDeliveryRelease"] = preDelivery;
@@ -3040,6 +3018,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (bool)preDelivery["processRetained"] && (bool?)preDelivery["endedAfterWait"] == true && (int)preDelivery["liveExecutionsAfterWait"] == 0,
                     (JObject)preDelivery.DeepClone(),
                     "An ordinary owned Dust cast released after its execution process started and before its first effect delivery: the cell's command release retains the exact process before interrupting the command (whatever the command's field reads afterwards), the process stays under observation and is observed ended, and no retained execution is left live.");
+
+                // 9b. R4-F4: a separate execution by the same Dust Mephit that the
+                // cell does not issue (standing for another owner's command), on the
+                // enemy outside the cone: its Sickened is not the cell's.
+                var unowned = new JObject(); row["unownedExecution"] = unowned;
+                outsideSaves.DesiredRoll = 1;
+                // Beside that enemy, facing away from the hostile and the caster behind.
+                PlaceExpandedSummoningUnit(late, ground(outside.Position + Vector3.right * 2f));
+                foreach (int step in R6Wait(20)) yield return step;
+                unowned["canTarget"] = abilityData(late, breath).CanTarget(new TargetWrapper(outside));
+                var separate = new UnitUseAbility(abilityData(late, breath), new TargetWrapper(outside));
+                late.Commands.Run(separate);
+                DateTime separateDeadline = DateTime.UtcNow.AddSeconds(15);
+                while (DateTime.UtcNow < separateDeadline && !(separate.IsFinished && (separate.ExecutionProcess == null || separate.ExecutionProcess.IsEnded))) yield return 0;
+                AbilityExecutionContext separateContext = separate.ExecutionProcess == null ? null : separate.ExecutionProcess.Context;
+                unownedSickened = outside.Descriptor.Buffs.Enumerable.FirstOrDefault(buff => ReferenceEquals(buff.Blueprint, sickened) && buff.Context != null &&
+                    (ReferenceEquals(buff.Context, separateContext) || ReferenceEquals(buff.Context.SourceAbilityContext, separateContext)));
+                unowned["sickenedApplied"] = unownedSickened != null;
+                unowned["ownedByLedger"] = unownedSickened != null && conditions.Owns(unownedSickened);
+                foreach (int step in S7WaitDustReleased()) yield return step;
+                PlaceExpandedSummoningUnit(late, spot);
+                foreach (int step in R6Wait(20)) yield return step;
 
                 // 7. A native-look comparison of the same Dust cast: the
                 // observer restores the recolour as soon as it is applied.
@@ -3177,6 +3177,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Ready = () => (bool?)probe["applied"] == true,
                 Inject = () => S7DustConditions.Inject = "fail-owned-removal",
                 Clear = () => S7DustConditions.Inject = null,
+                // The recolour of the cell's last cast is released natively; the safety readback follows that wait.
+                AfterRepair = S7WaitDustReleased,
                 Expected = new[] { "injected failure of an owned Sickened removal", "owned conditions remaining: 1" },
             };
             driver.Repair = () =>
@@ -3218,7 +3220,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint7ObserverPolicy.Cell("s7-dust-abandoned-inner", () => S7Dust(fixture, summon, hostile, inner, mark, ground, recorder, abilityData, symbols, hostileSaves, driver.Child, probe)),
                     Sprint7ObserverPolicy.Cell("s7-dust-abandoned-next", next), S7Cells(driver.Child, cells), TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(60)))
                     yield return step;
-                foreach (int step in S7WaitDustReleased()) yield return step;
             }
             finally
             {

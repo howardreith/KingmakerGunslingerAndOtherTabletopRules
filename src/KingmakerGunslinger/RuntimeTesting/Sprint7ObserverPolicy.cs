@@ -947,6 +947,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal Func<bool> Ready;               // null: run to completion
         internal Action Inject, Clear;
         internal Func<List<string>> Repair;
+        internal Func<IEnumerable<int>> AfterRepair;   // a declared settle wait between the repair and the safety readback
         internal Func<List<string>> Unsafe;
         internal string[] Expected = new string[0];
         internal readonly JObject Row = new JObject();
@@ -1005,6 +1006,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int step in Sprint7ObserverPolicy.Sequence(Child, new[] { next }, run, settle)) yield return step;
                 Row["childAfterResume"] = Child.Describe();
                 RepairOnce("after the guard");
+                if (AfterRepair != null) foreach (int step in AfterRepair()) yield return step;
                 List<string> unsafeReasons;
                 try { unsafeReasons = Unsafe == null ? new List<string>() : (Unsafe() ?? new List<string>()); }
                 catch (Exception error) { unsafeReasons = new List<string> { "safety readback: " + error.GetType().Name + ": " + error.Message }; }

@@ -1440,14 +1440,16 @@ namespace KingmakerGunslinger.DomainTests
             foreach (bool independent in new[] { false, true })
             {
                 var phase = new Sprint7CellIsolation();
-                bool ready = false; int childNext = 0, phaseNext = 0, repairs = 0;
+                bool ready = false, waited = false; int childNext = 0, phaseNext = 0, repairs = 0;
                 var leftovers = new List<string> { "injected-sickened", "foreign-sickened" };
                 var driver = new Sprint7Abandonment
                 {
                     Owner = "dust driver", Phase = phase, Ready = () => ready,
                     Inject = () => { }, Clear = () => { },
                     Repair = () => { repairs++; leftovers.Remove("injected-sickened"); return new List<string>(); },
-                    Unsafe = () => leftovers.Contains("injected-sickened") ? new List<string> { "leftover" } : new List<string>(),
+                    // The declared settle wait runs after the repair and before the safety readback.
+                    AfterRepair = () => Counting(() => waited = repairs == 1),
+                    Unsafe = () => leftovers.Contains("injected-sickened") || !waited ? new List<string> { "leftover or not settled" } : new List<string>(),
                     Expected = new[] { injected, "owned conditions remaining: 1" },
                 };
                 Func<IEnumerable<int>> inner = () => HeldCell(driver.Child, "s7-dust", () => ready = true, isolation =>
