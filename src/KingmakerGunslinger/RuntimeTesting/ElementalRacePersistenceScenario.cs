@@ -352,8 +352,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             CaptureLegacyMigrationFixture();
                         else
                         {
+                            // The capture clears _currentUnit; keep the observed actor.
+                            UnitEntityData observed = _currentUnit;
                             CaptureVerifiedFixture();
-                            StartSheetLabelCapture(_fixtures[_fixtureIndex], "module-off-fresh-load");
+                            StartSheetLabelCapture(_fixtures[_fixtureIndex], observed, "module-off-fresh-load");
                         }
                         _fixtureIndex++;
                         if (_fixtureIndex < _fixtures.Length)
@@ -397,8 +399,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (_prepare) CapturePreparedFixture();
                         else
                         {
+                            UnitEntityData observed = _currentUnit;
                             CaptureRestoredFixture();
-                            StartSheetLabelCapture(_fixtures[_fixtureIndex], "module-on-fresh-load-native-respec");
+                            StartSheetLabelCapture(_fixtures[_fixtureIndex], observed, "module-on-fresh-load-native-respec");
                         }
                         _fixtureIndex++;
                         if (_fixtureIndex < _fixtures.Length)
@@ -446,16 +449,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
 
-            private void StartSheetLabelCapture(ElementalPersistenceFixture fixture, string phase)
+            private void StartSheetLabelCapture(ElementalPersistenceFixture fixture, UnitEntityData unit, string phase)
             {
                 if (!ReferenceEquals(fixture.Blueprints, BlueprintBootstrap.ElementalRaces.Sylph) ||
-                    _fixtureIndex + 1 >= _fixtures.Length || _currentUnit == null || _lastExpectedRacial == null)
+                    _fixtureIndex + 1 >= _fixtures.Length)
                     return;
+                if (unit == null || unit.Descriptor == null || _lastExpectedRacial == null)
+                {
+                    // Recorded as a failed capture rather than silently skipped.
+                    _sheetLabelEvidence.Add(new JObject { ["fixture"] = fixture.Label, ["phase"] = phase,
+                        ["status"] = "no-observed-unit", ["exact"] = false });
+                    return;
+                }
                 var evidence = new JObject { ["fixture"] = fixture.Label, ["phase"] = phase,
                     ["expectedRacial"] = new JArray(_lastExpectedRacial), ["exact"] = false };
                 _sheetLabelEvidence.Add(evidence);
                 _sheetLabelCapture = NativeSheetRacialLabelProbe.Isolated(
-                    NativeSheetRacialLabelProbe.CaptureForPartyMember(_currentUnit.Descriptor,
+                    NativeSheetRacialLabelProbe.CaptureForPartyMember(unit.Descriptor,
                         (int[])_lastExpectedRacial.Clone(), evidence), evidence).GetEnumerator();
             }
 

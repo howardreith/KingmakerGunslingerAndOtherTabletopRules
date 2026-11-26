@@ -18,7 +18,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool PauseForNativeIconSheet()
         {
             if (!(NativeSheetCase || RacialLabelSheetCase) || !_nativeIconStages.Add(_raceIndex + "|committed-native-sheet")) return false;
-            if (_nativeIconScreens == null) _nativeIconScreens = new NativeIconScreenEvidence(_request);
+            // Screenshot evidence admits only its own creator scenarios; the label-only
+            // sheet case (e.g. native respec) reads structured state and needs none.
+            if (NativeSheetCase && _nativeIconScreens == null) _nativeIconScreens = new NativeIconScreenEvidence(_request);
             _nativeIconCapture = CaptureNativeCharacterSheet().GetEnumerator();
             return true;
         }
