@@ -324,7 +324,9 @@ by the same comparison it would fail in the Nereid scope.
   - the observed trait set to equal the declared set, in both directions.
 - `PhysicalLifecycleEvidenceExact()` uses that evaluator and still checks that the evidence file
   is recorded exactly once and exists. The capture assertion now reports the evaluator's reason
-  (`lifecycle=`).
+  (`lifecycle=`). After review, the evaluator runs before the other capture terms, and the
+  reason starts as `not evaluated`, so `lifecycle=exact` appears only after an evaluation that
+  passed (diagnostic only; the pass condition is unchanged).
 
 **Regression tests** (`elemental-traits.persistence-coverage-*`, 4 cases, all PASS):
 
@@ -399,8 +401,9 @@ not run natively in this follow-up.
 - **Persistence capture check.** The trait-set comparison that failed from v0.0.120 was repaired
   in the persistence coverage follow-up. The Nereid qualification scope was checked by domain
   tests only.
-- **Wider validation.** No complete domain suite, Sprint gate or compatibility profiles were
-  run.
+- **Wider validation.** The original label-repair validation did not include the complete
+  domain suite. The persistence follow-up at `c9453f9d07` passed the complete domain suite,
+  3,192/3,192. Sprint qualification and broad compatibility profiles were not run.
 
 ## Incidents
 

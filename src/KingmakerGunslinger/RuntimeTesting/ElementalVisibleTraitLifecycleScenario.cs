@@ -296,13 +296,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!exact) throw new InvalidOperationException("Visible-trait physical lifecycle diverged: " + row);
             }
 
-            // Null when the module-restored lifecycle evidence is complete and exact;
-            // otherwise the reason (reported with the capture assertion).
-            private string _physicalLifecycleCoverageFailure;
+            // Null only after PhysicalLifecycleEvidenceExact() has evaluated the evidence
+            // and found it complete and exact; otherwise the reason (reported with the
+            // capture assertion). Starts as "not evaluated" so a diagnostic built before
+            // or without an evaluation never reads as exact.
+            private string _physicalLifecycleCoverageFailure = "not evaluated";
 
             private bool PhysicalLifecycleEvidenceExact()
             {
-                if (!_moduleRestored) return _physicalLifecycleRecords.Count == 0;
+                if (!_moduleRestored)
+                {
+                    _physicalLifecycleCoverageFailure = _physicalLifecycleRecords.Count == 0
+                        ? null
+                        : "lifecycle rows recorded without module restoration";
+                    return _physicalLifecycleCoverageFailure == null;
+                }
                 string path = Path.Combine(_request.EvidenceDirectory, "elemental-visible-trait-physical-lifecycle.json");
                 var phases = new[] { "before-death", "native-dead", "native-resurrected", "native-polymorphed",
                     "native-polymorph-return", "native-armor-equipped", "native-equipment-and-doll-restored" };
