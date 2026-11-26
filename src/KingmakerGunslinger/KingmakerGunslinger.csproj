@@ -1940,6 +1940,7 @@
     <Compile Include="ElementalRaces\ElementalSpellAffinityPolicy.cs" />
     <Compile Include="ElementalRaces\ElementalRacialSpellLikePolicy.cs" />
     <Compile Include="ElementalRaces\ElementalRaceRuleComponents.cs" />
+    <Compile Include="ElementalRaces\ElementalRacialBonusDisplay.cs" />
     <Compile Include="ElementalRaces\ElementalRaceAbilityFactory.cs" />
     <Compile Include="ElementalRaces\ElementalRaceBlueprintFactory.cs" />
     <Compile Include="ElementalRaces\ElementalRacePublication.cs" />
