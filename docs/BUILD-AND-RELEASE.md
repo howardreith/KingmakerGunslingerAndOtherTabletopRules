@@ -2,6 +2,40 @@
 
 ## 0.0.196 publication authorization
 
+**Published (completed).** Stable
+[v0.0.196](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.196)
+is Latest and not a prerelease. The tag peels to the release commit `227456ab6f` (PR #225), which was `origin/master`
+when the publisher ran.
+
+- **Gate.** The publisher's complete suite passed 3,188/3,188 with 0 failures, and the release196 validator passed.
+- **Builds.** Two deterministic exact-reference builds against the pinned UMM 0.31.1 loader references:
+  - package SHA-256 `d60ccfe50e03012d6ca319042e88cbe6a0a44ef6e09cfdeebbc8ba37181bd680`;
+  - DLL SHA-256 `e31a369c0eab33f179712fdd5f594d229d69d9ce90e2db4c0c8385deeb56c554`.
+- **Reference bundle.** `artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`,
+  as for v0.0.195.
+- **Public download test.** A fresh download of the three assets matched `SHA256SUMS.txt`, and the manifest names
+  the release commit `227456ab6fefd39c4660c70cbf37430bdca53537` with two deterministic builds. The package has one
+  `KingmakerGunslinger` root (458 files); its `Info.json` reads 0.0.196 with `ManagerVersion` 0.31.1 and `Id`
+  `KingmakerGunslinger`, beside the DLL hash above.
+- **Native check on the published bytes.** The publisher's primary package, byte-identical to the public asset
+  (`d60ccfe5…`), was deployed to the live installation through the guarded runtime route. It ran the save-free
+  `disposable-elemental-heritage-mechanics` scenario: run `20261126T1636591624524Z`, **PASS 81/81**, 53 s in game,
+  106 s with deployment and restoration. The game loaded the DLL above (`KingmakerGunslinger 0.0.196`, MVID
+  `9f7af3cb-ab96-43bb-b359-23435a0c821e`).
+  - The scenario covers all 12 heritage sets' racial labels through the native PC and console methods, the four
+    transition sequences, the Dwarf native-race control and the Enhancement case.
+  - Afterwards the live mod was restored byte-exact from its pre-deploy backup, `Params.xml` went back to its
+    intake bytes, and the lock was released.
+  - The creator, respec and persistence scenarios ran on the development candidates and were not repeated on the
+    published bytes.
+  - A no-Kingmaker window was agreed with the two active peer sessions and released afterwards.
+- **Timing.** The publisher run took 1,009 s.
+- **Installation.** The publisher performed no deployment. The post-publication check deployed temporarily and
+  restored the installation exactly.
+- **Merges.** PR #224 merged as `b112793982`; release PR #225 as `227456ab6f`.
+
+Originally authorized as follows.
+
 On 2026-11-26, after approving PR #224 at `65a6a40367` ("approved for the focused repair"), Howie wrote: "I think
 this is ready for a merge and release of a new version. Could you please perform that?" The two nonblocking record
 corrections from that approval were committed as `f5c4fe9f5d`, and PR #224 merged into master as `b112793982`. No
@@ -33,7 +67,7 @@ channel was named, so this follows v0.0.195 as the next stable patch, v0.0.196, 
   - fresh load with the module ON plus native respec 254/255, with all label assertions passing and one pre-existing
     trait-set capture check failing (unchanged since v0.0.120).
 
-  The release build is run in the game after publication, and the result is added here.
+  The release build was run in the game after publication (above).
 - **Not established.** The console screen in controller mode was not rendered. The Ifrit, Oread and Undine creator
   and respec routes were not run. `elemental-race-persistence-verify-absent` did not run on the final candidate. The
   rolled creator route still pins Dice Roller 0.1.2. The release notes list the player-facing ones.
