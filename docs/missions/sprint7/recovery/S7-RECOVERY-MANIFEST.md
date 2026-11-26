@@ -32,6 +32,10 @@ not rebutted); **native execution of the changed evaluator is deferred to C3's c
 by C1. The historical 224949Z native FAIL stays a FAIL. C1's branch is frozen from its archive A while C2 and C3 are under
 review.
 
+**C1 accepted by the owner (2026-11-25, C2 amendment 1)** for its amended implementation/domain scope only, at reviewed H
+`5a56d480a2827e0ddd3918e30d32a07c7554e112` and archive A `2c67a049ee33e0b29621fd29a8b25608ed31e956`. C3 still owns native
+execution of the revised evaluator. C1's branch and archive stay frozen.
+
 **C2** (PR #222, enrollment `kmg-codex-s7-recovery-c2-ghaele-late-units-20261125192639-5a08`) started from C1's archive A on
 `codex/s7-recovery-c2-ghaele-late-units`, targeting C1's branch. Its short native lifecycle session passed on the existing
 candidate-3 package with the rebuilt harness (no product candidate): the positive pending verdict null; the post-disposal
@@ -59,6 +63,26 @@ owner-authorized extension"). R1-F1 to R1-F6 and R1-F8 were verified fixed. Open
 
 The C2 handoff is not current, so **C3 has not started** (no branch, mission or enrollment). Nothing was retried, re-enrolled
 or extended. Resuming C2 needs an owner decision (for example `resume --max-rounds N` after an amendment).
+
+Correction: the chat handoff at that stop listed R2-F2, R1-F7 and R2-F3 but omitted **R2-F1 (P1, blocking)**. This manifest
+listed it; all three blocking findings (R2-F1, R2-F2, R1-F7) remained required. The R2-F3 identities were checked against the
+two committed session receipts: `20261126T002852Z` git `c5fe26d146`, harness `0a038e40c6c1…`; `20261126T005206Z` git
+`44fd90a8d1`, harness `bf5d74a12487…`; both on package `49f8b88c…6413`, both PASS.
+
+**C2 amendment 1 (owner, 2026-11-25): late-unit cleanup.** Saved verbatim at
+`owner-guidance/S7-RECOVERY-C2-AMENDMENT-1-2026-11-25.md` (message sha256
+`6acde0306dbe04787f541d68c064c6ef6420ac532f149abbbc056b967fd18774`). Applied with `resume --amend-mission` (captured
+2026-11-26T02:43:00Z as cumulative owner-amendments revision 1, sha256
+`d62882e3355874e552829475113faf7afcc304a36c387d04ca29850cd08d4626`; the enrollment stayed BLOCKED at 2/2), then a separate
+`resume --max-rounds 3` (ACTIVE, develop, cap 3). Both instruction parts read. No allowance or candidate ceiling changed.
+Correction (one pass, external harness only):
+- R2-F1: `WitnessCaller.ReconcileLatest` reconciles a witness's latest observations; observations are never cleared, and the
+  shared final release reconciles every witness again, so arrivals after a failed unsubscribe are adopted and requested once
+  (per-reference guard) or named unknown; the unsubscribe error stays.
+- R2-F2: `LateResultObservation.Unknown` is computed by reference after removing positively correlated units and known
+  controls; fixture-teardown registration still does not attribute a unit.
+- R1-F7: `LateUnitFinalRelease.Release` is the one final sequence (reconcile every witness, request remaining units, one
+  terminal snapshot for row and outcome, further releases) called by `GhaeleLifetimeProbe.Release` and by the domain fixture.
 
 ## C1 history
 
@@ -182,9 +206,14 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C2 r2 | Focused gate `sprint7-visual` (local, C2 round-2 source) | PASS, 23 tests | 3.9 s | 7 min 19.1 s | 37 min 40.9 s |
 | C2 r2 | Session `20261126T005206Z-…-s7-ghaele-lifecycle` (candidate-3 package, harness `bf5d74a1…63cd` from `44fd90a8d1`) | PASS | 2 min 14 s | 9 min 33.1 s | 35 min 26.9 s |
 | C2 r2 | Controller gates on `525a27751b`: `sprint7-visual` 23 tests 4.0 s, `loader-compat-probe` 5 tests 3.4 s (receipts 2.1 + 1.6 = 3.7 s) | PASS | 7.4 s batch wall | 9 min 40.5 s | 35 min 19.5 s |
+| C2 r3 | Focused gate `sprint7-visual` (local, amendment-1 source) | PASS, 23 tests | 4.0 s | 9 min 44.5 s | 35 min 15.5 s |
+| C2 r3 | Harness build (amendment-1 source) | PASS, `4180621b2ade02140bb461aff586ba041d9ae318c60764828b36575aaeafdb61` | 1.3 s | 9 min 45.8 s | 35 min 14.2 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
   built its harness twice and ran two short lifecycle sessions on the existing candidate-3 package (rows above).
 - Failed validation attempts so far: seven (two in C1 round 2, four in C1 round 4, one in C1 round 5).
 - Earlier spend stays separate: 65 min 42 s in parent rounds 6 and 7. New product candidates used: 0 of 2.
+- Reserve before the C2 round-3 session: C3 still needs one combined Build-Local candidate and its affected native
+  qualification (the effects session, estimated at about 18 minutes, plus the build and gates). After the planned C2 short
+  session (about 2 min 15 s) and controller gates, about 32 minutes remain for C3.

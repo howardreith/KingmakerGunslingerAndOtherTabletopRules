@@ -108,9 +108,9 @@ namespace KmgLoaderCompatHarness
             // Built after the iterator's cleanup: only units no earlier release requested (R5-F5), then the blueprints.
             // R1-F4: no engine work is forced here. Each request's settlement is read once, as the engine left it; a unit whose
             // destruction is still pending (an abandoned probe has no frames left to wait) is an unresolved, named failure.
-            CleanupReport report = life.Release(() => new[] { new KeyValuePair<string, Action>("disposable units", units.ReleaseRemaining),
-                    new KeyValuePair<string, Action>("disposable units settled", () => LateResultReconciliation.Settle(units, result, "unsettledAtFinalRelease", u => u.UniqueId)) }
-                .Concat(ProbeReleases.PerItem("disposable blueprint", createdBlueprints, b => b.name + "#" + b.GetInstanceID(), b => UnityEngine.Object.Destroy(b))).ToList());
+            // C2 amendment 1 (R2-F1, R1-F7): the shared final sequence reconciles every witness's latest observations first.
+            CleanupReport report = LateUnitFinalRelease.Release(life, units, callers, result, "unsettledAtFinalRelease", u => u.UniqueId,
+                () => ProbeReleases.PerItem("disposable blueprint", createdBlueprints, b => b.name + "#" + b.GetInstanceID(), b => UnityEngine.Object.Destroy(b)));
             result["problems"] = new JArray(life.Problems.Cast<object>().ToArray());
             return report;
         }
@@ -1020,14 +1020,16 @@ namespace KmgLoaderCompatHarness
             EventBus.Subscribe(witness); witness.Subscribed = true;
             // Recovery C2 (R5-F1, R1-F3): the witness stays read-only; its caller (WitnessCaller) releases the subscription and
             // reconciles everything observed as two independently attempted releases, on every release path.
-            callers[name] = new WitnessCaller<UnitEntityData>(owned, units, witness.Observed, name,
-                () => { if (witness.Subscribed) { EventBus.Unsubscribe(witness); witness.Subscribed = false; } });
+            callers.Add(new WitnessCaller<UnitEntityData>(owned, units, witness.Observed, name,
+                () => { if (witness.Subscribed) { EventBus.Unsubscribe(witness); witness.Subscribed = false; } }));
             return witness;
         }
 
-        private readonly Dictionary<string, WitnessCaller<UnitEntityData>> callers = new Dictionary<string, WitnessCaller<UnitEntityData>>();
+        // Every witness caller of this probe, kept to the final release (R2-F1): a witness whose unsubscribe failed may
+        // still be delivering, and its observations are reconciled again there.
+        private readonly List<WitnessCaller<UnitEntityData>> callers = new List<WitnessCaller<UnitEntityData>>();
 
-        private void ReleaseWitness(string name) { callers[name].ReleaseNow(null); }
+        private void ReleaseWitness(string name) { callers.Last(caller => caller.Name == name).ReleaseNow(null); }
 
         /// <summary>Waits (bounded) until every requested unit is read gone, then records any still present or unreadable as a named cleanup failure.</summary>
         private IEnumerable<object> SettleOwned(JObject row, string field, float seconds)

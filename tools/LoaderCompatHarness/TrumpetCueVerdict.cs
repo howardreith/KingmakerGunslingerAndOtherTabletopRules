@@ -335,7 +335,9 @@ namespace KmgLoaderCompatHarness
     /// <summary>
     /// Recovery C2 (R5-F1): what a read-only late-result witness has observed: the units positively correlated to the
     /// watched cast, the controls its caller knows (for example the foreign same-caster Ghaele) and the same-caster units it
-    /// could not attribute. Unknown is read at release: an unattributed unit the caller came to know is not unknown.
+    /// could not attribute. Unknown is read at release, by reference (C2 amendment 1, R2-F2): an unattributed unit that was
+    /// later positively correlated, or that the caller came to know as a control, is not unknown. Registration for fixture
+    /// teardown is a separate ownership and does not attribute a unit to the watched cast.
     /// </summary>
     internal sealed class LateResultObservation<T> where T : class
     {
@@ -343,7 +345,21 @@ namespace KmgLoaderCompatHarness
         internal readonly List<T> Known = new List<T>();
         internal readonly List<T> Unattributed = new List<T>();
 
-        internal List<T> Unknown { get { return Unattributed.Where(unit => !Known.Any(known => ReferenceEquals(known, unit))).ToList(); } }
+        internal List<T> Unknown
+        {
+            get
+            {
+                return Unattributed.Where(unit => unit != null && !Owned.Any(owned => ReferenceEquals(owned, unit)) && !Known.Any(known => ReferenceEquals(known, unit)))
+                    .Distinct(ReferenceComparer.Instance).ToList();
+            }
+        }
+
+        private sealed class ReferenceComparer : IEqualityComparer<T>
+        {
+            internal static readonly ReferenceComparer Instance = new ReferenceComparer();
+            public bool Equals(T x, T y) { return ReferenceEquals(x, y); }
+            public int GetHashCode(T obj) { return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj); }
+        }
     }
 
     /// <summary>
@@ -355,21 +371,62 @@ namespace KmgLoaderCompatHarness
     internal sealed class WitnessCaller<T> where T : class
     {
         private readonly OwnedProbeResources owned;
-        private readonly string name;
+        private readonly OwnedDisposables<T> units;
+        private readonly LateResultObservation<T> observed;
+        internal readonly string Name;
 
         internal WitnessCaller(OwnedProbeResources owned, OwnedDisposables<T> units, LateResultObservation<T> observed, string name, Action unsubscribe)
         {
             this.owned = owned;
-            this.name = name;
+            this.units = units;
+            this.observed = observed;
+            Name = name;
             // Held newest last: on unwind the subscription is released first, then the reconciliation.
-            owned.Hold(name + " reconciliation", () => LateResultReconciliation.Release(units, observed.Owned, observed.Unknown, "witness " + name + ": unit"));
+            owned.Hold(name + " reconciliation", ReconcileLatest);
             owned.Hold(name + " subscription", unsubscribe);
         }
 
         internal void ReleaseNow(List<string> failures)
         {
-            owned.ReleaseNow(name + " subscription", failures);
-            owned.ReleaseNow(name + " reconciliation", failures);
+            owned.ReleaseNow(Name + " subscription", failures);
+            owned.ReleaseNow(Name + " reconciliation", failures);
+        }
+
+        /// <summary>
+        /// Reconciles the witness's latest observations (C2 amendment 1, R2-F1). The observations are never cleared, so a
+        /// witness still delivering after a failed unsubscribe is reconciled again by the final release: adoption, the
+        /// per-reference one-request guard and once-per-unit failure recording make a repeat account only for new arrivals.
+        /// </summary>
+        internal void ReconcileLatest()
+        {
+            LateResultReconciliation.Release(units, observed.Owned, observed.Unknown, "witness " + Name + ": unit");
+        }
+    }
+
+    /// <summary>
+    /// C2 amendment 1 (R1-F7): the one final release sequence of a probe that owns disposable units and late-result
+    /// witnesses, used by GhaeleLifetimeProbe and by its domain regression alike. It runs after the iterator's unwind and
+    /// the held releases: (1) reconcile the latest observations of every witness, (2) request each owned unit still
+    /// unrequested, (3) take one terminal settlement snapshot for the evidence row and the cumulative outcome; then any
+    /// further probe releases. Each action is attempted independently, and the cumulative outcome returns to ProbeSlot
+    /// with the original timeout or probe error kept by the slot. No engine work is forced: a pending unit stays a named
+    /// residual.
+    /// </summary>
+    internal static class LateUnitFinalRelease
+    {
+        internal static CleanupReport Release<T>(YieldedProbeLifecycle life, OwnedDisposables<T> units, IEnumerable<WitnessCaller<T>> witnesses, JObject row,
+            string field, Func<T, string> identity, Func<IEnumerable<KeyValuePair<string, Action>>> further) where T : class
+        {
+            return life.Release(() =>
+            {
+                var steps = new List<KeyValuePair<string, Action>>();
+                foreach (WitnessCaller<T> witness in (witnesses ?? Enumerable.Empty<WitnessCaller<T>>()).ToList())
+                    steps.Add(new KeyValuePair<string, Action>(witness.Name + " final reconciliation", witness.ReconcileLatest));
+                steps.Add(new KeyValuePair<string, Action>("disposable units", units.ReleaseRemaining));
+                steps.Add(new KeyValuePair<string, Action>("disposable units settled", () => LateResultReconciliation.Settle(units, row, field, identity)));
+                if (further != null) steps.AddRange(further());
+                return steps;
+            });
         }
     }
 

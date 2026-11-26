@@ -926,17 +926,25 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(clean.IsolationRestored && slot3.IsolationRestored && settles.Interrupts == 1, "A settled witness and clean releases restore isolation.");
         }
 
-        // Recovery C2 (R5-F1): late Ghaele units through the real ProbeSlot -> Poll -> Release -> unwind path, driven through
-        // the same release orchestration GhaeleLifetimeProbe uses: WitnessCaller (subscription and reconciliation released
-        // independently), LateResultObservation (owned, known and unattributed identities), LateResultReconciliation (adopt,
-        // request once, record unknowns; one terminal settlement snapshot for row and outcome) and OwnedDisposables. Only the
-        // native boundaries are replaced: destroy, the terminal read and the unsubscribe.
+        // Recovery C2 (R5-F1) and C2 amendment 1: late Ghaele units through the real ProbeSlot -> Poll -> Release / Abandon
+        // path, using the production caller and finalizer GhaeleLifetimeProbe uses: WitnessCaller (subscription and
+        // reconciliation released independently; ReconcileLatest), LateResultObservation (unknown by reference),
+        // LateResultReconciliation and the shared LateUnitFinalRelease sequence (no fixture-built final action array).
+        // Only native boundaries are replaced: destroy, the terminal read, the unsubscribe and delivery (active while the
+        // witness is subscribed, as EventBus delivery is).
         private sealed class LateUnit
         {
-            internal readonly string Id; internal int DestroyRequests; internal bool Destroyed, Registered = true, DestroyCompletes = true;
+            internal readonly string Id; internal int DestroyRequests, TerminalReads; internal bool Destroyed, Registered = true, DestroyCompletes = true, DestroyThrows;
+            // Read-dependent terminal state: when set, the first read returns it and later reads return true (gone).
+            internal bool? FirstReadOnly;
             internal LateUnit(string id) { Id = id; }
             // The engine's terminal read as GhaeleLifetimeProbe.Terminal makes it: destroyed, present, or unresolved.
-            internal bool? Terminal() { return Destroyed ? true : Registered ? false : (bool?)null; }
+            internal bool? Terminal()
+            {
+                TerminalReads++;
+                if (FirstReadOnly.HasValue) return TerminalReads == 1 ? FirstReadOnly : true;
+                return Destroyed ? true : Registered ? false : (bool?)null;
+            }
         }
 
         private sealed class LateUnitProbe : KmgLoaderCompatHarness.IOwnedProbe
@@ -945,50 +953,59 @@ namespace KingmakerGunslinger.DomainTests
             internal readonly KmgLoaderCompatHarness.YieldedProbeLifecycle Life;
             internal readonly KmgLoaderCompatHarness.OwnedDisposables<LateUnit> Units;
             internal readonly KmgLoaderCompatHarness.LateResultObservation<LateUnit> Observed = new KmgLoaderCompatHarness.LateResultObservation<LateUnit>();
-            internal readonly LateUnit Late = new LateUnit("late"), Extra = new LateUnit("extra"), Foreign = new LateUnit("foreign"), Stranger = new LateUnit("stranger");
+            internal readonly List<KmgLoaderCompatHarness.WitnessCaller<LateUnit>> Callers = new List<KmgLoaderCompatHarness.WitnessCaller<LateUnit>>();
+            internal readonly LateUnit Late = new LateUnit("late"), Extra = new LateUnit("extra"), Foreign = new LateUnit("foreign"), Stranger = new LateUnit("stranger"),
+                Shifty = new LateUnit("shifty"), Later = new LateUnit("later"), LaterStranger = new LateUnit("later-stranger");
             internal readonly JObject Row = new JObject();
             internal int Pause, Unsubscribes;
-            internal bool FailUnsubscribe, ExtraArrives, StrangerArrives, StrangerRegisteredForTeardown, AbandonBeforeSettle, ForeignAlsoUnattributed = true;
-            private KmgLoaderCompatHarness.WitnessCaller<LateUnit> caller;
+            internal bool Subscribed, FailUnsubscribe, ExtraArrives, StrangerArrives, StrangerRegisteredForTeardown, ShiftyArrives, DeliverAfterRelease, AbandonBeforeSettle,
+                ForeignAlsoUnattributed = true;
             internal LateUnitProbe()
             {
                 Units = new KmgLoaderCompatHarness.OwnedDisposables<LateUnit>("disposable unit", u => u.Id,
-                    u => { u.DestroyRequests++; if (u.DestroyCompletes) u.Destroyed = true; }, Owned.Outcome, u => u.Terminal());
+                    u => { u.DestroyRequests++; if (u.DestroyThrows) throw new InvalidOperationException("injected destroy failure"); if (u.DestroyCompletes) u.Destroyed = true; },
+                    Owned.Outcome, u => u.Terminal());
                 Life = new KmgLoaderCompatHarness.YieldedProbeLifecycle(Owned, lifecycle => Body());
             }
+            // Native delivery to the witness: only while it is subscribed.
+            private void Correlated(LateUnit unit) { if (Subscribed) Observed.Owned.Add(unit); }
+            private void Unattributed(LateUnit unit) { if (Subscribed) Observed.Unattributed.Add(unit); }
             private IEnumerable<object> Body()
             {
                 Owned.Hold("pause", () => Pause++);
                 Units.Add(Late);                                   // registered with its owner before delivery
                 Observed.Known.Add(Foreign);                        // the foreign same-caster control the caller knows
-                caller = new KmgLoaderCompatHarness.WitnessCaller<LateUnit>(Owned, Units, Observed, "late-result witness",
-                    () => { Unsubscribes++; if (FailUnsubscribe) throw new InvalidOperationException("injected unsubscribe failure"); });
+                Subscribed = true;
+                Callers.Add(new KmgLoaderCompatHarness.WitnessCaller<LateUnit>(Owned, Units, Observed, "late-result witness",
+                    () => { Unsubscribes++; if (FailUnsubscribe) throw new InvalidOperationException("injected unsubscribe failure"); Subscribed = false; }));
                 try
                 {
                     yield return null;
-                    Observed.Owned.Add(Late);                       // the delivered correlated result
-                    if (ForeignAlsoUnattributed) Observed.Unattributed.Add(Foreign); // seen before it was known, as in the spawn case
-                    if (ExtraArrives) Observed.Owned.Add(Extra);   // a further correlated unit after the cast owner's disposal
-                    if (StrangerArrives) { Observed.Unattributed.Add(Stranger); if (StrangerRegisteredForTeardown) Units.Add(Stranger); }
+                    Correlated(Late);                               // the delivered correlated result
+                    if (ForeignAlsoUnattributed) Unattributed(Foreign); // seen before it was known, as in the spawn case
+                    if (ExtraArrives) Correlated(Extra);           // a further correlated unit after the cast owner's disposal
+                    if (StrangerArrives) { Unattributed(Stranger); if (StrangerRegisteredForTeardown) Units.Add(Stranger); }
+                    if (ShiftyArrives) { Unattributed(Shifty); Correlated(Shifty); } // the same reference, first unattributed, then matched
                     yield return null;
                     if (AbandonBeforeSettle) while (true) yield return null;
-                    caller.ReleaseNow(null);                         // the early release, as GhaeleLifetimeProbe.ReleaseWitness
+                    Callers[0].ReleaseNow(null);                     // the early release, as GhaeleLifetimeProbe.ReleaseWitness
                     Units.Destroy(Late);                             // the caller's own request: not repeated after reconciliation
                     KmgLoaderCompatHarness.LateResultReconciliation.Settle(Units, Row, "unsettledAfterWitness", u => u.Id);
                     Row["foreignAlive"] = !Foreign.Destroyed; Row["foreignRequested"] = Units.WasRequested(Foreign);
                     Units.ReleaseRemaining();                       // the end of the run: remaining owned units, then settlement
                     KmgLoaderCompatHarness.LateResultReconciliation.Settle(Units, Row, "unsettledAtEnd", u => u.Id);
                     yield return null;
+                    if (DeliverAfterRelease) { Correlated(Later); Unattributed(LaterStranger); } // still delivered if the unsubscribe failed
+                    yield return null;
                 }
                 finally { Owned.ReleaseAll(); }
             }
             public object Result { get { return Row; } }
             public string Poll() { return Life.Poll(); }
+            // The production final sequence, as GhaeleLifetimeProbe.Release calls it.
             public KmgLoaderCompatHarness.CleanupReport Release(string testFailure)
             {
-                // As GhaeleLifetimeProbe.Release: remaining units, then one settlement read; no engine work is forced.
-                return Life.Release(() => new[] { new KeyValuePair<string, Action>("disposable units", Units.ReleaseRemaining),
-                    new KeyValuePair<string, Action>("disposable units settled", () => KmgLoaderCompatHarness.LateResultReconciliation.Settle(Units, Row, "unsettledAtFinalRelease", u => u.Id)) });
+                return KmgLoaderCompatHarness.LateUnitFinalRelease.Release(Life, Units, Callers, Row, "unsettledAtFinalRelease", u => u.Id, null);
             }
         }
 
@@ -1008,13 +1025,15 @@ namespace KingmakerGunslinger.DomainTests
                 return outcome;
             };
             Func<LateUnitProbe, bool> foreignUntouched = probe => !probe.Foreign.Destroyed && probe.Foreign.DestroyRequests == 0;
+            Func<JObject, string, string[]> rowList = (row, field) => row[field] == null ? new string[0] : ((JArray)row[field]).Values<string>().ToArray();
 
             // Control: the late unit is destroyed after its one request; the known foreign control (also seen unattributed before
-            // it was known) is untouched; isolation restored.
+            // it was known) is untouched; isolation restored; the final release found nothing new and nothing unsettled.
             var clean = new LateUnitProbe();
             KmgLoaderCompatHarness.ProbeOutcome cleanOutcome = runToEnd(clean, new KmgLoaderCompatHarness.ProbeSlot());
             Assertions.True(cleanOutcome.IsolationRestored && clean.Late.DestroyRequests == 1 && clean.Late.Destroyed && foreignUntouched(clean) && (bool)clean.Row["foreignAlive"] &&
-                !(bool)clean.Row["foreignRequested"] && ((JArray)clean.Row["unsettledAfterWitness"]).Count == 0, "A settled late unit and an untouched known foreign control leave isolation restored.");
+                !(bool)clean.Row["foreignRequested"] && rowList(clean.Row, "unsettledAfterWitness").Length == 0 && rowList(clean.Row, "unsettledAtFinalRelease").Length == 0 &&
+                cleanOutcome.Cleanup.Attempted.Contains("late-result witness final reconciliation"), "A settled late unit and an untouched known foreign control leave isolation restored through the shared final release.");
 
             // R1-F1: destruction requested but the unit's terminal state cannot be concluded (registration pending, not destroyed).
             var pending = new LateUnitProbe(); pending.ExtraArrives = true; pending.Extra.Registered = false; pending.Extra.DestroyCompletes = false;
@@ -1022,8 +1041,6 @@ namespace KingmakerGunslinger.DomainTests
             KmgLoaderCompatHarness.ProbeOutcome pendingOutcome = runToEnd(pending, slot1);
             Assertions.True(!pendingOutcome.IsolationRestored && pendingOutcome.Cleanup.Failures.Count(value => value == "disposable unit extra: destruction requested, terminal state unresolved") == 1 &&
                 pending.Extra.DestroyRequests == 1 && refusesNext(slot1), "R1-F1: a correlated unit with destruction pending and registration pending is unresolved by name; one request; next probe refused.");
-            // The row and the slot outcome consume the same terminal snapshot (R1-F5).
-            Assertions.True(((JArray)pending.Row["unsettledAfterWitness"]).Values<string>().Contains("extra: destruction requested, terminal state unresolved"), "R1-F5: the evidence row names the same unresolved identity.");
 
             // Destruction returns but the unit stays present: named, one request, next probe refused.
             var stays = new LateUnitProbe(); stays.Late.DestroyCompletes = false;
@@ -1032,49 +1049,64 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(!staysOutcome.IsolationRestored && staysOutcome.Cleanup.Failures.Count(value => value == "disposable unit late: destruction requested, unit still present") == 1 &&
                 stays.Late.DestroyRequests == 1 && stays.Pause == 1 && foreignUntouched(stays) && refusesNext(slot2), "A returned request does not establish disappearance; independent cleanup continues; foreign control untouched.");
 
-            // An additional correlated unit is adopted, requested once and settled.
-            var extra = new LateUnitProbe(); extra.ExtraArrives = true;
-            KmgLoaderCompatHarness.ProbeOutcome extraOutcome = runToEnd(extra, new KmgLoaderCompatHarness.ProbeSlot());
-            Assertions.True(extraOutcome.IsolationRestored && extra.Extra.DestroyRequests == 1 && extra.Extra.Destroyed && extra.Units.Owns(extra.Extra) && foreignUntouched(extra),
-                "An additional positively correlated unit is adopted by the destruction owner, requested once and observed destroyed.");
+            // R2-F2 (amendment case B): the same reference first unattributed, then positively correlated, before release.
+            var shifty = new LateUnitProbe(); shifty.ShiftyArrives = true;
+            KmgLoaderCompatHarness.ProbeOutcome shiftyOutcome = runToEnd(shifty, new KmgLoaderCompatHarness.ProbeSlot());
+            Assertions.True(shifty.Observed.Unattributed.Contains(shifty.Shifty) && shifty.Observed.Owned.Contains(shifty.Shifty) && shifty.Observed.Unknown.Count == 0 &&
+                shifty.Shifty.DestroyRequests == 1 && shifty.Shifty.Destroyed && shifty.Units.Owns(shifty.Shifty) && foreignUntouched(shifty) &&
+                !shiftyOutcome.Cleanup.Failures.Any(value => value.Contains("ownership unknown")) && shiftyOutcome.IsolationRestored,
+                "R2-F2: positive attribution resolves the same reference's earlier uncertainty: one request, settled, no residual unknown, clean admission.");
 
-            // R1-F2: an identity still unknown at release stays a named failure even when the unit is registered for teardown.
+            // R1-F2 retained: an identity still unknown at release stays a named failure even when registered for fixture teardown.
             var stranger = new LateUnitProbe(); stranger.StrangerArrives = true; stranger.StrangerRegisteredForTeardown = true;
             var slot3 = new KmgLoaderCompatHarness.ProbeSlot();
             KmgLoaderCompatHarness.ProbeOutcome strangerOutcome = runToEnd(stranger, slot3);
-            Assertions.True(!strangerOutcome.IsolationRestored && strangerOutcome.Cleanup.Failures.Contains("witness late-result witness: unit stranger: ownership unknown, left in place") &&
-                stranger.Stranger.DestroyRequests == 1 && refusesNext(slot3), "R1-F2: the witness leaves a registered unknown unit alone; the unknown identity survives its independent teardown (one teardown request) in the cumulative failure; next probe refused.");
+            Assertions.True(!strangerOutcome.IsolationRestored && strangerOutcome.Cleanup.Failures.Count(value => value == "witness late-result witness: unit stranger: ownership unknown, left in place") == 1 &&
+                stranger.Stranger.DestroyRequests == 1 && foreignUntouched(stranger) && refusesNext(slot3),
+                "A registered-but-unattributed unit is not attributed by its teardown registration: named once, one (teardown) request, foreign untouched, next probe refused.");
             var unregistered = new LateUnitProbe(); unregistered.StrangerArrives = true;
             KmgLoaderCompatHarness.ProbeOutcome unregisteredOutcome = runToEnd(unregistered, new KmgLoaderCompatHarness.ProbeSlot());
-            Assertions.True(!unregisteredOutcome.IsolationRestored && unregistered.Stranger.DestroyRequests == 0, "An unregistered unknown unit is never destroyed and still prevents clean isolation.");
+            Assertions.True(!unregisteredOutcome.IsolationRestored && unregistered.Stranger.DestroyRequests == 0, "Unknown cast ownership never authorizes destruction, and still prevents clean isolation.");
 
-            // R1-F3: the unsubscribe fails after an extra correlated result arrived; the reconciliation still runs.
-            var failing = new LateUnitProbe(); failing.ExtraArrives = true; failing.FailUnsubscribe = true;
+            // R2-F1 (amendment case A): the early unsubscribe throws before detaching, after the early reconciliation ran; a further
+            // correlated unit and an unknown unit are delivered later, after the run's own end settlement, before slot termination.
+            var failing = new LateUnitProbe(); failing.FailUnsubscribe = true; failing.DeliverAfterRelease = true;
             var slot4 = new KmgLoaderCompatHarness.ProbeSlot();
             KmgLoaderCompatHarness.ProbeOutcome failingOutcome = runToEnd(failing, slot4);
+            Assertions.True(failing.Subscribed && failing.Unsubscribes == 1 && failing.Observed.Owned.Contains(failing.Later) && failing.Observed.Unattributed.Contains(failing.LaterStranger),
+                "Case A setup: the witness stayed subscribed and received both later results.");
             Assertions.True(!failingOutcome.IsolationRestored && failingOutcome.Cleanup.Failures.Contains("late-result witness subscription: InvalidOperationException: injected unsubscribe failure") &&
-                failing.Extra.DestroyRequests == 1 && failing.Extra.Destroyed && failing.Unsubscribes == 1 && failing.Pause == 1 && refusesNext(slot4),
-                "R1-F3: the unsubscribe error is kept, the extra unit is still adopted, requested once and settled, independent cleanup continues, next probe refused.");
-
-            // Abandonment before the caller's own release: the slot's release unwinds both witness releases, then reads settlement;
-            // R1-F4: no engine work is forced, so a destruction still pending is unresolved; unrelated pending work is untouched.
-            var abandoned = new LateUnitProbe(); abandoned.ExtraArrives = true; abandoned.AbandonBeforeSettle = true; abandoned.Extra.DestroyCompletes = false;
-            var unrelatedPending = new LateUnit("unrelated-pending") { DestroyCompletes = false };
+                failing.Later.DestroyRequests == 1 && failing.Later.Destroyed && failing.Units.Owns(failing.Later) && !rowList(failing.Row, "unsettledAtFinalRelease").Any() &&
+                failingOutcome.Cleanup.Failures.Count(value => value == "witness late-result witness: unit later-stranger: ownership unknown, left in place") == 1 &&
+                failing.LaterStranger.DestroyRequests == 0 && failing.Late.DestroyRequests == 1 && foreignUntouched(failing) && failing.Pause == 1 && refusesNext(slot4),
+                "R2-F1: the final release reconciles the later arrivals: the correlated unit adopted, requested once and destroyed; the unknown named and left alone; the unsubscribe error kept; foreign untouched; next probe refused.");
+            // The same, with the later unit's destruction still pending at the final snapshot: a named residual in row and outcome.
+            var failingPending = new LateUnitProbe(); failingPending.FailUnsubscribe = true; failingPending.DeliverAfterRelease = true; failingPending.Later.DestroyCompletes = false;
             var slot5 = new KmgLoaderCompatHarness.ProbeSlot();
-            slot5.Begin(owner, abandoned);
-            Assertions.True(slot5.Poll(owner) == null && slot5.Poll(owner) == null && slot5.Poll(owner) == null, "Yielded after the late results arrived.");
-            KmgLoaderCompatHarness.ProbeOutcome abandonedOutcome = slot5.Abandon("step timeout after 240s");
-            Assertions.True(abandonedOutcome.TestFailure == "step timeout after 240s" && !abandonedOutcome.IsolationRestored &&
-                abandonedOutcome.Cleanup.Failures.Contains("disposable unit extra: destruction requested, unit still present") &&
-                abandoned.Late.DestroyRequests == 1 && abandoned.Extra.DestroyRequests == 1 && abandoned.Unsubscribes == 1 && abandoned.Pause == 1 && foreignUntouched(abandoned) &&
-                unrelatedPending.DestroyRequests == 0 && !unrelatedPending.Destroyed && refusesNext(slot5),
-                "On abandonment: one request each, the still-pending unit named, the original error kept, unrelated pending work untouched, the next probe refused.");
+            KmgLoaderCompatHarness.ProbeOutcome failingPendingOutcome = runToEnd(failingPending, slot5);
+            Assertions.True(!failingPendingOutcome.IsolationRestored && failingPending.Later.DestroyRequests == 1 &&
+                failingPendingOutcome.Cleanup.Failures.Count(value => value == "disposable unit later: destruction requested, unit still present") == 1 &&
+                rowList(failingPending.Row, "unsettledAtFinalRelease").SequenceEqual(new[] { "later: destruction requested, unit still present" }) && refusesNext(slot5),
+                "R2-F1: a later correlated unit still present at the final snapshot is one request and a named residual in the final row and the slot outcome.");
 
-            // R1-F6 / R1-F7: the production caller uses this orchestration, and its late-case verdict needs the reconciliation's request.
-            string probeSource = File.ReadAllText("tools/LoaderCompatHarness/GhaeleLifetimeProbes.cs");
-            Assertions.True(probeSource.Contains("new WitnessCaller<UnitEntityData>(owned, units, witness.Observed, name,") && probeSource.Contains("LateResultReconciliation.Settle(units, row, field, u => u.UniqueId)") &&
-                probeSource.Contains("!(bool)late[\"lateUnitDestroyRequestedByReconciliation\"]") && !probeSource.Contains("EntityDestroyer.Tick()"),
-                "GhaeleLifetimeProbe releases its witnesses through WitnessCaller, settles through the same snapshot, gates the late verdict on the reconciliation's request and forces no engine drain.");
+            // R1-F7 (amendment case C): abandonment through the real ProbeSlot before ordinary settlement. The extra unit's terminal
+            // reader changes after its first read (present, then gone), so the final row and the outcome agree only when both
+            // consume one snapshot; the late unit's destruction request throws, and independent cleanup continues.
+            var abandoned = new LateUnitProbe(); abandoned.ExtraArrives = true; abandoned.AbandonBeforeSettle = true; abandoned.Extra.FirstReadOnly = false; abandoned.Late.DestroyThrows = true;
+            var unrelatedPending = new LateUnit("unrelated-pending") { DestroyCompletes = false };
+            var slot6 = new KmgLoaderCompatHarness.ProbeSlot();
+            slot6.Begin(owner, abandoned);
+            Assertions.True(slot6.Poll(owner) == null && slot6.Poll(owner) == null && slot6.Poll(owner) == null, "Yielded after the late results arrived.");
+            KmgLoaderCompatHarness.ProbeOutcome abandonedOutcome = slot6.Abandon("step timeout after 240s");
+            const string residual = "extra: destruction requested, unit still present";
+            Assertions.True(abandonedOutcome.TestFailure == "step timeout after 240s" && !abandonedOutcome.IsolationRestored && ReferenceEquals(abandonedOutcome.Result, abandoned.Row) &&
+                rowList(abandoned.Row, "unsettledAtFinalRelease").Contains(residual) && abandonedOutcome.Cleanup.Failures.Count(value => value == "disposable unit " + residual) == 1 &&
+                abandoned.Extra.TerminalReads == 1, "Case C: the final row and the slot outcome carry the same unresolved unit from one read; a second read would have found it gone.");
+            Assertions.True(abandonedOutcome.Cleanup.Failures.Contains("disposable unit late: InvalidOperationException: injected destroy failure") &&
+                abandoned.Late.DestroyRequests == 1 && abandoned.Extra.DestroyRequests == 1 && abandoned.Unsubscribes == 1 && abandoned.Pause == 1 && foreignUntouched(abandoned) &&
+                abandonedOutcome.Cleanup.Attempted.Contains("late-result witness final reconciliation") && abandonedOutcome.Cleanup.Attempted.Contains("disposable units settled") &&
+                unrelatedPending.DestroyRequests == 0 && !unrelatedPending.Destroyed && refusesNext(slot6),
+                "Case C: the original timeout kept; one request each despite a failing request; the held and final releases all ran; unrelated pending work untouched; next probe refused.");
         }
 
         // Owner amendment 3 (R4-F1, R6-F2): the effects phase's cell sequence over one cumulative isolation, driven
