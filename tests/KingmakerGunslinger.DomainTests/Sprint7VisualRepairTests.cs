@@ -1598,6 +1598,25 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
+        // Recovery C3: the combined native qualification's callback-loss row (session 20261126T054228Z, candidate de63d6f4),
+        // persisted as the in-game collector wrote it. C1's revised evaluator judged it live in that run (its recorded
+        // verdict); the persisted row, and its collector-shaped live counterpart, must receive the same verdict here.
+        internal static void CombinedRunVerdictsAgree()
+        {
+            JObject record = JObject.Parse(File.ReadAllText("docs/evidence/sprint7/recovery-c3/20261126T054228Z-callback-loss-row.json"));
+            var persisted = (JObject)record["row"];
+            string live = (string)record["liveVerdict"];
+            Assertions.True(record["liveVerdict"].Type == JTokenType.Null && persisted["verdict"].Type == JTokenType.Null && live == null,
+                "The live verdict recorded in the same run is null (characterized).");
+            Assertions.True((string)persisted["evaluator"] == "Sprint7ObserverPolicy.CallbackLossRound7" && ((JArray)persisted["overlapSchedule"]).Count >= 1 &&
+                (bool)persisted["overlapSchedule"][0]["sameFrame"] && (bool)persisted["overlapSchedule"].Last["bothPlaying"],
+                "The row names C1's round-7 entry point and records the declared same-frame overlap delivery.");
+            const string stop = "stop-requested";
+            Assertions.Equal(live, Sprint7ObserverPolicy.CallbackLossRound7((JObject)persisted.DeepClone(), stop), "The persisted row receives the live verdict of the same run.");
+            Assertions.Equal(live, Sprint7ObserverPolicy.CallbackLossRound7((JObject)LiveCollectorShape(persisted.DeepClone()), stop),
+                "The collector-shaped live counterpart of the same row receives the same verdict.");
+        }
+
         private static IEnumerable<int> SetupCell(Sprint7CellIsolation isolation, Sprint7HookAttempt<object> attempt, Func<object> acquire)
         {
             isolation.Opened("callback-withhold");
