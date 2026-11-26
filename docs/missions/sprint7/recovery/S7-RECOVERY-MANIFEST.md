@@ -286,11 +286,14 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C2 r4 | Controller gates on `fd5a009a57`: `sprint7-visual` 23 tests 4.2 s, `loader-compat-probe` 5 tests 3.4 s (receipts 2.4 + 1.7 = 4.1 s) | PASS | 7.6 s batch wall | 14 min 26.3 s | 30 min 33.7 s |
 | C2 r5 | Focused gate `sprint7-visual` (local, round-5 domain-test source) | PASS, 23 tests | 3.8 s | 14 min 30.1 s | 30 min 29.9 s |
 | C2 r5 | Controller gates on `da811b123c`: `sprint7-visual` 23 tests 4.7 s, `loader-compat-probe` 5 tests 3.8 s (receipts 2.7 + 1.9 = 4.6 s) | PASS | 8.5 s batch wall | 14 min 38.6 s | 30 min 21.4 s |
+| C3 | Focused gate `sprint7-visual` (local, C3 source) | FAIL: compile error (an unassigned focused-injection field in production) | 15.6 s | 14 min 54.2 s | 30 min 5.8 s |
+| C3 | Focused gate `sprint7-visual` (local) | FAIL: compile error (driver fields unassigned in the domain project before its test existed) | 19.4 s | 15 min 13.6 s | 29 min 46.4 s |
+| C3 | Focused gate `sprint7-visual` (local) | PASS, 24 tests | 3.9 s | 15 min 17.5 s | 29 min 42.5 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
   built its harness four times and ran four short lifecycle sessions on the existing candidate-3 package (rows above).
-- Failed validation attempts so far: seven (two in C1 round 2, four in C1 round 4, one in C1 round 5).
+- Failed validation attempts so far: nine (two in C1 round 2, four in C1 round 4, one in C1 round 5, two in C3).
 - Earlier spend stays separate: 65 min 42 s in parent rounds 6 and 7. New product candidates used: 0 of 2.
 - Reserve before the C2 round-3 session: C3 still needs one combined Build-Local candidate and its affected native
   qualification (the effects session, estimated at about 18 minutes, plus the build and gates). After the planned C2 short

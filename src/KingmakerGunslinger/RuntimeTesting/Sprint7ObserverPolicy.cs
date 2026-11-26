@@ -759,6 +759,277 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
     }
 
+    /// <summary>
+    /// Recovery C3 (R7-F4): requests an observer makes directly (for example retiring a cue source) and their results, kept
+    /// apart. A request is recorded before it is made, so it is never issued twice; a request that throws is a named failure
+    /// and is rethrown to its caller (the original error). Publication sends every failure to the enclosing isolation as a
+    /// sticky failure and every requested item not read settled as a residual the admission guard re-reads.
+    /// </summary>
+    internal sealed class Sprint7OwnedRequests<T> where T : class
+    {
+        private readonly List<KeyValuePair<T, string>> requested = new List<KeyValuePair<T, string>>();
+        internal readonly List<string> Failures = new List<string>();
+
+        internal bool Requested(T item) { return item != null && requested.Any(entry => ReferenceEquals(entry.Key, item)); }
+
+        internal int Count { get { return requested.Count; } }
+
+        /// <summary>Makes the request once; returns false when it was already made. A throwing request is recorded and rethrown.</summary>
+        internal bool Request(T item, string label, Action<T> request)
+        {
+            if (item == null || Requested(item)) return false;
+            requested.Add(new KeyValuePair<T, string>(item, label));
+            try { request(item); }
+            catch (Exception error)
+            {
+                Failures.Add(label + ": " + error.GetType().Name + ": " + error.Message);
+                throw;
+            }
+            return true;
+        }
+
+        /// <summary>As <see cref="Request"/>, for an unwinding release: the failure is recorded, not rethrown.</summary>
+        internal bool RequestRecorded(T item, string label, Action<T> request)
+        {
+            try { return Request(item, label, request); }
+            catch (Exception) { return true; }
+        }
+
+        /// <summary>Failures become sticky isolation failures; each request whose result is not read settled stays a residual.</summary>
+        internal void Publish(Sprint7CellIsolation isolation, string owner, Func<T, bool?> settled)
+        {
+            isolation.Fail(owner, Failures);
+            foreach (KeyValuePair<T, string> entry in requested)
+            {
+                T item = entry.Key;
+                bool? state;
+                try { state = settled(item); } catch (Exception) { state = null; }
+                if (state != true) isolation.Residual(owner, entry.Value + " settled", () => settled(item));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Recovery C3 (R7-F2): the commands a cell issued and the exact execution processes they started. A process is retained
+    /// when first seen and before any interruption can clear the command's field; each command is released on its own, so an
+    /// interruption that throws never skips another command; a retained process not read ended (running, or unreadable) is a
+    /// live execution the cell publishes as a residual.
+    /// </summary>
+    internal sealed class Sprint7OwnedCommands<TCommand, TProcess> where TCommand : class where TProcess : class
+    {
+        private readonly List<TCommand> commands = new List<TCommand>();
+        private readonly List<TProcess> processes = new List<TProcess>();
+        private readonly Func<TCommand, TProcess> processOf;
+        private readonly Func<TProcess, bool?> ended;
+
+        internal Sprint7OwnedCommands(Func<TCommand, TProcess> processOf, Func<TProcess, bool?> ended)
+        {
+            this.processOf = processOf;
+            this.ended = ended;
+        }
+
+        internal List<TCommand> Commands { get { return commands.ToList(); } }
+        internal List<TProcess> Processes { get { return processes.ToList(); } }
+
+        internal void Own(TCommand command) { if (command != null && !commands.Any(value => ReferenceEquals(value, command))) commands.Add(command); }
+
+        /// <summary>Retains the current process of an owned command (of every owned command when null).</summary>
+        internal void Capture(TCommand command = null)
+        {
+            foreach (TCommand owned in command == null ? commands.ToList() : new List<TCommand> { command })
+            {
+                TProcess process;
+                try { process = processOf(owned); } catch (Exception) { process = null; }
+                if (process != null && !processes.Any(value => ReferenceEquals(value, process))) processes.Add(process);
+            }
+        }
+
+        internal bool Retains(TProcess process) { return process != null && processes.Any(value => ReferenceEquals(value, process)); }
+
+        /// <summary>
+        /// Releases each given owned command (every owned command when null) on its own: its process is captured first, then
+        /// the interruption runs when <paramref name="unfinished"/> says the command still runs. Returns the named failures.
+        /// </summary>
+        internal List<string> ReleaseEach(Func<TCommand, bool> unfinished, Action<TCommand> interrupt, Func<TCommand, string> label, IEnumerable<TCommand> only = null)
+        {
+            var failures = new List<string>();
+            foreach (TCommand command in (only ?? commands).ToList())
+            {
+                Capture(command);
+                try { if (unfinished(command)) interrupt(command); }
+                catch (Exception error) { failures.Add(label(command) + ": " + error.GetType().Name + ": " + error.Message); }
+            }
+            return failures;
+        }
+
+        /// <summary>Retained processes not read ended: running, or unreadable.</summary>
+        internal List<TProcess> Live()
+        {
+            Capture();
+            return processes.Where(process => Ended(process) != true).ToList();
+        }
+
+        internal bool? Ended(TProcess process)
+        {
+            try { return process == null ? (bool?)null : ended(process); } catch (Exception) { return null; }
+        }
+    }
+
+    /// <summary>
+    /// Recovery C3 (R7-F3): one attempt to install an observer's hooks. The attempt is registered before the constructor can
+    /// partly succeed and throw; neither a constructor failure nor a null result implies zero acquisition. Publication reads
+    /// the owned hooks back explicitly (by the observer's own identity, not through the returned object) and sends the setup
+    /// failure, an unreadable readback and any remaining hook to the enclosing isolation as sticky failures.
+    /// </summary>
+    internal sealed class Sprint7HookAttempt<T> where T : class
+    {
+        private readonly string name;
+        private readonly Func<int> readback;
+        internal bool Attempted { get; private set; }
+        internal T Acquired { get; private set; }
+        internal string SetupFailure { get; private set; }
+
+        internal Sprint7HookAttempt(string name, Func<int> readback)
+        {
+            this.name = name;
+            this.readback = readback;
+        }
+
+        /// <summary>Registers the attempt, then acquires; a throwing acquisition is recorded and rethrown (the original error).</summary>
+        internal T Acquire(Func<T> acquire)
+        {
+            Attempted = true;
+            try { Acquired = acquire(); }
+            catch (Exception error)
+            {
+                SetupFailure = name + " setup failed: " + error.GetType().Name + ": " + error.Message;
+                throw;
+            }
+            if (Acquired == null) SetupFailure = name + " setup returned no observer";
+            return Acquired;
+        }
+
+        /// <summary>The owned hooks read now; null when the read throws.</summary>
+        internal int? Remaining()
+        {
+            try { return readback(); } catch (Exception) { return null; }
+        }
+
+        /// <summary>Reads the hooks back once and publishes; returns the readback (0 when never attempted).</summary>
+        internal int? Publish(Sprint7CellIsolation isolation, string owner)
+        {
+            if (!Attempted) return 0;
+            int? remaining = Remaining();
+            if (SetupFailure != null) isolation.Fail(owner, SetupFailure);
+            if (remaining == null) isolation.Fail(owner, name + " hook readback unreadable");
+            else if (remaining.Value != 0) isolation.Fail(owner, name + " hooks remaining: " + remaining.Value);
+            return remaining;
+        }
+    }
+
+    /// <summary>
+    /// Recovery C3 (R4-F1, R7-F5): the one abandonment driver every effects driver uses. It runs the phase's own cell sequence
+    /// over a child isolation (the inner cell, then a next cell). In the abandonment mode it disposes that sequence once the
+    /// inner cell is ready, with its injected fault set at that moment; in the run-to-completion mode the fault is set before
+    /// the inner cell starts and the sequence runs to its end. The same admission guard then re-reads the child's residuals and
+    /// refuses the next cell, and the driver repairs its own intervention. The child's complete outcome decides: every child
+    /// failure is either one of the declared expected failures (the injected fault and its known residual) or unexpected, and
+    /// an unexpected failure reaches the enclosing phase by name and is never exempted by the repair. The repair is attempted
+    /// once on every exit, including the driver's own disposal during its recovery wait; a failed repair is kept. The driver
+    /// reports the fixture safe only when every expected failure was seen, nothing unexpected failed, no residual remains, the
+    /// next cell was refused and never started, the repair succeeded and the driver's explicit safety readback is clean.
+    /// </summary>
+    internal sealed class Sprint7Abandonment
+    {
+        internal string Owner;
+        internal Sprint7CellIsolation Phase;
+        internal readonly Sprint7CellIsolation Child = new Sprint7CellIsolation();
+        internal Func<bool> Ready;               // null: run to completion
+        internal Action Inject, Clear;
+        internal Func<List<string>> Repair;
+        internal Func<List<string>> Unsafe;
+        internal string[] Expected = new string[0];
+        internal readonly JObject Row = new JObject();
+        internal bool Proven { get; private set; }
+        internal bool Repaired { get; private set; }
+        internal readonly List<string> RepairFailures = new List<string>();
+
+        internal List<string> Unexpected { get { return Child.Failures.Where(failure => !Expected.Any(marker => failure.Contains(marker))).ToList(); } }
+        internal List<string> ExpectedMissing { get { return Expected.Where(marker => !Child.Failures.Any(failure => failure.Contains(marker))).ToList(); } }
+
+        private void RepairOnce(string when)
+        {
+            if (Repaired) return;
+            Repaired = true;
+            Row["repairedWhen"] = when;
+            try { RepairFailures.AddRange(Repair == null ? new List<string>() : (Repair() ?? new List<string>())); }
+            catch (Exception error) { RepairFailures.Add("repair: " + error.GetType().Name + ": " + error.Message); }
+        }
+
+        private void ClearInjection()
+        {
+            try { if (Clear != null) Clear(); }
+            catch (Exception error) { RepairFailures.Add("clear injection: " + error.GetType().Name + ": " + error.Message); }
+        }
+
+        internal IEnumerable<int> Run(KeyValuePair<string, Func<IEnumerable<int>>> inner, KeyValuePair<string, Func<IEnumerable<int>>> next,
+            Func<string, Func<IEnumerable<int>>, IEnumerable<int>> run, TimeSpan settle, TimeSpan readyLimit)
+        {
+            Phase.Opened(Owner);
+            Row["isolationRestored"] = false;
+            Row["mode"] = Ready == null ? "run-to-completion" : "abandon-when-ready";
+            IEnumerator<int> sequence = Sprint7ObserverPolicy.Sequence(Child, new[] { inner, next }, run, settle).GetEnumerator();
+            try
+            {
+                bool ready;
+                DateTime limit = DateTime.UtcNow + readyLimit;
+                if (Ready == null)
+                {
+                    if (Inject != null) Inject();
+                    bool more = true;
+                    while (more && DateTime.UtcNow < limit) { more = sequence.MoveNext(); if (more) yield return sequence.Current; }
+                    ready = !more;
+                    ClearInjection();
+                    sequence.Dispose();
+                }
+                else
+                {
+                    while (DateTime.UtcNow < limit && !Ready() && sequence.MoveNext()) yield return sequence.Current;
+                    ready = Ready();
+                    if (Inject != null) Inject();
+                    try { sequence.Dispose(); } finally { ClearInjection(); }
+                }
+                Row["readyBeforeAbandon"] = ready;
+                Row["childAfterDisposal"] = Child.Describe();
+                // The same admission guard over the next cell, on the same child result (the recovery wait).
+                foreach (int step in Sprint7ObserverPolicy.Sequence(Child, new[] { next }, run, settle)) yield return step;
+                Row["childAfterResume"] = Child.Describe();
+                RepairOnce("after the guard");
+                List<string> unsafeReasons;
+                try { unsafeReasons = Unsafe == null ? new List<string>() : (Unsafe() ?? new List<string>()); }
+                catch (Exception error) { unsafeReasons = new List<string> { "safety readback: " + error.GetType().Name + ": " + error.Message }; }
+                Row["unsafe"] = new JArray(unsafeReasons.ToArray());
+                Proven = ready && ExpectedMissing.Count == 0 && Unexpected.Count == 0 && Child.Pending.Count == 0 && Child.Refused == next.Key &&
+                    !Child.Admitted.Contains(next.Key) && RepairFailures.Count == 0 && unsafeReasons.Count == 0;
+            }
+            finally
+            {
+                ClearInjection();
+                sequence.Dispose();
+                RepairOnce("on unwind");
+                Row["expectedMissing"] = new JArray(ExpectedMissing.ToArray());
+                Row["unexpected"] = new JArray(Unexpected.ToArray());
+                Row["repairFailures"] = new JArray(RepairFailures.ToArray());
+                Row["child"] = Child.Describe();
+                Row["isolationRestored"] = Proven;
+                foreach (string failure in Unexpected) Phase.Fail(Owner, "unexpected child failure: " + failure);
+                foreach (string failure in RepairFailures) Phase.Fail(Owner, "repair failed: " + failure);
+                if (!Proven) Phase.Fail(Owner, "the fixture was not proven safe after the driver's repair");
+                Phase.Reported(Owner);
+            }
+        }
+    }
+
     internal static partial class Sprint7ObserverPolicy
     {
         /// <summary>
@@ -777,6 +1048,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                 isolation.Admitted.Add(cell.Key);
                 foreach (int step in run(cell.Key, cell.Value)) yield return step;
             }
+        }
+
+        /// <summary>
+        /// Recovery C3 (R7-F3): the effects phase's cell runner. A cell's setup, execution and disposal exceptions become sticky
+        /// failures of the isolation it reports to (a cell that later loses its visible resource is still failed), and the
+        /// cell's own finally always runs. <paramref name="completed"/> receives the cell's name and its exception (null when it
+        /// ran to its end); it is not called when the runner itself is disposed mid-cell.
+        /// </summary>
+        internal static IEnumerable<int> IsolatedCell(Sprint7CellIsolation isolation, string name, Func<IEnumerable<int>> body, Action<string, Exception> completed)
+        {
+            IEnumerator<int> steps = null; Exception failure = null;
+            try
+            {
+                try { steps = body().GetEnumerator(); } catch (Exception error) { failure = error; }
+                while (failure == null)
+                {
+                    bool more = false;
+                    try { more = steps.MoveNext(); } catch (Exception error) { failure = error; }
+                    if (!more) break;
+                    yield return steps.Current;
+                }
+            }
+            finally
+            {
+                if (steps != null)
+                    try { steps.Dispose(); }
+                    catch (Exception error) { isolation.Fail(name, "cell disposal: " + error.GetType().Name + ": " + error.Message); }
+            }
+            if (failure != null) isolation.Fail(name, "cell exception: " + failure.GetType().Name + ": " + failure.Message);
+            if (completed != null) completed(name, failure);
         }
 
         /// <summary>Re-reads the residuals every step until none remains or the limit passes.</summary>
