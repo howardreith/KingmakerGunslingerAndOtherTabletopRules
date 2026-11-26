@@ -482,6 +482,7 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C3 r2+ | Focused gate `sprint7-visual` (local) | FAIL: one test assumption (the ledger never acquires a preexisting instance) | 6.9 s | 44 min 58.9 s | 30 min 1.1 s |
 | C3 r2+ | Focused gate `sprint7-visual` (local) | FAIL: one test reused another case's out variables | 6.2 s | 45 min 5.1 s | 29 min 54.9 s |
 | C3 r2+ | Focused gate `sprint7-visual` (local) | PASS, 25 tests | 5.9 s | 45 min 10.0 s | 29 min 50.0 s |
+| C3 r3 | (estimate before recovery candidate 3: build about 7 min, mechanics-only session about 7 min, final controller gates about 0.5 min; about 15 min left after, enough for one contingency) | | | 45 min 10.0 s | 29 min 50.0 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
