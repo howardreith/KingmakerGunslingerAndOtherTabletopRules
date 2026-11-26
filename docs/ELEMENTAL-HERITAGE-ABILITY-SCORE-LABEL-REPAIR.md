@@ -270,9 +270,11 @@ Candidate5 results (`a49dffd66c`):
    19; those two belong to the separate `qualificationTrait`/`qualificationEffect` scopes. All
    168 lifecycle rows were present and exact; only the trait-set comparison fails. This was
    classified by inspecting that deterministic contract, not by rerunning unchanged code; it is
-   independent of labels. It is left unchanged for separate review.
+   independent of labels. That candidate's result stays **FAIL, 254/255**; the coverage contract
+   was repaired afterwards (see the persistence coverage follow-up below).
 3. The 4-launch chain stopped after the module-ON phase, so `elemental-race-persistence-verify-absent`
-   did not run on candidate5. The module-ON cleanup assertion passed, and the working save was
+   did not run on candidate5 and stays **NOT-RUN** for that candidate (run on the follow-up
+   candidate below). The module-ON cleanup assertion passed, and the working save was
    restored byte-exact to its intake bytes and mtime afterwards.
 4. Reader-only re-evaluations, with original verdicts kept in the run directories:
    - The candidate2 creator run's recorded panel totals equal the live `PermanentValue` 42/42.
@@ -285,6 +287,104 @@ Restoration after every pass: the live mod was restored byte-exact from its pre-
 phase. All 95 saves were hash-checked against intake, including `KMG_AUTOMATION_WORKING` with
 its original bytes and mtime (2026-10-05T20:09:11Z). No other save changed.
 
+### Persistence coverage follow-up (after v0.0.196)
+
+Branch `codex/elemental-persistence-trait-coverage` from master `227456ab6f`. That commit is
+the `v0.0.196` release, and it includes the label repair merged as `b112793982`. This follow-up
+does not change the label behavior.
+
+**Cause.** `PhysicalLifecycleEvidenceExact()` required the module-restored lifecycle rows to cover
+every published alternate trait (21 since v0.0.120). No persistence scope exercises all 21:
+
+- the ordinary 24-fixture matrix (`ElementalVisibleTraitPersistencePolicy.Traits`) exercises 19;
+- the `qualificationTrait=NereidFascination` scope swaps the six Undine breath rows for Nereid
+  Fascination, so it exercises 18;
+- Treacherous Earth is never a matrix trait. It is covered by `disposable-elemental-treacherous-earth`
+  and by the effect-only `qualificationEffect=TreacherousEarth` area probe inside the Nereid scope.
+  That probe requires the actor not to own the marker. Player-selection and save persistence were
+  explicitly waived (the existing `elemental-traits.visible-save-matrix` test records the same
+  partition).
+
+The capture assertion therefore failed in the ordinary scope with every observation exact, and
+by the same comparison it would fail in the Nereid scope.
+
+**Repair** (`ElementalRaces/ElementalVisibleTraitPersistencePolicy.cs`, `ElementalPersistenceTraitCoverage`):
+
+- Each scope declares its required lifecycle traits explicitly. The ordinary scope requires 19;
+  the Nereid scope requires 18.
+- Every published trait outside a scope's matrix has a named route:
+  - ordinary scope: Nereid Fascination goes to the Nereid scope;
+  - Nereid scope: Acid and Ooze Breath go to the ordinary matrix;
+  - both scopes: Treacherous Earth goes to its mechanics scenario and area probe.
+- `ContractFailure` requires a scope's matrix and its routes to partition the published catalog
+  exactly. A newly published trait with no route fails the evaluation.
+- `LifecycleFailure` still requires:
+  - one row per fixture and phase, in phase order;
+  - every row individually exact;
+  - the observed trait set to equal the declared set, in both directions.
+- `PhysicalLifecycleEvidenceExact()` uses that evaluator and still checks that the evidence file
+  is recorded exactly once and exists. The capture assertion now reports the evaluator's reason
+  (`lifecycle=`).
+
+**Regression tests** (`elemental-traits.persistence-coverage-*`, 4 cases, all PASS):
+
+- `-contract`: both scopes partition the 21 published traits; Treacherous Earth is the only trait
+  outside both matrices. A new unrouted trait, a trait both required and routed, and a route for
+  an unpublished trait each fail.
+- `-plan`: the fixture plan supplies exactly each scope's declared set. This compares the plan
+  with the declared lists, so dropping a trait from the plan fails instead of silently changing
+  the expected answer.
+- `-accepts`: real ordinary evidence (`tests/fixtures/elemental-persistence/ordinary-lifecycle-rows-a49dffd66c.json`,
+  168 rows reduced from run `20261126T1328558287358Z`) passes the ordinary scope. Its Nereid-scope
+  form passes the Nereid scope. Neither passes the other scope, and the ordinary evidence does
+  not cover the full catalog.
+- `-rejects`: each of these fails: a missing trait, an unexpected trait, a missing fixture, a
+  missing phase row, a duplicated phase in place of another, out-of-order phases, an inexact
+  observation, and empty evidence.
+
+The `elemental-races.persistence` source guard now names the evaluator instead of the moved
+expressions.
+
+**Validation.**
+
+- Focused gate `elemental-traits;elemental-race`: 45/45.
+- Complete domain suite at `c9453f9d07`: 3,192/3,192.
+- Development candidate `elemental-coverage-candidate`:
+  - commit `c9453f9d07`;
+  - package `8f6574d5b5c9eb72501cef34024879ca4a7892cf0649dfd4cb448a8173f14065`;
+  - DLL `c5af9b90cc739434b9008b0bc251a392fc522e9ffdc03112a73a3356dcbef6b6`;
+  - Build-Local with filter `elemental-traits;elemental-race`, 45 tests, 503 s.
+
+Native 4-launch chain, one deployment, ordinary scope, 912 s with restoration (2026-11-26 UTC):
+
+| Phase | Run | Result |
+| --- | --- | --- |
+| prepare | `20261126T1710280018928Z` | PASS 66/66 |
+| module OFF fresh load | `20261126T1713422825383Z` | PASS 175/175 (labels 96/96, sheets 6/6) |
+| module ON fresh load + native respec + cleanup | `20261126T1716390499870Z` | **PASS 255/255**. `restored-captures` reports `lifecycle=exact`; labels 120/120; sheets 6/6; cleanup save written |
+| fresh-load absence | `20261126T1723031509184Z` | **PASS 8/8** |
+
+One earlier attempt at 17:08Z refused before any launch: the runner passed `-ExpectedVersion
+0.0.195` on the 0.0.196 branch. Nothing was deployed beyond the guarded staging, which was
+restored.
+
+**Absence continuity.** The absence phase loaded the cleanup save written by the module-ON phase.
+The working save was restored only after all four phases. The recorded game clocks show the
+sequence:
+
+- prepare started from the intake save at tick 443,710,600,000 and saved at 443,720,190,000;
+- module OFF and module ON loaded at 443,720,190,000;
+- the module-ON cleanup saved at 443,720,570,000;
+- `verify-absent` loaded at 443,720,570,000, not the intake time.
+
+**Restoration.** The live mod was restored byte-exact. `Params.xml` and `FeatureModules.json`
+went back to their intake bytes. All 95 saves equal intake, including `KMG_AUTOMATION_WORKING`
+with its original bytes and mtime.
+
+The earlier candidate results above stand as recorded: `a49dffd66c` module ON **FAIL 254/255**,
+absence **NOT-RUN**. The Nereid scope's contract is covered by the domain tests; that scope was
+not run natively in this follow-up.
+
 ## Deferred checks and limits
 
 - **Console view rendering.** The console view model was exercised natively, but the console UI
@@ -292,12 +392,13 @@ its original bytes and mtime (2026-10-05T20:09:11Z). No other save changed.
 - **Other races in the creator.** The Ifrit, Oread and Undine creator and respec routes were not
   run. All 12 heritage sets are covered through the native label methods in the mechanics
   scenario, and all 24 race/sex/heritage fixtures through the persistence phases.
-- **Fresh-load absence phase.** `elemental-race-persistence-verify-absent` did not run on the
-  final candidate (note 3).
+- **Fresh-load absence phase.** Not run on the label candidate `a49dffd66c` (note 3); it passed
+  on the follow-up candidate `c9453f9d07`.
 - **Rolled creator route.** The rolled regression still pins Dice Roller 0.1.2, but 0.1.6 is
   installed. The committed sheet is covered by the respec route instead.
-- **Persistence capture check.** The trait-set comparison that fails since 0.0.120 is
-  pre-existing and left for separate review (note 2).
+- **Persistence capture check.** The trait-set comparison that failed from v0.0.120 was repaired
+  in the persistence coverage follow-up. The Nereid qualification scope was checked by domain
+  tests only.
 - **Wider validation.** No complete domain suite, Sprint gate or compatibility profiles were
   run.
 
