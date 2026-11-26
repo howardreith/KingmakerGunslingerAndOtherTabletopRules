@@ -368,18 +368,84 @@ namespace KmgLoaderCompatHarness
     /// unsubscribe never skips the reconciliation; both outcomes reach the probe's cumulative cleanup result. The same two
     /// releases run on an early release, on iterator unwind and on the slot's final release, each at most once.
     /// </summary>
+    /// <summary>
+    /// C2 amendment 2 (R3-F2): the probe-local shared view of attribution. It holds every witness observation of one probe
+    /// (by reference, never cleared) so that each witness's reconciliation, early, on held unwind or final, classifies its
+    /// unattributed references against the positive cast matches and the explicit control identities of all of them: a
+    /// reference another witness positively matched is correlated (and requested once through the destruction owner), a
+    /// reference another witness explicitly knows as a control is left alone, and only the rest is unknown. Fixture
+    /// teardown registration, blueprint or caster never stand in for either.
+    /// </summary>
+    internal sealed class LateResultAttribution<T> where T : class
+    {
+        private readonly List<LateResultObservation<T>> observations = new List<LateResultObservation<T>>();
+
+        internal void Add(LateResultObservation<T> observation)
+        {
+            if (observation != null && !observations.Any(value => ReferenceEquals(value, observation))) observations.Add(observation);
+        }
+
+        internal bool Correlated(T unit) { return unit != null && observations.Any(value => value.Owned.Any(owned => ReferenceEquals(owned, unit))); }
+
+        internal bool Control(T unit) { return unit != null && observations.Any(value => value.Known.Any(known => ReferenceEquals(known, unit))); }
+
+        /// <summary>The witness's own positive matches, plus its unattributed references another witness positively matched.</summary>
+        internal List<T> CorrelatedFor(LateResultObservation<T> observation)
+        {
+            var list = new List<T>();
+            foreach (T unit in observation.Owned.Concat(observation.Unattributed.Where(Correlated)))
+                if (unit != null && !list.Any(value => ReferenceEquals(value, unit))) list.Add(unit);
+            return list;
+        }
+
+        /// <summary>The witness's unattributed references that no witness of the probe positively matched or knows as a control.</summary>
+        internal List<T> UnknownFor(LateResultObservation<T> observation)
+        {
+            var list = new List<T>();
+            foreach (T unit in observation.Unattributed)
+                if (unit != null && !Correlated(unit) && !Control(unit) && !list.Any(value => ReferenceEquals(value, unit))) list.Add(unit);
+            return list;
+        }
+    }
+
+    /// <summary>
+    /// C2 amendment 2 (R3-F1): the held "unregistered summons" release of one owned cast, shared by GhaeleLifetimeProbe and
+    /// its domain regression. It requests destruction of exactly the cast's retained summon reference, unless that reference
+    /// was registered by the probe (released with the other owned units) or is already destroyed, through the per-reference
+    /// one-request owner. It runs no creation tick, queue drain or frame: a summon still pending creation stays a requested
+    /// reference whose settlement is read with the others (unresolved, a named residual) and unrelated engine work is never
+    /// advanced by cleanup. No retained reference means no request.
+    /// </summary>
+    internal static class OwnedCastRelease
+    {
+        internal static void Hold<T>(OwnedProbeResources owned, string name, OwnedDisposables<T> units, Func<T> summoned, Func<T> registered, Func<T, bool> destroyed,
+            Action requested) where T : class
+        {
+            owned.Hold(name, () =>
+            {
+                T own = summoned();
+                if (own == null || ReferenceEquals(own, registered()) || destroyed(own)) return;
+                if (units.Destroy(own) && requested != null) requested();
+            });
+        }
+    }
+
     internal sealed class WitnessCaller<T> where T : class
     {
         private readonly OwnedProbeResources owned;
         private readonly OwnedDisposables<T> units;
         private readonly LateResultObservation<T> observed;
+        private readonly LateResultAttribution<T> attribution;
         internal readonly string Name;
 
-        internal WitnessCaller(OwnedProbeResources owned, OwnedDisposables<T> units, LateResultObservation<T> observed, string name, Action unsubscribe)
+        internal WitnessCaller(OwnedProbeResources owned, OwnedDisposables<T> units, LateResultObservation<T> observed, LateResultAttribution<T> attribution, string name,
+            Action unsubscribe)
         {
             this.owned = owned;
             this.units = units;
             this.observed = observed;
+            this.attribution = attribution ?? new LateResultAttribution<T>();
+            this.attribution.Add(observed);
             Name = name;
             // Held newest last: on unwind the subscription is released first, then the reconciliation.
             owned.Hold(name + " reconciliation", ReconcileLatest);
@@ -399,7 +465,8 @@ namespace KmgLoaderCompatHarness
         /// </summary>
         internal void ReconcileLatest()
         {
-            LateResultReconciliation.Release(units, observed.Owned, observed.Unknown, "witness " + Name + ": unit");
+            // R3-F2: classified against every witness of the probe before any uncertainty is recorded.
+            LateResultReconciliation.Release(units, attribution.CorrelatedFor(observed), attribution.UnknownFor(observed), "witness " + Name + ": unit");
         }
     }
 

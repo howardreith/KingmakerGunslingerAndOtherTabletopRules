@@ -108,6 +108,22 @@ file rather than displayed in the session; they were displayed and the same repo
 The C2 handoff is not current, so **C3 has not started**. Nothing was retried, re-enrolled or extended; validation spend is
 unchanged by the stop (12 min 6.5 s of 45, the round-3 controller gates included).
 
+**C2 amendment 2 (owner, 2026-11-25): cast release and shared attribution.** Saved verbatim at
+`owner-guidance/S7-RECOVERY-C2-AMENDMENT-2-2026-11-25.md` (message sha256
+`51ab2989ed42cdc1d67b1518c1e16e4fae9ac7fe604b5022ffcc79fd1d541e2e`). Applied with `resume --amend-mission` (captured
+2026-11-26T03:29:00Z as cumulative owner-amendments revision 2, sha256
+`c94d3ad031dd6b5f781374cccd1d6c198b3819061749b2680f9c2134810ac2ee`; still BLOCKED at 3/3), then a separate
+`resume --max-rounds 5` (ACTIVE, develop, cap 5). `status --instructions` and all three parts were displayed in the session.
+Correction (external harness only):
+- R3-F1: the held "unregistered summons" release is the shared `OwnedCastRelease.Hold` (production `CastOwned` and the domain
+  fixture): it requests exactly the cast's retained summon (not when registered by the probe or already destroyed) through the
+  one-request owner, and runs no creation tick, drain or frame; a summon still pending creation stays a requested reference
+  whose settlement is read (unresolved, a named residual). The forward-progression creator tick in `CastOwned` is unchanged.
+- R3-F2: `LateResultAttribution`, a probe-local view of every witness observation, classifies each witness's unattributed
+  references in every reconciliation (early, held unwind, final): positively matched by any witness = correlated (requested
+  once), explicitly known by any witness = control (left alone), otherwise unknown (named).
+- R3-F3: the domain test requires an actual array at each asserted settlement field.
+
 ## C1 history
 
 **Current state (C1 amendment 2, 2026-11-25):** the owner narrowed C1's acceptance boundary for bounded closure and
@@ -234,6 +250,8 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C2 r3 | Harness build (amendment-1 source) | PASS, `4180621b2ade02140bb461aff586ba041d9ae318c60764828b36575aaeafdb61` | 1.3 s | 9 min 45.8 s | 35 min 14.2 s |
 | C2 r3 | Session `20261126T024816Z-…-s7-ghaele-lifecycle` (candidate-3 package, harness `4180621b…db61` from `56e359f2cc`) | PASS | 2 min 12 s | 11 min 57.8 s | 33 min 2.2 s |
 | C2 r3 | Controller gates on `89c7229e20`: `sprint7-visual` 23 tests 4.7 s, `loader-compat-probe` 5 tests 4.0 s (receipts 2.8 + 2.0 = 4.8 s) | PASS | 8.7 s batch wall | 12 min 6.5 s | 32 min 53.5 s |
+| C2 r4 | Focused gate `sprint7-visual` (local, amendment-2 source) | PASS, 23 tests | 4.0 s | 12 min 10.5 s | 32 min 49.5 s |
+| C2 r4 | Harness build (amendment-2 source) | PASS, `d77754bad4377734e87c9a70aaf0c980a306db82dbee25e335b9e9ba47ebb4f1` | 1.2 s | 12 min 11.7 s | 32 min 48.3 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
@@ -243,3 +261,6 @@ Notes:
 - Reserve before the C2 round-3 session: C3 still needs one combined Build-Local candidate and its affected native
   qualification (the effects session, estimated at about 18 minutes, plus the build and gates). After the planned C2 short
   session (about 2 min 15 s) and controller gates, about 32 minutes remain for C3.
+- Reserve before the C2 round-4 session: C3 is estimated at about 25 minutes (combined build, focused gates, effects
+  qualification); after this session (about 2 min 15 s) and the round-4 controller gates about 30 min 25 s remain, leaving
+  about 5 minutes of margin for one short C2 rerun if round 5 needs one.

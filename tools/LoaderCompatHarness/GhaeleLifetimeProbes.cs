@@ -304,13 +304,9 @@ namespace KmgLoaderCompatHarness
             Vector3 point = ObstacleAnalyzer.TraceAlongNavmesh(main.Position, main.Position + forward * 3f);
             handle.Command = new UnitUseAbility(new AbilityData(handle.Used), new TargetWrapper(point));
             casts.Add(handle);
-            owned.Hold(late, () =>
-            {
-                // Only the unit this cast's own execution summoned, and only if it was never registered.
-                Game.Instance.EntityCreator.Tick();
-                UnitEntityData own = handle.Summoned;
-                if (own != null && !ReferenceEquals(own, handle.Registered) && !own.Destroyed && units.Destroy(own)) handle.LateSummonsDestroyed++;
-            });
+            // Only the unit this cast's own execution summoned, and only if it was never registered (C2 amendment 2, R3-F1: no
+            // creation tick or other engine work in cleanup; a still-pending summon is a requested, settlement-read reference).
+            OwnedCastRelease.Hold(owned, late, units, () => handle.Summoned, () => handle.Registered, u => u.Destroyed, () => handle.LateSummonsDestroyed++);
             owned.Hold(command, () =>
             {
                 handle.CommandReleased = true;
@@ -1020,7 +1016,7 @@ namespace KmgLoaderCompatHarness
             EventBus.Subscribe(witness); witness.Subscribed = true;
             // Recovery C2 (R5-F1, R1-F3): the witness stays read-only; its caller (WitnessCaller) releases the subscription and
             // reconciles everything observed as two independently attempted releases, on every release path.
-            callers.Add(new WitnessCaller<UnitEntityData>(owned, units, witness.Observed, name,
+            callers.Add(new WitnessCaller<UnitEntityData>(owned, units, witness.Observed, attribution, name,
                 () => { if (witness.Subscribed) { EventBus.Unsubscribe(witness); witness.Subscribed = false; } }));
             return witness;
         }
@@ -1028,6 +1024,9 @@ namespace KmgLoaderCompatHarness
         // Every witness caller of this probe, kept to the final release (R2-F1): a witness whose unsubscribe failed may
         // still be delivering, and its observations are reconciled again there.
         private readonly List<WitnessCaller<UnitEntityData>> callers = new List<WitnessCaller<UnitEntityData>>();
+
+        // R3-F2: the probe-local shared view of every witness's positive matches and explicit controls.
+        private readonly LateResultAttribution<UnitEntityData> attribution = new LateResultAttribution<UnitEntityData>();
 
         private void ReleaseWitness(string name) { callers.Last(caller => caller.Name == name).ReleaseNow(null); }
 
