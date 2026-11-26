@@ -1,0 +1,178 @@
+<!-- agent-review:v1 enrollment=kmg-codex-s7-recovery-c2-ghaele-late-units-20261125192639-5a08 key=r04-review part=1/1 sha256=426423cb409786f74794e8e569c0efe62a332f7a9de2ab65f80f05320966a32e -->
+### Codex GPT-6.2 Astra — review — round 4 — candidate `fd5a009a57`
+
+**Decision:** `changes_required` — The production cast release no longer advances the creator, and witness reconciliation now uses probe-wide attribution. Both focused gates and the short native session passed. Two required observations remain inconclusive in the domain fixture.
+
+Continuation for Claude
+
+Complete the two observations in the existing focused test. Connect the simulated creator to the exercised cast boundary so that a tick there would visibly register the queued foreign unit. In the two-witness case, distinguish a request made during final reconciliation from the registered control’s later fixture teardown. Keep the shared production release and finalizer in both tests. Run `sprint7-visual` and `loader-compat-probe` through the controller on the corrected commit. A domain-test-only correction can reuse session `20261126T033419Z` under OWNER AMENDMENT 2 when the harness and session bytes match. C3 retains combined product qualification.
+
+#### Findings
+
+**R3-F1** · P2 · evidence_gap · blocks readiness — The abandonment test cannot observe a creator tick
+- Location: `tests/KingmakerGunslinger.DomainTests/Sprint7VisualRepairTests.cs:997`; acceptance: R5-F1
+- Trigger: ProbeSlot abandons a held cast while a foreign unit is queued for creation.
+- Expected: Advancing the creator at the exercised boundary would register the exact queued foreign unit. Synchronous abandonment leaves it pending and unrequested.
+- Actual: The fixture adds ForeignQueued to Creation.Queued, then supplies plain field readers to OwnedCastRelease.Hold. CreationQueue.Tick has no caller and is never bound to a simulated engine operation. Its zero count and the foreign unit’s pending flag therefore cannot detect a tick added to the native cast callback.
+- Why it blocks / does not: OWNER AMENDMENT 2 explicitly requires a participating controlled creation queue. The source correction and native real-spawn result establish other parts of R3-F1, but the required regression cannot detect the foreign registration it claims to check.
+- Requested correction: Connect the fixture’s simulated creator to the cast boundary used by the shared held release. For example, a domain control can model the former tick immediately before the retained-summon read and demonstrate that the same foreign unit registers.
+- Requested evidence: Show that the control detects an advance, then that the actual ProbeSlot.Abandon path leaves the foreign unit queued in the no-summon, conclusively destroyed and pending-summon cases. Retain the original timeout, independent releases and named pending residual.
+
+**R4-F1** · P2 · evidence_gap · blocks readiness — The registered foreign control’s final request has no observable origin
+- Location: `tests/KingmakerGunslinger.DomainTests/Sprint7VisualRepairTests.cs:1265`; acceptance: R5-F1
+- Trigger: The two-witness fixture registers the foreign control for teardown and final reconciliation runs after the held callbacks.
+- Expected: The registered foreign control has zero requests through the last witness reconciliation and receives its single request during fixture teardown.
+- Actual: SharedWitnessProbe sets Reconciling around early and held releases, then clears it before LateUnitFinalRelease.Release. Both final witness reconciliation and ReleaseRemaining run with the flag false. A premature final-witness request would consume the one-request guard and still satisfy both asserted counts for a registered foreign control.
+- Why it blocks / does not: OWNER AMENDMENT 2 requires the focused evidence to distinguish preservation during witness reconciliation from authorized fixture teardown. The unregistered-control variants establish survival throughout, but the registered variant cannot identify which final operation removed it.
+- Requested correction: Make the request’s origin observable in the existing fixture. One test-only option is to register a teardown-only unit ahead of the foreign control and record destruction order. A premature witness request for the foreign unit would then precede that unit’s teardown.
+- Requested evidence: Through the shared finalizer, distinguish the registered control’s teardown request from a final witness request in both witness orders. Keep the genuine unknown, original unsubscribe failure and next-Begin refusal assertions.
+
+#### Prior finding assessments
+
+- **R3-F1** — `fix_rejected` — The production correction is present. CastOwned installs the shared exact-reference release, and the focused case exercises its one-request and pending-settlement behavior through ProbeSlot.Abandon. The disposition remains incomplete because the simulated creator is disconnected from that boundary. OWNER AMENDMENT 2 specifically requires this observation.
+- **R3-F2** — `fix_verified` — Every production witness registers its observation in the same probe-local attribution view. Early, held and final reconciliation consult that view by reference before recording uncertainty. The executed two-witness cases cover both orders, retain the genuine unknown and unsubscribe error, request the matched summon once and refuse the next Begin. R4-F1 concerns the separate timing evidence for registered-control destruction.
+- **R3-F3** — `fix_verified` — The settlement reader requires a JArray. The passing focused case explicitly accepts an empty array and rejects both an absent field and a scalar.
+
+#### Evidence assessment
+
+- **Inspected:** The fixed mission, both owner amendments, prior ledger, developer report, repository review instructions, full feature diff and round-4 correction.; GhaeleLifetimeProbe.CastOwned and Watch, OwnedCastRelease, WitnessCaller, LateResultAttribution, LateUnitFinalRelease, ProbeSlot and the focused domain fixtures.; The four C2 lifecycle session and launch records, evidence manifest, recovery ledger and candidate-bound gate receipts.
+- **Executed verification:** Controller receipts at fd5a009a575cc282bcb90e96113c3d3c98fa449b confirm production compilation and both focused gates. `sprint7-visual` passed 23 tests, including `ghaele-late-units-reach-slot`, in a 2.4-second gate. `loader-compat-probe` passed 5 tests in a 1.7-second gate. Both receipts report an unchanged worktree.; Native session 20261126T033419Z on owner-0.33.0 used harness d77754bad4377734e87c9a70aaf0c980a306db82dbee25e335b9e9ba47ebb4f1 from d631d283aaee937ce207e6b6af2f72f41fd0eb08. It reused candidate 3, package 49f8b88c052ca448b214552a6aab7a0e615697c10ecbea842ae013456faf6413 and product DLL 5969f596811984eaaf69014bc3bc8ddb39d733d8837cce280a76655abd98e2c3. Git confirms identical harness source and session definition at the reviewed commit.; The native row records the late unit’s request before fallback and exactly one request each for the late unit and the real-spawn unit. Both reached terminal destruction. The foreign controls were alive and unrequested after settlement. All three final witness reconciliations ran, with an empty final residual array and zero cleanup failures. The session receipt confirms transaction completion, owner installation and save integrity, and registry restoration.
+- **Source inspection only:** The held cast callback reads the retained summon, excludes the registered reference and uses the per-reference request guard. The remaining EntityCreator.Tick call is in ordinary forward cast progression.; The shared finalizer places all witness reconciliations before ReleaseRemaining. That ordering explains the registered control’s request in the current source. The fixture’s counters do not independently establish its origin.
+- **Required gaps:** R3-F1 needs a participating simulated creator whose advancement is observable through the exercised cast boundary.; R4-F1 needs an observation that identifies when the independently registered foreign control receives its sole request during final release.
+- **Limitations:** This was a read-only review. The controller withheld the mixed foreground shell transcript. Execution claims above rely on the controller receipts and structured native records.; The native session exercised the ordinary lifecycle and real-spawn abandonment. OWNER AMENDMENT 2 assigns queued foreign creation and failed unsubscribe to controlled domain tests.; The reported cumulative recovery spend, including the final gate wrappers, is 14m26.3s of 45m, leaving 30m33.7s. C2 used zero new product candidates.
+
+#### Summary
+
+- **Delivered behavior:** Cast cleanup requests the exact retained summon once. Witness callers reconcile positive matches and explicit controls across the probe, preserve genuine uncertainty, and return a shared final settlement snapshot to ProbeSlot.
+- **Scope reviewed:** Draft PR #222, final C2 checkpoint for parent R5-F1, against C1 archive 2c67a049ee33e0b29621fd29a8b25608ed31e956 under owner amendment revision 2.
+- **Pending later-phase work:** After a current C2 handoff, the separate C3 child owns effects isolation and agreement between the revised live evaluator and its persisted row on the combined candidate.
+- **Unresolved questions:** none
+- **Remaining owner review:** Visual and listening acceptance.; Integration of the reviewed stack with frozen PR #219 and any merge or release decision.
+
+#### Provenance (controller-recorded)
+
+| | Requested | Observed |
+|---|---|---|
+| Model | `gpt-6.2-astra` | `gpt-6.2-astra` (turns ['gpt-6.2-astra']) |
+| Reasoning effort | `max` | `max` (turns ['max']) |
+| Sandbox / approvals | read-only / never | `read-only` / `never` |
+
+Owner guidance bound to this review: none.
+
+Owner amendments bound to this review: revision 2, sha256 `c94d3ad031dd6b5f781374cccd1d6c198b3819061749b2680f9c2134810ac2ee`.
+
+Codex CLI `0.170.0`, thread `01a215ee-ef1b-7743-8e49-edd23edffb25`, duration 676.1s, response sha256 `14c6dc03deb761254c6fb115f20e869e723167c3087e1f5c392a7b7f00c10fe4`, request `kmg-codex-s7-recovery-c2-ghaele-late-units-20261125192639-5a08-r04-b48da6`. Observed values come from the Codex session rollout's recorded thread settings, not from the model's own statements; the serving backend's model identity is not separately exposed.
+
+<details><summary>Complete structured review (agent-review.review.v1)</summary>
+
+```json
+{
+  "candidate_commit": "fd5a009a575cc282bcb90e96113c3d3c98fa449b",
+  "checkpoint_id": "final",
+  "checkpoint_type": "final",
+  "decision": "changes_required",
+  "decision_rationale": "The production cast release no longer advances the creator, and witness reconciliation now uses probe-wide attribution. Both focused gates and the short native session passed. Two required observations remain inconclusive in the domain fixture.\n\nContinuation for Claude\n\nComplete the two observations in the existing focused test. Connect the simulated creator to the exercised cast boundary so that a tick there would visibly register the queued foreign unit. In the two-witness case, distinguish a request made during final reconciliation from the registered control\u2019s later fixture teardown. Keep the shared production release and finalizer in both tests. Run `sprint7-visual` and `loader-compat-probe` through the controller on the corrected commit. A domain-test-only correction can reuse session `20261126T033419Z` under OWNER AMENDMENT 2 when the harness and session bytes match. C3 retains combined product qualification.",
+  "evidence_assessment": {
+    "executed_verification": [
+      "Controller receipts at fd5a009a575cc282bcb90e96113c3d3c98fa449b confirm production compilation and both focused gates. `sprint7-visual` passed 23 tests, including `ghaele-late-units-reach-slot`, in a 2.4-second gate. `loader-compat-probe` passed 5 tests in a 1.7-second gate. Both receipts report an unchanged worktree.",
+      "Native session 20261126T033419Z on owner-0.33.0 used harness d77754bad4377734e87c9a70aaf0c980a306db82dbee25e335b9e9ba47ebb4f1 from d631d283aaee937ce207e6b6af2f72f41fd0eb08. It reused candidate 3, package 49f8b88c052ca448b214552a6aab7a0e615697c10ecbea842ae013456faf6413 and product DLL 5969f596811984eaaf69014bc3bc8ddb39d733d8837cce280a76655abd98e2c3. Git confirms identical harness source and session definition at the reviewed commit.",
+      "The native row records the late unit\u2019s request before fallback and exactly one request each for the late unit and the real-spawn unit. Both reached terminal destruction. The foreign controls were alive and unrequested after settlement. All three final witness reconciliations ran, with an empty final residual array and zero cleanup failures. The session receipt confirms transaction completion, owner installation and save integrity, and registry restoration."
+    ],
+    "inspected": [
+      "The fixed mission, both owner amendments, prior ledger, developer report, repository review instructions, full feature diff and round-4 correction.",
+      "GhaeleLifetimeProbe.CastOwned and Watch, OwnedCastRelease, WitnessCaller, LateResultAttribution, LateUnitFinalRelease, ProbeSlot and the focused domain fixtures.",
+      "The four C2 lifecycle session and launch records, evidence manifest, recovery ledger and candidate-bound gate receipts."
+    ],
+    "limitations": [
+      "This was a read-only review. The controller withheld the mixed foreground shell transcript. Execution claims above rely on the controller receipts and structured native records.",
+      "The native session exercised the ordinary lifecycle and real-spawn abandonment. OWNER AMENDMENT 2 assigns queued foreign creation and failed unsubscribe to controlled domain tests.",
+      "The reported cumulative recovery spend, including the final gate wrappers, is 14m26.3s of 45m, leaving 30m33.7s. C2 used zero new product candidates."
+    ],
+    "required_gaps": [
+      "R3-F1 needs a participating simulated creator whose advancement is observable through the exercised cast boundary.",
+      "R4-F1 needs an observation that identifies when the independently registered foreign control receives its sole request during final release."
+    ],
+    "source_inspection_only": [
+      "The held cast callback reads the retained summon, excludes the registered reference and uses the per-reference request guard. The remaining EntityCreator.Tick call is in ordinary forward cast progression.",
+      "The shared finalizer places all witness reconciliations before ReleaseRemaining. That ordering explains the registered control\u2019s request in the current source. The fixture\u2019s counters do not independently establish its origin."
+    ]
+  },
+  "findings": [
+    {
+      "acceptance_ids": [
+        "R5-F1"
+      ],
+      "actual": "The fixture adds ForeignQueued to Creation.Queued, then supplies plain field readers to OwnedCastRelease.Hold. CreationQueue.Tick has no caller and is never bound to a simulated engine operation. Its zero count and the foreign unit\u2019s pending flag therefore cannot detect a tick added to the native cast callback.",
+      "blocking_rationale": "OWNER AMENDMENT 2 explicitly requires a participating controlled creation queue. The source correction and native real-spawn result establish other parts of R3-F1, but the required regression cannot detect the foreign registration it claims to check.",
+      "blocks_readiness": true,
+      "category": "evidence_gap",
+      "expected": "Advancing the creator at the exercised boundary would register the exact queued foreign unit. Synchronous abandonment leaves it pending and unrequested.",
+      "id": "R3-F1",
+      "location": {
+        "file": "tests/KingmakerGunslinger.DomainTests/Sprint7VisualRepairTests.cs",
+        "line": 997
+      },
+      "priority": "P2",
+      "requested_correction": "Connect the fixture\u2019s simulated creator to the cast boundary used by the shared held release. For example, a domain control can model the former tick immediately before the retained-summon read and demonstrate that the same foreign unit registers.",
+      "requested_evidence": "Show that the control detects an advance, then that the actual ProbeSlot.Abandon path leaves the foreign unit queued in the no-summon, conclusively destroyed and pending-summon cases. Retain the original timeout, independent releases and named pending residual.",
+      "title": "The abandonment test cannot observe a creator tick",
+      "trigger": "ProbeSlot abandons a held cast while a foreign unit is queued for creation."
+    },
+    {
+      "acceptance_ids": [
+        "R5-F1"
+      ],
+      "actual": "SharedWitnessProbe sets Reconciling around early and held releases, then clears it before LateUnitFinalRelease.Release. Both final witness reconciliation and ReleaseRemaining run with the flag false. A premature final-witness request would consume the one-request guard and still satisfy both asserted counts for a registered foreign control.",
+      "blocking_rationale": "OWNER AMENDMENT 2 requires the focused evidence to distinguish preservation during witness reconciliation from authorized fixture teardown. The unregistered-control variants establish survival throughout, but the registered variant cannot identify which final operation removed it.",
+      "blocks_readiness": true,
+      "category": "evidence_gap",
+      "expected": "The registered foreign control has zero requests through the last witness reconciliation and receives its single request during fixture teardown.",
+      "id": "R4-F1",
+      "location": {
+        "file": "tests/KingmakerGunslinger.DomainTests/Sprint7VisualRepairTests.cs",
+        "line": 1265
+      },
+      "priority": "P2",
+      "requested_correction": "Make the request\u2019s origin observable in the existing fixture. One test-only option is to register a teardown-only unit ahead of the foreign control and record destruction order. A premature witness request for the foreign unit would then precede that unit\u2019s teardown.",
+      "requested_evidence": "Through the shared finalizer, distinguish the registered control\u2019s teardown request from a final witness request in both witness orders. Keep the genuine unknown, original unsubscribe failure and next-Begin refusal assertions.",
+      "title": "The registered foreign control\u2019s final request has no observable origin",
+      "trigger": "The two-witness fixture registers the foreign control for teardown and final reconciliation runs after the held callbacks."
+    }
+  ],
+  "prior_finding_assessments": [
+    {
+      "assessment": "fix_rejected",
+      "finding_id": "R3-F1",
+      "rationale": "The production correction is present. CastOwned installs the shared exact-reference release, and the focused case exercises its one-request and pending-settlement behavior through ProbeSlot.Abandon. The disposition remains incomplete because the simulated creator is disconnected from that boundary. OWNER AMENDMENT 2 specifically requires this observation."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R3-F2",
+      "rationale": "Every production witness registers its observation in the same probe-local attribution view. Early, held and final reconciliation consult that view by reference before recording uncertainty. The executed two-witness cases cover both orders, retain the genuine unknown and unsubscribe error, request the matched summon once and refuse the next Begin. R4-F1 concerns the separate timing evidence for registered-control destruction."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R3-F3",
+      "rationale": "The settlement reader requires a JArray. The passing focused case explicitly accepts an empty array and rejects both an absent field and a scalar."
+    }
+  ],
+  "request_id": "kmg-codex-s7-recovery-c2-ghaele-late-units-20261125192639-5a08-r04-b48da6",
+  "round": 4,
+  "schema_version": "agent-review.review.v1",
+  "summary": {
+    "delivered_behavior": "Cast cleanup requests the exact retained summon once. Witness callers reconcile positive matches and explicit controls across the probe, preserve genuine uncertainty, and return a shared final settlement snapshot to ProbeSlot.",
+    "pending_later_phase_work": [
+      "After a current C2 handoff, the separate C3 child owns effects isolation and agreement between the revised live evaluator and its persisted row on the combined candidate."
+    ],
+    "remaining_owner_review": [
+      "Visual and listening acceptance.",
+      "Integration of the reviewed stack with frozen PR #219 and any merge or release decision."
+    ],
+    "scope_reviewed": "Draft PR #222, final C2 checkpoint for parent R5-F1, against C1 archive 2c67a049ee33e0b29621fd29a8b25608ed31e956 under owner amendment revision 2.",
+    "unresolved_questions": []
+  }
+}
+```
+</details>
+
+_Model-generated review by Codex using the requested model, posted by the agent-review controller through the owner's GitHub account. Not a human review or approval._

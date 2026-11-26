@@ -1456,6 +1456,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("sprint7-visual.probe-final-releases-per-item", Sprint7VisualRepairTests.ProbeFinalReleasesPerItem),
             Case("sprint7-visual.ghaele-early-release-failures-reach-slot", Sprint7VisualRepairTests.GhaeleEarlyReleaseFailuresReachSlot),
             Case("sprint7-visual.effects-cell-sequence-isolation", Sprint7VisualRepairTests.EffectsCellSequenceIsolation),
+            Case("sprint7-visual.ghaele-late-units-reach-slot", Sprint7VisualRepairTests.GhaeleLateUnitsReachSlot),
             Case("summon-playtest-r6.aid-cast-style", SummonPlaytestR6Tests.AidCastStyleSurvivesTargetRewriting),
             Case("summon-playtest-r6.redcap-kmg-origin", SummonPlaytestR6Tests.RedcapBindingRequiresKmgSummonContext),
             Case("summon-playtest-r6.observer-cast-gesture", SummonPlaytestR6Tests.ObserverRejectsMissingCastGesture),

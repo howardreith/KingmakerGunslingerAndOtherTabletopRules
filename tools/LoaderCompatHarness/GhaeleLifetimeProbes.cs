@@ -79,11 +79,22 @@ namespace KmgLoaderCompatHarness
             result["mode"] = mode;
             // One destruction-request owner per unit; every request, direct or final, and any failure of one is kept in
             // the probe's one cumulative outcome that ProbeSlot reads (owner amendment 3, R6-F1).
-            units = new OwnedDisposables<UnitEntityData>("disposable unit", u => u.UniqueId, u => { if (!u.Destroyed) u.Destroy(); }, owned.Outcome);
+            // Recovery C2 (R5-F1, R1-F1): a request is not its result. Settlement is the engine's own terminal mark: Destroyed,
+            // which EntityDestructionController sets when it processes the destruction. A unit still in State.Units is
+            // present; a unit neither destroyed nor in State.Units (registration pending, or detached) is unresolved.
+            units = new OwnedDisposables<UnitEntityData>("disposable unit", u => u.UniqueId, u => { if (!u.Destroyed) u.Destroy(); }, owned.Outcome, Terminal);
             life = new YieldedProbeLifecycle(owned, lifecycle => Run());
         }
 
         public object Result => result;
+
+        /// <summary>True when the engine destroyed the unit, false while it is present, null when that cannot be concluded.</summary>
+        private static bool? Terminal(UnitEntityData unit)
+        {
+            if (unit == null) return null;
+            if (unit.Destroyed) return true;
+            return Game.Instance.State.Units.Contains(unit) ? false : (bool?)null;
+        }
 
         public string Poll()
         {
@@ -95,8 +106,11 @@ namespace KmgLoaderCompatHarness
         public CleanupReport Release(string testFailure)
         {
             // Built after the iterator's cleanup: only units no earlier release requested (R5-F5), then the blueprints.
-            CleanupReport report = life.Release(() => new[] { new KeyValuePair<string, Action>("disposable units", units.ReleaseRemaining) }
-                .Concat(ProbeReleases.PerItem("disposable blueprint", createdBlueprints, b => b.name + "#" + b.GetInstanceID(), b => UnityEngine.Object.Destroy(b))).ToList());
+            // R1-F4: no engine work is forced here. Each request's settlement is read once, as the engine left it; a unit whose
+            // destruction is still pending (an abandoned probe has no frames left to wait) is an unresolved, named failure.
+            // C2 amendment 1 (R2-F1, R1-F7): the shared final sequence reconciles every witness's latest observations first.
+            CleanupReport report = LateUnitFinalRelease.Release(life, units, callers, result, "unsettledAtFinalRelease", u => u.UniqueId,
+                () => ProbeReleases.PerItem("disposable blueprint", createdBlueprints, b => b.name + "#" + b.GetInstanceID(), b => UnityEngine.Object.Destroy(b)));
             result["problems"] = new JArray(life.Problems.Cast<object>().ToArray());
             return report;
         }
@@ -290,13 +304,9 @@ namespace KmgLoaderCompatHarness
             Vector3 point = ObstacleAnalyzer.TraceAlongNavmesh(main.Position, main.Position + forward * 3f);
             handle.Command = new UnitUseAbility(new AbilityData(handle.Used), new TargetWrapper(point));
             casts.Add(handle);
-            owned.Hold(late, () =>
-            {
-                // Only the unit this cast's own execution summoned, and only if it was never registered.
-                Game.Instance.EntityCreator.Tick();
-                UnitEntityData own = handle.Summoned;
-                if (own != null && !ReferenceEquals(own, handle.Registered) && !own.Destroyed && units.Destroy(own)) handle.LateSummonsDestroyed++;
-            });
+            // Only the unit this cast's own execution summoned, and only if it was never registered (C2 amendment 2, R3-F1: no
+            // creation tick or other engine work in cleanup; a still-pending summon is a requested, settlement-read reference).
+            OwnedCastRelease.Hold(owned, late, units, () => handle.Summoned, () => handle.Registered, u => u.Destroyed, () => handle.LateSummonsDestroyed++);
             owned.Hold(command, () =>
             {
                 handle.CommandReleased = true;
@@ -366,6 +376,9 @@ namespace KmgLoaderCompatHarness
                     mode == "visibility" ? Visibility(main, ability, donorBlueprint) : null;
                 if (body == null) { life.Problems.Add("unknown mode " + mode); yield break; }
                 foreach (object step in body) yield return step;
+                // Recovery C2: every owned unit is requested here and its settlement observed while frames still run.
+                units.ReleaseRemaining();
+                foreach (object step in SettleOwned(result, "unsettledAtEnd", 5f)) yield return step;
             }
             finally
             {
@@ -724,13 +737,15 @@ namespace KmgLoaderCompatHarness
             pending["bystanderAfterAbandon"] = commandState(unrelated);
             foreach (object step in Watching(pendingWitness, 6f)) yield return step;
             pending["ownedCommandRemains"] = pendingCommand != null && main.Commands.Contains(pendingCommand) && !pendingCommand.IsFinished;
-            pending["foreignPreserved"] = foreignPending != null && !foreignPending.Destroyed && Game.Instance.State.Units.Contains(foreignPending);
             pending["abilityGrantRemains"] = main.Descriptor.Abilities.GetAbility(ability) != null;
             pending["bystanderCommandSurvived"] = (bool)pending["bystanderBeforeAbandon"]["held"] && survived((JObject)pending["bystanderAfterAbandon"]);
-            owned.ReleaseNow("pending late-spawn witness", null);
+            ReleaseWitness("pending late-spawn witness");
             pending["witness"] = pendingWitness.Describe();
+            foreach (object step in SettleOwned(pending, "unsettledAfterWitness", 5f)) yield return step;
+            // R1-F6: the foreign control read after the witness's reconciliation and settlement, before its own teardown.
+            pending["foreignPreserved"] = ForeignAlive(foreignPending);
             string pendingVerdict = GhaelePending.Verdict(commandPending, loanHeld, (bool)pending["ownedCommandRemains"], (bool)pending["abilityGrantRemains"],
-                (bool)pending["foreignPreserved"], pendingWitness.Owned.Count, pendingWitness.Unattributed.Count, pendingWitness.Subscribed);
+                (bool)pending["foreignPreserved"], pendingWitness.Owned.Count, pendingWitness.Unknown.Count, pendingWitness.Subscribed);
             pending["verdict"] = pendingVerdict;
             if (pendingVerdict != null || !(bool)pending["bystanderCommandSurvived"] || !(bool)pending["commandReleased"] || !(bool)pending["loanReleased"])
                 life.Problems.Add("lifecycle.pending: the abandoned pending command was not settled exactly: " + (pendingVerdict ?? "bystander or release"));
@@ -776,25 +791,27 @@ namespace KmgLoaderCompatHarness
             foreach (object step in Watching(lateWitness, 1f)) yield return step;
             late["ownedCommandRemains"] = lateCommand != null && main.Commands.Contains(lateCommand) && !lateCommand.IsFinished;
             late["abilityGrantRemains"] = main.Descriptor.Abilities.GetAbility(ability) != null;
-            late["foreignPreserved"] = foreignPending != null && !foreignPending.Destroyed && Game.Instance.State.Units.Contains(foreignPending);
-            owned.ReleaseNow("late-result witness", null);
+            ReleaseWitness("late-result witness");
             late["witness"] = lateWitness.Describe();
-            string lateVerdict = GhaelePending.Verdict(lateCommandPending, lateLoanHeld, (bool)late["ownedCommandRemains"], (bool)late["abilityGrantRemains"],
-                (bool)late["foreignPreserved"], lateWitness.Owned.Count, lateWitness.Unattributed.Count, lateWitness.Subscribed);
-            late["verdict"] = lateVerdict;
-            // The control's unit is accounted for by its owner: one destruction request, destroyed afterwards.
+            // R1-F6: the request must come from the witness caller's reconciliation (read before any fallback); then settlement;
+            // then the foreign control, read alive and unrequested before its own teardown.
+            late["lateUnitDestroyRequestedByReconciliation"] = lateUnit != null && units.WasRequested(lateUnit);
             if (lateUnit != null) units.Destroy(lateUnit);
-            // Destruction completes after the call: read it once settled (bounded).
-            float destroyedBy = Time.realtimeSinceStartup + 5f;
-            while (lateUnit != null && Time.realtimeSinceStartup < destroyedBy && !(lateUnit.Destroyed || !Game.Instance.State.Units.Contains(lateUnit))) yield return null;
+            foreach (object step in SettleOwned(late, "unsettledAfterWitness", 5f)) yield return step;
+            late["foreignPreserved"] = ForeignAlive(foreignPending);
+            late["foreignUnrequested"] = foreignPending != null && !units.WasRequested(foreignPending);
+            string lateVerdict = GhaelePending.Verdict(lateCommandPending, lateLoanHeld, (bool)late["ownedCommandRemains"], (bool)late["abilityGrantRemains"],
+                (bool)late["foreignPreserved"], lateWitness.Owned.Count, lateWitness.Unknown.Count, lateWitness.Subscribed);
+            late["verdict"] = lateVerdict;
             late["lateUnitDestroyRequested"] = lateUnit != null && units.WasRequested(lateUnit);
-            late["lateUnitDestroyed"] = lateUnit != null && (lateUnit.Destroyed || !Game.Instance.State.Units.Contains(lateUnit));
+            late["lateUnitDestroyed"] = lateUnit != null && Terminal(lateUnit) == true;
             string[] expectedOrder = { "queued", "before-disposal", "cast-owner-disposed", "late-unit-registered", "late-result-delivered" };
             bool ordered = order.Select(entry => (string)entry["step"]).SequenceEqual(expectedOrder) &&
                 order.Take(4).All(entry => (int)entry["witnessOwned"] == 0) && (int)order[4]["witnessOwned"] == 1;
             late["ordered"] = ordered;
             if (lateVerdict != "late-owned-summon" || !ordered || lateWitness.Owned.Count != 1 || !ReferenceEquals(lateWitness.Owned[0], lateUnit) ||
-                (string)lateWitness.Describe()["matchedBy"][0] != "ability-data" || !(bool)late["lateUnitOwnedBeforeDelivery"] || !(bool)late["lateUnitDestroyRequested"] ||
+                (string)lateWitness.Describe()["matchedBy"][0] != "ability-data" || !(bool)late["lateUnitOwnedBeforeDelivery"] || !(bool)late["lateUnitDestroyRequestedByReconciliation"] ||
+                !(bool)late["foreignUnrequested"] ||
                 !(bool)late["lateUnitDestroyed"] || !(bool)late["commandReleased"] || !(bool)late["loanReleased"])
                 life.Problems.Add("lifecycle.pendingLate: the post-disposal late result was not rejected by the pending verdict as required: " + (lateVerdict ?? "verdict passed"));
             units.Destroy(foreignPending);
@@ -830,17 +847,20 @@ namespace KmgLoaderCompatHarness
             spawnRun.Dispose();
             spawned["bystanderAfterAbandon"] = commandState(unrelatedSpawn);
             foreach (object step in Seconds(4f)) yield return step;
-            spawned["earlySummonDestroyed"] = early != null && (early.Destroyed || !Game.Instance.State.Units.Contains(early));
-            spawned["foreignPreserved"] = foreignSpawned != null && !foreignSpawned.Destroyed && Game.Instance.State.Units.Contains(foreignSpawned);
+            spawned["earlySummonDestroyed"] = early != null && Terminal(early) == true;
             spawned["ownedCommandRemains"] = spawnHandle.Command != null && main.Commands.Contains(spawnHandle.Command) && !spawnHandle.Command.IsFinished;
             spawned["abilityGrantRemains"] = main.Descriptor.Abilities.GetAbility(ability) != null;
             spawned["bystanderCommandSurvived"] = (bool)spawned["bystanderBeforeAbandon"]["held"] && survived((JObject)spawned["bystanderAfterAbandon"]);
-            owned.ReleaseNow("spawn detection witness", null);
+            ReleaseWitness("spawn detection witness");
             spawned["witness"] = spawnWitness.Describe();
+            foreach (object step in SettleOwned(spawned, "unsettledAfterWitness", 5f)) yield return step;
+            // R1-F6: the foreign control read after the witness's reconciliation and settlement, before its own teardown.
+            spawned["foreignPreserved"] = ForeignAlive(foreignSpawned);
+            spawned["foreignUnrequested"] = foreignSpawned != null && !units.WasRequested(foreignSpawned);
             if (spawnWitness.Owned.Count != 1 || !ReferenceEquals(spawnWitness.Owned[0], early) || spawnWitness.Subscribed)
                 life.Problems.Add("lifecycle.spawned: the witness did not detect exactly the cast's own real spawn, or did not unsubscribe");
             if (!(bool)spawned["spawnSeenBeforeRegistration"] || !(bool)spawned["earlySummonDestroyed"] || !(bool)spawned["foreignPreserved"] ||
-                foreignSpawned == null || ReferenceEquals(foreignSpawned, early) || (bool)spawned["ownedCommandRemains"] || (bool)spawned["abilityGrantRemains"] ||
+                foreignSpawned == null || ReferenceEquals(foreignSpawned, early) || !(bool)spawned["foreignUnrequested"] || (bool)spawned["ownedCommandRemains"] || (bool)spawned["abilityGrantRemains"] ||
                 (int)spawned["lateSummonsDestroyed"] != 1 || !(bool)spawned["bystanderCommandSurvived"])
                 life.Problems.Add("lifecycle.spawned: the abandoned cast did not destroy exactly its own summon");
             units.Destroy(foreignSpawned);
@@ -886,11 +906,16 @@ namespace KmgLoaderCompatHarness
             private AbilityData data;
             private readonly List<object> executions = new List<object>();
             internal UnitEntityData Caster;
-            internal readonly List<UnitEntityData> Known = new List<UnitEntityData>();
-            internal readonly List<UnitEntityData> Owned = new List<UnitEntityData>();
+            // What the witness observed (the same structure the release orchestration and its domain tests use).
+            internal readonly LateResultObservation<UnitEntityData> Observed = new LateResultObservation<UnitEntityData>();
+            internal List<UnitEntityData> Known { get { return Observed.Known; } }
+            internal List<UnitEntityData> Owned { get { return Observed.Owned; } }
+            internal List<UnitEntityData> Unattributed { get { return Observed.Unattributed; } }
             internal readonly List<string> MatchedBy = new List<string>();
-            internal readonly List<UnitEntityData> Unattributed = new List<UnitEntityData>();
             internal bool Subscribed;
+
+            /// <summary>Same-caster Ghaele the witness could not attribute and the caller does not know (read now, not when seen).</summary>
+            internal List<UnitEntityData> Unknown { get { return Observed.Unknown; } }
 
             internal void Begin(UnitUseAbility watched)
             {
@@ -923,10 +948,13 @@ namespace KmgLoaderCompatHarness
             internal JObject Describe()
             {
                 return new JObject { ["owned"] = new JArray(Owned.Select(u => (object)u.UniqueId).ToArray()), ["matchedBy"] = new JArray(MatchedBy.Cast<object>().ToArray()),
-                    ["unattributed"] = new JArray(Unattributed.Select(u => (object)u.UniqueId).ToArray()),
+                    ["unattributed"] = new JArray(Unattributed.Select(u => (object)u.UniqueId).ToArray()), ["unknown"] = new JArray(Unknown.Select(u => (object)u.UniqueId).ToArray()),
                     ["known"] = new JArray(Known.Select(u => (object)u.UniqueId).ToArray()), ["retainedExecutions"] = executions.Count, ["subscribed"] = Subscribed };
             }
         }
+
+        // A foreign control is alive when the engine has not destroyed it and it is still in the game state.
+        private static bool ForeignAlive(UnitEntityData unit) { return unit != null && Terminal(unit) == false; }
 
         private static IEnumerable<object> Watching(SummonWitness witness, float seconds)
         {
@@ -986,8 +1014,29 @@ namespace KmgLoaderCompatHarness
             var witness = new SummonWitness { Caster = caster };
             if (known != null) witness.Known.Add(known);
             EventBus.Subscribe(witness); witness.Subscribed = true;
-            owned.Hold(name, () => { if (witness.Subscribed) { EventBus.Unsubscribe(witness); witness.Subscribed = false; } });
+            // Recovery C2 (R5-F1, R1-F3): the witness stays read-only; its caller (WitnessCaller) releases the subscription and
+            // reconciles everything observed as two independently attempted releases, on every release path.
+            callers.Add(new WitnessCaller<UnitEntityData>(owned, units, witness.Observed, attribution, name,
+                () => { if (witness.Subscribed) { EventBus.Unsubscribe(witness); witness.Subscribed = false; } }));
             return witness;
+        }
+
+        // Every witness caller of this probe, kept to the final release (R2-F1): a witness whose unsubscribe failed may
+        // still be delivering, and its observations are reconciled again there.
+        private readonly List<WitnessCaller<UnitEntityData>> callers = new List<WitnessCaller<UnitEntityData>>();
+
+        // R3-F2: the probe-local shared view of every witness's positive matches and explicit controls.
+        private readonly LateResultAttribution<UnitEntityData> attribution = new LateResultAttribution<UnitEntityData>();
+
+        private void ReleaseWitness(string name) { callers.Last(caller => caller.Name == name).ReleaseNow(null); }
+
+        /// <summary>Waits (bounded) until every requested unit is read gone, then records any still present or unreadable as a named cleanup failure.</summary>
+        private IEnumerable<object> SettleOwned(JObject row, string field, float seconds)
+        {
+            float end = Time.realtimeSinceStartup + seconds;
+            while (Time.realtimeSinceStartup < end && units.ReadSettlement().Count > 0) yield return null;
+            // R1-F5: the row and the cleanup outcome take the same terminal snapshot.
+            LateResultReconciliation.Settle(units, row, field, u => u.UniqueId);
         }
 
         private static IEnumerable<object> Frames(int count) { for (int frame = 0; frame < count; frame++) yield return null; }

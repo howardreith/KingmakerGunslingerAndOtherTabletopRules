@@ -1,0 +1,82 @@
+[
+ {
+  "file": "20261126T002852Z-owner-0.33.0-s7-ghaele-lifecycle-session.json",
+  "session": "20261126T002852Z-owner-0.33.0-s7-ghaele-lifecycle",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "6c9351ad39337a5616d2099163fe3d108179daf45d08f750d64861bfba84b345"
+  }
+ },
+ {
+  "file": "20261126T002852Z-owner-0.33.0-s7-ghaele-lifecycle-01-ghaele.json",
+  "session": "20261126T002852Z-owner-0.33.0-s7-ghaele-lifecycle",
+  "launch": "01-ghaele",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "b48cf87555a131172f4c49976ab3856a4fa1d94dbdf5632401c906b7501df8e2"
+  }
+ },
+ {
+  "file": "20261126T005206Z-owner-0.33.0-s7-ghaele-lifecycle-session.json",
+  "session": "20261126T005206Z-owner-0.33.0-s7-ghaele-lifecycle",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "d63f8ff285a3916f148cf9a6d341f977570aea47e8fd63bcc27c537b18b9a53b"
+  }
+ },
+ {
+  "file": "20261126T005206Z-owner-0.33.0-s7-ghaele-lifecycle-01-ghaele.json",
+  "session": "20261126T005206Z-owner-0.33.0-s7-ghaele-lifecycle",
+  "launch": "01-ghaele",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "c2da72ab2e0f4ab80707e6ca8981a081f6cf1b9690b964f291cbdfb0d2436535"
+  }
+ },
+ {
+  "file": "20261126T024816Z-owner-0.33.0-s7-ghaele-lifecycle-session.json",
+  "session": "20261126T024816Z-owner-0.33.0-s7-ghaele-lifecycle",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "04885c00bc6ac3cf9bc3f28eb2797b5aa6017c7e51e2e46b1f2a188a8b29ed73"
+  }
+ },
+ {
+  "file": "20261126T024816Z-owner-0.33.0-s7-ghaele-lifecycle-01-ghaele.json",
+  "session": "20261126T024816Z-owner-0.33.0-s7-ghaele-lifecycle",
+  "launch": "01-ghaele",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "699fa95ee2dd4923bc30df061b89c5369bbbac9cb31e49a64ff2882da3474dbe"
+  }
+ },
+ {
+  "file": "20261126T033419Z-owner-0.33.0-s7-ghaele-lifecycle-session.json",
+  "session": "20261126T033419Z-owner-0.33.0-s7-ghaele-lifecycle",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "9bcd7ef151c9a2e8a4a057560c6b63555e3b6c063e043c0f267f317102a12bef"
+  }
+ },
+ {
+  "file": "20261126T033419Z-owner-0.33.0-s7-ghaele-lifecycle-01-ghaele.json",
+  "session": "20261126T033419Z-owner-0.33.0-s7-ghaele-lifecycle",
+  "launch": "01-ghaele",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "aaabb2fbfadb1d5c8e9cc34306874798c655719268079f97eab533765ff162c2"
+  }
+ }
+]
