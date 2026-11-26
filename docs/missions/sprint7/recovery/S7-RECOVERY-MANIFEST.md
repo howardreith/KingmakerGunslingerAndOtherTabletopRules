@@ -273,6 +273,29 @@ Offline corrections before recovery candidate 3 (not yet run in game):
   partial subscription, and a failing unpatch beside an independent release through `RunReleases`.
 - R1-F13: the integration pre-checks and identities above are corrected.
 
+**C3 native qualification of the corrected bytes (recovery candidate 3).** Product source `66b0ff3f14ef` (= the reviewed-2
+corrections `b989a045d1` plus records), package `473f2f5a78229f3e2e15c3d97b863f2201f44ae372d2485de1fdb05010618366`, DLL
+`8e574477cce11621ca2ec88fdeed358cb9f8f76ff8ced423e154e3c86d277d07`, harness C2's `d77754ba…b4f1` (unchanged), fixture the admitted
+disposable outdoor native Default fixture of `disposable-expanded-summoning-sprint32-native-review`, selection
+`summon-s7-effects-mechanics` (session `s7-c3-mechanics`). Session `20261126T134425Z-…-s7-c3-mechanics`: PASS, 43/43 checks
+(window 13:36Z–13:50Z, agreed with the other sessions).
+- Required parent cells (declared before the run): all seven admitted and completed (`s7-effects-required-cells-completed`);
+  separately, physical restoration true (`s7-effects-owned-state-restored`): the phase isolation restored with no failure,
+  pending or unreadable residual; one recovery (the Dust outside target's retirement settled).
+- Drivers: callback-abandoned, callback-setup-failed, trace-setup-failed, dust-pre-delivery-disposed and dust-abandoned all
+  proven, with no unexpected and no missing expected failure, repair after the guard, nothing transferred to the phase.
+- Ordinary disposal before delivery: disposed in the readiness frame 11195 with the exact execution
+  `KMG_Summoning_Special_DustMephit_Breath#-376666880` started, not ended and not delivered; after the disposal that execution
+  delivered one Sickened late (acquired from that execution: 1), released at settlement (present from it: 0); the ledger held
+  until settlement, then unsubscribed; the caster-behind control kept through settlement.
+- Dust cell: both foreign controls read present after the owned release (no control failure), pre-delivery release retained
+  and settled; no frames, no native-look comparison, no samples (mechanics-only selection; casts record "not captured").
+- Callback loss (constructed setup): declared same-frame delivery 0 posted real cues with both IDs playing (534, 535); C1's
+  evaluator judged the row live: verdict null (characterized). The committed persisted row
+  `docs/evidence/sprint7/recovery-c3/20261126T134425Z-callback-loss-row.json` (source sha256 recorded) and its collector-shaped
+  counterpart receive the same verdict (`sprint7-visual.combined-run-verdicts-agree`).
+- Retirements: 19 requests through the phase's one record, none failed, all settled.
+
 R1-F12 (scope disclosure, records only): the `s7-c3-fx` selection ran the whole inherited effects phase. Besides the
 mechanical ownership and evaluator observations, its passing run `20261126T054228Z` also produced the phase's presentation
 material: the Dust cast frame captures (`r6-frames/s7-dust-cast-0..2`, `s7-dust-native-look`; the reviewer counts 56, 58
@@ -293,7 +316,7 @@ Frozen inputs and reviewed identities (product source, reviewed head and control
 | #219 | `codex/s7-visual-audio-remediation` | `3e2baea4b4` (round 7) | n/a; frozen head `0542b0592a` | BLOCKED 7/7 | `9c39b1ff7f` (candidate 3) |
 | #221 C1 | `codex/s7-recovery-c1-cue-evaluator` | `5a56d480a2` | `2c67a049ee` | owner-accepted (implementation/domain) | none of its own; its evaluator ran in C3's candidate `6abd692fa7` |
 | #222 C2 | `codex/s7-recovery-c2-ghaele-late-units` | `da811b123c` | `eab90a5ac8` | AWAITING_OWNER_REVIEW, handoff current | external harness `d77754ba…b4f1` over candidate 3 |
-| #223 C3 | `codex/s7-recovery-c3-effects-ownership` | `7fff8b34f6` (round 1; later rounds below) | none yet | ACTIVE under C3 amendment 1 (cap 4) | `6abd692fa7` (candidate `de63d6f4…4b46`) for the earlier run; the corrected source still to be qualified |
+| #223 C3 | `codex/s7-recovery-c3-effects-ownership` | `7fff8b34f6` (round 1), `89d4efa347` (round 2); round 3 below | none yet | ACTIVE under C3 amendment 1 (cap 4) | `6abd692fa7` (candidate `de63d6f4…4b46`) for the earlier run; `66b0ff3f14` (recovery candidate 3, `473f2f5a…8366`) for the corrected bytes |
 
 Dependency checks (2026-11-26): `0542b0592a` is an ancestor of `2c67a049ee`, which is an ancestor of `eab90a5ac8`, which is
 an ancestor of `7fff8b34f6`; every remote branch head matched the identities above when checked (2026-11-26, before C3
@@ -484,6 +507,8 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C3 r2+ | Focused gate `sprint7-visual` (local) | PASS, 25 tests | 5.9 s | 45 min 10.0 s | 29 min 50.0 s |
 | C3 r3 | (estimate before recovery candidate 3: build about 7 min, mechanics-only session about 7 min, final controller gates about 0.5 min; about 15 min left after, enough for one contingency) | | | 45 min 10.0 s | 29 min 50.0 s |
 | C3 r3 | Build-Local `-DevelopmentPurpose s7-recovery-c3 -DevelopmentTestFilter sprint7-visual` on `66b0ff3f14` (recovery candidate 3 of 4: package `473f2f5a78229f3e2e15c3d97b863f2201f44ae372d2485de1fdb05010618366`, DLL `8e574477cce11621ca2ec88fdeed358cb9f8f76ff8ced423e154e3c86d277d07`; 25 selected tests) | PASS | 8 min 0.9 s | 53 min 10.9 s | 21 min 49.1 s |
+| C3 r3 | Session `20261126T134425Z-…-s7-c3-mechanics` (recovery candidate 3, C2 harness `d77754ba…b4f1`) | PASS, 43/43 checks; required cells completed; restoration completed, owner files and saves verified, registry restored | 6 min 3 s | 59 min 13.9 s | 15 min 46.1 s |
+| C3 r3 | Focused gate `sprint7-visual` (local, with the candidate-3 same-run agreement) | PASS, 25 tests | 4.8 s | 59 min 18.7 s | 15 min 41.3 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then

@@ -2012,7 +2012,14 @@ namespace KingmakerGunslinger.DomainTests
         // verdict); the persisted row, and its collector-shaped live counterpart, must receive the same verdict here.
         internal static void CombinedRunVerdictsAgree()
         {
-            JObject record = JObject.Parse(File.ReadAllText("docs/evidence/sprint7/recovery-c3/20261126T054228Z-callback-loss-row.json"));
+            // The earlier combined run (product 6abd692fa7; C1's same-run criterion) and recovery candidate 3's run (66b0ff3f14).
+            foreach (string file in new[] { "20261126T054228Z-callback-loss-row.json", "20261126T134425Z-callback-loss-row.json" })
+                RunVerdictsAgree(file);
+        }
+
+        private static void RunVerdictsAgree(string file)
+        {
+            JObject record = JObject.Parse(File.ReadAllText("docs/evidence/sprint7/recovery-c3/" + file));
             var persisted = (JObject)record["row"];
             string live = (string)record["liveVerdict"];
             Assertions.True(record["liveVerdict"].Type == JTokenType.Null && persisted["verdict"].Type == JTokenType.Null && live == null,
