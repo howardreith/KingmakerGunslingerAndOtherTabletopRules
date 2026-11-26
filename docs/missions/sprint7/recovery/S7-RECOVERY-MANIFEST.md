@@ -24,7 +24,20 @@ disposition, the approved wording and the released Sickened mechanics. Visual an
 
 ## Recovery status (2026-11-25)
 
-**Current state (after round 4): C1 is BLOCKED at its amended four-review cap** ("review-round cap reached for final
+**Current state (C1 amendment 2, 2026-11-25):** the owner narrowed C1's acceptance boundary for bounded closure and
+raised the cap to five reviews on the same enrollment (`<lab>/owner-guidance/S7-RECOVERY-C1-AMENDMENT-2-2026-11-25.md`;
+controller amendment revision 2, sha256 `cc70f3e9…7e74`; applied with `resume --amend-mission`, then `resume --max-rounds 5`).
+C1 qualifies the evaluator's acceptance/rejection behavior for the current collector, live-object versus persisted-row
+equivalence, the named identity/missing-evidence/lifecycle controls, the round-4 outcome corrections and the retained rows
+at their supported scopes. Complete forensic validation of arbitrarily edited historical traces, a general chronology model
+for old collectors beyond the named controls, and exact diagnostic wording for inputs that already cannot characterize are
+withdrawn as C1 prerequisites. A refused characterization means only that the evidence does not establish the claim.
+Round 5 addresses R4-F1 to R4-F4 and R4-F7 and also fixes the R4-F5 and R4-F6 distinctions (local fixes, so no rebuttal).
+
+Corrections to earlier summaries: round 3 left R2-F3 open (it was verified only in round 4), and the recovery ledger
+recorded six failed validation attempts at that point (two in round 2, four in round 4), not five.
+
+**State after round 4 (historical): C1 was BLOCKED at its amended four-review cap** ("review-round cap reached for final
 (4/4)"; enrollment `kmg-codex-s7-recovery-c1-cue-evaluator-20261125045625-4a34`, PR #221). Round 3 on `d71bdf2e60`
 verified R2-F1, R2-F2 and R2-F4 to R2-F6, kept R2-F3 open and raised R3-F1 to R3-F6. Round 4 on the reviewed head
 **`2f975db075`** verified R2-F3 and R3-F1 to R3-F6 and raised seven more evaluator findings, which stay open:
@@ -121,6 +134,8 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C1 r4 | Focused gate `sprint7-visual` (local) | FAIL: check order (a pre-disposal stop reported as inconsistent fields) | 17.6 s | 3 min 12.4 s | 41 min 47.6 s |
 | C1 r4 | Focused gate `sprint7-visual` (local) | PASS, 22 tests | 17.4 s | 3 min 29.8 s | 41 min 30.2 s |
 | C1 r4 | Controller gates on `2f975db075`: `sprint7-visual` 22 tests 4.2 s, `summon-playtest-r6` 11 tests 4.1 s, `sprint22-` 11 tests 4.5 s, `native-profile` 9 tests 3.8 s (receipts 2.3 + 2.1 + 2.4 + 1.9 = 8.7 s) | PASS | 17.5 s batch wall | 3 min 47.3 s | 41 min 12.7 s |
+| C1 r5 | Focused gate `sprint7-visual` (local, amendment-2 source) | FAIL: an existing diagnostic-only assertion (input kept; now asserts refusal) | 18.4 s | 4 min 5.7 s | 40 min 54.3 s |
+| C1 r5 | Focused gate `sprint7-visual` (local) | PASS, 22 tests | 3.4 s | 4 min 9.1 s | 40 min 50.9 s |
 
 No product package, harness build or game session has run in the recovery. Earlier spend stays separate (65 min 42 s in
 rounds 6 and 7); new product candidates used: 0 of 2.

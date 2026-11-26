@@ -1399,6 +1399,17 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("intervention-not-restored", mutated((row, other) => row["interventionDisposeFailures"] = new JArray("cue callback hook: InvalidOperationException: x")), "A failed unpatch is not restoration.");
             Assertions.Equal("cue-identity-contradiction:other-retirement-frame", mutated((row, other) => row["afterOtherRetired"]["other"]["playingId"] = (long)row["before"]["survivor"]["playingId"]), "Round 6: the retirement-frame other record is bound too.");
             Assertions.Equal("wrong-entry:round7-row", Sprint7ObserverPolicy.CallbackLossRound6(baseRow, Sprint7ObserverPolicy.CueCollector.Round7, otherOf(basePhase), markOf(basePhase), stop), "A round-7 row has one entry point.");
+            // R4-F3: the Round6 phase mark is not the loop's start. With the local start at 20:29:02.3250 and the mark read after it
+            // at 20:29:02.3261873, a disposal stop at 20:29:14.3258 follows the real deadline (14.3250) although it precedes
+            // mark + window (14.3261873); the reader bounds the deadline only by the later posting + window (14.3142622).
+            Func<string, string> between = stopAt =>
+            {
+                var row = (JObject)baseRow.DeepClone();
+                row["survivorAfterDisposal"]["cue"]["stopRequestedUtc"] = stopAt;
+                return Sprint7ObserverPolicy.CallbackLossRound6(row, Sprint7ObserverPolicy.CueCollector.Round6Second, otherOf(basePhase), new JValue("2026-11-24T20:29:02.3261873Z"), stop);
+            };
+            Assertions.Equal(null, between("2026-11-24T20:29:14.3258000Z"), "R4-F3: a Round6 disposal stop between the real deadline and mark + window is accepted.");
+            Assertions.Equal("survivor-stop-inside-zero-stop-interval", between("2026-11-24T20:29:14.3000000Z"), "A Round6 stop before the later posting + window still refuses.");
 
             // Round 7, the final collector (candidate 9c39b1ff7f, package 49f8b88c…) in game: 223809Z found no overlap (the
             // in-run "not-both-playing" stands); 224949Z reached overlap and ran the whole live path. Its in-run verdict,
@@ -1512,8 +1523,8 @@ namespace KingmakerGunslinger.DomainTests
                 // R2-F3: earlier and later lifecycle observations of the same posting.
                 Assertions.Equal("lifecycle-contradiction:other.endUtc", with(row => row["before"]["other"]["endUtc"] = "2026-11-24T22:51:56.4200000Z"),
                     n + "R2-F3: an earlier recorded completion of the other cue cannot be erased by the favorable later records.");
-                Assertions.Equal("other-ended-before-retirement", with(row => { foreach (JToken cue in new[] { row["before"]["other"], row["afterOtherRetired"]["other"], row["otherRetirementSettled"]["other"] }) cue["endUtc"] = "2026-11-24T22:51:56.4200000Z"; }),
-                    n + "a completion recorded before the retirement cannot be credited to the retirement.");
+                Assertions.True(with(row => { foreach (JToken cue in new[] { row["before"]["other"], row["afterOtherRetired"]["other"], row["otherRetirementSettled"]["other"] }) cue["endUtc"] = "2026-11-24T22:51:56.4200000Z"; }) != null,
+                    n + "a completion recorded before the retirement cannot be credited to the retirement (refused; the label is diagnostic only under C1 amendment 2).");
                 Assertions.Equal("lifecycle-contradiction:other.stopAttempts-decreased", with(row => row["afterOtherRetired"]["otherStopAttempts"] = 2), n + "R2-F3: a retirement-frame stop count above the settled count refuses.");
                 Assertions.Equal("survivor-stop-inside-zero-stop-interval", with(row => row["survivorAfterDisposal"]["cue"]["stopRequestedUtc"] = "2026-11-24T22:51:56.4333170Z"),
                     n + "R2-F3: a survivor stop timed inside the interval reported to have zero stops refuses.");
@@ -1562,6 +1573,38 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.Equal("missing:cuesBeforeSelection.survivorSource[0].event", with(row => row["cuesBeforeSelection"]["survivorSource"][0] = new JObject { ["playingId"] = 513 }), n + "R3-F4: an unselected positive record without a posting refuses.");
                 Assertions.Equal("unreadable:before.survivor.event", with(row => { row["before"]["survivor"]["event"] = ""; row["survivorAtWindowEnd"]["cue"]["event"] = ""; row["survivorAfterDisposal"]["cue"]["event"] = "";
                     row["cuesBeforeSelection"]["survivorSource"].First(cue => (long)cue["playingId"] == survivorPlaying)["event"] = ""; }), n + "R3-F4: an empty event name is not a posting.");
+                // C1 amendment 2 (round-4 findings).
+                // R4-F1: a completion seen with zero attempts locks the count (Retire skips a completed posting); a retirement-frame
+                // time strictly after the first sample is impossible; a stop already attempted and then completed stays valid.
+                Assertions.Equal("lifecycle-contradiction:other.stop-after-completion", with(row => row["afterOtherRetired"]["other"]["endUtc"] = row["otherRetirementSettled"]["other"]["endUtc"].DeepClone()),
+                    n + "R4-F1: an end recorded at zero attempts followed by a settled first stop refuses.");
+                Assertions.Equal("retirement-frame-after-first-sample:stopRequestedUtc", with(row => { var frame = (JObject)row["afterOtherRetired"]; var settled = (JObject)row["otherRetirementSettled"]["other"];
+                    foreach (string field in new[] { "stopReason", "stopResult", "stopRequestedUtc" }) frame["other"][field] = settled[field].DeepClone(); frame["otherStopAttempts"] = 1; }),
+                    n + "R4-F1: a complete retirement-frame stop timed after the first sample (22:51:56.4303174Z) refuses.");
+                Assertions.Equal(null, with(row => { var frame = (JObject)row["afterOtherRetired"]; var settled = (JObject)row["otherRetirementSettled"]["other"]; JToken tick = row["window"][0]["utc"].DeepClone();
+                    settled["stopRequestedUtc"] = tick.DeepClone(); foreach (string field in new[] { "stopReason", "stopResult", "stopRequestedUtc" }) frame["other"][field] = settled[field].DeepClone(); frame["otherStopAttempts"] = 1; }),
+                    n + "a stop already attempted in the retirement frame at the first sample's own tick, completed later, stays valid.");
+                // R4-F2: no further sample after one stamped at or past the recorded deadline (22:52:08.4293166Z).
+                Assertions.Equal("window-sample-after-deadline:window[" + (((JArray)current.Make()["window"]).Count - 1) + "]", with(row => { var window = (JArray)row["window"];
+                    window[window.Count - 2]["utc"] = "2026-11-24T22:52:08.4300000Z"; window[window.Count - 1]["utc"] = "2026-11-24T22:52:08.4500000Z"; }),
+                    n + "R4-F2: two samples past the deadline (another iteration after an expired one) refuse.");
+                Assertions.Equal(null, with(row => { var window = (JArray)row["window"]; window[window.Count - 1]["utc"] = "2026-11-24T22:52:08.4500000Z"; }), n + "a final sample straddling its own guard stays valid.");
+                // R4-F4: equal readings in the known order are not inversions.
+                Assertions.Equal(null, with(row => { foreach (JObject sample in row["window"]) sample["callbacksWithheld"] = 0; row["survivorAtWindowEnd"]["callbacksWithheld"] = new JArray("2026-11-24T22:52:08.4634895Z"); }),
+                    n + "R4-F4: a terminal callback sharing the disposal stop's clock tick is accepted.");
+                Assertions.Equal(null, with(row => row["survivorAfterDisposal"]["cue"]["stopRequestedUtc"] = "2026-11-24T22:52:08.4293166Z"), n + "a disposal stop on the deadline's own tick is accepted.");
+                // R4-F5: more than the one attempt per posting is impossible wherever it is read (fixed, not rebutted).
+                Assertions.Equal("stop-attempts-impossible:afterOtherRetired.survivorStopAttempts", with(row => row["afterOtherRetired"]["survivorStopAttempts"] = 2), n + "R4-F5: a retirement-frame count of two is impossible.");
+                Assertions.Equal("stop-attempts-impossible:otherRetirementSettled.survivorStopAttemptsThroughWindow", with(row => row["otherRetirementSettled"]["survivorStopAttemptsThroughWindow"] = 2), n + "R4-F5: a through-window count of two is impossible.");
+                // R4-F6: an omitted or malformed settled end is unavailable, distinct from a recorded null (fixed, not rebutted).
+                Assertions.Equal("missing:otherRetirementSettled.other.endUtc", with(row => ((JObject)row["otherRetirementSettled"]["other"]).Remove("endUtc")), n + "R4-F6: an omitted settled end is missing.");
+                Assertions.Equal("unreadable:otherRetirementSettled.other.endUtc", with(row => row["otherRetirementSettled"]["other"]["endUtc"] = "not a date"), n + "R4-F6: a malformed settled end is unreadable.");
+                Assertions.Equal("other-not-stopped-by-own-id", with(row => row["otherRetirementSettled"]["other"]["endUtc"] = current.Null()), n + "R4-F6: a recorded null means no completion was recorded.");
+                // R4-F7: a successful request is credited to the retirement only with the production cause.
+                Assertions.Equal("other-stop-cause-not-retirement", with(row => row["otherRetirementSettled"]["other"]["stopReason"] = ""), n + "R4-F7: an empty cause refuses.");
+                Assertions.Equal("other-stop-cause-not-retirement", with(row => row["otherRetirementSettled"]["other"]["stopReason"] = "manual-preview-stop"), n + "R4-F7: an unrelated cause refuses.");
+                Assertions.Equal(null, with(row => row["otherRetirementSettled"]["other"]["stopReason"] = "entity-retired"), n + "the other production retirement cause (entity-retired) is valid.");
+                Assertions.Equal("survivor-stop-cause-not-retirement", with(row => row["survivorAfterDisposal"]["cue"]["stopReason"] = "manual-preview-stop"), n + "the survivor's post-window stop needs its own retirement cause too.");
                 // The accepted terminal playback rules stay.
                 Assertions.Equal("survivor-playback-persisted:window-end", with(row => row["survivorAtWindowEnd"]["playback"] = Sprint7ObserverPolicy.PlaybackPlaying), n + "terminal playing is persistence.");
                 Assertions.Equal("survivor-playback-unknown:after-disposal", with(row => ((JObject)row["survivorAfterDisposal"]).Remove("playback")), n + "a missing terminal read is unknown.");

@@ -222,8 +222,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         // (the product received the completion callback) and one stop attempt (SummonCastCueLifecycle.Retire: stopAttempts
         // becomes 1 and stopReason is set first; on success stopRequestedUtc and stopResult "stop-requested" follow; on
         // failure stopResult "failed:..." with no request time; at most one attempt per playing ID). Once observed, an end
-        // or stop never disappears or changes and stopAttempts never decreases. A snapshot and the counts read with it are
-        // read in one main-thread frame, so they agree exactly. Native playback (playing / inactive / unknown) is a separate
+        // or stop never disappears or changes and stopAttempts never decreases. A cue record and the stop count the collector
+        // reads beside it are read in consecutive statements with no yield between them, on the main thread where Retire
+        // runs, so Retire cannot interleave and they agree exactly; samples and other reads that do yield between them are
+        // not treated as one atomic snapshot. Native playback (playing / inactive / unknown) is a separate
         // query, true only at its own read. A playing ID of exactly 0 is the producer's record of a failed post: it owns
         // nothing.
         //
@@ -235,9 +237,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         //                           then the other cue and both stop counts, in the retirement frame;
         //   W  window[i]            per sample: the survivor's playback queried, then utc stamped, then survivorEndUtc,
         //                           tracked and the withheld count read; samples run while now < retirement + window;
-        //   S3 otherRetirementSettled and survivorAtWindowEnd   after the loop exits, so not earlier than retirement +
-        //                           declaredWindowSeconds (the exact time is not recorded), the terminal withheld timestamps
-        //                           copied among them;
+        //   S3 otherRetirementSettled and survivorAtWindowEnd   after the loop exits: for Round7, whose otherRetiredUtc is
+        //                           the loop's own start, not earlier than that + declaredWindowSeconds; for Round6, which
+        //                           recorded only a later phase mark, not earlier than the later posting + window and the
+        //                           last sample (the exact time is never recorded); the terminal withheld timestamps are
+        //                           copied among them, before the survivor's disposal;
         //   S4 survivorAfterDisposal after the survivor's own source was then retired and observed destroyed.
         // Round6First (f3bfab1303) armed the target before both cues were confirmed playing: only the survivor's posting
         // bounds its withheld callback from below.
@@ -307,8 +311,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (retiredUtc.Value < survivorPosted || retiredUtc.Value < otherPosted) return "retirement-before-posting";
             double? declaredWindow = Seconds(Child(row, "declaredWindowSeconds"));
             if (!declaredWindow.HasValue) return Problem(row, "declaredWindowSeconds", "row");
-            // The zero-stop terminal reads came after the loop, so not before this instant.
-            DateTime terminalNotBefore = retiredUtc.Value.AddSeconds(declaredWindow.Value);
+            // The zero-stop terminal reads came after the loop. Round7 recorded the loop's own start (otherRetiredUtc), so
+            // they came at or after that start + window, the loop deadline. Round6 recorded only the later phase mark, so
+            // its deadline is bounded below only by what the row establishes: the retirement followed both postings.
+            DateTime? loopDeadline = collector == CueCollector.Round7 ? retiredUtc.Value.AddSeconds(declaredWindow.Value) : (DateTime?)null;
+            DateTime terminalNotBefore = loopDeadline ?? (survivorPosted >= otherPosted ? survivorPosted : otherPosted).AddSeconds(declaredWindow.Value);
 
             // The other cue's lifecycle, S0 -> S1 -> S2 -> S3: nothing observed may disappear or change; attempts never fall.
             problem = (otherRecord == null ? null : Advances(otherRecord, otherCue, "other")) ?? Advances(otherCue, otherAtRetirement, "other") ?? Advances(otherAtRetirement, otherSettled, "other");
@@ -318,6 +325,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             int? otherStops = Count(otherSettled, "stopAttempts");
             if (!otherStops.HasValue) return Problem(otherSettled, "stopAttempts", settledPath + ".other");
             if (otherStops.Value < otherFrameStops.Value) return "lifecycle-contradiction:other.stopAttempts-decreased";
+            if (otherFrameStops.Value > 1 || otherStops.Value > 1) return "stop-attempts-impossible:other";
+            // R4-F1: Retire skips a posting whose end is already recorded, so an end seen with zero attempts keeps it at zero.
+            if (otherFrameStops.Value == 0 && Unset(otherAtRetirement, "endUtc", "afterOtherRetired.other", true) == "set" && otherStops.Value > 0)
+                return "lifecycle-contradiction:other.stop-after-completion";
             // R3-F2: each stop observation agrees with the attempt count read with it.
             problem = StopAgrees(otherRecord, null, "cuesBeforeSelection.otherSource[selected]") ?? StopAgrees(otherCue, null, "before.other") ??
                 StopAgrees(otherAtRetirement, otherFrameStops, "afterOtherRetired.other") ?? StopAgrees(otherSettled, otherStops, settledPath + ".other");
@@ -330,6 +341,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string stop = Unset(earlier.Cue, "stopRequestedUtc", earlier.Path, true);
                 if (stop != null) return stop == "set" ? "other-stopped-before-retirement" : stop;
             }
+            // R4-F6: the settled completion is an explicit null (no completion recorded), a readable time, or unavailable.
+            string settledEnd = Unset(otherSettled, "endUtc", settledPath + ".other", true);
+            if (settledEnd != null && settledEnd != "set") return settledEnd;
+            // R4-F7: a successful request is credited to the retirement only with the production retirement cause.
+            if (Text(otherSettled, "stopResult") == SummonCastCueStopRequested && !RetirementReason(Text(otherSettled, "stopReason")))
+                return "other-stop-cause-not-retirement";
             if (otherStops.Value != 1 || !RetiredByOwnId(otherStops.Value, Text(otherSettled, "stopResult"), productStopRequested,
                     Utc(Child(otherSettled, "stopRequestedUtc")), Utc(Child(otherSettled, "endUtc")), retiredUtc.Value))
                 return "other-not-stopped-by-own-id";
@@ -337,12 +354,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             // The survivor through the window: no stop in any pre-disposal snapshot, counts cumulative and readable.
             int? frameStops = Count(retiredFrame, "survivorStopAttempts");
             if (!frameStops.HasValue) return Problem(retiredFrame, "survivorStopAttempts", "afterOtherRetired");
+            if (frameStops.Value > 1) return "stop-attempts-impossible:afterOtherRetired.survivorStopAttempts";
             if (frameStops.Value > 0) return "survivor-stopped-by-other-retirement";
             int windowStops = frameStops.Value;
             if (collector == CueCollector.Round7)
             {
                 int? through = Count(settledToken, "survivorStopAttemptsThroughWindow");
                 if (!through.HasValue) return Problem(settledToken, "survivorStopAttemptsThroughWindow", settledPath);
+                if (through.Value > 1) return "stop-attempts-impossible:" + settledPath + ".survivorStopAttemptsThroughWindow";
                 if (through.Value > 0) return "survivor-stopped-by-other-retirement";
                 windowStops = through.Value;
             }
@@ -409,6 +428,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 samples.Add(playback); times.Add(at.Value); counts.Add(count.Value);
             }
             if (counts[counts.Count - 1] > withheld.Count) return "callback-count-exceeds-terminal";
+            // R4-F2 (Round7): a sample stamped at or past the loop deadline ends the loop; no later sample can follow it.
+            if (loopDeadline.HasValue)
+                for (int index = 0; index + 1 < times.Count; index++)
+                    if (times[index] >= loopDeadline.Value) return "window-sample-after-deadline:window[" + (index + 1) + "]";
+            // R4-F1: the retirement frame was read before the first sample; a time it recorded cannot be later than that sample.
+            foreach (string field in new[] { "stopRequestedUtc", "endUtc" })
+            {
+                DateTime? recorded = Unset(otherAtRetirement, field, "afterOtherRetired.other", true) == "set" ? Utc(Child(otherAtRetirement, field)) : null;
+                if (recorded.HasValue && recorded.Value > times[0]) return "retirement-frame-after-first-sample:" + field;
+            }
             for (int index = 0; index < times.Count; index++)
             {
                 int before_ = withheld.Count(at => at < times[index]);
@@ -448,10 +477,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (ownStop == "set")
             {
                 DateTime stoppedAt = Utc(Child(disposedCue, "stopRequestedUtc")).Value;
-                // R2-F3: the through-window reads that still found no stop came at or after retirement + window.
-                if (stoppedAt <= terminalNotBefore || stoppedAt <= times[times.Count - 1]) return "survivor-stop-inside-zero-stop-interval";
-                // R3-F1: the terminal withheld list was copied before the survivor's disposal began.
-                if (withheld.Any(at => at >= stoppedAt)) return "callback-after-terminal-capture";
+                // R2-F3 / R4-F3: the through-window reads that still found no stop came after the last sample and at or after
+                // the established deadline bound; the disposal stop came after them. A shared clock tick is not an inversion (R4-F4).
+                if (stoppedAt < terminalNotBefore || stoppedAt < times[times.Count - 1]) return "survivor-stop-inside-zero-stop-interval";
+                // R3-F1: the terminal withheld list was copied before the survivor's disposal began; only a strictly later callback inverts that.
+                if (withheld.Any(at => at > stoppedAt)) return "callback-after-terminal-capture";
+                if (!RetirementReason(Text(disposedCue, "stopReason"))) return "survivor-stop-cause-not-retirement";
             }
             int? unrelated = Count(afterDisposal, "unrelatedRecordsChanged");
             if (!unrelated.HasValue) return Problem(afterDisposal, "unrelatedRecordsChanged", "survivorAfterDisposal");
@@ -557,6 +588,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             return null;
         }
+
+        /// <summary>The production retirement causes (SummonCastCuePlayback: "entity-retired" in LateUpdate, "view-destroyed" in OnDestroy).</summary>
+        private static bool RetirementReason(string reason) { return reason == "entity-retired" || reason == "view-destroyed"; }
 
         // The producer's successful stop result (SummonCastCueLifecycle.StopRequested), kept here so the evaluator stays pure.
         private const string SummonCastCueStopRequested = "stop-requested";
