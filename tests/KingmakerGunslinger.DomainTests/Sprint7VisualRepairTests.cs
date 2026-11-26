@@ -1536,6 +1536,8 @@ namespace KingmakerGunslinger.DomainTests
                     Sprint7ObserverPolicy.Cell("s7-later", () => Counting(() => phaseNext++)) }, cells(phase), limit)) { }
                 Assertions.True(childNext == 0 && driver.Child.Refused == "next" && leftover.Removes == 2 && !effects.Present.Contains(leftover) && effects.Present.Contains(effects.Foreign),
                     variant + ": the leftover's removal failed once at the boundary (not retried by later releases), the driver's repair removed it, the foreign control is untouched and the child's next cell was refused.");
+                // With no execution live at cleanup the settlement is immediate and does not release a second time.
+                Assertions.True(effects.Unsubscribes == 1 && !effects.Subscribed, variant + ": with nothing live the ledger unsubscribed at cleanup, once.");
                 if (variant == "control")
                     Assertions.True(driver.Proven && phase.Restored && phaseNext == 1 && driver.Unexpected.Count == 0, "control: only the exact expected failures: the driver proves the fixture safe and the next phase cell runs.");
                 else

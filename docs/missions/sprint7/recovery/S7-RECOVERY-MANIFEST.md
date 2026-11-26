@@ -217,7 +217,8 @@ Owner acceptances recorded here (C3 only; the C1 and C2 branches are not amended
   returned (`Returned` is not settlement); failures and settlement residuals are published once by identity; the fixture's
   outer teardown skips units whose retirement the phase attempted (`RetirementAttempted`, narrow to that path) and lists them.
 - R1-F2: `ReleaseOwnedEffects` keeps the condition ledger subscribed while any retained execution is live and reconciles at
-  settlement (late owned conditions released, new remaining ones named, then unsubscribe and the foreign-control check).
+  settlement (late owned conditions released, new remaining ones named, then unsubscribe and the foreign-control check); with
+  nothing live it settles at cleanup without a second release.
 - R1-F3: command-release failures are published the moment they happen and kept cumulatively by `Sprint7OwnedCommands`.
 - R1-F4: an unreadable process is a named unknown residual of its command; the step-4 cancellation and the early-exit cast go
   through the command owner (process captured first).
@@ -442,11 +443,13 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C3 a1 | Focused gate `sprint7-visual` (local) | FAIL: compile errors (unassigned test fields) | 19.3 s | 43 min 5.1 s | 31 min 54.9 s |
 | C3 a1 | Focused gate `sprint7-visual` (local) | PASS, 25 tests (one test waited out a 30 s settle window) | 34.2 s | 43 min 39.3 s | 31 min 20.7 s |
 | C3 a1 | Focused gate `sprint7-visual` (local, settle windows shortened) | PASS, 25 tests | 5.4 s | 43 min 44.7 s | 31 min 15.3 s |
+| C3 a1 | Focused gate `sprint7-visual` (local, immediate-settlement correction) | FAIL: compile error (a test assertion inserted between if and else) | 17.1 s | 44 min 1.8 s | 30 min 58.2 s |
+| C3 a1 | Focused gate `sprint7-visual` (local) | PASS, 25 tests | 4.9 s | 44 min 6.7 s | 30 min 53.3 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
   built its harness four times and ran four short lifecycle sessions on the existing candidate-3 package (rows above).
-- Failed validation attempts so far: twelve (two in C1 round 2, four in C1 round 4, one in C1 round 5, five in C3).
+- Failed validation attempts so far: thirteen (two in C1 round 2, four in C1 round 4, one in C1 round 5, six in C3).
 - Earlier spend stays separate: 65 min 42 s in parent rounds 6 and 7. New product candidates used: 2 of 2 (C3's combined candidate and its contingency).
 - Reserve before the C2 round-3 session: C3 still needs one combined Build-Local candidate and its affected native
   qualification (the effects session, estimated at about 18 minutes, plus the build and gates). After the planned C2 short

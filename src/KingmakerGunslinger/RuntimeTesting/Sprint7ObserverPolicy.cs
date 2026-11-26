@@ -1237,16 +1237,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             row["ownedExecutions"] = executions;
             row["ownedExecutionsLive"] = live.Count + unknown.Count;
-            bool settledNow = false;
+            bool settledNow = false, lateRelease = true;
             Func<bool?> settle = () =>
             {
                 if (settledNow) { List<string> again = remaining(); return again == null ? (bool?)null : again.Count == 0; }
                 foreach (TProcess process in commands.Processes) { bool? ended = commands.Ended(process); if (ended != true) return ended; }
                 foreach (TCommand command in commands.Unknown) { bool? ended = commands.EndedOf(command); if (ended != true) return ended; }
                 settledNow = true;
-                List<string> late;
-                try { late = releaseConditions(); }
-                catch (Exception error) { late = new List<string> { "condition release: " + error.GetType().Name + ": " + error.Message }; }
+                // Nothing can be delivered late when no execution was live at cleanup: the release above stands.
+                List<string> late = new List<string>();
+                if (lateRelease)
+                    try { late = releaseConditions(); }
+                    catch (Exception error) { late = new List<string> { "condition release: " + error.GetType().Name + ": " + error.Message }; }
                 foreach (string failure in late) isolation.Fail(owner, "late release failure: " + failure);
                 List<string> after = remaining();
                 if (after == null) isolation.Fail(owner, "owned conditions unread after settlement");
@@ -1261,7 +1263,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["remainingAfterSettlement"] = after == null ? null : new JArray(after.ToArray());
                 return after == null ? (bool?)null : after.Count == 0;
             };
-            if (live.Count + unknown.Count == 0) { settle(); row["ledgerHeldUntilSettlement"] = false; }
+            if (live.Count + unknown.Count == 0) { lateRelease = false; settle(); row["ledgerHeldUntilSettlement"] = false; }
             else { isolation.Residual(owner, "owned conditions reconciled after settlement", settle); row["ledgerHeldUntilSettlement"] = true; }
             return row;
         }
