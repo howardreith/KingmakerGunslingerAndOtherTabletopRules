@@ -96,19 +96,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// Opens the native character sheet for an existing party member, observes
+        /// Opens the native character sheet for an existing player-faction actor, observes
         /// its rendered ability block, then restores the sheet character, section,
         /// window and pause state. Throws when the desktop service UI is not idle.
         /// </summary>
-        internal static IEnumerable<int> CaptureForPartyMember(UnitDescriptor owner, int[] expectedRacial,
+        internal static IEnumerable<int> CaptureForActor(UnitDescriptor owner, int[] expectedRacial,
             JObject evidence)
         {
             var game = Game.Instance;
             var ui = game.UI;
             var group = GroupController.Instance;
-            if (owner == null || !game.Player.Party.Any(value => ReferenceEquals(value.Descriptor, owner)) ||
+            if (owner == null || owner.Unit == null || !owner.IsPlayerFaction ||
                 ui.ServiceWindow == null || ui.ServiceWindow.WindowTabs.IsShow || group == null || game.IsControllerGamepad)
-                throw new InvalidOperationException("Native sheet label capture requires a party member and idle desktop service UI.");
+                throw new InvalidOperationException("Native sheet label capture requires a player-faction actor and idle desktop service UI.");
+            evidence["partyMember"] = game.Player.Party.Any(value => ReferenceEquals(value.Descriptor, owner));
             var sheet = ui.ServiceWindow.WindowTabs.SubWindowsList.Select(pair => pair.SubWindow)
                 .OfType<CharacterScreenController>().Single();
             var characterField = typeof(CharacterScreenController).GetField("m_CurrentCharacter", Members);

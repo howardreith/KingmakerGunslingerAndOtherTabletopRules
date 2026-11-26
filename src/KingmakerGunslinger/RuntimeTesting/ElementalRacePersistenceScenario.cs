@@ -465,7 +465,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["expectedRacial"] = new JArray(_lastExpectedRacial), ["exact"] = false };
                 _sheetLabelEvidence.Add(evidence);
                 _sheetLabelCapture = NativeSheetRacialLabelProbe.Isolated(
-                    NativeSheetRacialLabelProbe.CaptureForPartyMember(unit.Descriptor,
+                    NativeSheetRacialLabelProbe.CaptureForActor(unit.Descriptor,
                         (int[])_lastExpectedRacial.Clone(), evidence), evidence).GetEnumerator();
             }
 
