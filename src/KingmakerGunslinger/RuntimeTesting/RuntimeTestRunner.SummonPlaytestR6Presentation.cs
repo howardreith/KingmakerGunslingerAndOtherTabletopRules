@@ -229,10 +229,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["availableBefore"] = data.IsAvailable; row["canTarget"] = data.CanTarget(target);
             if (!data.IsAvailable || !data.CanTarget(target)) throw new InvalidOperationException("Native ability unavailable: " + data.Blueprint.name);
             var command = new UnitUseAbility(data, target);
-            if (issued != null) issued(command);
             int cuesSeen = SummonAbilityCastCueRuntime.Snapshot().Length;
             var cuePosts = new JArray(); row["cuePostsListener"] = cuePosts;
-            owner.Commands.Run(command);
+            // Recovery C3 (audit A1-F5): the issue callback runs before the single native run, through the shared submission.
+            Sprint7ObserverPolicy.IssueAndRun(command, issued, value => owner.Commands.Run(value));
             DateTime deadline = DateTime.UtcNow.AddSeconds(30);
             int actedAt = -1, shots = 0;
             while (DateTime.UtcNow < deadline)

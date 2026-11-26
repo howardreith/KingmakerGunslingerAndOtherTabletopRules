@@ -2462,9 +2462,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return process == null ? 0 : _conditions.Ledger.Acquired.Count(buff => ReferenceEquals(ExecutionOf(buff), process.Context));
             }
 
-            internal int PresentFrom(Kingmaker.Controllers.AbilityExecutionProcess process)
+            /// <summary>
+            /// Audit A2-F2: the exact execution's conditions still present, through the condition owner's count: an unreadable
+            /// attribution or context makes it unknown (null), never zero.
+            /// </summary>
+            internal int? PresentFrom(Kingmaker.Controllers.AbilityExecutionProcess process)
             {
-                return process == null ? 0 : _conditions.RemainingOwned().Count(buff => ReferenceEquals(ExecutionOf(buff), process.Context));
+                if (process == null) return 0;
+                object context;
+                try { context = process.Context; } catch (Exception) { return null; }
+                return _conditions.PresentFrom(context, buff => ExecutionOf(buff));
             }
 
             /// <summary>R2-F8 (audit A1-F8): the early release; each failure, bound to its instance, enters the cell's result at once.</summary>
@@ -2602,7 +2609,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             JArray cellFailures)
         {
             var command = new UnitUseAbility(data, new TargetWrapper(target));
-            ledger.Own(command);
+            // Audit A2-F3: registered with the cell's owner and the phase record (with the owner's capture) before its run.
+            Sprint7ObserverPolicy.RegisterCellCommand(ledger.Commands, _s7Issued, dust, command);
             // Owner amendment 3 (R4-F1): this cast's own execution process, retained when first seen.
             Kingmaker.Controllers.AbilityExecutionProcess own = null;
             try
@@ -2742,10 +2750,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool unownedControlDue = false;
             var releaseFailures = new JArray();
             Action clearSickened = () => { foreach (string failure in conditions.ReleaseAndPublish("")) releaseFailures.Add(failure); };
-            // Every command this cell issues is registered with the ledger before it runs (R4-F4).
+            // Every command this cell issues is registered with the ledger before it runs (R4-F4). Audit A1-F5, A2-F3: both routes
+            // use the production registration: the cell's owner and the phase record (with the owner's capture, which a phase retry
+            // runs before interrupting), before the single native run (the passive route's run is inside R6RunPassive).
             Func<UnitEntityData, AbilityData, TargetWrapper, JObject, R6Clip, IEnumerable<int>> passive = (unit, data, target, cast, clip) =>
-                R6RunPassive(unit, data, target, cast, clip, command => { conditions.Own(command); if (_s7Issued != null) _s7Issued.Record(unit, command); });
-            Func<UnitEntityData, UnitUseAbility, UnitUseAbility> issue = (unit, command) => { conditions.Own(command); S7Run(unit, command); return command; };
+                R6RunPassive(unit, data, target, cast, clip, command => Sprint7ObserverPolicy.RegisterCellCommand(conditions.Commands, _s7Issued, unit, command));
+            Func<UnitEntityData, UnitUseAbility, UnitUseAbility> issue = (unit, command) =>
+            {
+                Sprint7ObserverPolicy.RegisterCellCommand(conditions.Commands, _s7Issued, unit, command);
+                S7Run(unit, command);
+                return command;
+            };
             Func<UnitEntityData, int, int, JObject> laterCast = (caster, savesFrom, damageFrom) => new JObject {
                 ["caster"] = caster.UniqueId, ["casterAlive"] = !caster.Destroyed, ["casterIsEnemyOfHostile"] = caster.IsEnemy(hostile), ["hostileIsEnemyOfCaster"] = hostile.IsEnemy(caster),
                 ["hostileSaves"] = new JArray(saveLog.Rows.Skip(savesFrom).Where(value => (string)value.Key["unit"] == hostile.UniqueId).Select(value => { var copy = (JObject)value.Key.DeepClone();
@@ -3310,17 +3325,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 S7DustConditions owner = conditions;
                 Func<List<string>> afterSettlement = () =>
                 {
-                    // R3-F3: the controls this path requires are declared first (the caster-behind control once placed; the
-                    // same-caster control once the separate execution was due); each is read once, and the diagnostics, the verdict
-                    // and the releases all use that one result; a failed read never prevents an independent release.
+                    // R3-F3 (audit A1-F4): the production Dust control settlement declares this path's controls (the caster-behind
+                    // control once placed; the same-caster control once the separate execution was due); each is read once, and the
+                    // diagnostics, the verdict and the releases all use that one result; a failed read never prevents an independent
+                    // release; the outside target's one retirement request and its publication to this cell's isolation follow.
                     var presence = new Dictionary<string, bool?>();
-                    List<string> failures = Sprint7ObserverPolicy.SettleControls(new[] {
-                        new Sprint7Control<Buff> { Key = "caster-behind control", Name = "caster-behind control" + (foreignSickened == null ? " (no handle)" : " " + S7DustConditions.Identity(foreignSickened)),
-                            Required = foreignSickened != null || row["layout"] != null, Handle = foreignSickened, Read = buff => presentOn(buff, fixture.Caster)(), Release = buff => buff.Remove() },
-                        new Sprint7Control<Buff> { Key = "same-caster unowned control", Name = "same-caster unowned control" + (unownedSickened == null ? " (no handle)" : " " + S7DustConditions.Identity(unownedSickened)),
-                            Required = unownedControlDue, Handle = unownedSickened, Read = buff => presentOn(buff, outside)(), Release = buff => buff.Remove() } },
-                        () => { if (outside != null && !outside.Destroyed) S7Retire(outside, "dust outside target", _s7Retire ?? (unit => DisposeExpandedSummoningUnits(fixture.Created, new[] { unit }))); },
-                        () => { if (_s7Retirements != null) _s7Retirements.Publish(isolation, "s7-dust", S7UnitSettled); }, row, presence);
+                    List<string> failures = Sprint7ObserverPolicy.DustControlSettlement(isolation, "s7-dust",
+                        foreignSickened, row["layout"] != null, buff => presentOn(buff, fixture.Caster)(),
+                        unownedSickened, unownedControlDue, buff => presentOn(buff, outside)(), buff => S7DustConditions.Identity(buff), buff => buff.Remove(),
+                        outside, unit => !unit.Destroyed, _s7Retirements, _s7Retire ?? (unit => DisposeExpandedSummoningUnits(fixture.Created, new[] { unit })),
+                        unit => unit.UniqueId, S7UnitSettled, row, presence);
                     row["foreignKeptAtSettlement"] = presence["caster-behind control"] == true;
                     row["unownedKeptAtSettlement"] = presence["same-caster unowned control"] == true;
                     row["conditionsSubscribedAfterSettlement"] = owner == null ? (bool?)null : owner.Subscribed;
@@ -3504,7 +3518,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 JObject afterSettled = _s7PreDeliveryState == null ? null : _s7PreDeliveryState();
                 driver.Row["afterSettlement"] = afterSettled;
-                if (afterSettled == null || (bool?)afterSettled["ended"] != true || (int?)afterSettled["presentFromExecution"] != 0) reasons.Add("the execution's own conditions not settled and released");
+                // Audit A2-F2: an unknown count (unreadable attribution) is never accepted as zero.
+                if (afterSettled == null || !Sprint7ObserverPolicy.ExecutionConditionsReleased((bool?)afterSettled["ended"], (int?)afterSettled["presentFromExecution"]))
+                    reasons.Add("the execution's own conditions not settled and released");
                 if (effects == null || effects.Type != JTokenType.Object) reasons.Add("no effects release recorded");
                 else
                 {
@@ -3663,18 +3679,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // The fixture's caster and hostile only leave combat (their commands are not the phase's).
                 // R2-F7: only the commands this runner issued, by reference; interruption, queue maintenance and combat exit are each
                 // attempted on their own per command and per actor; another owner's command on the same actor is not touched.
-                // Audit A1-F6: queue maintenance is withheld (and reported) on an actor whose queue holds a command not issued here.
+                // Audit A1-F6: queue maintenance and combat exit (whose native return move can clear the queue; audit-sourced) are
+                // each withheld (and reported, never recorded as performed) on an actor whose queue holds a command not issued here;
+                // the same guard covers the fixture caster's and hostile's combat exit. Audit A2-F3: before each interruption the
+                // command's original owner retains its readable execution process.
+                Func<Kingmaker.UnitLogic.Commands.Base.UnitCommand, string> commandName = command => command.GetType().Name + "#" + System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(command);
+                Action<UnitEntityData> leaveCombat = unit => { if (unit.CombatState.IsInCombat) unit.CombatState.LeaveCombat(); };
                 if (_s7Issued != null)
                 {
                     foreach (string failure in _s7Issued.Release(owned, unit => unit != null && !unit.Destroyed,
                         command => command.IsFinished, (unit, command) => unit.Commands.InterruptAll(value => ReferenceEquals(value, command)),
-                        unit => unit.Commands.Queue.ToList(), unit => unit.Commands.RemoveFinishedAndUpdateQueue(),
-                        unit => { if (unit.CombatState.IsInCombat) unit.CombatState.LeaveCombat(); },
-                        unit => unit.UniqueId, command => command.GetType().Name + "#" + System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(command))) errors.Add(failure);
-                    record["queueMaintenanceWithheld"] = new JArray(_s7Issued.Withheld.ToArray());
+                        unit => unit.Commands.Queue.ToList(), unit => unit.Commands.RemoveFinishedAndUpdateQueue(), leaveCombat,
+                        unit => unit.UniqueId, commandName)) errors.Add(failure);
+                    foreach (string failure in _s7Issued.ExitCombat(new[] { fixture.Hostile, fixture.Caster }, unit => unit != null && !unit.Destroyed,
+                        unit => unit.Commands.Queue.ToList(), leaveCombat, unit => unit.UniqueId, commandName)) errors.Add(failure);
+                    record["commandCleanupWithheld"] = new JArray(_s7Issued.Withheld.ToArray());
+                    record["commandCleanupPerformed"] = new JArray(_s7Issued.Performed.ToArray());
                 }
-                foreach (string failure in Sprint7ObserverPolicy.ReleaseEach(new[] { fixture.Hostile, fixture.Caster }.Where(value => value != null && !value.Destroyed),
-                    unit => "combat " + unit.UniqueId, unit => { if (unit.CombatState.IsInCombat) unit.CombatState.LeaveCombat(); })) errors.Add(failure);
+                else
+                    foreach (string failure in Sprint7ObserverPolicy.ReleaseEach(new[] { fixture.Hostile, fixture.Caster }.Where(value => value != null && !value.Destroyed),
+                        unit => "combat " + unit.UniqueId, leaveCombat)) errors.Add(failure);
                 restore("hostile damage", () => { if (!fixture.Hostile.Destroyed) fixture.Hostile.Descriptor.Damage = 0; });
                 restore("caster", () => PlaceExpandedSummoningUnit(fixture.Caster, centre));
                 foreach (string failure in setup.ReleaseAll()) errors.Add(failure);
