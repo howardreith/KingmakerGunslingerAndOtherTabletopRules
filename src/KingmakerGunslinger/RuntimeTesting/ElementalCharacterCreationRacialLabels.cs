@@ -16,8 +16,11 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private int _racialLabelWait;
 
+        // The committed-sheet capture admits only the registered native
+        // CustomCompanion that the rolled loaded-game creator route produces.
         private bool RacialLabelSheetCase =>
-            _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression;
+            _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression &&
+            (string)_request.Parameters["allocation"] == "roll";
 
         private ElementalHeritageBlueprints SelectedRegressionHeritage()
         {
@@ -77,6 +80,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     " at revision " + _revision + ": " + rendered.ToString(Newtonsoft.Json.Formatting.None));
             Write();
             return true;
+        }
+
+        /// <summary>
+        /// At every native final review: the labels the native score-entry code
+        /// produces for the current preview. The native creator can skip the
+        /// ability-score phase after a revision that leaves skill points unchanged
+        /// (Smokesoul -> Stormsoul), so this covers every planned heritage state.
+        /// </summary>
+        private void ObserveFinalReviewRacialLabels()
+        {
+            if (!_regression) return;
+            ElementalHeritageBlueprints heritage = SelectedRegressionHeritage();
+            bool exact;
+            JObject probe = ElementalRacialLabelObservation.Observe(_controller.Preview, HeritageRacial(heritage), null, out exact);
+            probe["checkpoint"] = "native-final-review"; probe["revision"] = _revision;
+            probe["heritage"] = heritage.Definition.Id.ToString();
+            if (_character["finalReviewRacialLabels"] == null) _character["finalReviewRacialLabels"] = new JArray();
+            ((JArray)_character["finalReviewRacialLabels"]).Add(probe);
+            if (!exact)
+                AcceptanceFailure("Native racial labels diverged at final review for " + heritage.Definition.Id +
+                    " (revision " + _revision + "): " + ElementalRacialLabelObservation.Compact(probe));
         }
 
         private void CaptureSheetRacialLabels(CharacterScreenController sheet, UnitDescriptor owner)
