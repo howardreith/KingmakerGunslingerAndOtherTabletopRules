@@ -174,6 +174,7 @@ VALIDATORS = {
     "0.0.194": "validate_bag_of_tricks_no_item_weight_release194.py",
     "0.0.195": "validate_gunslinger_sprint6_release195.py",
     "0.0.196": "validate_elemental_heritage_labels_release196.py",
+    "0.0.197": "validate_elemental_persistence_coverage_release197.py",
 }
 
 

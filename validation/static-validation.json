@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.196-elemental-heritage-racial-labels",
+  "milestone": "0.0.197-elemental-persistence-coverage",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.196",
+  "version": "0.0.197",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -3089,5 +3089,15 @@
     "releasedIdentityChanges": 0,
     "visibleChoiceTotal": 1208,
     "change": "Elemental heritage racial-bonus labels (PR #224, reviewed by the owner with ChatGPT at 2a69d3aac7 and approved at 65a6a40367, merged as b112793982). A report against the alternate elemental heritages ('+2 dex and Cha but -2 Con, Int, and Wis' for a Sylph) was traced to Kingmaker 2.1.7b's CharSScoreEntry.SetData and console CharInfoStatVM.OnStatUpdated, which label an ability with the first Racial modifier; per-descriptor lists sort ascending, so an alternate heritage (General race modifier plus the marker's NetDeltas, both Racial) showed its most negative entry. Racial stacks, so actual scores were correct. ElementalRaces/ElementalRacialBonusDisplay.cs postfixes both paths for the four registered elemental races only and shows the engine's effective Racial aggregate (ApplyModifiersFiltered over Racial, offset past the MinValueRaw clamp); zero renders '-'. Labels only: no stat, allocation, fact or save writes. The character sheet renders no racial label (null RaceBonus). Ten RuntimeTesting observer files add native label, creator-panel, sheet-total, respec and fresh-load persistence checks. Natively tested as development candidate a49dffd66c (product tree 469cd49484): mechanics 81/81, Sylph native respec 12/12, persistence prepare 66/66, module OFF 175/175, module ON 254/255 with one pre-existing trait-set capture check."
+  },
+  "elementalPersistenceCoverageRelease197": {
+    "releaseVersion": "0.0.197",
+    "releaseInformationalVersion": "0.0.197-elemental-persistence-coverage",
+    "baseStableVersion": "0.0.196",
+    "reviewedProductSource": "f75a9f456974b5ae179cac2d52696fb60508eab6",
+    "appendedIdentities": 0,
+    "releasedIdentityChanges": 0,
+    "visibleChoiceTotal": 1208,
+    "change": "Elemental persistence trait coverage (PR #227, reviewed by the owner with ChatGPT at 80ddc8a8cb and approved; two nonblocking review items committed as c28f4efd50; merged as f75a9f4569). The module-restored persistence capture assertion required the lifecycle rows to cover all 21 published alternate traits, which no persistence scope exercises (ordinary matrix 19, Nereid qualification scope 18, Treacherous Earth covered by its own scenario and area probe), so it failed with every observation exact since v0.0.120. ElementalVisibleTraitPersistencePolicy.cs adds ElementalPersistenceTraitCoverage: each scope declares its required traits, every other published trait has a named route, the contract must partition the published catalog, and the evaluator still requires one exact row per fixture and phase in order and the exact declared trait set. RuntimeTesting only otherwise: the lifecycle scenario uses the evaluator, and the capture diagnostic reports its verdict ('not evaluated' unless it ran). No gameplay, label, identity or save behavior changes. Natively tested as development candidate c9453f9d07 (product tree f8128f70b0): persistence prepare 66/66, module OFF 175/175, module ON 255/255 with lifecycle=exact, fresh-load absence 8/8 on the chain's cleanup save; the merged tree adds only the review's diagnostic change in two RuntimeTesting files."
   }
 }
