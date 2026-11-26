@@ -572,8 +572,7 @@ foreach ($mode in @('build-local', 'development', 'historical-release')) {
         $childText = $child.Output
         # The child writes one JSON line; a console can wrap it, so the object is taken from the whole output with line
         # breaks removed.
-        $childJson = @([regex]::Matches(($child.Output -replace '?
-\s*', ''), '\{"admissionMode".*\}') | ForEach-Object { $_.Value } | Select-Object -Last 1)
+        $childJson = @([regex]::Matches(($child.Output -replace '\r?\n\s*', ''), '\{"admissionMode".*\}') | ForEach-Object { $_.Value } | Select-Object -Last 1)
         if ($child.ExitCode -eq 0 -and $childJson.Count -eq 1) {
             $returned = $childJson[0] | ConvertFrom-Json
             $reportInput = Join-Path $temp 'ordinary-admission.json'
