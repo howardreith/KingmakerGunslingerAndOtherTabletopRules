@@ -91,6 +91,23 @@ after any witness, at the end or at final release; zero cleanup failures; isolat
 files verified, registry restored. `005206Z` stays tied to harness `bf5d74a1…63cd` from `44fd90a8d1`. Neither run executes
 C1's changed evaluator (old product package). The failed-unsubscribe and slot-abandonment cases are domain-only, by design.
 
+**C2 STOPPED AGAIN: BLOCKED at its amended review cap (3 of 3).** Review 3 on H `89c7229e208a498e71caa91e7e4225e867c0d5d8`
+(report prepared under owner amendments revision 1, sha256 `d62882e3…4626`) returned changes_required; the controller set
+status BLOCKED ("review-round cap reached for final (3/3)"). R2-F1, R2-F2, R1-F7 and R2-F3 were verified fixed. (A first
+submission of that report was refused by the controller, nothing changed, because the amendment parts had been read into a
+file rather than displayed in the session; they were displayed and the same report resubmitted.) Open findings:
+- **R3-F1** (P1, blocks): the held `unregistered summons` release of each owned cast calls `Game.Instance.EntityCreator.Tick()`
+  before reading the cast's own summon, on cast disposal and on the probe's unwind, so abandonment can advance unrelated
+  entity creation. The tick predates C2: it came from parent round-4 commit `9733a0c9b7` (in the frozen #219 head) and was
+  not changed by C2.
+- **R3-F2** (P2, blocks): each witness's final `ReconcileLatest` classifies unknowns from its own observation only, so a
+  witness left subscribed after a failed unsubscribe can name as "ownership unknown" a summon another witness positively
+  matched, or a foreign control another witness knows. This follows from C2's R2-F1 repair (final re-reconciliation).
+- **R3-F3** (P3, non-blocking): the domain test's `rowList` helper treats a missing settlement field as an empty array.
+
+The C2 handoff is not current, so **C3 has not started**. Nothing was retried, re-enrolled or extended; validation spend is
+unchanged by the stop (12 min 6.5 s of 45, the round-3 controller gates included).
+
 ## C1 history
 
 **Current state (C1 amendment 2, 2026-11-25):** the owner narrowed C1's acceptance boundary for bounded closure and
@@ -153,7 +170,7 @@ advance; snapshots S0 inventory, S1 selection, S2 retirement frame, W samples, S
 | R7-F1 live and persisted callback verdicts disagree | C1 `codex/s7-recovery-c1-cue-evaluator` (PR #221) | Strict evaluator: absent, undefined, unreadable and out-of-range vs explicit null in both representations; one row-based round-7 entry point for the in-game collector and every reader | `sprint7-visual.impact-cue-playback-verdicts`: the persisted `…224949Z` row and its collector-shaped live counterpart (cue records through the collector's own `CueRow`, String-typed nulls, never serialized) both characterize; omitted fields are "missing" in both | #219 | Native execution of the changed evaluator: C3's combined qualification |
 | R7-F6 settled verdict not bound to cue IDs and stop count | C1 (PR #221) | Identity binding and stop/callback reconciliation across every snapshot the collector emitted | Same case: substituted retirement-frame, window-end, disposal and settled-other IDs, a consistent survivor substitution the source inventory contradicts, the same ID twice, invalid and oversized IDs; positive retirement-frame or through-window stop counts, stop reasons, stop results, stop times and window-sample ends; placeholder or uncounted withheld callbacks; all refuse, in both forms. Retained round-6 rows are judged through `CallbackLossRound6` by their own collector generation (`Round6First` for `f3bfab1303`, `Round6Second` for `740d94a995`) | #219 | As R7-F1 |
 | R6-F5 round-7 expenditure and harness suffix | C1 (records disposition only) | Confirm the frozen head's record and planning row from existing receipts | This manifest, below | #219 | Parent records reconciliation at integration |
-| R5-F1 unaccounted late Ghaele | C2 `codex/s7-recovery-c2-ghaele-late-units` (PR #222) | Caller reconciles every correlated late unit with the destruction owner; outstanding units fail ProbeSlot isolation | Domain `sprint7-visual.ghaele-late-units-reach-slot` (ProbeSlot / Poll / Release / unwind); native `20261126T002852Z-…-s7-ghaele-lifecycle` PASS (round 1, harness `0a038e40`; round 2: `20261126T005206Z-…-s7-ghaele-lifecycle` PASS, harness `bf5d74a1…63cd` from `44fd90a8d1`; round 3 under C2 amendment 1: `20261126T024816Z-…-s7-ghaele-lifecycle` PASS, harness `4180621b…db61` from `56e359f2cc`) on candidate-3 package `49f8b88c…6413` / DLL `5969f596…e2c3` with harness `0a038e40…71ca9` built from `c5fe26d146` (`docs/evidence/sprint7/recovery-c2/`) | C1 | C2 harness identity carried into C3 and the parent |
+| R5-F1 unaccounted late Ghaele | C2 `codex/s7-recovery-c2-ghaele-late-units` (PR #222) | Caller reconciles every correlated late unit with the destruction owner; outstanding units fail ProbeSlot isolation | Domain `sprint7-visual.ghaele-late-units-reach-slot` (ProbeSlot / Poll / Release / unwind); native `20261126T002852Z-…-s7-ghaele-lifecycle` PASS (round 1, harness `0a038e40`; round 2: `20261126T005206Z-…-s7-ghaele-lifecycle` PASS, harness `bf5d74a1…63cd` from `44fd90a8d1`; round 3 under C2 amendment 1: `20261126T024816Z-…-s7-ghaele-lifecycle` PASS, harness `4180621b…db61` from `56e359f2cc`; C2 BLOCKED at 3/3 with R3-F1 and R3-F2 blocking, R3-F3 open) on candidate-3 package `49f8b88c…6413` / DLL `5969f596…e2c3` with harness `0a038e40…71ca9` built from `c5fe26d146` (`docs/evidence/sprint7/recovery-c2/`) | C1 | C2 harness identity carried into C3 and the parent |
 | R4-F1 independent release failures past the abandonment drivers | C3 `codex/s7-recovery-c3-effects-ownership` | Complete child outcome in both drivers | C3 tests and combined native qualification | C2 | Combined candidate |
 | R7-F2 ordinary Dust executions interrupted before retention | C3 | Retain the exact process before interruption; independent command releases | As R4-F1 | C2 | As R4-F1 |
 | R7-F3 incomplete hook setup rollback | C3 | Register the acquisition attempt before partial success; rollback outcome to the isolation | As R4-F1 | C2 | As R4-F1 |
@@ -216,6 +233,7 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C2 r3 | Focused gate `sprint7-visual` (local, amendment-1 source) | PASS, 23 tests | 4.0 s | 9 min 44.5 s | 35 min 15.5 s |
 | C2 r3 | Harness build (amendment-1 source) | PASS, `4180621b2ade02140bb461aff586ba041d9ae318c60764828b36575aaeafdb61` | 1.3 s | 9 min 45.8 s | 35 min 14.2 s |
 | C2 r3 | Session `20261126T024816Z-…-s7-ghaele-lifecycle` (candidate-3 package, harness `4180621b…db61` from `56e359f2cc`) | PASS | 2 min 12 s | 11 min 57.8 s | 33 min 2.2 s |
+| C2 r3 | Controller gates on `89c7229e20`: `sprint7-visual` 23 tests 4.7 s, `loader-compat-probe` 5 tests 4.0 s (receipts 2.8 + 2.0 = 4.8 s) | PASS | 8.7 s batch wall | 12 min 6.5 s | 32 min 53.5 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
