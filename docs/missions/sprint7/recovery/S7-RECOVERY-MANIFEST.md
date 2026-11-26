@@ -142,6 +142,18 @@ while the actual no-summon, conclusive and pending-creation cases leave it queue
 teardown-only sentinel ahead of the foreign control and records request order, which must be summon, sentinel, foreign
 (or summon alone when the control is not registered) in all eight variants.
 
+**C2 handed off (scoped):** review 5 of 5 returned ready_for_owner_review (no open findings; R3-F1 and R4-F1 verified). A first
+`finalize` was refused, nothing published, because another session's runtime transaction lock was present
+(`compatibility-state/compatibility.lock`, transaction `runtime-20261126T035746Z`, a stalled run of a different Gunslinger
+session, which that session recovered); after it cleared, `resume --reason` (recording that cause) completed the handoff:
+AWAITING_OWNER_REVIEW with handoff_current=true. **Reviewed H `da811b123c5720ad2d174db17142d8f4ef8fa5d6`; archive A
+`eab90a5ac82f661ecb903c5456d951a57a085eb9`.** Handoff scope: the external-harness correction of R5-F1 and its qualification
+(harness `d77754bad4377734e87c9a70aaf0c980a306db82dbee25e335b9e9ba47ebb4f1`, session `20261126T033419Z` on candidate 3). C2's
+branch is frozen from its archive A while C3 is under review.
+
+**C3** (`codex/s7-recovery-c3-effects-ownership`) starts from C2's archive A, targeting C2's branch, under its original
+mission, a two-review cap, the shared allowance (30 min 21.4 s remaining) and the candidate ceiling (0 of 2 used).
+
 ## C1 history
 
 **Current state (C1 amendment 2, 2026-11-25):** the owner narrowed C1's acceptance boundary for bounded closure and
@@ -273,6 +285,7 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C2 r4 | Session `20261126T033419Z-…-s7-ghaele-lifecycle` (candidate-3 package, harness `d77754ba…b4f1` from `d631d283aa`) | PASS | 2 min 7 s | 14 min 18.7 s | 30 min 41.3 s |
 | C2 r4 | Controller gates on `fd5a009a57`: `sprint7-visual` 23 tests 4.2 s, `loader-compat-probe` 5 tests 3.4 s (receipts 2.4 + 1.7 = 4.1 s) | PASS | 7.6 s batch wall | 14 min 26.3 s | 30 min 33.7 s |
 | C2 r5 | Focused gate `sprint7-visual` (local, round-5 domain-test source) | PASS, 23 tests | 3.8 s | 14 min 30.1 s | 30 min 29.9 s |
+| C2 r5 | Controller gates on `da811b123c`: `sprint7-visual` 23 tests 4.7 s, `loader-compat-probe` 5 tests 3.8 s (receipts 2.7 + 1.9 = 4.6 s) | PASS | 8.5 s batch wall | 14 min 38.6 s | 30 min 21.4 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
