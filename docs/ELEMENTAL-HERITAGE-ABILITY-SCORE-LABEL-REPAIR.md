@@ -22,8 +22,10 @@ product code at `adcba2f314` with the installed mod set), actual ability scores 
 intended values for all twelve heritages. All eight alternate heritages produced incorrect racial
 labels through the native PC score-entry and console view-model paths (the save-free method
 probes under Regression coverage). The Sylph creator panel also visibly reproduced the defect.
-The character sheet shares the patched PC method, but the rendered sheet and the console screen
-were not observed in that baseline pass. The reporter's version and mod environment are unknown,
+The rendered character sheet does not show a racial bonus at all (its ability entries have no
+`RaceBonus` field; observed on candidates, see Verification), so the defect is visible only in
+the creator/level-up ability panel and, by the same method, the console stat view. The console
+screen itself was not rendered. The reporter's version and mod environment are unknown,
 so this classification is bounded to the tested environment.
 
 ### Engine contract (Kingmaker 2.1.7b, verified directly)
@@ -35,8 +37,11 @@ committed.
 
 - `CharSScoreEntry.SetData(UnitDescriptor, Color32, bool)` sets `RaceBonus.text` to
   `UIUtility.AddSign(first Racial modifier in Stat.Modifiers)`, or `-` when there is none.
-  `CharBScoresEntry`, the creator and level-up ability panel, calls this base method, so the
-  creator and the character sheet share it.
+  `CharBScoresEntry`, the creator and level-up ability panel, calls this base method. The
+  character sheet's `CharSScores` also calls it (`showPermanentValue: false`), but the sheet's
+  entries have no `RaceBonus` component, so native `SetData` skips the label there: the sheet
+  shows totals only. This was observed natively on 2026-11-26 (all 36 bound sheet entries in the
+  respec and persistence runs below), not inferred from the decompilation.
 - The console `CharInfoStatVM.OnStatUpdated` applies the same first-modifier rule to `RaceBonus`.
 - `ModifiableValue.AddModifier` keeps each descriptor's list sorted ascending by value, so the
   label is the most negative Racial modifier.
@@ -115,8 +120,19 @@ migration is needed.
   phase after a revision that leaves skill points unchanged (Smokesoul -> Stormsoul).
 - Regression route 0 changes from General -> A -> General to General -> Smokesoul ->
   Stormsoul -> General. The route domain test was updated.
-- A committed-sheet capture was added for the rolled (`CustomCompanion`) route. It did not run;
-  see Deferred.
+- `RuntimeTesting/NativeSheetRacialLabelProbe.cs` reads the rendered native character sheet
+  (`CharacterScreenController.AbilityScores`): six visible entries bound to the owner's live
+  stats, each displayed total equal to `ModifiedValue`, and the racial label compared where the
+  sheet renders one (it does not; recorded per entry as `raceBonusFieldPresent`). The sheet's
+  character, section, window, group, selection and pause are restored and asserted.
+- The committed-sheet capture runs in `working-save-elemental-native-respec` (Fighter point-buy,
+  a registered native mercenary) on the respec original after every `Player.RespecCompanion`
+  commit, and on the rolled regression route.
+- `ElementalRacePersistenceScenario` runs the native-method probe inside every fixture
+  observation (24 fixtures: prepare after native respec, module-OFF fresh load before/after
+  level-up and rest, module-ON fresh load after native respec) and captures the rendered sheet
+  for the six Sylph fixtures after each fresh load. A capture failure is recorded on the
+  evidence and fails its assertion without aborting the phase.
 
 ## Verification
 
@@ -186,24 +202,92 @@ Review stills (lab originals in the run directories; committed copies are byte-i
 
 Screenshots support presentation only; the mechanics claims rest on the structured observations.
 
+### Review follow-up (sheet, totals, respec, reload, module OFF)
+
+The review of `2a69d3aac7` asked for the rendered sheet, an existing character after reload, a
+native respec commit, the module-OFF state and an explicit displayed-total check. The observer
+changes above were built as three more development candidates (same build command, filter
+`elemental-heritages;elemental-chargen;elemental-race`, 35 tests, 0 failures each):
+
+| Purpose | Commit | Package SHA-256 | DLL SHA-256 | Build |
+| --- | --- | --- | --- | ---: |
+| elemental-label-candidate3 | `c4c35847ed` | `2f53ed3e8d7c3f3bfe8567e0afa286c7c6ce5f4898ede288a91fdf1c12ce93e1` | `b68c620ac49f98a91fbab3dbbce5d63fa283bcf7ba60edb0aaab6c0983790f5a` | 460 s |
+| elemental-label-candidate4 | `925181dddb` | `7ae20947e653596ca81f0d736282c743f85a659f121a5663ec87e10a8f1ed87b` | `1b689230e4ddd4c5a53e48e734d25f4b8b87f83842386a812f6c252b7194b600` | 436 s |
+| elemental-label-candidate5 | `a49dffd66c` | `33c916bd6e690016f4e6cbfef7843c4b43a00526c0f151ba391cac671af274af` | `e0379d4b08e4e0e4a17adede34f9038fc682012f29be24f6c217df943d03a782` | 491 s |
+
+The production patch is unchanged from `1650c97019` in every candidate; only observers changed.
+
+| Run (UTC 2026-11-26) | Build | Scenario | Result |
+| --- | --- | --- | --- |
+| 12:20 | candidate3 | heritage mechanics | PASS, 81/81 |
+| 12:22 | candidate3 | Sylph native respec | FAIL at the first commit: the new sheet hook built the screenshot helper, which admits only its own scenarios. Observer fixed in `3d24b903c9`. |
+| 12:25 | candidate3 | persistence prepare | PASS |
+| 12:27 | candidate3 | module OFF, fresh load | 174/175. Native label probes 96/96 exact; sheet captures never started because the capture method clears `_currentUnit` (observer fixed in `3d24b903c9`). |
+| 12:40 | candidate4 | heritage mechanics | PASS, 81/81 |
+| 12:42 | candidate4 | Sylph native respec | FAIL: every visit committed and passed except the sheet check, which expected a racial label the sheet does not render (`RaceBonus` null). Fixed in `a49dffd66c`. |
+| 12:53 | candidate4 | persistence prepare / module OFF | PASS / 174/175 (same sheet expectation). |
+| 13:09 | candidate5 | heritage mechanics | **PASS, 81/81** |
+| 13:10 | candidate5 | Sylph native respec | **PASS, 12/12** |
+| 13:23 | candidate5 | persistence prepare | **PASS, 66/66** |
+| 13:26 | candidate5 | module OFF, fresh load | **PASS, 175/175** |
+| 13:28 | candidate5 | module ON, fresh load + native respec + cleanup | 254/255. All label assertions pass; one pre-existing failure (note 2). |
+
+Candidate5 results (`a49dffd66c`):
+
+- **Native respec** (`20261126T1310450512574Z`): eight creator visits, General, General,
+  Smokesoul, Stormsoul, General, Stormsoul, Smokesoul, General. The first commits the
+  registered mercenary; the other seven are real `Player.RespecCompanion` commits with one
+  success callback each and the original identity kept. In every visit:
+  - the rendered creator panel labels and displayed totals (`PermanentValue`) were exact;
+  - the committed sheet's six entries were bound and visible, and each displayed total equaled
+    the live `ModifiedValue`;
+  - exactly one owned heritage marker matched the visit.
+  The sheet renders no racial label (`raceBonusFieldPresent` false on all 48 entries).
+- **Existing characters after reload, module OFF** (`20261126T1326001904784Z`): 24 saved
+  fixtures (4 races x 3 heritages x 2 sexes) loaded in a fresh process with Elemental Races
+  off. All 96 native-method label observations were exact (load, level-up, rest, re-spend). The
+  six Sylph fixtures (General, Smokesoul, Stormsoul; both sexes) were opened on the rendered
+  native sheet: totals exact, state restored exactly.
+- **Module ON after reload and native respec** (`20261126T1328558287358Z`): 120/120 native-method
+  label observations exact. The six Sylph replacements' rendered sheets after native respec into
+  their restored heritages were exact. Fixture cleanup passed (`elemental-race-persistence-cleanup`).
+- The Dwarf control, the Enhancement case and all 12 heritage sets passed again in mechanics.
+
+2. Pre-existing persistence capture check. `elemental-race-persistence-restored-captures` fails
+   only through `PhysicalLifecycleEvidenceExact`. It requires the lifecycle rows to cover every
+   published alternate trait. Since 0.0.120 that is 21 traits (`NereidFascination` and
+   `TreacherousEarth` were published in `d5aa78b615`). The ordinary 24-fixture matrix exercises
+   19; those two belong to the separate `qualificationTrait`/`qualificationEffect` scopes. All
+   168 lifecycle rows were present and exact; only the trait-set comparison fails. This was
+   classified by inspecting that deterministic contract, not by rerunning unchanged code; it is
+   independent of labels. It is left unchanged for separate review.
+3. The 4-launch chain stopped after the module-ON phase, so `elemental-race-persistence-verify-absent`
+   did not run on candidate5. The module-ON cleanup assertion passed, and the working save was
+   restored byte-exact to its intake bytes and mtime afterwards.
+4. Reader-only re-evaluations, with original verdicts kept in the run directories:
+   - The candidate2 creator run's recorded panel totals equal the live `PermanentValue` 42/42.
+     That run predates the in-game total assertion.
+   - Candidate4's respec visits pass 8/8 and its module-OFF sheets pass 6/6 under the corrected
+     sheet reader. Candidate5 then executed the corrected reader natively.
+
+Restoration after every pass: the live mod was restored byte-exact from its pre-deploy backup.
+`Params.xml` went back to its intake bytes. `FeatureModules.json` was restored after the OFF
+phase. All 95 saves were hash-checked against intake, including `KMG_AUTOMATION_WORKING` with
+its original bytes and mtime (2026-10-05T20:09:11Z). No other save changed.
+
 ## Deferred checks and limits
 
-- **Committed character sheet.** The sheet capture admits only the registered `CustomCompanion`
-  from the rolled route. That route's fixture pins Dice Roller 0.1.2, but 0.1.6 is installed.
-  Updating the pin would mean re-verifying Dice Roller's bridge contract, which is outside this
-  mission, so the rendered sheet was not observed. The sheet uses the same
-  `CharSScoreEntry.SetData` that the creator panel (through `CharBScoresEntry`) and the
-  mechanics probe exercised natively.
-- **Existing character after reload; respec.** Not run. The fix writes no state, and an
-  existing character goes through the same `SetData`. `working-save-elemental-native-respec`
-  would also exercise the new panel check during respec visits.
-- **Module disabled.** Not run natively. The patch does not read module state. The races stay
-  registered, so existing elemental characters get the corrected label; native races are
-  covered by the Dwarf control.
 - **Console view rendering.** The console view model was exercised natively, but the console UI
   itself was not rendered in gamepad mode.
-- **Other races in the creator.** The Ifrit, Oread and Undine creator regressions were not run.
-  All 12 heritage sets are covered by the mechanics scenario through the real UI code.
+- **Other races in the creator.** The Ifrit, Oread and Undine creator and respec routes were not
+  run. All 12 heritage sets are covered through the native label methods in the mechanics
+  scenario, and all 24 race/sex/heritage fixtures through the persistence phases.
+- **Fresh-load absence phase.** `elemental-race-persistence-verify-absent` did not run on the
+  final candidate (note 3).
+- **Rolled creator route.** The rolled regression still pins Dice Roller 0.1.2, but 0.1.6 is
+  installed. The committed sheet is covered by the respec route instead.
+- **Persistence capture check.** The trait-set comparison that fails since 0.0.120 is
+  pre-existing and left for separate review (note 2).
 - **Wider validation.** No complete domain suite, Sprint gate or compatibility profiles were
   run.
 

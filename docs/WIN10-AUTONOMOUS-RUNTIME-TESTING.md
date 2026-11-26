@@ -1080,6 +1080,15 @@ preexisting world membership, main character, area, idle global controller and
 build-unit references must be restored exactly. A failed per-character result
 makes this regression request FAIL. Human UI acceptance remains a separate gate.
 
+Racial-bonus labels (elemental heritage label repair, PR #224): once allocation is complete, the
+creator regression and native respec read the rendered `CharBScoresEntry` racial labels and
+totals for the current preview. Every native final review also runs the label-method probe.
+After each commit of a registered native mercenary (native respec; rolled route), the committed
+sheet's six ability entries must show live `ModifiedValue` totals. The 2.1.7b sheet renders no
+racial label. The elemental persistence phases run the same probe in every fixture observation
+and open the rendered sheet for the six Sylph fixtures after each fresh load. Expected labels
+come only from the heritage's final racial modifiers.
+
 Loaded-game rolled creator regressions use the native `CustomCompanion` blueprint,
 because Dice Roller excludes an unrelated non-mercenary player candidate when a
 campaign main character already exists. Native mercenary completion may enroll
