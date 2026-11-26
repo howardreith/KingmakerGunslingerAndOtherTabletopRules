@@ -1,4 +1,5 @@
 using System.Linq;
+using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.UI.LevelUp;
 using Kingmaker.UI.ServiceWindow.CharacterScreen;
@@ -16,11 +17,17 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private int _racialLabelWait;
 
-        // The committed-sheet capture admits only the registered native
-        // CustomCompanion that the rolled loaded-game creator route produces.
+        // The committed-sheet capture admits only a registered native
+        // CustomCompanion: the rolled loaded-game creator route, and the ordinary
+        // native respec route (Fighter point-buy), whose committed owner is the
+        // registered original after every Player.RespecCompanion visit.
         private bool RacialLabelSheetCase =>
-            _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression &&
-            (string)_request.Parameters["allocation"] == "roll";
+            (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreationRegression &&
+             (string)_request.Parameters["allocation"] == "roll") ||
+            _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalNativeRespec;
+
+        // The registered actor whose committed state the native sheet shows.
+        private UnitEntityData SheetOwner => _nativeRespec && _respecOriginal != null ? _respecOriginal : _unit;
 
         private ElementalHeritageBlueprints SelectedRegressionHeritage()
         {
@@ -61,10 +68,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var entry = entries.FirstOrDefault(value => value.Type == stat);
                 string label = entry?.RaceBonus?.text;
                 string wanted = ElementalRacialLabelObservation.ExpectedLabel(expected[index]);
-                bool same = label == wanted;
+                // The creator panel shows PermanentValue (CharBScoresEntry passes
+                // showPermanentValue true); compare the rendered total with it.
+                string shown = entry?.Value?.text;
+                string wantedValue = preview.Stats.GetStat(stat).PermanentValue.ToString();
+                bool same = label == wanted && shown == wantedValue;
                 exact &= same;
                 rendered.Add(new JObject { ["stat"] = stat.ToString(), ["renderedRaceBonus"] = label,
-                    ["renderedValue"] = entry?.Value?.text, ["expectedRaceBonus"] = wanted, ["exact"] = same });
+                    ["expectedRaceBonus"] = wanted, ["renderedValue"] = shown,
+                    ["livePermanentValue"] = wantedValue, ["exact"] = same });
             }
             bool probeExact;
             JObject probe = ElementalRacialLabelObservation.Observe(preview, expected, null, out probeExact);
@@ -107,40 +119,23 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             ElementalRaceBlueprints race = RegressionRace;
             ElementalHeritageBlueprints heritage = race.Heritages.Choices().ToArray()[_revisionRoute[_revisionRoute.Length - 1]];
-            int[] expected = HeritageRacial(heritage);
-            var entries = sheet.GetComponentsInChildren<CharSScoreEntry>(true)
-                .Where(value => !(value is CharBScoresEntry) && value.gameObject.activeInHierarchy).ToArray();
-            bool bound = AbilityStats.All(stat => entries.Count(value => value.Type == stat &&
-                ReferenceEquals(value.Stat, owner.Stats.GetStat(stat))) == 1);
-            bool exact = bound;
-            var rendered = new JArray();
-            for (int index = 0; index < AbilityStats.Length; index++)
-            {
-                StatType stat = AbilityStats[index];
-                var entry = entries.FirstOrDefault(value => value.Type == stat && ReferenceEquals(value.Stat, owner.Stats.GetStat(stat)));
-                string label = entry?.RaceBonus?.text;
-                string wanted = ElementalRacialLabelObservation.ExpectedLabel(expected[index]);
-                bool same = label == wanted;
-                exact &= same;
-                rendered.Add(new JObject { ["stat"] = stat.ToString(), ["renderedRaceBonus"] = label,
-                    ["renderedValue"] = entry?.Value?.text, ["modifiedValue"] = owner.Stats.GetStat(stat).ModifiedValue,
-                    ["expectedRaceBonus"] = wanted, ["exact"] = same });
-            }
-            bool probeExact;
-            JObject probe = ElementalRacialLabelObservation.Observe(owner, expected, null, out probeExact);
-            exact &= probeExact;
+            bool exact;
+            JObject observation = NativeSheetRacialLabelProbe.ObserveSheet(sheet, owner, HeritageRacial(heritage), out exact);
             int markers = race.Heritages.Choices().Count(value => owner.HasFact(value.Marker));
             // The creator selects an explicit marker for every heritage, General included.
             bool markerExact = markers == 1 && owner.HasFact(heritage.Marker);
             exact &= markerExact;
-            _character["sheetRacialLabels"] = new JObject { ["checkpoint"] = "native-character-sheet",
-                ["heritage"] = heritage.Definition.Id.ToString(), ["markerGuid"] = heritage.Marker.AssetGuid,
-                ["ownedHeritageMarkers"] = markers, ["markerExact"] = markerExact,
-                ["sheetBound"] = bound, ["activeEntries"] = entries.Length, ["rendered"] = rendered,
-                ["stats"] = probe, ["exact"] = exact };
+            observation["checkpoint"] = "native-character-sheet";
+            observation["visit"] = _raceIndex;
+            observation["heritage"] = heritage.Definition.Id.ToString();
+            observation["markerGuid"] = heritage.Marker.AssetGuid;
+            observation["ownedHeritageMarkers"] = markers;
+            observation["markerExact"] = markerExact;
+            observation["exact"] = exact;
+            _character["sheetRacialLabels"] = observation;
             if (!exact)
                 AcceptanceFailure("Rendered character-sheet racial labels diverged for " + heritage.Definition.Id + ": " +
-                    rendered.ToString(Newtonsoft.Json.Formatting.None));
+                    observation["rendered"].ToString(Newtonsoft.Json.Formatting.None));
             Write();
         }
     }

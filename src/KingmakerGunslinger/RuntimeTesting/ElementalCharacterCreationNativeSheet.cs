@@ -30,7 +30,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var game = Game.Instance;
             var ui = game.UI;
-            var owner = _unit;
+            var owner = SheetOwner;
             var group = GroupController.Instance;
             if (!_canCommit || !_committed || owner == null || !owner.Descriptor.IsCustomCompanion() ||
                 !ReferenceEquals(owner.HoldingState, game.Player.CrossSceneState) || ui.ServiceWindow == null ||
@@ -56,7 +56,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var evidence = new JObject { ["ownerId"] = owner.UniqueId, ["status"] = "pending",
                 ["originalCharacter"] = originalCharacter?.Unit.UniqueId, ["originalSection"] = originalSection };
             _character["nativeCharacterSheet"] = evidence;
-            Func<bool> ownsSheet = () => ReferenceEquals(_unit, owner) && _committed &&
+            Func<bool> ownsSheet = () => ReferenceEquals(SheetOwner, owner) && _committed &&
                 ReferenceEquals(owner.HoldingState, game.Player.CrossSceneState) &&
                 ui.ServiceWindow.WindowTabs.IsShow && sheet.IsShow && sheet.gameObject.activeInHierarchy &&
                 ReferenceEquals(characterField.GetValue(sheet), owner.Descriptor) &&
@@ -85,10 +85,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!ui.ServiceWindow.WindowTabs.IsShow || !sheet.IsShow)
                     throw new InvalidOperationException("Native character sheet did not open.");
                 sheet.SetCharacter(owner.Descriptor);
+                if (RacialLabelSheetCase)
+                {
+                    // Show the section holding the ability block before reading it.
+                    expectedSection = NativeSheetRacialLabelProbe.AbilitySection(sheet, 1);
+                    evidence["abilitySection"] = expectedSection;
+                    sheet.ShowSection(expectedSection);
+                    for (int frame = 0; frame < 60; frame++) yield return 0;
+                    if (!ownsSheet()) throw new InvalidOperationException("Native character sheet lost the exact disposable owner.");
+                    CaptureSheetRacialLabels(sheet, owner.Descriptor);
+                    expectedSection = 1;
+                }
                 sheet.ShowSection(1);
                 for (int frame = 0; frame < 60; frame++) yield return 0;
                 if (!ownsSheet()) throw new InvalidOperationException("Native character sheet lost the exact disposable owner.");
-                if (RacialLabelSheetCase) CaptureSheetRacialLabels(sheet, owner.Descriptor);
                 if (NativeSheetCase)
                     foreach (int frame in CaptureNativeFactSlots(sheet.Abilities.transform, owner.Descriptor,
                         "character-sheet", ownsSheet)) yield return frame;

@@ -1872,6 +1872,7 @@
     <Compile Include="RuntimeTesting\ElementalAlternateTraitReconciliationScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageMechanicsScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRacialLabelObservation.cs" />
+    <Compile Include="RuntimeTesting\NativeSheetRacialLabelProbe.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageSlaScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceVisualAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceMechanicsScenario.cs" />

@@ -188,6 +188,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly List<BlueprintUnit> _createdBlueprints =
                 new List<BlueprintUnit>();
             private readonly JArray _records = new JArray();
+            // Racial-bonus labels: the native label code on every observed
+            // fixture, and the rendered native sheet for the Sylph fixtures after
+            // each fresh-process load (module OFF) and module-ON native respec.
+            private int _racialLabelObservations;
+            private int _racialLabelObservationsExact;
+            private int[] _lastExpectedRacial;
+            private IEnumerator<int> _sheetLabelCapture;
+            private readonly JArray _sheetLabelEvidence = new JArray();
             private readonly JArray _respecRecords = new JArray();
             private readonly JArray _selectionRecords = new JArray();
             private readonly JArray _partyRecords = new JArray();
@@ -286,6 +294,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (Complete) return;
                 try
                 {
+                    if (_sheetLabelCapture != null)
+                    {
+                        if (_sheetLabelCapture.MoveNext()) return;
+                        _sheetLabelCapture.Dispose();
+                        _sheetLabelCapture = null;
+                        return;
+                    }
                     if (_saveStarted)
                     {
                         PollExactWorkingSave();
@@ -335,7 +350,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }
                         if (_legacyMigration)
                             CaptureLegacyMigrationFixture();
-                        else CaptureVerifiedFixture();
+                        else
+                        {
+                            CaptureVerifiedFixture();
+                            StartSheetLabelCapture(_fixtures[_fixtureIndex], "module-off-fresh-load");
+                        }
                         _fixtureIndex++;
                         if (_fixtureIndex < _fixtures.Length)
                         {
@@ -376,7 +395,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         if (!PollCurrentReady()) return;
                         if (_prepare) CapturePreparedFixture();
-                        else CaptureRestoredFixture();
+                        else
+                        {
+                            CaptureRestoredFixture();
+                            StartSheetLabelCapture(_fixtures[_fixtureIndex], "module-on-fresh-load-native-respec");
+                        }
                         _fixtureIndex++;
                         if (_fixtureIndex < _fixtures.Length)
                         {
@@ -412,9 +435,50 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 catch (Exception exception)
                 {
+                    if (_sheetLabelCapture != null)
+                    {
+                        try { _sheetLabelCapture.Dispose(); }
+                        catch (Exception cleanup) { RecordException(cleanup); }
+                        _sheetLabelCapture = null;
+                    }
                     RecordException(exception);
                     BeginCleanup();
                 }
+            }
+
+            private void StartSheetLabelCapture(ElementalPersistenceFixture fixture, string phase)
+            {
+                if (!ReferenceEquals(fixture.Blueprints, BlueprintBootstrap.ElementalRaces.Sylph) ||
+                    _fixtureIndex + 1 >= _fixtures.Length || _currentUnit == null || _lastExpectedRacial == null)
+                    return;
+                var evidence = new JObject { ["fixture"] = fixture.Label, ["phase"] = phase,
+                    ["expectedRacial"] = new JArray(_lastExpectedRacial), ["exact"] = false };
+                _sheetLabelEvidence.Add(evidence);
+                _sheetLabelCapture = NativeSheetRacialLabelProbe.Isolated(
+                    NativeSheetRacialLabelProbe.CaptureForPartyMember(_currentUnit.Descriptor,
+                        (int[])_lastExpectedRacial.Clone(), evidence), evidence).GetEnumerator();
+            }
+
+            private void AddRacialLabelAssertions(string phase)
+            {
+                JObject[] sheets = _sheetLabelEvidence.OfType<JObject>().ToArray();
+                bool sheetsExact = sheets.Length == 6 && sheets.All(value => TokenBool(value, "exact"));
+                bool probesExact = _racialLabelObservations > 0 &&
+                    _racialLabelObservationsExact == _racialLabelObservations;
+                string path = Path.Combine(_request.EvidenceDirectory, "elemental-race-persistence-racial-labels.json");
+                WriteJsonAtomic(path, new JObject { ["phase"] = phase,
+                    ["nativeLabelObservations"] = _racialLabelObservations,
+                    ["nativeLabelObservationsExact"] = _racialLabelObservationsExact,
+                    ["sheets"] = new JArray(sheets.Select(value => value.DeepClone())) });
+                // Not added to _evidenceFiles: the capture-set check counts that list exactly.
+                Add(_assertions, "elemental-race-persistence-racial-labels",
+                    "every fixture observation: native PC/console racial labels equal the expected heritage's final racial modifiers",
+                    "observations=" + _racialLabelObservations + ";exact=" + _racialLabelObservationsExact,
+                    probesExact, "native CharSScoreEntry.SetData and CharInfoStatVM on loaded descriptors (" + phase + ")");
+                Add(_assertions, "elemental-race-persistence-sheet-racial-labels",
+                    "6 Sylph fixtures: rendered native sheet racial labels and totals equal live values; sheet state restored",
+                    "sheets=" + sheets.Length + ";exact=" + sheets.Count(value => TokenBool(value, "exact")),
+                    sheetsExact, "native CharacterScreenController.AbilityScores after " + phase);
             }
 
             private void Initialize()
@@ -2354,6 +2418,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     HasExactHumanoidRig(unit.View.transform) &&
                     materialsExact;
 
+                int[] expectedRacial = Enumerable.Range(0, 6).Select(index =>
+                    expectedHeritage.Definition.ModifierFor((ElementalHeritageStat)index)).ToArray();
+                bool racialLabelsExact;
+                JObject racialLabels = ElementalRacialLabelObservation.Observe(owner, expectedRacial, null,
+                    out racialLabelsExact);
+                _lastExpectedRacial = expectedRacial;
+                _racialLabelObservations++;
+                if (racialLabelsExact) _racialLabelObservationsExact++;
+                statExact &= racialLabelsExact;
+
                 return new ElementalPersistenceObservation
                 {
                     RaceExact = raceExact,
@@ -2403,6 +2477,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 value.SlaAbility) != null) },
                         { "statsExact", statExact },
                         { "abilityScores", statDeltas },
+                        { "racialLabelsExact", racialLabelsExact },
+                        { "racialLabels", racialLabels },
                         { "racialPerception", racialPerception },
                         { "speed", owner.Stats.Speed.ModifiedValue },
                         { "sla", sla.Evidence },
@@ -3874,6 +3950,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     preserved && _normalPathComplete &&
                         _preservedMembershipExact,
                     "exact fixture membership and armed working-save write without cleanup");
+                AddRacialLabelAssertions("module-off-fresh-load");
                 AddSaveAndIdentityAssertions(true);
             }
 
@@ -3985,6 +4062,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     cleaned && _normalPathComplete &&
                         _structuralCleaned,
                     "marker-only native scene removal and exact cleanup save");
+                AddRacialLabelAssertions("module-on-fresh-load-native-respec");
                 AddSaveAndIdentityAssertions(true);
             }
 

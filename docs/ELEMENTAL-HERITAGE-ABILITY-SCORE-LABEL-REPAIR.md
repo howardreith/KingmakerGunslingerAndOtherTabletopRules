@@ -17,9 +17,14 @@ or final scores. The reporter was not contacted.
 
 ## Diagnosis
 
-**Display-only.** The actual ability scores were correct. The "Racial Bonus" label next to each
-ability was wrong for all eight alternate heritages, on the PC creator panel, the character sheet
-and the console stat view. This was observed natively on unchanged product code (below).
+**Display-only in the tested baseline.** In the tested Kingmaker 2.1.7b baseline (unchanged
+product code at `adcba2f314` with the installed mod set), actual ability scores matched the
+intended values for all twelve heritages. All eight alternate heritages produced incorrect racial
+labels through the native PC score-entry and console view-model paths (the save-free method
+probes under Regression coverage). The Sylph creator panel also visibly reproduced the defect.
+The character sheet shares the patched PC method, but the rendered sheet and the console screen
+were not observed in that baseline pass. The reporter's version and mod environment are unknown,
+so this classification is bounded to the tested environment.
 
 ### Engine contract (Kingmaker 2.1.7b, verified directly)
 
@@ -89,9 +94,9 @@ migration is needed.
 
 ## Regression coverage (observer changes)
 
-- `RuntimeTesting/ElementalRacialLabelObservation.cs` runs the real native label code. For PC
-  it calls `CharSScoreEntry.SetData` on an inactive request-local entry; for console it uses
-  `CharInfoStatVM`. It records, per ability, Base/Permanent/Modified values and every Racial
+- `RuntimeTesting/ElementalRacialLabelObservation.cs` is a native-method probe, not a rendered
+  screen. For PC it calls the real `CharSScoreEntry.SetData` on an inactive request-local entry
+  with no canvas; for console it constructs the real `CharInfoStatVM` and reads its value. It records, per ability, Base/Permanent/Modified values and every Racial
   modifier with its source fact, component, stacking and active state. Expected labels derive
   only from the heritage's final racial modifiers.
 - `ElementalHeritageMechanicsScenario` (save-free) checks labels for all 12 heritages. It also
@@ -103,8 +108,10 @@ migration is needed.
 - The creator regression (`ElementalCharacterCreationRacialLabels.cs`) reads the rendered
   `CharBScoresEntry.RaceBonus` text in the real creator ability panel once allocation is
   complete. That happens on the first pass and on every post-revision pass, requiring all six
-  entries bound to the current preview. At each native final review it also checks the labels
-  the native code produces. The final-review check exists because the creator skips the ability
+  entries bound to the current preview, and compares each rendered total with the live
+  `PermanentValue` (the creator panel shows permanent values). At each native final review it
+  also runs the native-method probe on the preview; that is a method check, not an observation of
+  a rendered final-review control. The final-review check exists because the creator skips the ability
   phase after a revision that leaves skill points unchanged (Smokesoul -> Stormsoul).
 - Regression route 0 changes from General -> A -> General to General -> Smokesoul ->
   Stormsoul -> General. The route domain test was updated.
@@ -153,7 +160,8 @@ Candidate2 creator run (`20261126T0527302441164Z`), routes G->Smoke->Storm->G, S
 and Storm->G->Smoke:
 
 - All 7 rendered panel observations were bound to the current preview and correct.
-- All 9 final-review label checks were correct, including Stormsoul at every visit.
+- All 9 final-review native-method probes were correct, including Stormsoul at every visit.
+  These are method probes, not rendered final-review controls.
 - All 59 racial graphs were exact: facts, markers, providers, resources, stat overlays and
   ranks.
 - The allocation baseline was preserved across every revisit after allocation.
