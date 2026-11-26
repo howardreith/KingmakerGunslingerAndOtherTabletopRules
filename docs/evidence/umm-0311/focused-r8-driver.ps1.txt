@@ -1,0 +1,93 @@
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory = $true)][string]$Source,
+    [Parameter(Mandatory = $true)][string]$Commit,
+    [Parameter(Mandatory = $true)][string]$OutDir,
+    [string]$ReferenceBundleDir = '<dev>\KingmakerGunslingerLab\private\extracted-references\KingmakerGunslinger-private-build-references'
+)
+# Focused round-8 reproduction for TRE PR #220. Builds ONE development candidate with Build-Local in a temporary detached
+# clone of the commit under test (the setup of scripts/Test-CandidateAdmission.ps1, except an ordinary local clone that shares the immutable object files), keeps that frozen candidate
+# (ZIP, receipt, complete build log), then runs, unmodified, the committed fixture regions of that commit's
+# Test-CandidateAdmission.ps1: 'focused-packaged-content' (R1-F4) and 'focused-tree-probe' (R6-F3 and the staging
+# controls, including the successful swap). Nothing is deployed or launched.
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
+[void][IO.Directory]::CreateDirectory($OutDir)
+$purpose = 'umm-0311-admission'
+$lab = Split-Path -Parent (Split-Path -Parent $Source)
+$temp = Join-Path $lab ('worktrees\focused-r8-' + [Guid]::NewGuid().ToString('N'))
+$clone = Join-Path $temp 'clone with space'
+$suiteText = $null
+$cases = [Collections.Generic.List[object]]::new()
+function Get-Region([string]$Text, [string]$Name) {
+    $m = [regex]::Match($Text, '(?s)#region ' + [regex]::Escape($Name) + '\r?\n(.*?)#endregion ' + [regex]::Escape($Name))
+    if (-not $m.Success) { throw "Region $Name not found in the committed suite." }
+    return $m.Groups[1].Value
+}
+try {
+    & git clone -q $Source $clone
+    & git -C $clone checkout -q --detach $Commit
+    $commit = (& git -C $clone rev-parse HEAD).Trim()
+    if ($commit -cne $Commit) { throw 'The clone did not select the commit under test.' }
+    Copy-Item -LiteralPath (Join-Path $Source 'GamePath.props') -Destination $clone
+    New-Item -ItemType Directory -Path (Join-Path $clone 'artifacts\references\loader\UnityModManager') -Force | Out-Null
+    Copy-Item -Path (Join-Path $Source 'artifacts\references\loader\UnityModManager\*.dll') -Destination (Join-Path $clone 'artifacts\references\loader\UnityModManager')
+    $suiteText = [IO.File]::ReadAllText((Join-Path $clone 'scripts\Test-CandidateAdmission.ps1'))
+    . ([scriptblock]::Create((Get-Region $suiteText 'focused-helpers')))
+    $git = { param([string[]]$a) & git -C $clone -c user.name=candidate-admission -c user.email=candidate-admission@invalid @a }
+
+    # Repository tests read Git from the working directory (QualifiedRelease.Common.ps1 calls git without -C), so every
+    # step runs from the clone.
+    Set-Location -LiteralPath $clone
+    # The one build: complete stdout/stderr and exit status from its start.
+    $buildLog = Join-Path $OutDir 'development-build-r8.txt'
+    $buildStart = [DateTime]::UtcNow
+    $previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    try {
+        $null | & powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File (Join-Path $clone 'scripts\Build-Local.ps1') -ReferenceBundleDir $ReferenceBundleDir `
+            -DevelopmentPurpose $purpose -DevelopmentTestFilter 'model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged' 2>&1 |
+            ForEach-Object { "$_" } | Set-Content -LiteralPath $buildLog -Encoding UTF8
+        $buildExit = $LASTEXITCODE
+    }
+    finally { $ErrorActionPreference = $previous }
+    $buildSeconds = [int]([DateTime]::UtcNow - $buildStart).TotalSeconds
+    Add-Content -LiteralPath $buildLog -Value ("BUILD-EXIT $buildExit SECONDS $buildSeconds START $($buildStart.ToString('o'))") -Encoding UTF8
+    $buildText = [IO.File]::ReadAllText($buildLog)
+    $package = [regex]::Match($buildText, 'DEVELOPMENT CANDIDATE \(never a release\): (.+?\.zip)').Groups[1].Value
+    $receiptPath = [regex]::Match($buildText, 'Receipt: (.+?\.json)').Groups[1].Value
+    Add-Case 'final-candidate-built' ($buildExit -eq 0 -and $package -and (Test-Path -LiteralPath $package)) "exit $buildExit; $buildSeconds s; $package"
+    if (-not $package) { throw "Build-Local produced no candidate (exit $buildExit); see $buildLog" }
+    # Keep the frozen candidate outside the disposable clone.
+    $frozen = Join-Path $OutDir 'frozen-candidate'
+    [void][IO.Directory]::CreateDirectory($frozen)
+    Copy-Item -LiteralPath $package, "$package.sha256", $receiptPath -Destination $frozen
+    $harness = Join-Path $clone 'scripts\RuntimeHarness.Common.ps1'
+    $admit = { param([string]$zip) Invoke-PS @('-Command', ". '$($harness.Replace("'", "''"))'; `$r = Read-KmgBuildLocalManifest -PackagePath '$($zip.Replace("'", "''"))' -RepositoryRoot '$($clone.Replace("'", "''"))' -DevelopmentPurpose '$purpose' -RequireCurrentMaterialInputs; 'ADMITTED ' + `$r.dllSha256") }
+    $r = & $admit $package
+    Add-Case 'final-candidate-admitted-for-staging' ($r.ExitCode -eq 0 -and $r.Output -match 'ADMITTED [0-9a-f]{64}') ("exit $($r.ExitCode); " + [regex]::Match($r.Output, 'ADMITTED [0-9a-f]{64}').Value)
+    $variants = Join-Path $temp 'variants'; New-Item -ItemType Directory -Path $variants | Out-Null
+    $harnessDir = Join-Path $temp 'harness'; New-Item -ItemType Directory -Path $harnessDir | Out-Null
+    foreach ($name in @('KmgLoaderCompatHarness.dll', 'Info.json')) { Set-Content -LiteralPath (Join-Path $harnessDir $name) -Value 'fixture' }
+    $lc = Join-Path $clone 'scripts\compatibility\loader-compat'
+
+    . ([scriptblock]::Create((Get-Region $suiteText 'focused-packaged-content')))
+    . ([scriptblock]::Create((Get-Region $suiteText 'focused-tree-probe')))
+
+    $failed = @($cases | Where-Object { -not $_.passed })
+    $summary = [ordered]@{ schema = 'kmg.focused-r8.v1'; commit = $commit; purpose = $purpose
+        suiteSha256 = (Get-FileHash -LiteralPath (Join-Path $clone 'scripts\Test-CandidateAdmission.ps1') -Algorithm SHA256).Hash.ToLowerInvariant()
+        regions = @('focused-helpers', 'focused-packaged-content', 'focused-tree-probe')
+        package = (Split-Path -Leaf $package); package_sha256 = Get-Sha $package; build_exit = $buildExit; build_seconds = $buildSeconds
+        passed = $cases.Count - $failed.Count; total = $cases.Count; cases = @($cases) }
+    $summary | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $OutDir 'focused-r8.json') -Encoding UTF8
+    Write-Host ("RESULT {0}/{1} focused checks passed" -f $summary.passed, $summary.total)
+    if ($failed.Count -gt 0) { throw "$($failed.Count) focused check(s) failed." }
+}
+finally {
+    Set-Location -LiteralPath $OutDir
+    if (Test-Path -LiteralPath $temp) {
+        try { Remove-Item -LiteralPath $temp -Recurse -Force -ErrorAction Stop }
+        catch { Write-Warning "The temporary clone could not be removed: $temp ($($_.Exception.Message))" }
+    }
+}

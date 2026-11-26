@@ -1,0 +1,74 @@
+{
+    "schema":  "kmg.focused-r8.v1",
+    "commit":  "c0b54ba4adac0ad0cc101cd44b434cef7c07a33f",
+    "purpose":  "umm-0311-admission",
+    "suiteSha256":  "524dc4e6ab64cdfc69ecc3b3854306d0450d94bf33671f0625c448a1d1476879",
+    "regions":  [
+                    "focused-helpers",
+                    "focused-packaged-content",
+                    "focused-tree-probe"
+                ],
+    "package":  "KingmakerGunslinger-0.0.195-development-umm-0311-admission-c0b54ba4adac.zip",
+    "package_sha256":  "d86d9a7cdd4a66f763b8ee77f8c1e22c67e54c0a8feb844af35e29d6ec12caa1",
+    "build_exit":  0,
+    "build_seconds":  441,
+    "passed":  11,
+    "total":  11,
+    "cases":  [
+                  {
+                      "name":  "final-candidate-built",
+                      "passed":  true,
+                      "detail":  "exit 0; 441 s; <dev>\\KingmakerGunslingerLab\\worktrees\\focused-r8-fa2584bab547460b9cb3118842847865\\clone with space\\artifacts\\development-candidates\\umm-0311-admission\\c0b54ba4adac\\KingmakerGunslinger-0.0.195-development-umm-0311-admission-c0b54ba4adac.zip"
+                  },
+                  {
+                      "name":  "final-candidate-admitted-for-staging",
+                      "passed":  true,
+                      "detail":  "exit 0; ADMITTED 71dfdd7231e8b5858aa27c36d0c0022c3a1a421c9621081a46e807e3bfe9c281"
+                  },
+                  {
+                      "name":  "packaged-readme-edit-restored-before-the-decision-refused-by-the-writer-check",
+                      "passed":  true,
+                      "detail":  "status entries at start 0, at the decision 0; package exit 0; ZIP README carries the edit: True; consumed-source check passed: True; not match its producing commit c0b54ba4ad: README"
+                  },
+                  {
+                      "name":  "packaged-readme-edit-restored-before-the-decision-refused-by-the-ordinary-reader",
+                      "passed":  true,
+                      "detail":  "ZIP 0d7e2d00c258fc1247e399ca6511d0ca806ba16a328a1deb368a419e4d9a4e5e; not match its producing commit c0b54ba4ad: README"
+                  },
+                  {
+                      "name":  "clean-package-from-the-same-route-passes-the-writer-check-and-is-admitted",
+                      "passed":  true,
+                      "detail":  "package exit 0; PACKAGED-FILES-MATCH 159 repository files compared; reader: ADMITTED d86d9a7cdd4a66f763b8ee77f8c1e22c67e54c0a8feb844af35e29d6ec12caa1"
+                  },
+                  {
+                      "name":  "clean-package-admitted-after-an-unshipped-review-note",
+                      "passed":  true,
+                      "detail":  "HEAD e046afb830; ADMITTED d86d9a7cdd4a66f763b8ee77f8c1e22c67e54c0a8feb844af35e29d6ec12caa1"
+                  },
+                  {
+                      "name":  "loader-staging-refuses-a-changed-non-dll-file-with-the-previous-mods-intact",
+                      "passed":  true,
+                      "detail":  "AFTER-CHANGED-FILE sentinel=True modsEntries=1 zipIntact=True leftovers=0 REMOVED-INFO REFUSED The extracted candidate tree is not the admitted archive (a file differs, is missing or was added); nothing was staged. "
+                  },
+                  {
+                      "name":  "loader-staging-refuses-a-removed-info-json-with-the-previous-mods-intact",
+                      "passed":  true,
+                      "detail":  "AFTER-REMOVED-INFO sentinel=True modsEntries=1 zipIntact=True leftovers=0 DEST-CHECK REFUSED injected destination verification failure "
+                  },
+                  {
+                      "name":  "loader-staging-failed-destination-check-restores-the-previous-mods",
+                      "passed":  true,
+                      "detail":  "DEST-CHECK REFUSED injected destination verification failure AFTER-DEST-CHECK sentinel=True modsEnt"
+                  },
+                  {
+                      "name":  "loader-staging-stages-the-genuine-tree-completely",
+                      "passed":  true,
+                      "detail":  "GENUINE STAGED tree=True dll=True harness=True  AFTER-GENUINE sentinel=False modsEntries=2 zipIntact=True leftovers=0"
+                  },
+                  {
+                      "name":  "loader-staging-private-copy-cleanup-failure-restores-the-previous-mods",
+                      "passed":  true,
+                      "detail":  "CLEANUP REFUSED The process cannot access the file \u0027admitted-package.zip\u0027 because it is being used by another process. / AFTER-CLEANUP-FAILURE sentinel=True modsEntries=1 zipIntact=True leftovers=0 / CLEANUP SENTINEL-TEXT True product-at-mods=False / CLEANUP COPY-REMOVED-AFTER-RELEASE True"
+                  }
+              ]
+}

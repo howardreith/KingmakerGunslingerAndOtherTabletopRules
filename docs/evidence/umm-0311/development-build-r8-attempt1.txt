@@ -1,0 +1,12 @@
+MSBuild: <buildtools>\MSBuild\Current\Bin\MSBuild.exe
+Private reference is missing: <dev>\KingmakerGunslingerLab\private\extracted-references\KingmakerGunslinger-private-bu
+ild-references\Managed\UniRx.dll
+At <dev>\KingmakerGunslingerLab\worktrees\focused-r8-7cbc14fb2cac45008e1a379e66e206a1\clone with 
+space\scripts\ReferenceProvenance.Common.ps1:169 char:13
++             throw "Private reference is missing: $bundlePath"
++             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Private referen...naged\UniRx.dll:String) [], RuntimeException
+    + FullyQualifiedErrorId : Private reference is missing: <dev>\KingmakerGunslingerLab\private\extracted-references 
+   \KingmakerGunslinger-private-build-references\Managed\UniRx.dll
+ 
+BUILD-EXIT 1 SECONDS 5 START 2026-11-26T23:02:33.7244760Z
