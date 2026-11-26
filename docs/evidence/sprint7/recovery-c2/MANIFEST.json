@@ -58,5 +58,25 @@
   "sources": {
    "harness-result.json": "699fa95ee2dd4923bc30df061b89c5369bbbac9cb31e49a64ff2882da3474dbe"
   }
+ },
+ {
+  "file": "20261126T033419Z-owner-0.33.0-s7-ghaele-lifecycle-session.json",
+  "session": "20261126T033419Z-owner-0.33.0-s7-ghaele-lifecycle",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "9bcd7ef151c9a2e8a4a057560c6b63555e3b6c063e043c0f267f317102a12bef"
+  }
+ },
+ {
+  "file": "20261126T033419Z-owner-0.33.0-s7-ghaele-lifecycle-01-ghaele.json",
+  "session": "20261126T033419Z-owner-0.33.0-s7-ghaele-lifecycle",
+  "launch": "01-ghaele",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "aaabb2fbfadb1d5c8e9cc34306874798c655719268079f97eab533765ff162c2"
+  }
  }
 ]
