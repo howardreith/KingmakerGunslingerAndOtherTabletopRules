@@ -326,6 +326,64 @@ would need recovery candidate 4 and another mechanics session. At the stop: 59 m
 the last build took 8 min 0.9 s and the session 6 min 3 s), 3 of 4 candidates used, 3 of 4 reviews used. The enrollment's state
 is preserved; nothing was retried, resumed, re-enrolled or extended.
 
+**C3 amendment 2 (owner, 2026-11-26): continue past the no-progress stop.** Saved verbatim at
+`owner-guidance/S7-RECOVERY-C3-AMENDMENT-2-2026-11-26.md` (message sha256 `bbde9e73…dc2c2`). Applied to the same enrollment with
+`resume --amend-mission` and a reason recording the owner's authorization to continue after the no-progress stop
+(review ceiling unchanged at four; `--max-rounds` not changed). Controller amendments revision 2, sha256
+`2b84ac74880bdc892048034d87e21609af86c067f82eb7bda9738d2f8dc75481` (captured 2026-11-26T16:16:07Z); all four instruction
+parts displayed and read in the enrolled developer session. Allowances: validation 75 → 90 min total (59 min 37.0 s spent at
+the amendment, 30 min 23.0 s left); candidates stay 4 total (3 used; candidate 4 is the last); formal reviews stay 4 total
+(3 used; review 4 is the last, for the full corrected-byte result). A bounded independent read-only pre-build audit (initial
+pass plus one verification follow-up) is separately authorized; it is not a controller round or an approval.
+
+Retained at its actual scope: the PASS of `20261126T134425Z` on source `66b0ff3f14`, package `473f2f5a…8366`, DLL
+`8e574477…7d07`, harness `d77754ba…b4f1` (43 checks, all seven required cells admitted and completed, separate physical
+restoration, real late Sickened delivery and removal after pre-delivery disposal, same-run live/persisted agreement). Its five
+driver rows have empty `transferredResiduals` arrays: it is **not** native qualification of failures or new residuals produced
+after a driver hands pending cleanup to the phase. Those boundaries are covered by focused tests through the production
+orchestration (below).
+
+Corrections under C3 amendment 2 (source and focused tests; **not yet run in game**; they need recovery candidate 4):
+- **R3-F1** (A): `Sprint7CellIsolation.TransferPendingTo` now also forwards every later `Fail` and `Residual` of the departed
+  child to the enclosing owner (prefixed), so cleanup that outlives a driver publishes to the phase it keeps consuming; the
+  child keeps its own history and the intentional-fault classification is not replayed (only post-transfer publications are
+  forwarded). Focused: a driver disposed mid-cell hands its reconciliation to the phase; the reconciliation's later unsubscribe
+  failure and a new outside-target residual reach the phase beside the original refusal, and the forwarded residual is
+  consumed by the phase's settlement.
+- **R3-F4** (A): `ReleaseOwnedEffects` registers one reconciliation obligation, with its bounded teardown action, before any
+  settlement attempt on both paths; the immediate path settles it through `SettleResidual` and it leaves only when settlement
+  is established. Focused: census reads the execution ended, the settlement read throws; the obligation stays (ledger still
+  subscribed), and terminal teardown runs it once and names "not settled at teardown".
+- **R3-F2** (B): ownership attribution is the production `Sprint7ObserverPolicy.AttributedTo` (observed delivery **or** the
+  context of a retained owned process, including one recovered after missed notifications), and settlement always reconciles
+  once more. Observed deliveries (`Delivered()`, the pre-delivery probe) stay a separate collection. Focused: a condition
+  delivered while the process was unreadable is released once the process is recovered and ended; the foreign control stays;
+  no observed delivery is fabricated.
+- **R2-F7** (C): the effects runner records each command it issues (`S7Run`) and the phase teardown releases only those, by
+  reference (`ReleaseIssuedCommands`), with interruption, queue maintenance and combat exit each attempted on their own; the
+  same-caster control command is deliberately not recorded; the callback observer's teardown interrupts nothing (its
+  observation-time stilling of its own two freshly summoned sources is unchanged from the qualified run). Focused: one
+  interruption fails, the later command is still interrupted, a non-issued command on the same actor is untouched, and both
+  actors' queue and combat cleanup run.
+- **R3-F3** (D): Dust declares its required controls per path (the caster-behind control once placed; the same-caster control
+  once the separate execution was due), reads each once (present, absent or unreadable), and derives diagnostics, verdict and
+  releases from that one result (`ControlResults`); a required control with no handle is a named failure. The outside target is
+  added to the phase's owned list at acquisition, so phase teardown retires it through the one retirement record if no cell did.
+- **R1-F9** (D): the baseline ground lookup and hostile placement run inside `S7PhaseAcquire`, whose release restores the
+  hostile's position. Focused: a placement failure after both subscriptions stays in the phase result while every release
+  runs newest first.
+- **R2-F8** (E): `AcquisitionLedger.Release` takes an identity function and binds each removal failure to its exact instance
+  at the boundary ("removal of <id>: <exception>"); the injected fault is recognised by that identity, not by message text.
+  Focused: an engine exception with no ID is named by instance and survives a later read failure; the next cell is refused.
+- **R1-F11** (F): the production retirement is `RetireRecorded` (the fixture's `RetirementAttempted` collection written
+  before disposal) and the observer's unwinding release is the shared `ReleaseObserverSources`; the focused retirement case
+  passes the collection that operation wrote through `FixtureTeardownCandidates` (both failure positions covered); the
+  context-read case arranges the throwing getter before the successful match and asserts it ran.
+- **R1-F13** (records): the active integration table, dependency paragraph, finding reconciliation and C3 finding-map rows
+  below are brought to this state; the earlier stops stay as dated history.
+- **R3-F5** (records): arithmetic kept as corrected (59 min 37.0 s at the amendment; receipts 8.9 s; batch 17.3 s;
+  seventeen failed attempts through the stop); later attempts add to it in the ledger.
+
 R1-F12 (scope disclosure, records only): the `s7-c3-fx` selection ran the whole inherited effects phase. Besides the
 mechanical ownership and evaluator observations, its passing run `20261126T054228Z` also produced the phase's presentation
 material: the Dust cast frame captures (`r6-frames/s7-dust-cast-0..2`, `s7-dust-native-look`; the reviewer counts 56, 58
@@ -346,22 +404,27 @@ Frozen inputs and reviewed identities (product source, reviewed head and control
 | #219 | `codex/s7-visual-audio-remediation` | `3e2baea4b4` (round 7) | n/a; frozen head `0542b0592a` | BLOCKED 7/7 | `9c39b1ff7f` (candidate 3) |
 | #221 C1 | `codex/s7-recovery-c1-cue-evaluator` | `5a56d480a2` | `2c67a049ee` | owner-accepted (implementation/domain) | none of its own; its evaluator ran in C3's candidate `6abd692fa7` |
 | #222 C2 | `codex/s7-recovery-c2-ghaele-late-units` | `da811b123c` | `eab90a5ac8` | AWAITING_OWNER_REVIEW, handoff current | external harness `d77754ba…b4f1` over candidate 3 |
-| #223 C3 | `codex/s7-recovery-c3-effects-ownership` | `7fff8b34f6` (round 1), `89d4efa347` (round 2), `f0ca78cbab` (round 3) | none | BLOCKED at 3/4 (no-progress rule), changes_required | `6abd692fa7` (candidate `de63d6f4…4b46`) for the earlier run; `66b0ff3f14` (recovery candidate 3, `473f2f5a…8366`) qualified by `20261126T134425Z` |
+| #223 C3 | `codex/s7-recovery-c3-effects-ownership` | `7fff8b34f6` (round 1), `89d4efa347` (round 2), `f0ca78cbab` (round 3); round 4 pending | none yet | ACTIVE/develop at 3/4 under C3 amendment 2 (after the no-progress stop) | `6abd692fa7` (candidate `de63d6f4…4b46`, `20261126T054228Z`); `66b0ff3f14` (recovery candidate 3, `473f2f5a…8366`, `20261126T134425Z`); the amendment-2 corrections await recovery candidate 4 |
 
 Dependency checks (2026-11-26): `0542b0592a` is an ancestor of `2c67a049ee`, which is an ancestor of `eab90a5ac8`, which is
 an ancestor of `7fff8b34f6`; every remote branch head matched the identities above when checked (2026-11-26, before C3
 amendment 1). C1's and C2's current heads differ from their reviewed H only by the controller's archive records. C3's head at
-that check (`254c08c53d`) differed from its round-1 H by records only; since then C3 amendment 1 changed compiled code:
-`82dc667c93` and `89d4efa347` (reviewed in round 2) and the round-2 corrections after it, still to be built and qualified as
-recovery candidate 3. The product source that ran natively is a separate identity in each case. The stack is linear on the frozen parent, so stacking the children onto #219 needs no conflict
+that check (`254c08c53d`) differed from its round-1 H by records only. (History, dated: under C3 amendment 1 the compiled
+code changed in `82dc667c93` and `89d4efa347`, reviewed in round 2; the round-2 corrections were built as recovery candidate 3
+from `66b0ff3f14` and qualified by `20261126T134425Z`; round 3 reviewed `f0ca78cbab`.) Current (2026-11-26, C3 amendment 2):
+the remote heads were re-verified unchanged at the amendment (#219 `0542b0592a`, C1 `2c67a049ee`, C2 `eab90a5ac8`, C3 records
+head `80d224bd56`); the amendment-2 corrections change compiled code again and are to be built as recovery candidate 4 and
+qualified by one mechanics session before formal review 4. Source, reviewed H, current records head and archive A stay
+separate identities. The stack is linear on the frozen parent, so stacking the children onto #219 needs no conflict
 resolution while #219 stays frozen; that says nothing about integration with `master`, which has moved independently and may
 conflict.
 
-Finding reconciliation (current, 2026-11-26 after C3 review 3): parent R7-F1, R7-F6 (C1, owner-accepted; its same-run native
-criterion fulfilled and accepted at `20261126T054228Z` on `6abd692fa7`), R6-F5 (C1 records), R5-F1 (C2, owner-accepted at
-harness `d77754ba…b4f1` / `20261126T033419Z`), R4-F1 and R7-F2 to R7-F5 (C3: corrected code qualified natively by recovery
-candidate 3 at `20261126T134425Z`; C3 review findings R3-F1 to R3-F5, R2-F7, R2-F8, R1-F9, R1-F11 and R1-F13 open at the
-no-progress stop). (History: the earlier C3 stop at round 1, before C3 amendment 1, had R1-F1 to R1-F11 open; the round-1
+Finding reconciliation (current, 2026-11-26 under C3 amendment 2): parent R7-F1, R7-F6 (C1, owner-accepted; its same-run
+native criterion fulfilled and accepted at `20261126T054228Z` on `6abd692fa7`), R6-F5 (C1 records), R5-F1 (C2, owner-accepted
+at harness `d77754ba…b4f1` / `20261126T033419Z`), R4-F1 and R7-F2 to R7-F5 (C3: the round-2 corrections qualified natively by
+recovery candidate 3 at `20261126T134425Z`, at its stated scope; the amendment-2 corrections of C3 review findings R3-F1 to
+R3-F4, R2-F7, R2-F8, R1-F9 and R1-F11 are in source and focused tests and still need recovery candidate 4's mechanics session
+and formal review 4; R1-F13 and R3-F5 are records). (History: at the review-3 no-progress stop these findings were open.) (History: the earlier C3 stop at round 1, before C3 amendment 1, had R1-F1 to R1-F11 open; the round-1
 native evidence was `20261126T054228Z` only.) Historical native FAILs and accepted interpretations stay as recorded.
 
 Proposed integration operation (to run only under a later owner authorization; one authorization may cover the routine
@@ -445,11 +508,11 @@ advance; snapshots S0 inventory, S1 selection, S2 retirement frame, W samples, S
 | R7-F6 settled verdict not bound to cue IDs and stop count | C1 (PR #221) | Identity binding and stop/callback reconciliation across every snapshot the collector emitted | Same case: substituted retirement-frame, window-end, disposal and settled-other IDs, a consistent survivor substitution the source inventory contradicts, the same ID twice, invalid and oversized IDs; positive retirement-frame or through-window stop counts, stop reasons, stop results, stop times and window-sample ends; placeholder or uncounted withheld callbacks; all refuse, in both forms. Retained round-6 rows are judged through `CallbackLossRound6` by their own collector generation (`Round6First` for `f3bfab1303`, `Round6Second` for `740d94a995`) | #219 | C1 deferred native check FULFILLED by C3: `20261126T054228Z-…-s7-c3-fx` PASS (41/41 checks) on candidate `de63d6f4…4b46` / DLL `ef66c870…b57a` from `6abd692fa7` judged the row live (verdict null, characterized) and `sprint7-visual.combined-run-verdicts-agree` gives the persisted row and its live-shaped counterpart the same verdict; C1 branch unchanged |
 | R6-F5 round-7 expenditure and harness suffix | C1 (records disposition only) | Confirm the frozen head's record and planning row from existing receipts | This manifest, below | #219 | Parent records reconciliation at integration |
 | R5-F1 unaccounted late Ghaele | C2 `codex/s7-recovery-c2-ghaele-late-units` (PR #222) | Caller reconciles every correlated late unit with the destruction owner; outstanding units fail ProbeSlot isolation | Domain `sprint7-visual.ghaele-late-units-reach-slot` (ProbeSlot / Poll / Release / unwind); native `20261126T002852Z-…-s7-ghaele-lifecycle` PASS (round 1, harness `0a038e40`; round 2: `20261126T005206Z-…-s7-ghaele-lifecycle` PASS, harness `bf5d74a1…63cd` from `44fd90a8d1`; round 3 under C2 amendment 1: `20261126T024816Z-…-s7-ghaele-lifecycle` PASS, harness `4180621b…db61` from `56e359f2cc`; C2 BLOCKED at 3/3 with R3-F1 and R3-F2 blocking, R3-F3 open; round 4 under C2 amendment 2: `20261126T033419Z-…-s7-ghaele-lifecycle` PASS, harness `d77754ba…b4f1` from `d631d283aa`) on candidate-3 package `49f8b88c…6413` / DLL `5969f596…e2c3` with harness `0a038e40…71ca9` built from `c5fe26d146` (`docs/evidence/sprint7/recovery-c2/`) | C1 | C2 harness identity carried into C3 and the parent |
-| R4-F1 independent release failures past the abandonment drivers | C3 `codex/s7-recovery-c3-effects-ownership` (PR #223) | Complete child outcome in every driver (`Sprint7Abandonment`); unexpected child failures reach the phase by name and survive the repair | Domain `sprint7-visual.effects-ownership-recovery` (paired injected fault plus independent command-release failure through the phase sequence); native `20261126T054228Z-…-s7-c3-fx` PASS (41/41 checks) on candidate `de63d6f4…4b46` / DLL `ef66c870…b57a` from `6abd692fa7`: all four drivers proven, none unexpected | C2 | Combined candidate; C3 review R1-F1 to R1-F11 open (stopped) |
-| R7-F2 ordinary Dust executions interrupted before retention | C3 (PR #223) | `Sprint7OwnedCommands`: process retained before interruption; commands released independently; ledger owns executions by retained process | Domain (failing interruption does not skip the next; cleared field keeps the process); native pre-delivery release in `20261126T054228Z-…-s7-c3-fx` PASS (41/41 checks) on candidate `de63d6f4…4b46` / DLL `ef66c870…b57a` from `6abd692fa7` (process retained, ended, none live) | C2 | Combined candidate; C3 review R1-F1 to R1-F11 open (stopped) |
-| R7-F3 incomplete hook setup rollback | C3 (PR #223) | `Sprint7HookAttempt` registered before set-up, readback by identity; `IsolatedCell` sticky cell exceptions; caller-chosen trace identity | Domain (failed rollback, null result, unreadable readback, sticky exception); native callback and trace set-up-failed controls in `20261126T054228Z-…-s7-c3-fx` PASS (41/41 checks) on candidate `de63d6f4…4b46` / DLL `ef66c870…b57a` from `6abd692fa7` (set-up and rollback errors, readback 1 and 2 hooks, next cell refused, repaired to 0) | C2 | Combined candidate; C3 review R1-F1 to R1-F11 open (stopped) |
-| R7-F4 failed direct cue-source retirement | C3 (PR #223) | `Sprint7OwnedRequests`: one request per source, failure named and sticky, unsettled source a residual | Domain (throwing retirement through the phase sequence); native retirements in `20261126T054228Z-…-s7-c3-fx` PASS (41/41 checks) on candidate `de63d6f4…4b46` / DLL `ef66c870…b57a` from `6abd692fa7` | C2 | Combined candidate; C3 review R1-F1 to R1-F11 open (stopped) |
-| R7-F5 Dust driver disposed during recovery | C3 (PR #223) | Repair of the exact injected condition once on every exit, including disposal in the recovery wait; failed repair kept | Domain (disposal in the recovery wait, successful and failed repair, foreign kept); native Dust driver in `20261126T054228Z-…-s7-c3-fx` PASS (41/41 checks) on candidate `de63d6f4…4b46` / DLL `ef66c870…b57a` from `6abd692fa7` | C2 | Combined candidate; C3 review R1-F1 to R1-F11 open (stopped) |
+| R4-F1 independent release failures past the abandonment drivers | C3 `codex/s7-recovery-c3-effects-ownership` (PR #223) | Complete child outcome in every driver (`Sprint7Abandonment`); unexpected child failures reach the phase by name and survive the repair | Domain `sprint7-visual.effects-ownership-recovery` (paired injected fault plus independent command-release failure through the phase sequence); native `20261126T054228Z-…-s7-c3-fx` PASS (41/41 checks) on candidate `de63d6f4…4b46` / DLL `ef66c870…b57a` from `6abd692fa7`: all four drivers proven, none unexpected | C2 | Current (2026-11-26, C3 amendment 2): qualified at its stated scope by recovery candidate 3 (`66b0ff3f14`, package `473f2f5a…8366`, DLL `8e574477…7d07`, harness `d77754ba…b4f1`) in `20261126T134425Z-…-s7-c3-mechanics` (43 checks; seven required cells completed; physical restoration; driver rows with empty `transferredResiduals`, so no native transfer-failure claim); amendment-2 corrections (R3-F1 forwarding after transfer, R3-F4 single reconciliation obligation) in source and focused tests (`sprint7-visual.effects-ownership-recovery`), awaiting recovery candidate 4 and formal review 4. (History: the earlier stops had R1-F1 to R1-F11, then R3-F1 to R3-F5 with R2-F7, R2-F8, R1-F9, R1-F11 and R1-F13, open.) |
+| R7-F2 ordinary Dust executions interrupted before retention | C3 (PR #223) | `Sprint7OwnedCommands`: process retained before interruption; commands released independently; ledger owns executions by retained process | Domain (failing interruption does not skip the next; cleared field keeps the process); native pre-delivery release in `20261126T054228Z-…-s7-c3-fx` PASS (41/41 checks) on candidate `de63d6f4…4b46` / DLL `ef66c870…b57a` from `6abd692fa7` (process retained, ended, none live) | C2 | Current (2026-11-26, C3 amendment 2): qualified at its stated scope by recovery candidate 3 (`66b0ff3f14`, package `473f2f5a…8366`, DLL `8e574477…7d07`, harness `d77754ba…b4f1`) in `20261126T134425Z-…-s7-c3-mechanics` (43 checks; seven required cells completed; physical restoration; driver rows with empty `transferredResiduals`, so no native transfer-failure claim); amendment-2 corrections (R3-F2 recovered-context reconciliation, R2-F7 exact issued commands, R2-F8 removal identity) in source and focused tests (`sprint7-visual.effects-ownership-recovery`), awaiting recovery candidate 4 and formal review 4. (History: the earlier stops had R1-F1 to R1-F11, then R3-F1 to R3-F5 with R2-F7, R2-F8, R1-F9, R1-F11 and R1-F13, open.) |
+| R7-F3 incomplete hook setup rollback | C3 (PR #223) | `Sprint7HookAttempt` registered before set-up, readback by identity; `IsolatedCell` sticky cell exceptions; caller-chosen trace identity | Domain (failed rollback, null result, unreadable readback, sticky exception); native callback and trace set-up-failed controls in `20261126T054228Z-…-s7-c3-fx` PASS (41/41 checks) on candidate `de63d6f4…4b46` / DLL `ef66c870…b57a` from `6abd692fa7` (set-up and rollback errors, readback 1 and 2 hooks, next cell refused, repaired to 0) | C2 | Current (2026-11-26, C3 amendment 2): qualified at its stated scope by recovery candidate 3 (`66b0ff3f14`, package `473f2f5a…8366`, DLL `8e574477…7d07`, harness `d77754ba…b4f1`) in `20261126T134425Z-…-s7-c3-mechanics` (43 checks; seven required cells completed; physical restoration; driver rows with empty `transferredResiduals`, so no native transfer-failure claim); amendment-2 corrections (R1-F9 guarded baseline placement) in source and focused tests (`sprint7-visual.effects-ownership-recovery`), awaiting recovery candidate 4 and formal review 4. (History: the earlier stops had R1-F1 to R1-F11, then R3-F1 to R3-F5 with R2-F7, R2-F8, R1-F9, R1-F11 and R1-F13, open.) |
+| R7-F4 failed direct cue-source retirement | C3 (PR #223) | `Sprint7OwnedRequests`: one request per source, failure named and sticky, unsettled source a residual | Domain (throwing retirement through the phase sequence); native retirements in `20261126T054228Z-…-s7-c3-fx` PASS (41/41 checks) on candidate `de63d6f4…4b46` / DLL `ef66c870…b57a` from `6abd692fa7` | C2 | Current (2026-11-26, C3 amendment 2): qualified at its stated scope by recovery candidate 3 (`66b0ff3f14`, package `473f2f5a…8366`, DLL `8e574477…7d07`, harness `d77754ba…b4f1`) in `20261126T134425Z-…-s7-c3-mechanics` (43 checks; seven required cells completed; physical restoration; driver rows with empty `transferredResiduals`, so no native transfer-failure claim); amendment-2 corrections (R1-F11 production retirement record through the fixture decision; R3-F3 outside target owned from acquisition) in source and focused tests (`sprint7-visual.effects-ownership-recovery`), awaiting recovery candidate 4 and formal review 4. (History: the earlier stops had R1-F1 to R1-F11, then R3-F1 to R3-F5 with R2-F7, R2-F8, R1-F9, R1-F11 and R1-F13, open.) |
+| R7-F5 Dust driver disposed during recovery | C3 (PR #223) | Repair of the exact injected condition once on every exit, including disposal in the recovery wait; failed repair kept | Domain (disposal in the recovery wait, successful and failed repair, foreign kept); native Dust driver in `20261126T054228Z-…-s7-c3-fx` PASS (41/41 checks) on candidate `de63d6f4…4b46` / DLL `ef66c870…b57a` from `6abd692fa7` | C2 | Current (2026-11-26, C3 amendment 2): qualified at its stated scope by recovery candidate 3 (`66b0ff3f14`, package `473f2f5a…8366`, DLL `8e574477…7d07`, harness `d77754ba…b4f1`) in `20261126T134425Z-…-s7-c3-mechanics` (43 checks; seven required cells completed; physical restoration; driver rows with empty `transferredResiduals`, so no native transfer-failure claim); amendment-2 corrections (R3-F1 later outcomes reach the phase; R3-F3 per-path required controls read once) in source and focused tests (`sprint7-visual.effects-ownership-recovery`), awaiting recovery candidate 4 and formal review 4. (History: the earlier stops had R1-F1 to R1-F11, then R3-F1 to R3-F5 with R2-F7, R2-F8, R1-F9, R1-F11 and R1-F13, open.) |
 
 Dependency order: #219 (frozen) ← C1 ← C2 ← C3. The children are not independently mergeable to master.
 
@@ -543,11 +606,15 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C3 r3 | Session `20261126T134425Z-…-s7-c3-mechanics` (recovery candidate 3, C2 harness `d77754ba…b4f1`) | PASS, 43/43 checks; required cells completed; restoration completed, owner files and saves verified, registry restored | 6 min 3 s | 59 min 14.9 s | 15 min 45.1 s |
 | C3 r3 | Focused gate `sprint7-visual` (local, with the candidate-3 same-run agreement) | PASS, 25 tests | 4.8 s | 59 min 19.7 s | 15 min 40.3 s |
 | C3 r3 | Controller gates on `f0ca78cbab`: `sprint7-visual` 25 tests 5.8 s, `summon-playtest-r6` 11 tests 3.5 s, `native-profile` 9 tests 3.6 s, `loader-compat-probe` 5 tests 3.9 s (receipts 3.6 + 1.7 + 1.8 + 1.8 = 8.9 s; the round-3 report said 6.9 s in error) | PASS | 17.3 s batch wall | 59 min 37.0 s | 15 min 23.0 s |
+| C3 amendment 2 | Allowance raised from 75 to 90 min total (59 min 37.0 s spent; remaining shown against 90 from here) | | | 59 min 37.0 s | 30 min 23.0 s |
+| C3 r4 | Focused gate `sprint7-visual` (local, amendment-2 corrections) | FAIL, 24/25: the new R3-F4 case arranged its throwing end-state read one read too late (`ThrowAfter = 3`; the census makes two reads), so settlement succeeded; test arrangement corrected to 2 | 24.4 s | 60 min 1.4 s | 29 min 58.6 s |
+| C3 r4 | Focused gate `sprint7-visual` (local) | PASS, 25 tests | 5.1 s | 60 min 6.5 s | 29 min 53.5 s |
+| C3 r4 | Focused gate `sprint7-visual` (local, after restoring the observer's observation-time source stilling) | PASS, 25 tests | 20.3 s | 60 min 26.8 s | 29 min 33.2 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
   built its harness four times and ran four short lifecycle sessions on the existing candidate-3 package (rows above).
-- Failed validation attempts so far: seventeen (two in C1 round 2, four in C1 round 4, one in C1 round 5, ten in C3); refused controller submissions with no validation launched are listed in their rows.
+- Failed validation attempts so far: eighteen (two in C1 round 2, four in C1 round 4, one in C1 round 5, eleven in C3; seventeen through the review-3 stop, one since); refused controller submissions with no validation launched are listed in their rows.
 - R3-F5 (records): a 1.0 s arithmetic drift from the 45 min 5.1 s row was corrected on 2026-11-26 in every later running total; the round-3 report's 59 min 36.0 s should read 59 min 37.0 s and its receipt subtotal 8.9 s.
 - Earlier spend stays separate: 65 min 42 s in parent rounds 6 and 7. New product candidates used: 3 of 4 (C3's first combined candidate, its contingency, and recovery candidate 3 under C3 amendment 1).
 - Reserve before the C2 round-3 session: C3 still needs one combined Build-Local candidate and its affected native

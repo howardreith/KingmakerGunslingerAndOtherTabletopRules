@@ -1373,6 +1373,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     entry["keeperPlayingId"] = kept == null ? null : (JToken)kept.PlayingId;
                     entry["otherPlayingId"] = retired == null ? null : (JToken)retired.PlayingId;
                 }
+                // Observation control (unchanged from the qualified run): the two sources this observer summoned for the overlap are
+                // stilled before selection so no further attack adds cues. This is not teardown; the teardown interrupts nothing.
                 foreach (UnitEntityData attacker in new[] { keeper, other })
                 { attacker.Commands.InterruptAll(command => true); attacker.Commands.RemoveFinishedAndUpdateQueue(); }
                 row["cuesBeforeSelection"] = new JObject { ["survivorSource"] = new JArray(S7ImpactCues(keeper).Skip(keeperFrom).Select(S7Cue)),
@@ -1430,26 +1432,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var releases = new List<KeyValuePair<string, Action>>();
                 // R1-F6: each of the hook's release failures stays its own failure (no aggregation).
                 if (withhold != null) releases.Add(new KeyValuePair<string, Action>("cue callback hook", () => withhold.Dispose()));
-                int commandsInterrupted = 0, sourcesRetired = 0;
-                foreach (UnitEntityData unit in new[] { keeper, other }.Where(value => value != null))
-                {
-                    UnitEntityData source = unit;
-                    releases.Add(new KeyValuePair<string, Action>("source commands " + source.UniqueId, () =>
-                    { if (!source.Destroyed) { source.Commands.InterruptAll(command => true); source.Commands.RemoveFinishedAndUpdateQueue(); commandsInterrupted++; } }));
-                }
-                // Sources this observer summoned and did not already request are retired here (one request each; a failed
-                // request is recorded by the request owner and the other releases still run).
-                if (keeper != null && !sources.Requested(keeper)) releases.Add(new KeyValuePair<string, Action>("survivor source", () => { if (sources.RequestRecorded(keeper, "survivor source " + keeper.UniqueId, retire)) sourcesRetired++; }));
-                if (other != null && !sources.Requested(other)) releases.Add(new KeyValuePair<string, Action>("other source", () => { if (sources.RequestRecorded(other, "other source " + other.UniqueId, retire)) sourcesRetired++; }));
+                // C3 review R2-F7: the teardown interrupts no command; the observer's sources are retired below.
+                const int commandsInterrupted = 0;
                 List<string> failures = Sprint7ObserverPolicy.RunReleases(releases);
+                if (withhold != null) isolation.Fail(Owner, withhold.DisposeFailures);
+                // R1-F11: sources this observer summoned and did not already request are retired here through the shared
+                // operation (one request each; a failure recorded; then failures and settlement published).
+                var labelled = new List<KeyValuePair<UnitEntityData, string>>();
+                if (keeper != null) labelled.Add(new KeyValuePair<UnitEntityData, string>(keeper, "survivor source " + keeper.UniqueId));
+                if (other != null) labelled.Add(new KeyValuePair<UnitEntityData, string>(other, "other source " + other.UniqueId));
+                int sourcesRetired = Sprint7ObserverPolicy.ReleaseObserverSources(sources, labelled, retire, isolation, Owner, S7UnitSettled);
                 row["releaseFailures"] = new JArray(failures.ToArray());
                 row["retirementFailures"] = new JArray(sources.Failures.ToArray());
                 row["interventionDisposeFailures"] = new JArray(withhold == null ? new string[0] : withhold.DisposeFailures.ToArray());
                 row["independentCleanup"] = new JObject { ["commandsInterrupted"] = commandsInterrupted, ["sourcesRetiredHere"] = sourcesRetired,
                     ["survivorRetirementRequested"] = sources.Requested(keeper), ["otherRetirementRequested"] = sources.Requested(other) };
                 isolation.Fail(Owner, failures);
-                if (withhold != null) isolation.Fail(Owner, withhold.DisposeFailures);
-                sources.Publish(isolation, Owner, S7UnitSettled);
                 // The hook attempt's explicit readback, whether or not its set-up returned an observer (R7-F3).
                 int? hooksAfter = hook.Publish(isolation, Owner);
                 row["hookAttempted"] = hook.Attempted;
@@ -1733,7 +1731,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 target.Descriptor.Damage = 0;
                 var attack = new UnitAttack(target);
-                unit.Commands.Run(attack);
+                S7Run(unit, attack);
                 DateTime deadline = DateTime.UtcNow.AddSeconds(8);
                 while (DateTime.UtcNow < deadline && !attack.IsFinished) yield return 0;
                 unit.Commands.InterruptAll(command => true); unit.Commands.RemoveFinishedAndUpdateQueue();
@@ -1753,6 +1751,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (unit == null) return;
             if (_s7Retirements == null) { retire(unit); return; }
             _s7Retirements.Request(unit, label + " " + unit.UniqueId, retire);
+        }
+
+        // Recovery C3 (R2-F7): the commands the effects runner issued, by reference, for the phase teardown.
+        private List<KeyValuePair<UnitEntityData, Kingmaker.UnitLogic.Commands.Base.UnitCommand>> _s7Issued;
+
+        /// <summary>Runs a command the effects runner issues, recording it (inside the phase) for the exact teardown.</summary>
+        private void S7Run(UnitEntityData unit, Kingmaker.UnitLogic.Commands.Base.UnitCommand command)
+        {
+            if (_s7Issued != null) _s7Issued.Add(new KeyValuePair<UnitEntityData, Kingmaker.UnitLogic.Commands.Base.UnitCommand>(unit, command));
+            unit.Commands.Run(command);
         }
 
         /// <summary>Recovery C3: a unit's terminal state: true when destroyed, false while it is in the game state, null otherwise.</summary>
@@ -1928,7 +1936,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 logFrom = log.Rows.Count; cuesFrom = S7ImpactCues(first).Length;
                 mark("anky-cancel-start");
                 var cancelled = new UnitAttack(hostile);
-                first.Commands.Run(cancelled);
+                S7Run(first, cancelled);
                 yield return 0;
                 first.Commands.InterruptAll(command => true); first.Commands.RemoveFinishedAndUpdateQueue();
                 foreach (int step in R6Seconds(2f)) yield return step;
@@ -1941,8 +1949,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // 5. Concurrent sources; one retired while its own cue plays.
                 int firstFrom = S7ImpactCues(first).Length, secondCueFrom = S7ImpactCues(second).Length;
                 mark("anky-concurrent-start");
-                first.Commands.Run(new UnitAttack(hostile));
-                second.Commands.Run(new UnitAttack(hostile));
+                S7Run(first, new UnitAttack(hostile));
+                S7Run(second, new UnitAttack(hostile));
                 DateTime wait = DateTime.UtcNow.AddSeconds(16);
                 SummonCastCueRecord retiring = null, survivor = null;
                 // Retire only once both cues are live at the same time.
@@ -2533,15 +2541,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return (buff.Blueprint == null ? "buff" : buff.Blueprint.name) + "#" + System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(buff) + " on " + owner;
             }
 
-            /// <summary>The exact text of the injected removal fault of this instance.</summary>
-            internal static string RemovalFault(string identity) { return "injected failure of an owned Sickened removal: " + identity; }
+            /// <summary>The injected removal fault's text; the instance's identity is added at the removal boundary (R2-F8).</summary>
+            internal const string RemovalFault = "injected failure of an owned Sickened removal";
 
             private static void Remove(Buff buff)
             {
                 if (Inject == "fail-owned-removal")
                 {
                     if (InjectedLeftovers.Count == 0) { InjectedLeftovers.Add(buff); InjectedIdentities.Add(Identity(buff)); }
-                    if (InjectedLeftovers.Contains(buff)) throw new InvalidOperationException(RemovalFault(InjectedIdentities[InjectedLeftovers.IndexOf(buff)]));
+                    if (InjectedLeftovers.Contains(buff)) throw new InvalidOperationException(RemovalFault);
                 }
                 buff.Remove();
             }
@@ -2558,13 +2566,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 Kingmaker.UnitLogic.Mechanics.MechanicsContext context = buff.Context;
                 AbilityExecutionContext execution = context as AbilityExecutionContext ?? (context == null ? null : context.SourceAbilityContext);
-                return execution != null && _executions.Any(value => ReferenceEquals(value, execution));
+                // R3-F2: owned when its execution delivered under observation, or when it is the context of a retained owned
+                // process (including one recovered after a missed notification); observed deliveries stay separate (Delivered).
+                return Sprint7ObserverPolicy.AttributedTo(execution, _executions.Cast<object>(), _owned, process => process.Context);
             }
 
             internal bool Owns(Buff buff) { return buff != null && Owned(buff); }
 
             internal int Observe() { return _ledger.Observe(Present(), Owned); }
-            internal List<string> Release() { return _ledger.Release(Present(), Owned, Remove); }
+            internal List<string> Release() { return _ledger.Release(Present(), Owned, Remove, Identity); }
             internal int Remaining() { return _ledger.Remaining(Present(), Owned); }
 
             /// <summary>R1-F2: the identities of the owned conditions still present.</summary>
@@ -2586,7 +2596,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Kingmaker.Controllers.AbilityExecutionProcess own = null;
             try
             {
-                dust.Commands.Run(command);
+                S7Run(dust, command);
                 DateTime deadline = DateTime.UtcNow.AddSeconds(20);
                 while (DateTime.UtcNow < deadline && !(command.IsFinished && (command.ExecutionProcess == null || command.ExecutionProcess.IsEnded)))
                 { if (own == null) own = command.ExecutionProcess; ledger.Capture(command); yield return 0; }
@@ -2718,12 +2728,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             // the observer's own control) are removed.
             S7DustConditions conditions = null;
             Buff foreignSickened = null, unownedSickened = null;
+            bool unownedControlDue = false;
             var releaseFailures = new JArray();
             Action clearSickened = () => { foreach (string failure in conditions.Release()) { releaseFailures.Add(failure); conditions.ReleaseFailed(failure); } };
             // Every command this cell issues is registered with the ledger before it runs (R4-F4).
             Func<UnitEntityData, AbilityData, TargetWrapper, JObject, R6Clip, IEnumerable<int>> passive = (unit, data, target, cast, clip) =>
                 R6RunPassive(unit, data, target, cast, clip, conditions.Own);
-            Func<UnitEntityData, UnitUseAbility, UnitUseAbility> issue = (unit, command) => { conditions.Own(command); unit.Commands.Run(command); return command; };
+            Func<UnitEntityData, UnitUseAbility, UnitUseAbility> issue = (unit, command) => { conditions.Own(command); S7Run(unit, command); return command; };
             Func<UnitEntityData, int, int, JObject> laterCast = (caster, savesFrom, damageFrom) => new JObject {
                 ["caster"] = caster.UniqueId, ["casterAlive"] = !caster.Destroyed, ["casterIsEnemyOfHostile"] = caster.IsEnemy(hostile), ["hostileIsEnemyOfCaster"] = hostile.IsEnemy(caster),
                 ["hostileSaves"] = new JArray(saveLog.Rows.Skip(savesFrom).Where(value => (string)value.Key["unit"] == hostile.UniqueId).Select(value => { var copy = (JObject)value.Key.DeepClone();
@@ -2754,6 +2765,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PlaceExpandedSummoningUnit(fixture.Caster, ground(spot + Vector3.back * 3f));
                 outside = Game.Instance.EntityCreator.SpawnUnit(fixture.HostileBlueprint ?? hostile.Blueprint,
                     ground(spot + Vector3.left * 3.6f + Vector3.back * .6f), Quaternion.identity, fixture.Scene);
+                // R3-F3: the outside target's retirement obligation is the phase's from acquisition (its teardown retires it if the
+                // cell does not), through the one retirement record.
+                if (_s7PhaseOwned != null) _s7PhaseOwned.Add(outside);
                 Sprint28SetBrainActivePreservingActions(outside, false);
                 outside.Stats.HitPoints.BaseValue = 100000;
                 // R1-F9: the handler exists before its subscription is attempted; the subscription's release is registered first.
@@ -3188,6 +3202,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int step in R6Wait(20)) yield return step;
                 unowned["canTarget"] = abilityData(late, breath).CanTarget(new TargetWrapper(outside));
                 var separate = new UnitUseAbility(abilityData(late, breath), new TargetWrapper(outside));
+                // R3-F3: from here the ordinary path requires the same-caster control at cleanup. R2-F7: this separate owner's
+                // command is deliberately not recorded as the runner's.
+                unownedControlDue = true;
                 late.Commands.Run(separate);
                 DateTime separateDeadline = DateTime.UtcNow.AddSeconds(15);
                 while (DateTime.UtcNow < separateDeadline && !(separate.IsFinished && (separate.ExecutionProcess == null || separate.ExecutionProcess.IsEnded))) yield return 0;
@@ -3282,20 +3299,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 S7DustConditions owner = conditions;
                 Func<List<string>> afterSettlement = () =>
                 {
-                    var controls = new List<KeyValuePair<string, Func<bool?>>>();
-                    if (foreignSickened != null) controls.Add(new KeyValuePair<string, Func<bool?>>("caster-behind control " + S7DustConditions.Identity(foreignSickened), presentOn(foreignSickened, fixture.Caster)));
-                    if (unownedSickened != null) controls.Add(new KeyValuePair<string, Func<bool?>>("same-caster unowned control " + S7DustConditions.Identity(unownedSickened), presentOn(unownedSickened, outside)));
-                    List<string> failures = Sprint7ObserverPolicy.ControlsKept(controls);
+                    // R3-F3: the controls this path requires are declared first (the caster-behind control once placed; the
+                    // same-caster control once the separate execution was due); each is read once, and the diagnostics, the verdict
+                    // and the releases all use that one result; a failed read never prevents an independent release.
+                    Func<Buff, UnitEntityData, bool?> readOnce = (buff, unit) => { if (buff == null) return false; try { return presentOn(buff, unit)(); } catch (Exception) { return null; } };
+                    bool? casterPresent = readOnce(foreignSickened, fixture.Caster);
+                    bool? unownedPresent = readOnce(unownedSickened, outside);
+                    List<string> failures = Sprint7ObserverPolicy.ControlResults(new[] {
+                        new KeyValuePair<string, KeyValuePair<bool, bool?>>("caster-behind control" + (foreignSickened == null ? " (no handle)" : " " + S7DustConditions.Identity(foreignSickened)),
+                            new KeyValuePair<bool, bool?>(foreignSickened != null || row["layout"] != null, casterPresent)),
+                        new KeyValuePair<string, KeyValuePair<bool, bool?>>("same-caster unowned control" + (unownedSickened == null ? " (no handle)" : " " + S7DustConditions.Identity(unownedSickened)),
+                            new KeyValuePair<bool, bool?>(unownedControlDue, unownedPresent)) }, row);
                     row["controlsAfterOwnedRelease"] = new JArray(failures.ToArray());
-                    row["foreignKeptAtSettlement"] = foreignSickened != null && presentOn(foreignSickened, fixture.Caster)() == true;
-                    row["unownedKeptAtSettlement"] = unownedSickened != null && presentOn(unownedSickened, outside)() == true;
+                    row["foreignKeptAtSettlement"] = casterPresent == true;
+                    row["unownedKeptAtSettlement"] = unownedPresent == true;
                     row["conditionsSubscribedAfterSettlement"] = owner == null ? (bool?)null : owner.Subscribed;
                     row["lateRemovedAtSettlement"] = owner == null ? -1 : owner.LastRemoved;
                     failures.AddRange(Sprint7ObserverPolicy.RunReleases(new[] {
-                        new KeyValuePair<string, Action>("caster-behind control", () => { if (foreignSickened != null && presentOn(foreignSickened, fixture.Caster)() == true) foreignSickened.Remove(); }),
-                        new KeyValuePair<string, Action>("same-caster unowned control", () => { if (unownedSickened != null && presentOn(unownedSickened, outside)() == true) unownedSickened.Remove(); }),
-                        new KeyValuePair<string, Action>("outside target", () => { if (outside != null && !outside.Destroyed) S7Retire(outside, "dust outside target", CleanupExpandedSummoningUnit); }) }));
-                    if (_s7Retirements != null) _s7Retirements.Publish(isolation, "s7-dust", S7UnitSettled);
+                        new KeyValuePair<string, Action>("caster-behind control", () => { if (casterPresent == true) foreignSickened.Remove(); }),
+                        new KeyValuePair<string, Action>("same-caster unowned control", () => { if (unownedPresent == true) unownedSickened.Remove(); }),
+                        new KeyValuePair<string, Action>("outside target", () => { if (outside != null && !outside.Destroyed) S7Retire(outside, "dust outside target", _s7Retire ?? (unit => DisposeExpandedSummoningUnits(fixture.Created, new[] { unit }))); }),
+                        new KeyValuePair<string, Action>("retirement settlement", () => { if (_s7Retirements != null) _s7Retirements.Publish(isolation, "s7-dust", S7UnitSettled); }) }));
                     return failures;
                 };
                 int liveBeforeCleanup = -1;
@@ -3307,7 +3331,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // owned conditions released, live or unreadable executions kept as residuals; the ledger stays subscribed and
                     // reconciles late deliveries until they settle; then the controls are checked and released.
                     effects = Sprint7ObserverPolicy.ReleaseOwnedEffects(isolation, "s7-dust", owner.Commands, S7DustConditions.Unfinished, owner.Interrupt,
-                        S7DustConditions.Label, S7DustConditions.Identity, () => owner.Release(), owner.RemainingIdentities, owner.Dispose, afterSettlement);
+                        S7DustConditions.Label, S7DustConditions.Identity, () => owner.Release(), owner.RemainingIdentities, owner.Dispose, afterSettlement, () => owner.LastRemoved);
                     row["ownedEffects"] = effects;
                     row["ownedExecutions"] = effects["ownedExecutions"];
                     row["ownedExecutionsLive"] = effects["ownedExecutionsLive"];
@@ -3329,14 +3353,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 JArray remainingAtCleanup = effects == null ? null : effects["remainingAtCleanup"] as JArray;
                 int live = effects == null ? -1 : (int)effects["ownedExecutionsLive"];
                 row["conditions"] = new JObject { ["acquired"] = owner == null ? -1 : owner.Acquired.Count, ["ownedExecutions"] = owner == null ? -1 : owner.OwnedExecutions,
-                    ["liveBeforeCleanup"] = liveBeforeCleanup, ["removedAtCleanup"] = owner == null ? -1 : owner.LastRemoved,
+                    ["liveBeforeCleanup"] = liveBeforeCleanup, ["removedAtCleanup"] = effects == null ? (JToken)(-1) : effects["removedAtCleanup"],
                     ["remainingAfterCleanup"] = remainingAtCleanup == null ? -1 : remainingAtCleanup.Count, ["releaseFailures"] = releaseFailures,
                     ["foreignKeptAtCleanup"] = foreignPresentAtCleanup, ["unownedExecutionKept"] = unownedKept, ["ownedCommandsLeft"] = row["ownedCommandsLeft"],
                     ["ownedCommandFailures"] = row["ownedCommandFailures"], ["ownedExecutionsLive"] = live, ["ledgerHeldUntilSettlement"] = effects == null ? null : effects["ledgerHeldUntilSettlement"],
                     ["note"] = "Sickened lasts 3 rounds; an instance that expired before cleanup is gone natively and is not counted as live." };
                 isolation.Reported("s7-dust");
                 dustCheck("s7-dust-cell-conditions-released", owner != null && remainingAtCleanup != null && remainingAtCleanup.Count == 0 && releaseFailures.Count == 0 &&
-                        liveBeforeCleanup >= 1 && owner.LastRemoved >= 1 && owner.Acquired.Count >= 2 && foreignPresentAtCleanup && unownedKept &&
+                        liveBeforeCleanup >= 1 && (int?)effects["removedAtCleanup"] >= 1 && owner.Acquired.Count >= 2 && foreignPresentAtCleanup && unownedKept &&
                         (bool?)row["foreignKeptAtSettlement"] == true && row["ownedCommandsLeft"].Type == JTokenType.Integer && (int)row["ownedCommandsLeft"] == 0 && live == 0 &&
                         owner.Commands.Failures.Count == 0 && !owner.Subscribed && cleanupFailures.Count == 0,
                     (JObject)row["conditions"].DeepClone(),
@@ -3376,7 +3400,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             // R1-F6: the injected fault and its known residual, bound to the exact instance (identity captured at injection).
             driver.Expected = () => leftoverIdentities.Count != 1 ? new[] { "exactly one injected leftover expected, saw " + leftoverIdentities.Count } : new[] {
-                "s7-dust: release failure: early-exit cast: InvalidOperationException: " + S7DustConditions.RemovalFault(leftoverIdentities[0]),
+                "s7-dust: release failure: early-exit cast: removal of " + leftoverIdentities[0] + ": InvalidOperationException: " + S7DustConditions.RemovalFault,
                 "s7-dust: owned conditions remaining: 1 (" + leftoverIdentities[0] + ")" };
             driver.Repair = () =>
             {
@@ -3531,6 +3555,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private Sprint7OwnedRequests<UnitEntityData> _s7Retirements;
         private Action<UnitEntityData> _s7Retire;
         private bool _s7Mechanics;
+        // Recovery C3 (R3-F3): the phase's owned units (summons and the Dust outside target), retired at teardown if no cell did.
+        private List<UnitEntityData> _s7PhaseOwned;
 
         // Recovery C3 (R2-F3): the pre-delivery control's readback of its exact execution (set by the Dust cell in that mode).
         private Func<JObject> _s7PreDeliveryState;
@@ -3560,12 +3586,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             var timeline = new JArray(); record["timeline"] = timeline;
             Action<string> mark = name => timeline.Add(new JObject { ["mark"] = name, ["utc"] = DateTime.UtcNow.ToString("o"), ["frame"] = Time.frameCount });
             var owned = new List<UnitEntityData>();
+            _s7PhaseOwned = owned;
             var isolation = new Sprint7CellIsolation();
             // R1-F9: the phase's set-up acquisitions are owned by this scope before each one runs.
             var setup = new Sprint7SetupScope();
             var retirements = new Sprint7OwnedRequests<UnitEntityData>();
-            Action<UnitEntityData> retire = unit => { fixture.RetirementAttempted.Add(unit); DisposeExpandedSummoningUnits(fixture.Created, new[] { unit }); };
+            // R1-F11: the production retirement operation records the attempt in the fixture's collection before the disposal.
+            Action<UnitEntityData> retire = unit => Sprint7ObserverPolicy.RetireRecorded(fixture.RetirementAttempted, unit, value => DisposeExpandedSummoningUnits(fixture.Created, new[] { value }));
             _s7Retirements = retirements; _s7Retire = retire; _s7Mechanics = mechanics;
+            _s7Issued = new List<KeyValuePair<UnitEntityData, Kingmaker.UnitLogic.Commands.Base.UnitCommand>>();
             Vector3 centre = fixture.Caster.Position;
             UnitEntityData hostile = fixture.Hostile;
             Vector3 hostilePosition = hostile.Position;
@@ -3591,7 +3620,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var hostileSaves = new Sprint26Saves(hostile, false) { DesiredRoll = 1 };
                 saves.Add(hostileSaves);
                 S7PhaseAcquire(setup, isolation, "hostile saves subscription", hostileSaves.Subscribe, hostileSaves.Dispose);
-                PlaceExpandedSummoningUnit(hostile, ground(centre + Vector3.forward * 5f));
+                // R1-F9: the ground lookup and the baseline placement are a guarded set-up operation; its release restores the position.
+                S7PhaseAcquire(setup, isolation, "baseline hostile placement", () => PlaceExpandedSummoningUnit(hostile, ground(centre + Vector3.forward * 5f)),
+                    () => { if (!fixture.Hostile.Destroyed) PlaceExpandedSummoningUnit(fixture.Hostile, hostilePosition); });
                 foreach (int step in R6Wait(10)) yield return step;
                 mark("baseline-start");
                 foreach (int step in R6Seconds(3f)) yield return step;
@@ -3627,16 +3658,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var errors = new JArray();
                 Action<string, Action> restore = (name, action) => { try { action(); } catch (Exception error) { errors.Add(name + ":" + error.Message); } };
-                // R2-F7: each actor on its own, named by identity. The phase's own summons are brain-inactive units whose
-                // commands are the phase's; the fixture's caster and hostile only leave combat (their commands are not the phase's).
-                foreach (string failure in Sprint7ObserverPolicy.ReleaseEach(owned.Where(value => value != null && !value.Destroyed), unit => "combat " + unit.UniqueId, unit =>
-                    {
-                        unit.Commands.InterruptAll(command => true); unit.Commands.RemoveFinishedAndUpdateQueue();
-                        if (unit.CombatState.IsInCombat) unit.CombatState.LeaveCombat();
-                    })) errors.Add(failure);
+                // The fixture's caster and hostile only leave combat (their commands are not the phase's).
+                // R2-F7: only the commands this runner issued, by reference; interruption, queue maintenance and combat exit are each
+                // attempted on their own per command and per actor; another owner's command on the same actor is not touched.
+                foreach (string failure in Sprint7ObserverPolicy.ReleaseIssuedCommands(_s7Issued, owned, unit => unit != null && !unit.Destroyed,
+                    command => command.IsFinished, (unit, command) => unit.Commands.InterruptAll(value => ReferenceEquals(value, command)),
+                    unit => unit.Commands.RemoveFinishedAndUpdateQueue(), unit => { if (unit.CombatState.IsInCombat) unit.CombatState.LeaveCombat(); },
+                    unit => unit.UniqueId, command => command.GetType().Name + "#" + System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(command))) errors.Add(failure);
                 foreach (string failure in Sprint7ObserverPolicy.ReleaseEach(new[] { fixture.Hostile, fixture.Caster }.Where(value => value != null && !value.Destroyed),
                     unit => "combat " + unit.UniqueId, unit => { if (unit.CombatState.IsInCombat) unit.CombatState.LeaveCombat(); })) errors.Add(failure);
-                restore("hostile", () => { if (!fixture.Hostile.Destroyed) { fixture.Hostile.Descriptor.Damage = 0; PlaceExpandedSummoningUnit(fixture.Hostile, hostilePosition); } });
+                restore("hostile damage", () => { if (!fixture.Hostile.Destroyed) fixture.Hostile.Descriptor.Damage = 0; });
                 restore("caster", () => PlaceExpandedSummoningUnit(fixture.Caster, centre));
                 foreach (string failure in setup.ReleaseAll()) errors.Add(failure);
                 // R1-F1: each phase-owned unit no layer has requested yet is retired here, each on its own (one request per unit
@@ -3649,7 +3680,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 isolation.Settle();
                 // R2-F2: residuals still pending (including those a driver handed to the phase) run their bounded teardown once.
                 isolation.TerminatePending();
-                _s7Retirements = null; _s7Retire = null; _s7Mechanics = false; _s7PreDeliveryState = null;
+                _s7Retirements = null; _s7Retire = null; _s7Mechanics = false; _s7PreDeliveryState = null; _s7Issued = null; _s7PhaseOwned = null;
                 record["isolation"] = isolation.Describe();
                 record["retirements"] = new JObject { ["requested"] = retirements.Count, ["retiredAtTeardown"] = retiredHere, ["failures"] = new JArray(retirements.Failures.ToArray()) };
                 // R1-F8: completion of the declared qualification, kept apart from eventual physical restoration.
