@@ -486,7 +486,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "observations=" + _racialLabelObservations + ";exact=" + _racialLabelObservationsExact,
                     probesExact, "native CharSScoreEntry.SetData and CharInfoStatVM on loaded descriptors (" + phase + ")");
                 Add(_assertions, "elemental-race-persistence-sheet-racial-labels",
-                    "6 Sylph fixtures: rendered native sheet racial labels and totals equal live values; sheet state restored",
+                    "6 Sylph fixtures: rendered native sheet totals equal live values (racial label compared where the sheet renders one); sheet state restored",
                     "sheets=" + sheets.Length + ";exact=" + sheets.Count(value => TokenBool(value, "exact")),
                     sheetsExact, "native CharacterScreenController.AbilityScores after " + phase);
             }

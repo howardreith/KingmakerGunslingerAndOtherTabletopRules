@@ -16,9 +16,10 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// Reads the rendered ability block of the native character sheet
     /// (CharacterScreenController.AbilityScores, filled by CharSScores through
     /// CharSScoreEntry.SetData with showPermanentValue false). Each of the six
-    /// visible entries must be bound to the owner's live stat; its racial label
-    /// must equal the expected final racial modifier and its displayed total the
-    /// live ModifiedValue.
+    /// visible entries must be bound to the owner's live stat and display the live
+    /// ModifiedValue. Kingmaker 2.1.7b's sheet entries have no RaceBonus field
+    /// (native SetData skips the label when it is null; observed 2026-11-26), so
+    /// the racial label is compared only where the sheet actually renders one.
     /// </summary>
     internal static class NativeSheetRacialLabelProbe
     {
@@ -49,9 +50,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string shown = entry?.Value?.text;
                 string wantedLabel = ElementalRacialLabelObservation.ExpectedLabel(expectedRacial[index]);
                 string wantedValue = stat.ModifiedValue.ToString();
-                bool same = entry != null && label == wantedLabel && shown == wantedValue;
+                bool raceBonusField = entry != null && entry.RaceBonus != null;
+                bool same = entry != null && (!raceBonusField || label == wantedLabel) && shown == wantedValue;
                 all &= same;
                 rendered.Add(new JObject { ["stat"] = type.ToString(), ["boundVisibleEntries"] = bound.Length,
+                    ["raceBonusFieldPresent"] = raceBonusField,
                     ["renderedRaceBonus"] = label, ["expectedRaceBonus"] = wantedLabel,
                     ["renderedValue"] = shown, ["liveModifiedValue"] = stat.ModifiedValue,
                     ["livePermanentValue"] = stat.PermanentValue, ["baseValue"] = stat.BaseValue,
