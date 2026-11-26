@@ -182,6 +182,30 @@ try {
         Assert-That ($null -ne (Get-Refusal { Read-KmgDomainTestEvidence -LogPath $evidenceLog -CompleteSuite })) "complete-$($case.Name)-refused"
     }
 
+    # R5-F2: one distinct outcome per selected test, and only Build-Local's exact deferral of the loader case.
+    $loaderCase = 'loader.production-dll-references-pinned-loader'
+    $deferred = "NOT APPLICABLE ${loaderCase}: deferred: Build-Local runs this case on its exact compiler output."
+    $unbound = "NOT APPLICABLE ${loaderCase}: no production compiler output is bound to this unfiltered run (test-domain.ps1 binds one)."
+    foreach ($case in @(
+        @{ Name='duplicate-deferral-replacing-a-pass'; Lines=@('PASS a', $deferred, $deferred, 'Completed 3 tests; failures=0. Registered 3; elapsed 0.1s.') },
+        @{ Name='conflicting-outcomes-for-one-case'; Lines=@('PASS a', "PASS $loaderCase", $deferred, 'Completed 3 tests; failures=0. Registered 3; elapsed 0.1s.') },
+        @{ Name='unbound-skip-as-deferral'; Lines=@('PASS a', $unbound, 'Completed 2 tests; failures=0. Registered 2; elapsed 0.1s.') })) {
+        $case.Lines | Set-Content $evidenceLog
+        Assert-That ($null -ne (Get-Refusal { Read-KmgDomainTestEvidence -LogPath $evidenceLog -CompleteSuite })) "complete-$($case.Name)-refused"
+    }
+    @('PASS a', $deferred, 'Completed 2 tests; failures=0. Registered 2; elapsed 0.1s.') | Set-Content $evidenceLog
+    $deferredEvidence = Read-KmgDomainTestEvidence -LogPath $evidenceLog -CompleteSuite
+    Assert-That ($deferredEvidence.selected -eq 2 -and (@($deferredEvidence.notApplicable) -join ',') -ceq $loaderCase) 'complete-valid-deferral-accepted'
+    # The receipt's recorded deferral list is compared with its log: equal is accepted, a different list is refused.
+    @('PASS fixture.one', $deferred, 'Completed 2 tests; failures=0. Registered 2; elapsed 0.1s.') | Set-Content $layout.TestLogPath
+    $deferralReceipt = Get-Receipt
+    $deferralReceipt.selectedTests = [pscustomobject](Read-KmgDomainTestEvidence -LogPath $layout.TestLogPath -CompleteSuite)
+    Assert-KmgDevelopmentReceipt -Receipt $deferralReceipt -PackagePath $layout.PackagePath -RepositoryRoot $repository -Purpose $purpose
+    $checks++
+    $deferralReceipt.selectedTests.notApplicable = @()
+    Assert-That ((Get-Refusal { Assert-KmgDevelopmentReceipt -Receipt $deferralReceipt -PackagePath $layout.PackagePath -RepositoryRoot $repository -Purpose $purpose }) -like '*deferred tests differ*') 'receipt-deferral-list-mismatch-refused'
+    [IO.File]::WriteAllBytes($layout.TestLogPath, $originalLog)
+
     $git = [pscustomobject]@{ Commit = $commit; Status = @() }
     Assert-KmgDevelopmentSourceBinding -Receipt (Get-Receipt) -Git $git -SourceStateSha256 ('b' * 64) -ExpectedVersion '0.0.156'
     $checks++

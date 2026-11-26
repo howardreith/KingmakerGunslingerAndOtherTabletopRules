@@ -290,24 +290,41 @@ function Set-LcGameCopyMods($Paths, [string[]]$OwnerMods, $Admitted, [string]$Ha
             New-Item -ItemType Directory -Path $harnessTarget | Out-Null
             Copy-Item -LiteralPath (Join-Path $HarnessDir 'KmgLoaderCompatHarness.dll') -Destination $harnessTarget
             Copy-Item -LiteralPath (Join-Path $HarnessDir 'Info.json') -Destination $harnessTarget
+            # Fallible measurements are taken on the prepared tree, before the owner's Mods tree is moved.
+            $preparedDllSha256 = Get-LcSha256 (Join-Path $product 'KingmakerGunslinger.dll')
+            if ($preparedDllSha256 -cne [string]$Admitted.dllSha256) { throw 'The prepared candidate DLL is not the admitted DLL; nothing was staged.' }
+            $preparedManagerVersion = (Get-Content -LiteralPath (Join-Path $product 'Info.json') -Raw | ConvertFrom-Json).ManagerVersion
+            $preparedHarnessSha256 = Get-LcSha256 (Join-Path $harnessTarget 'KmgLoaderCompatHarness.dll')
+            # The previous tree is kept until the destination check after the swap has passed; any failure from the swap
+            # through that check moves the new tree back and restores the previous one.
             $previous = $null
             if (Test-Path -LiteralPath $Paths.ModsDir) {
                 $previous = Join-Path $modsParent ('Mods.kmg-previous-' + [Guid]::NewGuid().ToString('N'))
                 Move-Item -LiteralPath $Paths.ModsDir -Destination $previous
             }
-            try { Move-Item -LiteralPath $preparing -Destination $Paths.ModsDir }
-            catch { if ($previous -and -not (Test-Path -LiteralPath $Paths.ModsDir)) { Move-Item -LiteralPath $previous -Destination $Paths.ModsDir }; throw }
+            $placed = $false
+            try {
+                Move-Item -LiteralPath $preparing -Destination $Paths.ModsDir
+                $placed = $true
+                if ((Get-LcSha256 (Join-Path $Paths.ModsDir 'KingmakerGunslinger\KingmakerGunslinger.dll')) -cne $preparedDllSha256) { throw 'The staged candidate DLL is not the admitted DLL.' }
+            }
+            catch {
+                $stagingError = $_
+                if ($placed -and (Test-Path -LiteralPath $Paths.ModsDir)) { Move-Item -LiteralPath $Paths.ModsDir -Destination $preparing }
+                if ($previous -and -not (Test-Path -LiteralPath $Paths.ModsDir)) { Move-Item -LiteralPath $previous -Destination $Paths.ModsDir }
+                throw $stagingError
+            }
             if ($previous) { Remove-Item -LiteralPath $previous -Recurse -Force }
         }
         catch { if (Test-Path -LiteralPath $preparing) { Remove-Item -LiteralPath $preparing -Recurse -Force }; throw }
     }
     finally { Remove-LcAdmittedCopy $Admitted }
-    $stagedDllSha256 = Get-LcSha256 (Join-Path $Paths.ModsDir 'KingmakerGunslinger\KingmakerGunslinger.dll')
-    if ($stagedDllSha256 -cne [string]$Admitted.dllSha256) { throw 'The staged candidate DLL is not the admitted DLL.' }
+    # Recorded from the measurements of the prepared tree (verified at the destination before the previous tree was
+    # removed); nothing fallible runs after the owner's previous Mods tree is gone.
     $staged['KingmakerGunslinger'] = [ordered]@{ zipSha256 = [string]$Admitted.packageSha256
         dllSha256 = [string]$Admitted.dllSha256
-        managerVersion = (Get-Content -LiteralPath (Join-Path $Paths.ModsDir 'KingmakerGunslinger\Info.json') -Raw | ConvertFrom-Json).ManagerVersion }
-    $staged['KmgLoaderCompatHarness'] = [ordered]@{ dllSha256 = Get-LcSha256 (Join-Path $Paths.ModsDir 'KmgLoaderCompatHarness\KmgLoaderCompatHarness.dll') }
+        managerVersion = $preparedManagerVersion }
+    $staged['KmgLoaderCompatHarness'] = [ordered]@{ dllSha256 = $preparedHarnessSha256 }
     return $staged
 }
 

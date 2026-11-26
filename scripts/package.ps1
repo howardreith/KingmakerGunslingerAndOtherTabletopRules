@@ -351,9 +351,11 @@ $expectedPackageFileCount = if ($hasFirearmSoundBank) {
 } else {
     $basePackageFileCount
 }
+# The ZIP writer's informational lines go to the host, not the success stream, so a -PassThruMeasurement caller receives
+# exactly the measurement object (and an ordinary caller exactly the package path); its exit code is still checked.
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
-    --expected-file-count $expectedPackageFileCount
+    --expected-file-count $expectedPackageFileCount | Out-Host
 if ($LASTEXITCODE -ne 0) {
     throw 'Deterministic standalone package creation failed.'
 }

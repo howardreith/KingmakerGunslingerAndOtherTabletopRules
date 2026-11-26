@@ -8,7 +8,8 @@ param([string]$ReportPath)
 #   - the direct runner unfiltered without a binding reports the case NOT APPLICABLE, never PASS, and exits 0;
 #   - a Build-Local deferral reports NOT APPLICABLE;
 #   - the wrapper given a production DLL that was removed during preparation refuses before the runner starts;
-#   - a digest refusal inside the wrapper restores the caller's binding variables and leaves no private copy.
+#   - a digest refusal inside the wrapper restores the caller's binding variables and leaves no private copy;
+#   - the fixture itself restores its caller's filter and four binding variables on every exit.
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'common.ps1')
@@ -22,6 +23,11 @@ function Add-Case([string]$Name, [bool]$Passed, [string]$Detail) {
     Write-Host ("{0} {1} :: {2}" -f $(if ($Passed) { 'PASS' } else { 'FAIL' }), $Name, $Detail)
 }
 $bindingNames = @('KMG_TEST_FILTER', 'KMG_PRODUCTION_DLL', 'KMG_PRODUCTION_DLL_SHA256', 'KMG_EXPECTED_LOADER_REFERENCES', 'KMG_LOADER_CASE_DEFERRED')
+# The caller's values of all five variables are saved before the fixture changes any of them and restored on every exit
+# (success, a failed check or an exception), so running the fixture in an existing session leaves its filter and its
+# production-DLL binding as they were.
+$callerBindings = @{}; foreach ($name in $bindingNames) { $callerBindings[$name] = [Environment]::GetEnvironmentVariable($name, 'Process') }
+try {
 function Invoke-Runner([hashtable]$Environment, [string[]]$Arguments) {
     $saved = @{}; foreach ($name in $bindingNames) { $saved[$name] = [Environment]::GetEnvironmentVariable($name, 'Process'); [Environment]::SetEnvironmentVariable($name, $null, 'Process') }
     $previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
@@ -92,3 +98,5 @@ $report = [ordered]@{ schema = 'kmg.loader-case-selection-tests.v1'; commit = (&
 if ($ReportPath) { $report | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $ReportPath -Encoding UTF8 }
 Write-Host ("RESULT {0}/{1} loader-case selection checks passed" -f $report.passed, $report.total)
 if ($failed.Count -gt 0) { throw "$($failed.Count) loader-case selection check(s) failed." }
+}
+finally { foreach ($name in $bindingNames) { [Environment]::SetEnvironmentVariable($name, $callerBindings[$name], 'Process') } }

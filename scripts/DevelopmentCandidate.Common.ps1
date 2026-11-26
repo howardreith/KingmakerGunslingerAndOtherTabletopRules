@@ -146,18 +146,28 @@ function Read-KmgDomainTestEvidence {
     $failed = @($lines | Where-Object { $_ -cmatch '^FAIL ' })
     # A case the runner reports NOT APPLICABLE ran no assertion: it is never counted as passed, and only the loader
     # reference case (deferred to Build-Local's exact compiler output) may be not applicable in selected evidence.
-    $notApplicable = [string[]]@($lines | Where-Object { $_ -cmatch '^NOT APPLICABLE \S+: ' } | ForEach-Object { ($_.Substring(15) -split ':', 2)[0] })
-    if (@($notApplicable | Where-Object { $_ -cne 'loader.production-dll-references-pinned-loader' }).Count -ne 0) {
-        throw "Selected domain-test evidence has a case that ran no assertion: $($notApplicable -join ', ')."
-    }
+    # The only accepted NOT APPLICABLE line is Build-Local's deferral of the loader reference case, with the runner's
+    # exact deferral reason (an unbound unfiltered run reports a different reason and is refused), at most once.
+    $deferralReason = 'deferred: Build-Local runs this case on its exact compiler output.'
+    $notApplicable = [string[]]@($lines | Where-Object { $_ -cmatch '^NOT APPLICABLE \S+: ' } | ForEach-Object {
+        $parts = $_.Substring(15) -split ': ', 2
+        if ($parts[0] -cne 'loader.production-dll-references-pinned-loader' -or $parts.Count -ne 2 -or $parts[1] -cne $deferralReason) {
+            throw "Selected domain-test evidence has a case that ran no assertion or was not deferred by Build-Local: $_"
+        }
+        $parts[0]
+    })
+    # Every selected test has exactly one outcome: a name repeated among the passes, among the deferrals or across both
+    # is refused.
     $unique = New-Object 'Collections.Generic.HashSet[string]' ([StringComparer]::Ordinal)
-    foreach ($name in $passed) { [void]$unique.Add($name) }
+    foreach ($name in @($passed) + @($notApplicable)) {
+        if (-not $unique.Add($name)) { throw "Selected domain-test evidence reports $name more than once." }
+    }
     if (-not $CompleteSuite -and $observedFilter -cne $Filter) {
         throw "Selected domain-test evidence ran filter '$observedFilter', not '$Filter'."
     }
     if ($selected -lt 1 -or $selected -gt $registered -or $completed -ne $selected -or
         $completedRegistered -ne $registered -or $failures -ne 0 -or $failed.Count -ne 0 -or
-        ($passed.Count + $notApplicable.Count) -ne $selected -or $unique.Count -ne $passed.Count -or
+        ($passed.Count + $notApplicable.Count) -ne $selected -or $unique.Count -ne ($passed.Count + $notApplicable.Count) -or
         ($CompleteSuite -and $completed -ne $registered)) {
         throw 'Selected domain-test evidence is empty, failed or inconsistent.'
     }
@@ -271,6 +281,11 @@ function Assert-KmgDevelopmentReceipt {
         $observedTests.registered -ne [int]$tests.registered -or
         $observedTests.passedNamesSha256 -cne [string]$tests.passedNamesSha256) {
         throw 'Development receipt test counts differ from its selected test log.'
+    }
+    # A recorded deferral list must equal the log's (a receipt written before the field existed carries none).
+    $recordedNotApplicable = $tests.PSObject.Properties['notApplicable']
+    if ($null -ne $recordedNotApplicable -and ((@($recordedNotApplicable.Value | ForEach-Object { [string]$_ }) -join "`n") -cne (@($observedTests.notApplicable) -join "`n"))) {
+        throw 'Development receipt deferred tests differ from its selected test log.'
     }
 }
 

@@ -450,9 +450,11 @@ foreach ($part in @('griffon-mesh.json','griffon-albedo.png')) {
 $packagePath = if ($development) { $developmentLayout.PackagePath } else {
     Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.zip"
 }
-$packageMeasurement = @(& (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release -PackagePath $packagePath -PassThruMeasurement) |
-    Where-Object { $_ -is [psobject] -and $_.PSObject.Properties['packageSha256'] -and $_.PSObject.Properties['dll'] } | Select-Object -Last 1
-if ($null -eq $packageMeasurement) { throw 'Package assembly returned no measurement.' }
+$packageOutput = @(& (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release -PackagePath $packagePath -PassThruMeasurement)
+if ($packageOutput.Count -ne 1 -or $null -eq $packageOutput[0] -or -not $packageOutput[0].PSObject.Properties['packageSha256'] -or -not $packageOutput[0].PSObject.Properties['dll']) {
+    throw "Package assembly must return exactly one measurement object; it returned $($packageOutput.Count) value(s)."
+}
+$packageMeasurement = $packageOutput[0]
 Write-Output $packagePath
 if ($LASTEXITCODE -ne 0 -and $null -ne $LASTEXITCODE) {
     throw "Package assembly failed with exit code $LASTEXITCODE."
@@ -497,10 +499,10 @@ if ([string]$packagedDllIdentity.sha256 -cne [string]$compilerDllIdentity.sha256
     [string]$packagedDllIdentity.gitCommit -cne $git.Commit) {
     throw "The packaged DLL ($($packagedDllIdentity.sha256)) or the loose output ($looseDllSha256) is not the exact compiler output ($($compilerDllIdentity.sha256)) of $($git.Commit)."
 }
+# Every route (ordinary, reproducibility and development): no receipt unless the consumed source state is the one
+# fingerprinted when the build started.
+Assert-KmgConsumedSourceState -RepositoryRoot $root -SourceStateSha256 $sourceStateSha256
 if ($development) {
-    if ((Get-KmgSourceStateFingerprint -RepositoryRoot $root) -cne $sourceStateSha256) {
-        throw 'The source state changed during the development build.'
-    }
     [xml]$developmentProps = Get-Content -LiteralPath (Join-Path $root 'Directory.Build.props') -Raw
     $validationSummary = Get-Content -LiteralPath $developmentLayout.ValidationSummaryPath -Raw |
         ConvertFrom-Json

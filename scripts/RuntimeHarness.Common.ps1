@@ -730,6 +730,16 @@ function Assert-KmgProducedFromCleanCommit {
     }
 }
 
+# The consumed source state: the shipped and material inputs the compiler and packager read must still be the source state
+# fingerprinted when the build started. Every Build-Local route (ordinary, reproducibility and development) runs this
+# before it writes a receipt, so content changed between the starting fingerprint and packaging never gets a receipt.
+function Assert-KmgConsumedSourceState {
+    param([Parameter(Mandatory = $true)][string]$RepositoryRoot, [Parameter(Mandatory = $true)][string]$SourceStateSha256)
+    if ((Get-KmgSourceStateFingerprint -RepositoryRoot $RepositoryRoot) -cne $SourceStateSha256) {
+        throw 'The source state changed during the build: a shipped or material input differs from the state fingerprinted at its start; no receipt was written.'
+    }
+}
+
 function Get-KmgSourceStateFingerprint {
     param([Parameter(Mandatory = $true)][string]$RepositoryRoot)
     $root = (Resolve-Path -LiteralPath $RepositoryRoot).Path
