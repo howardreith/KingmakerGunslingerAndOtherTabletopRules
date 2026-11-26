@@ -1,5 +1,48 @@
 # Build, package, and publish
 
+## 0.0.197 publication authorization
+
+On 2026-11-26, after reviewing PR #227 at `80ddc8a8cb` ("I approve the scoped persistence-test repair"), Howie
+wrote: "This is approved. Could you please merge and cut a new release?" The two nonblocking review items (a
+lifecycle diagnostic that could read `exact` without an evaluation, and a stale wider-validation sentence) were
+committed as `c28f4efd50`, and PR #227 merged into master as `f75a9f4569`. No channel was named, so this follows
+v0.0.196 as the next stable patch, v0.0.197, from master `f75a9f4569`.
+
+- **Reviewed product.** Master `f75a9f4569`. The product change from v0.0.196 (tag target `227456ab6f`) is three
+  files under `src/KingmakerGunslinger`, listed and pinned in
+  `tools/validate_elemental_persistence_coverage_release197.py`:
+  - `ElementalRaces/ElementalVisibleTraitPersistencePolicy.cs` (the per-scope coverage contract and evaluator);
+  - `RuntimeTesting/ElementalVisibleTraitLifecycleScenario.cs` and `RuntimeTesting/ElementalRacePersistenceScenario.cs`
+    (the persistence scenario uses the evaluator and reports its verdict);
+  - the product delta from v0.0.196 under `src/KingmakerGunslinger`, `assets`, `assets-source`, `blueprints` and
+    `Directory.Build.props` is exactly those three files, in both directions;
+  - the merged `src/KingmakerGunslinger` tree is `3e0c3ffcb3`. It differs from the natively tested candidate
+    `c9453f9d07` (tree `f8128f70b0`) only in the two RuntimeTesting files changed by the review follow-up
+    `c28f4efd50`, which is diagnostic only;
+  - `Info.json`, the UMM 0.31.1 loader pins and the build inputs are unchanged from v0.0.196;
+  - only the three AssemblyInfo version attributes and the Info and props version values change;
+  - all 7,935 released identities stay exact and in order, and none is appended;
+  - the creature catalog is unchanged, with only the owner-withdrawn Stirge withheld (1,208 public choices);
+  - v0.0.192's DEF-05 inherited-template policy stays;
+  - one static release record is added.
+- **Preparation.** On the PR #227 head `c28f4efd50`, the focused gate `elemental-traits;elemental-race` passed
+  45/45 and the complete domain suite passed 3,192/3,192 with 0 failures (103 s). The release-branch repository
+  wrapper and complete suite are recorded in the release PR.
+- **Native evidence.** On development candidate `c9453f9d07`, recorded in
+  `docs/ELEMENTAL-HERITAGE-ABILITY-SCORE-LABEL-REPAIR.md`, one deployment, ordinary scope:
+  - persistence prepare 66/66;
+  - fresh load with the module OFF 175/175;
+  - fresh load with the module ON plus native respec and cleanup 255/255, `lifecycle=exact`;
+  - fresh-load absence 8/8 on the cleanup save that sequence wrote.
+
+  The review follow-up `c28f4efd50` was checked offline only. The release build is run in the game after
+  publication, and the result is added here.
+- **Not established.** The Nereid qualification scope was checked by domain tests only. The disclosures recorded for
+  v0.0.196 still stand. The release notes list the player-facing ones.
+- **Publication path.** The ordinary exact-reference publisher runs from clean, pushed master with
+  `docs/RELEASE-NOTES-0.0.197.md` and the explicit summon-overhaul-baseline reference bundle. It runs the complete
+  gate and two deterministic builds, then publishes.
+
 ## 0.0.196 publication authorization
 
 On 2026-11-26, after approving PR #224 at `65a6a40367` ("approved for the focused repair"), Howie wrote: "I think
