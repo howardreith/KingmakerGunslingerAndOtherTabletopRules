@@ -79,7 +79,9 @@ namespace KmgLoaderCompatHarness
             result["mode"] = mode;
             // One destruction-request owner per unit; every request, direct or final, and any failure of one is kept in
             // the probe's one cumulative outcome that ProbeSlot reads (owner amendment 3, R6-F1).
-            units = new OwnedDisposables<UnitEntityData>("disposable unit", u => u.UniqueId, u => { if (!u.Destroyed) u.Destroy(); }, owned.Outcome);
+            // Recovery C2 (R5-F1): a request is not its result; settlement is read (gone from the game state) per unit.
+            units = new OwnedDisposables<UnitEntityData>("disposable unit", u => u.UniqueId, u => { if (!u.Destroyed) u.Destroy(); }, owned.Outcome,
+                u => u == null || u.Destroyed || !Game.Instance.State.Units.Contains(u));
             life = new YieldedProbeLifecycle(owned, lifecycle => Run());
         }
 
@@ -95,7 +97,9 @@ namespace KmgLoaderCompatHarness
         public CleanupReport Release(string testFailure)
         {
             // Built after the iterator's cleanup: only units no earlier release requested (R5-F5), then the blueprints.
-            CleanupReport report = life.Release(() => new[] { new KeyValuePair<string, Action>("disposable units", units.ReleaseRemaining) }
+            CleanupReport report = life.Release(() => new[] { new KeyValuePair<string, Action>("disposable units", units.ReleaseRemaining),
+                    // Settlement of every request, read after the destroyer runs; anything still present or unreadable is a named failure.
+                    new KeyValuePair<string, Action>("disposable units settled", () => { Game.Instance.EntityDestroyer.Tick(); units.RecordUnsettled(); }) }
                 .Concat(ProbeReleases.PerItem("disposable blueprint", createdBlueprints, b => b.name + "#" + b.GetInstanceID(), b => UnityEngine.Object.Destroy(b))).ToList());
             result["problems"] = new JArray(life.Problems.Cast<object>().ToArray());
             return report;
@@ -366,6 +370,9 @@ namespace KmgLoaderCompatHarness
                     mode == "visibility" ? Visibility(main, ability, donorBlueprint) : null;
                 if (body == null) { life.Problems.Add("unknown mode " + mode); yield break; }
                 foreach (object step in body) yield return step;
+                // Recovery C2: every owned unit is requested here and its settlement observed while frames still run.
+                units.ReleaseRemaining();
+                foreach (object step in SettleOwned(result, "unsettledAtEnd", 5f)) yield return step;
             }
             finally
             {
@@ -729,8 +736,9 @@ namespace KmgLoaderCompatHarness
             pending["bystanderCommandSurvived"] = (bool)pending["bystanderBeforeAbandon"]["held"] && survived((JObject)pending["bystanderAfterAbandon"]);
             owned.ReleaseNow("pending late-spawn witness", null);
             pending["witness"] = pendingWitness.Describe();
+            foreach (object step in SettleOwned(pending, "unsettledAfterWitness", 5f)) yield return step;
             string pendingVerdict = GhaelePending.Verdict(commandPending, loanHeld, (bool)pending["ownedCommandRemains"], (bool)pending["abilityGrantRemains"],
-                (bool)pending["foreignPreserved"], pendingWitness.Owned.Count, pendingWitness.Unattributed.Count, pendingWitness.Subscribed);
+                (bool)pending["foreignPreserved"], pendingWitness.Owned.Count, pendingWitness.Unknown.Count, pendingWitness.Subscribed);
             pending["verdict"] = pendingVerdict;
             if (pendingVerdict != null || !(bool)pending["bystanderCommandSurvived"] || !(bool)pending["commandReleased"] || !(bool)pending["loanReleased"])
                 life.Problems.Add("lifecycle.pending: the abandoned pending command was not settled exactly: " + (pendingVerdict ?? "bystander or release"));
@@ -780,13 +788,13 @@ namespace KmgLoaderCompatHarness
             owned.ReleaseNow("late-result witness", null);
             late["witness"] = lateWitness.Describe();
             string lateVerdict = GhaelePending.Verdict(lateCommandPending, lateLoanHeld, (bool)late["ownedCommandRemains"], (bool)late["abilityGrantRemains"],
-                (bool)late["foreignPreserved"], lateWitness.Owned.Count, lateWitness.Unattributed.Count, lateWitness.Subscribed);
+                (bool)late["foreignPreserved"], lateWitness.Owned.Count, lateWitness.Unknown.Count, lateWitness.Subscribed);
             late["verdict"] = lateVerdict;
-            // The control's unit is accounted for by its owner: one destruction request, destroyed afterwards.
+            // Recovery C2: the witness's release reconciled every correlated unit with the destruction owner (one request
+            // each); the caller now observes their settlement, and anything still present or unreadable fails cleanup.
+            late["lateUnitDestroyRequestedByReconciliation"] = lateUnit != null && units.WasRequested(lateUnit);
             if (lateUnit != null) units.Destroy(lateUnit);
-            // Destruction completes after the call: read it once settled (bounded).
-            float destroyedBy = Time.realtimeSinceStartup + 5f;
-            while (lateUnit != null && Time.realtimeSinceStartup < destroyedBy && !(lateUnit.Destroyed || !Game.Instance.State.Units.Contains(lateUnit))) yield return null;
+            foreach (object step in SettleOwned(late, "unsettledAfterWitness", 5f)) yield return step;
             late["lateUnitDestroyRequested"] = lateUnit != null && units.WasRequested(lateUnit);
             late["lateUnitDestroyed"] = lateUnit != null && (lateUnit.Destroyed || !Game.Instance.State.Units.Contains(lateUnit));
             string[] expectedOrder = { "queued", "before-disposal", "cast-owner-disposed", "late-unit-registered", "late-result-delivered" };
@@ -837,6 +845,7 @@ namespace KmgLoaderCompatHarness
             spawned["bystanderCommandSurvived"] = (bool)spawned["bystanderBeforeAbandon"]["held"] && survived((JObject)spawned["bystanderAfterAbandon"]);
             owned.ReleaseNow("spawn detection witness", null);
             spawned["witness"] = spawnWitness.Describe();
+            foreach (object step in SettleOwned(spawned, "unsettledAfterWitness", 5f)) yield return step;
             if (spawnWitness.Owned.Count != 1 || !ReferenceEquals(spawnWitness.Owned[0], early) || spawnWitness.Subscribed)
                 life.Problems.Add("lifecycle.spawned: the witness did not detect exactly the cast's own real spawn, or did not unsubscribe");
             if (!(bool)spawned["spawnSeenBeforeRegistration"] || !(bool)spawned["earlySummonDestroyed"] || !(bool)spawned["foreignPreserved"] ||
@@ -892,6 +901,9 @@ namespace KmgLoaderCompatHarness
             internal readonly List<UnitEntityData> Unattributed = new List<UnitEntityData>();
             internal bool Subscribed;
 
+            /// <summary>Same-caster Ghaele the witness could not attribute and the caller does not know (read now, not when seen).</summary>
+            internal List<UnitEntityData> Unknown { get { return Unattributed.Where(unit => !Known.Contains(unit)).ToList(); } }
+
             internal void Begin(UnitUseAbility watched)
             {
                 command = watched;
@@ -923,7 +935,7 @@ namespace KmgLoaderCompatHarness
             internal JObject Describe()
             {
                 return new JObject { ["owned"] = new JArray(Owned.Select(u => (object)u.UniqueId).ToArray()), ["matchedBy"] = new JArray(MatchedBy.Cast<object>().ToArray()),
-                    ["unattributed"] = new JArray(Unattributed.Select(u => (object)u.UniqueId).ToArray()),
+                    ["unattributed"] = new JArray(Unattributed.Select(u => (object)u.UniqueId).ToArray()), ["unknown"] = new JArray(Unknown.Select(u => (object)u.UniqueId).ToArray()),
                     ["known"] = new JArray(Known.Select(u => (object)u.UniqueId).ToArray()), ["retainedExecutions"] = executions.Count, ["subscribed"] = Subscribed };
             }
         }
@@ -986,8 +998,23 @@ namespace KmgLoaderCompatHarness
             var witness = new SummonWitness { Caster = caster };
             if (known != null) witness.Known.Add(known);
             EventBus.Subscribe(witness); witness.Subscribed = true;
-            owned.Hold(name, () => { if (witness.Subscribed) { EventBus.Unsubscribe(witness); witness.Subscribed = false; } });
+            // Recovery C2 (R5-F1): the witness stays read-only; its caller, on every release path (early, iterator unwind,
+            // final), reconciles each correlated unit with the destruction owner and records unknown ownership as a failure.
+            owned.Hold(name, () =>
+            {
+                if (witness.Subscribed) { EventBus.Unsubscribe(witness); witness.Subscribed = false; }
+                LateResultReconciliation.Release(units, witness.Owned, witness.Unknown, "witness " + name + ": unit");
+            });
             return witness;
+        }
+
+        /// <summary>Waits (bounded) until every requested unit is read gone, then records any still present or unreadable as a named cleanup failure.</summary>
+        private IEnumerable<object> SettleOwned(JObject row, string field, float seconds)
+        {
+            float end = Time.realtimeSinceStartup + seconds;
+            while (Time.realtimeSinceStartup < end && units.Unsettled().Count > 0) yield return null;
+            row[field] = new JArray(units.Unsettled().Select(entry => (object)(entry.Key.UniqueId + ": " + entry.Value)).ToArray());
+            units.RecordUnsettled();
         }
 
         private static IEnumerable<object> Frames(int count) { for (int frame = 0; frame < count; frame++) yield return null; }

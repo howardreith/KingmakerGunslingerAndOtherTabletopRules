@@ -188,22 +188,35 @@ namespace KmgLoaderCompatHarness
     /// (which completes after the call) has finished; final releases are built only for units never requested. Owner
     /// amendment 3 (R6-F1): every request, direct or from a release, is recorded in the probe's one cumulative outcome
     /// under the unit's identity, and a request that throws is kept there as a named failure (and rethrown to its
-    /// caller) even though the unit stays marked requested.
+    /// caller) even though the unit stays marked requested. Recovery C2 (R5-F1): a request is not its result. With a
+    /// settlement reader, every requested unit must be read gone: a unit still present, or one whose state cannot be read,
+    /// is a named failure in the same outcome (once per unit). Units positively correlated to the probe's own cast by its
+    /// read-only witness are adopted by this owner; a unit whose ownership is unknown is a named failure, never destroyed.
     /// </summary>
     internal sealed class OwnedDisposables<T> where T : class
     {
         private readonly List<T> items = new List<T>();
         private readonly List<T> requested = new List<T>();
+        private readonly List<T> unsettledReported = new List<T>();
+        private readonly List<T> uncertainReported = new List<T>();
         private readonly string name;
         private readonly Func<T, string> identity;
         private readonly Action<T> destroy;
+        private readonly Func<T, bool?> gone;
         private readonly CleanupReport outcome;
 
         internal OwnedDisposables(string name, Func<T, string> identity, Action<T> destroy, CleanupReport outcome)
+            : this(name, identity, destroy, outcome, null)
+        {
+        }
+
+        /// <param name="gone">True once the unit is gone, false while it is still present, null when that cannot be read.</param>
+        internal OwnedDisposables(string name, Func<T, string> identity, Action<T> destroy, CleanupReport outcome, Func<T, bool?> gone)
         {
             this.name = name;
             this.identity = identity;
             this.destroy = destroy;
+            this.gone = gone;
             this.outcome = outcome ?? new CleanupReport();
         }
 
@@ -241,6 +254,88 @@ namespace KmgLoaderCompatHarness
             foreach (T item in Remaining)
                 try { Destroy(item); }
                 catch (Exception) { }
+        }
+
+        internal bool Owns(T item) { return item != null && Has(items, item); }
+
+        /// <summary>Owns each positively correlated unit not yet owned; returns those adopted now.</summary>
+        internal List<T> Adopt(IEnumerable<T> correlated)
+        {
+            var adopted = new List<T>();
+            foreach (T item in (correlated ?? Enumerable.Empty<T>()).ToList())
+                if (item != null && !Has(items, item)) { items.Add(item); adopted.Add(item); }
+            return adopted;
+        }
+
+        private bool? Gone(T item)
+        {
+            if (gone == null) return null;
+            try { return gone(item); }
+            catch (Exception) { return null; }
+        }
+
+        /// <summary>Requested units not read gone, each with its reason; without a settlement reader every request is unsettled.</summary>
+        internal List<KeyValuePair<T, string>> Unsettled()
+        {
+            var list = new List<KeyValuePair<T, string>>();
+            foreach (T item in requested)
+            {
+                bool? state = Gone(item);
+                if (state == true) continue;
+                list.Add(new KeyValuePair<T, string>(item, state == false ? "destruction requested, unit still present" : "destruction requested, settlement unreadable"));
+            }
+            return list;
+        }
+
+        /// <summary>Records every requested unit not read gone as a named cleanup failure (once per unit); returns how many are unsettled.</summary>
+        internal int RecordUnsettled()
+        {
+            List<KeyValuePair<T, string>> unsettled = Unsettled();
+            foreach (KeyValuePair<T, string> entry in unsettled)
+                if (!Has(unsettledReported, entry.Key))
+                {
+                    unsettledReported.Add(entry.Key);
+                    outcome.Failures.Add(name + " " + identity(entry.Key) + ": " + entry.Value);
+                }
+            return unsettled.Count;
+        }
+
+        /// <summary>Records each unit whose ownership is unknown as a named cleanup failure (once per unit); it is left alone.</summary>
+        internal int RecordUncertain(IEnumerable<T> unknown, string context)
+        {
+            int count = 0;
+            foreach (T item in (unknown ?? Enumerable.Empty<T>()).ToList())
+            {
+                if (item == null || Has(items, item)) continue;
+                count++;
+                if (Has(uncertainReported, item)) continue;
+                uncertainReported.Add(item);
+                outcome.Failures.Add(context + " " + identity(item) + ": ownership unknown, left in place");
+            }
+            return count;
+        }
+    }
+
+    /// <summary>
+    /// Recovery C2 (R5-F1): what the caller of a read-only late-result witness does when it releases the witness. Every
+    /// unit the witness positively correlated to the owned cast is adopted by the destruction owner and requested once
+    /// (a failed request is already a named failure in the owner's outcome); every same-caster unit the witness could not
+    /// attribute is a named "ownership unknown" failure and is left in place. Settlement is read separately
+    /// (<see cref="OwnedDisposables{T}.RecordUnsettled"/>).
+    /// </summary>
+    internal static class LateResultReconciliation
+    {
+        internal static void Release<T>(OwnedDisposables<T> units, IEnumerable<T> correlated, IEnumerable<T> unattributed, string witness) where T : class
+        {
+            var correlatedList = (correlated ?? Enumerable.Empty<T>()).Where(item => item != null).ToList();
+            units.Adopt(correlatedList);
+            foreach (T item in correlatedList)
+            {
+                if (units.WasRequested(item)) continue;
+                try { units.Destroy(item); }
+                catch (Exception) { }
+            }
+            units.RecordUncertain(unattributed, witness);
         }
     }
 

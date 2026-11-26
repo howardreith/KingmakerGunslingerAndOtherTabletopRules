@@ -926,6 +926,142 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(clean.IsolationRestored && slot3.IsolationRestored && settles.Interrupts == 1, "A settled witness and clean releases restore isolation.");
         }
 
+        // Recovery C2 (R5-F1): late Ghaele units through the real ProbeSlot -> Poll -> Release -> unwind path. The probe is
+        // built as the Ghaele probe is: OwnedDisposables with a settlement reader over the probe's cumulative outcome, a
+        // read-only witness whose correlated and unattributed units its caller reconciles on release, and a settlement read.
+        private sealed class LateUnit
+        {
+            internal readonly string Id; internal int DestroyRequests; internal bool Present = true; internal bool StaysPresent; internal bool Unreadable;
+            internal LateUnit(string id, bool staysPresent = false) { Id = id; StaysPresent = staysPresent; }
+        }
+
+        private sealed class LateUnitProbe : KmgLoaderCompatHarness.IOwnedProbe
+        {
+            internal readonly KmgLoaderCompatHarness.OwnedProbeResources Owned = new KmgLoaderCompatHarness.OwnedProbeResources();
+            internal readonly KmgLoaderCompatHarness.YieldedProbeLifecycle Life;
+            internal readonly KmgLoaderCompatHarness.OwnedDisposables<LateUnit> Units;
+            internal readonly LateUnit Late, Extra = new LateUnit("extra"), Foreign = new LateUnit("foreign"), Stranger = new LateUnit("stranger");
+            internal readonly List<LateUnit> Correlated = new List<LateUnit>(), Unattributed = new List<LateUnit>();
+            internal int Pause;
+            private readonly bool abandonBeforeSettle;
+            internal LateUnitProbe(bool lateStays, bool extraArrives, bool stranger, bool abandonBeforeSettle)
+            {
+                Late = new LateUnit("late", lateStays);
+                this.abandonBeforeSettle = abandonBeforeSettle;
+                Units = new KmgLoaderCompatHarness.OwnedDisposables<LateUnit>("disposable unit", u => u.Id,
+                    u => { u.DestroyRequests++; if (!u.StaysPresent) u.Present = false; }, Owned.Outcome,
+                    u => u.Unreadable ? (bool?)null : !u.Present);
+                Life = new KmgLoaderCompatHarness.YieldedProbeLifecycle(Owned, lifecycle => Body(extraArrives, stranger));
+            }
+            private IEnumerable<object> Body(bool extraArrives, bool stranger)
+            {
+                Owned.Hold("pause", () => Pause++);
+                Units.Add(Late);                      // registered with its owner before delivery
+                Owned.Hold("late-result witness", () => KmgLoaderCompatHarness.LateResultReconciliation.Release(Units, Correlated, Unattributed, "witness late-result witness: unit"));
+                try
+                {
+                    yield return null;
+                    Correlated.Add(Late);             // the delivered correlated result
+                    if (extraArrives) Correlated.Add(Extra);  // a further correlated unit after the cast owner's disposal
+                    if (stranger) Unattributed.Add(Stranger); // a same-caster unit the witness could not attribute
+                    yield return null;
+                    if (abandonBeforeSettle) while (true) yield return null;
+                    var failures = new List<string>();
+                    Owned.ReleaseNow("late-result witness", failures);
+                    Units.Destroy(Late);              // the caller's own request: already made by the reconciliation, not repeated
+                    Units.RecordUnsettled();          // the settlement read after the bounded wait
+                    yield return null;
+                }
+                finally { Owned.ReleaseAll(); }
+            }
+            public object Result { get { return "recorded"; } }
+            public string Poll() { return Life.Poll(); }
+            public KmgLoaderCompatHarness.CleanupReport Release(string testFailure)
+            {
+                return Life.Release(() => new[] { new KeyValuePair<string, Action>("disposable units", Units.ReleaseRemaining),
+                    new KeyValuePair<string, Action>("disposable units settled", () => Units.RecordUnsettled()) });
+            }
+        }
+
+        internal static void GhaeleLateUnitsReachSlot()
+        {
+            const string owner = "3|kmgGhaeleLifetime_lifecycle";
+            Func<KmgLoaderCompatHarness.ProbeSlot, bool> refusesNext = slot =>
+            {
+                try { slot.Begin("4|kmgGhaeleLifetime_visibility", new LateUnitProbe(false, false, false, false)); return false; }
+                catch (InvalidOperationException error) { return error.Message.Contains("isolation was not restored"); }
+            };
+            Func<LateUnitProbe, KmgLoaderCompatHarness.ProbeSlot, KmgLoaderCompatHarness.ProbeOutcome> runToEnd = (probe, slot) =>
+            {
+                slot.Begin(owner, probe);
+                KmgLoaderCompatHarness.ProbeOutcome outcome = null;
+                for (int poll = 0; poll < 10 && outcome == null; poll++) outcome = slot.Poll(owner);
+                return outcome;
+            };
+
+            // Destruction returns but the late unit remains present.
+            var stays = new LateUnitProbe(true, false, false, false);
+            var slot1 = new KmgLoaderCompatHarness.ProbeSlot();
+            KmgLoaderCompatHarness.ProbeOutcome remained = runToEnd(stays, slot1);
+            Assertions.True(remained != null && !remained.IsolationRestored &&
+                remained.Cleanup.Failures.Count(value => value == "disposable unit late: destruction requested, unit still present") == 1,
+                "A returned destruction request does not establish disappearance: the still-present unit is one named failure in the outcome ProbeSlot reads.");
+            Assertions.True(stays.Late.DestroyRequests == 1 && stays.Pause == 1 && stays.Foreign.DestroyRequests == 0,
+                "Exactly one request for the late unit; the independent release ran; the foreign control was never touched.");
+            Assertions.True(!slot1.IsolationRestored && refusesNext(slot1), "Isolation fails and the next probe does not start.");
+
+            // An additional positively correlated unit arrives after the cast owner's disposal: adopted, requested once, settled.
+            var extra = new LateUnitProbe(false, true, false, false);
+            var slot2 = new KmgLoaderCompatHarness.ProbeSlot();
+            KmgLoaderCompatHarness.ProbeOutcome adopted = runToEnd(extra, slot2);
+            Assertions.True(adopted != null && adopted.IsolationRestored && extra.Extra.DestroyRequests == 1 && extra.Late.DestroyRequests == 1 && !extra.Extra.Present &&
+                extra.Units.Owns(extra.Extra) && extra.Foreign.DestroyRequests == 0 && adopted.Cleanup.Attempted.Count(value => value == "disposable unit extra") == 1,
+                "The extra correlated unit is adopted by the destruction owner, requested once and observed gone; the foreign control is untouched.");
+
+            // The same extra unit stays present: the failure names it.
+            var extraStays = new LateUnitProbe(false, true, false, false);
+            extraStays.Extra.StaysPresent = true;
+            var slot3 = new KmgLoaderCompatHarness.ProbeSlot();
+            KmgLoaderCompatHarness.ProbeOutcome extraOutcome = runToEnd(extraStays, slot3);
+            Assertions.True(!extraOutcome.IsolationRestored && extraOutcome.Cleanup.Failures.Contains("disposable unit extra: destruction requested, unit still present") && refusesNext(slot3),
+                "An unaccounted additional unit fails isolation by identity and the next probe is refused.");
+
+            // A unit whose ownership is unknown is never destroyed and prevents clean isolation.
+            var strange = new LateUnitProbe(false, false, true, false);
+            var slot4 = new KmgLoaderCompatHarness.ProbeSlot();
+            KmgLoaderCompatHarness.ProbeOutcome strangeOutcome = runToEnd(strange, slot4);
+            Assertions.True(!strangeOutcome.IsolationRestored && strange.Stranger.DestroyRequests == 0 &&
+                strangeOutcome.Cleanup.Failures.Contains("witness late-result witness: unit stranger: ownership unknown, left in place") && refusesNext(slot4),
+                "Unattributed ownership is reported by identity, not guessed, and refuses the next probe.");
+
+            // An unreadable settlement is not restored.
+            var unreadable = new LateUnitProbe(true, false, false, false);
+            unreadable.Late.Unreadable = true;
+            KmgLoaderCompatHarness.ProbeOutcome unreadableOutcome = runToEnd(unreadable, new KmgLoaderCompatHarness.ProbeSlot());
+            Assertions.True(!unreadableOutcome.IsolationRestored && unreadableOutcome.Cleanup.Failures.Contains("disposable unit late: destruction requested, settlement unreadable"),
+                "An unreadable settlement fails isolation.");
+
+            // Abandoned before the caller's own settlement: the slot's release reconciles the witness, requests once, reads settlement.
+            var abandonedProbe = new LateUnitProbe(true, true, false, true);
+            var slot5 = new KmgLoaderCompatHarness.ProbeSlot();
+            slot5.Begin(owner, abandonedProbe);
+            Assertions.True(slot5.Poll(owner) == null && slot5.Poll(owner) == null && slot5.Poll(owner) == null, "Yielded after the late results arrived.");
+            KmgLoaderCompatHarness.ProbeOutcome abandonedOutcome = slot5.Abandon("step timeout after 240s");
+            Assertions.True(abandonedOutcome.TestFailure == "step timeout after 240s" && !abandonedOutcome.IsolationRestored &&
+                abandonedOutcome.Cleanup.Failures.Contains("disposable unit late: destruction requested, unit still present") &&
+                abandonedProbe.Late.DestroyRequests == 1 && abandonedProbe.Extra.DestroyRequests == 1 && !abandonedProbe.Extra.Present && abandonedProbe.Pause == 1 &&
+                abandonedProbe.Foreign.DestroyRequests == 0 && refusesNext(slot5),
+                "On abandonment the release path reconciles and reads settlement too: one request each, the still-present unit named, the original error kept, the next probe refused.");
+
+            // Control: the late unit goes away after its one request; isolation restored.
+            var clean = new LateUnitProbe(false, false, false, false);
+            KmgLoaderCompatHarness.ProbeOutcome cleanOutcome = runToEnd(clean, new KmgLoaderCompatHarness.ProbeSlot());
+            Assertions.True(cleanOutcome.IsolationRestored && clean.Late.DestroyRequests == 1 && !clean.Late.Present, "A settled late unit leaves isolation restored.");
+            string probeSource = File.ReadAllText("tools/LoaderCompatHarness/GhaeleLifetimeProbes.cs");
+            Assertions.True(probeSource.Contains("LateResultReconciliation.Release(units, witness.Owned, witness.Unknown,") && probeSource.Contains("units.RecordUnsettled()"),
+                "The Ghaele probe's witness release and settlement use the same owner path.");
+        }
+
         // Owner amendment 3 (R4-F1, R6-F2): the effects phase's cell sequence over one cumulative isolation, driven
         // the way the phase drives it: cells publish their cleanup from their own finally; disposal of the sequence
         // (the enclosing runner) unwinds the running cell; the admission guard refuses the next cell; a later repair
