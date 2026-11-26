@@ -22,7 +22,19 @@ Every parent finding, amendment, session, FAIL, budget and package identity stay
 not a retrospective parent PASS. Accepted scope stays accepted: R4-F5, the bounded Ghaele scope, the controller-admission
 disposition, the approved wording and the released Sickened mechanics. Visual and listening acceptance remain the owner's.
 
-## Recovery status (2026-11-25)
+## Recovery status (2026-11-26)
+
+**C1 handed off (scoped):** AWAITING_OWNER_REVIEW with handoff_current=true after review 5 of 5 (decision
+ready_for_owner_review, no open findings; R4-F1 to R4-F7 verified). **Reviewed H `5a56d480a2827e0ddd3918e30d32a07c7554e112`;
+archive A `2c67a049ee33e0b29621fd29a8b25608ed31e956`.** Handoff scope: implementation and domain behavior only, under the
+revised acceptance boundary of C1 amendment 2; no accepted diagnostic limitations remained (R4-F5 and R4-F6 were fixed,
+not rebutted); **native execution of the changed evaluator is deferred to C3's combined qualification** and is not claimed
+by C1. The historical 224949Z native FAIL stays a FAIL. C1's branch is frozen from its archive A while C2 and C3 are under
+review.
+
+**C2 started** from C1's archive A on `codex/s7-recovery-c2-ghaele-late-units`, targeting C1's branch.
+
+## C1 history
 
 **Current state (C1 amendment 2, 2026-11-25):** the owner narrowed C1's acceptance boundary for bounded closure and
 raised the cap to five reviews on the same enrollment (`<lab>/owner-guidance/S7-RECOVERY-C1-AMENDMENT-2-2026-11-25.md`;
@@ -139,3 +151,4 @@ the next ledger update (the next child's manifest, or the final handoff).
 
 No product package, harness build or game session has run in the recovery. Earlier spend stays separate (65 min 42 s in
 rounds 6 and 7); new product candidates used: 0 of 2.
+| C1 r5 | Controller gates on `5a56d480a2`: `sprint7-visual` 22 tests 4.1 s, `summon-playtest-r6` 11 tests 3.4 s, `sprint22-` 11 tests 3.9 s, `native-profile` 9 tests 3.3 s (receipts 2.1 + 1.7 + 2.1 + 1.7 = 7.6 s) | PASS | 15.5 s batch wall | 4 min 24.6 s | 40 min 35.4 s |
