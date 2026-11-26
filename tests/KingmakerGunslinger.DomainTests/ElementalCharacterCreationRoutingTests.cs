@@ -147,8 +147,8 @@ namespace KingmakerGunslinger.DomainTests
             var routes = Enumerable.Range(0, 3).Select(ElementalCharacterCreationRegressionPlan.Route).ToArray();
             Assertions.True(routes.Select(route => route.Last()).OrderBy(value => value).SequenceEqual(new[] { 0, 1, 2 }),
                 "All three heritages must reach actual final commits.");
-            Assertions.True(routes.Any(route => route.SequenceEqual(new[] { 0, 1, 0 })) &&
-                routes.Any(route => route.SequenceEqual(new[] { 1, 2 })), "Back-navigation must cover retain/alternate and alternate/alternate transitions.");
+            Assertions.True(routes.Any(route => route.SequenceEqual(new[] { 0, 1, 2, 0 })) &&
+                routes.Any(route => route.SequenceEqual(new[] { 1, 2 })), "Back-navigation must cover General -> A -> B -> General and alternate/alternate transitions.");
             foreach (ElementalHeritageRace race in Enum.GetValues(typeof(ElementalHeritageRace)))
                 foreach (int choice in Enumerable.Range(0, 3))
                 {

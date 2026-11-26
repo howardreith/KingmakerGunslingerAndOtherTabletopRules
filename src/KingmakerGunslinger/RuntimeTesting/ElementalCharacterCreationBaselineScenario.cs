@@ -189,7 +189,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Capture(_stage); _lastCaptureKey = captureKey;
                     if ((phase.Value == CharBPhase.Type.Race || phase.Value == CharBPhase.Type.Determinator ||
                         phase.Value == CharBPhase.Type.Abilities || phase.Value == CharBPhase.Type.Total ||
-                        phase.Value == CharBPhase.Type.TotalInChargen) && PauseForNativeIconScreen(captureKey, _stage)) return;
+                        phase.Value == CharBPhase.Type.TotalInChargen ||
+                        (_regression && phase.Value == CharBPhase.Type.Skills)) && PauseForNativeIconScreen(captureKey, _stage)) return;
                 }
                 switch (phase.Value)
                 {
@@ -633,6 +634,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                 RejectCharacter("skill allocation has remaining points but no native spend operation"); return;
             }
+            if (!RenderedCreatorRacialLabelsObserved()) return;
             Advance();
         }
 

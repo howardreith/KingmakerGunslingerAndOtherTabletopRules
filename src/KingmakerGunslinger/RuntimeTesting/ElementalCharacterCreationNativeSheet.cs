@@ -17,7 +17,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private bool PauseForNativeIconSheet()
         {
-            if (!NativeSheetCase || !_nativeIconStages.Add(_raceIndex + "|committed-native-sheet")) return false;
+            if (!(NativeSheetCase || RacialLabelSheetCase) || !_nativeIconStages.Add(_raceIndex + "|committed-native-sheet")) return false;
             if (_nativeIconScreens == null) _nativeIconScreens = new NativeIconScreenEvidence(_request);
             _nativeIconCapture = CaptureNativeCharacterSheet().GetEnumerator();
             return true;
@@ -88,8 +88,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 sheet.ShowSection(1);
                 for (int frame = 0; frame < 60; frame++) yield return 0;
                 if (!ownsSheet()) throw new InvalidOperationException("Native character sheet lost the exact disposable owner.");
-                foreach (int frame in CaptureNativeFactSlots(sheet.Abilities.transform, owner.Descriptor,
-                    "character-sheet", ownsSheet)) yield return frame;
+                if (RacialLabelSheetCase) CaptureSheetRacialLabels(sheet, owner.Descriptor);
+                if (NativeSheetCase)
+                    foreach (int frame in CaptureNativeFactSlots(sheet.Abilities.transform, owner.Descriptor,
+                        "character-sheet", ownsSheet)) yield return frame;
                 if (NativeRacialBuffCase && _raceIndex == 0)
                 {
                     var buffSections = sheet.BuffsAndConditions.SectionGroupIndex;

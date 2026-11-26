@@ -25,6 +25,7 @@ using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.ElementalRaces;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using UnityEngine;
 
@@ -88,6 +89,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             public bool SpellbookAbsent { get; set; }
             public bool MaterialAbsent { get; set; }
             public bool StatsExact { get; set; }
+            public string RacialLabels { get; set; }
+            public bool RacialLabelsExact { get; set; }
+            public string RacialLabelsWithEnhancement { get; set; }
+            public bool RacialLabelsWithEnhancementExact { get; set; }
+            public JObject RacialLabelObservation { get; set; }
             public bool MenuContract { get; set; }
             public bool ProviderContract { get; set; }
             public bool ParameterContract { get; set; }
@@ -136,6 +142,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             public int FirstAmountAfterReturn { get; set; }
             public int GeneralAmountAfterRest { get; set; }
             public string MarkerFirstProviders { get; set; }
+            public List<string> RacialLabelSequence { get; set; }
+            public bool RacialLabelsExact { get; set; }
 
             public bool Pass()
             {
@@ -166,7 +174,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     GeneralAmountAfterRest + ";explicitGeneral=" +
                     ExplicitGeneralExact + ";markerFirst=" +
                     MarkerFirstExact + "[" + MarkerFirstProviders +
-                    "];markerFirstRemoval=" + MarkerFirstRemovalExact;
+                    "];markerFirstRemoval=" + MarkerFirstRemovalExact +
+                    ";labels=" + RacialLabelsExact + "[" + string.Join(
+                        " | ", (RacialLabelSequence ?? new List<string>())
+                        .ToArray()) + "]";
             }
         }
 
@@ -177,6 +188,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             public bool SaveStateTouched { get; set; }
             public List<ChoiceEvidence> Choices { get; set; }
             public List<TransitionEvidence> Transitions { get; set; }
+            public JObject NativeRaceControl { get; set; }
+            public bool NativeRaceControlExact { get; set; }
             public bool CleanupExact { get; set; }
         }
 
@@ -251,6 +264,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     evidence.Transitions.Add(ExerciseTransitions(race,
                         createdUnits, createdBlueprints));
                 }
+                stage = "native-race-label-control";
+                bool controlExact;
+                evidence.NativeRaceControl = ExerciseNativeRaceControl(set,
+                    createdUnits, createdBlueprints, out controlExact);
+                evidence.NativeRaceControlExact = controlExact;
             }
             catch (Exception exception)
             {
@@ -353,6 +371,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             string actualStats = ActualStats(owner);
             bool statsExact = string.Equals(expectedStats, actualStats,
                 StringComparison.Ordinal);
+            bool labelsExact;
+            JObject labels = ElementalRacialLabelObservation.Observe(owner,
+                ExpectedRacial(choice.Definition), null, out labelsExact);
             ProviderSnapshot providers = Snapshot(owner, race, choice);
 
             Advance(owner, fighter, 2);
@@ -369,6 +390,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             EnsureFact(owner, adjustment);
             int charismaBonus = owner.Stats.Charisma.Bonus;
             int dcBonus = Context(data, unit).Params.DC;
+            // An unrelated typed Charisma bonus must not alter racial labels.
+            bool enhancedLabelsExact;
+            JObject enhancedLabels = ElementalRacialLabelObservation.Observe(
+                owner, ExpectedRacial(choice.Definition), null,
+                out enhancedLabelsExact);
             owner.RemoveFact(adjustment);
 
             adjustment = CreateCharismaAdjustment(
@@ -446,7 +472,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SpellLike = data.Blueprint.Type == AbilityType.SpellLike,
                 SpellbookAbsent = data.Spellbook == null,
                 MaterialAbsent = !data.RequireMaterialComponent,
-                StatsExact = statsExact
+                StatsExact = statsExact,
+                RacialLabels = ElementalRacialLabelObservation.Compact(labels),
+                RacialLabelsExact = labelsExact,
+                RacialLabelsWithEnhancement = ElementalRacialLabelObservation
+                    .Compact(enhancedLabels),
+                RacialLabelsWithEnhancementExact = enhancedLabelsExact,
+                RacialLabelObservation = labels
             };
             result.MenuContract = result.MenuCount == 3 &&
                 result.MenuExact && result.MenuSelectable &&
@@ -498,15 +530,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 Race = race.Definition.DisplayName,
                 FirstAlternate = first.Definition.Name,
-                SecondAlternate = second.Definition.Name
+                SecondAlternate = second.Definition.Name,
+                RacialLabelSequence = new List<string>(),
+                RacialLabelsExact = true
             };
             result.LegacyGeneralExact = Exact(owner, race, general, 0) &&
-                StatsExact(owner, general.Definition);
+                StatsExact(owner, general.Definition) &
+                LabelsExact(owner, general, "legacy-general", result);
             InvokeSpend(RequireCastData(owner, general.SlaAbility));
 
             EnsureFact(owner, first.Marker);
             result.FirstAlternateExact = Exact(owner, race, first, 1) &&
-                StatsExact(owner, first.Definition);
+                StatsExact(owner, first.Definition) &
+                LabelsExact(owner, first, "first", result);
             owner.Abilities.AddFact(general.SlaAbility, null);
             result.LoadHydrationOrphanPresent = Snapshot(owner, race,
                 first).Abilities == 2;
@@ -521,7 +557,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             result.AddBeforeRemoveExact = Exact(owner, race, second, 2);
             owner.RemoveFact(first.Marker);
             result.SecondAlternateExact = Exact(owner, race, second, 1) &&
-                StatsExact(owner, second.Definition);
+                StatsExact(owner, second.Definition) &
+                LabelsExact(owner, second, "second", result);
             InvokeSpend(RequireCastData(owner, second.SlaAbility));
             bool reconciled = ElementalHeritageRuntime.Reconcile(owner,
                 null, null) && ElementalHeritageRuntime.Reconcile(owner,
@@ -534,13 +571,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             result.GeneralAmountAfterReturn = owner.Resources
                 .GetResourceAmount(general.SlaResource);
             result.GeneralRestoredExact = Exact(owner, race, general, 0) &&
-                StatsExact(owner, general.Definition);
+                StatsExact(owner, general.Definition) &
+                LabelsExact(owner, general, "general-return", result);
 
             EnsureFact(owner, first.Marker);
             result.FirstAmountAfterReturn = owner.Resources
                 .GetResourceAmount(first.SlaResource);
             result.FirstSpentAmountRestored = Exact(owner, race, first, 1) &&
-                result.FirstAmountAfterReturn == 0;
+                result.FirstAmountAfterReturn == 0 &
+                LabelsExact(owner, first, "first-return", result);
             owner.RemoveFact(first.Marker);
             Kingmaker.Controllers.Rest.RestController.ApplyRest(owner);
             result.GeneralAmountAfterRest = owner.Resources
@@ -563,7 +602,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             result.MarkerFirstProviders = markerFirstSnapshot.Summary();
             result.MarkerFirstExact = Exact(markerFirst.Descriptor, race,
                 first, 1) && StatsExact(markerFirst.Descriptor,
-                    first.Definition);
+                    first.Definition) & LabelsExact(markerFirst.Descriptor,
+                        first, "marker-first", result);
             markerFirst.Descriptor.RemoveFact(first.Marker);
             result.MarkerFirstRemovalExact = Exact(markerFirst.Descriptor,
                 race, general, 0) && StatsExact(markerFirst.Descriptor,
@@ -685,6 +725,82 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Stat(owner, value).BaseValue)).ToArray());
         }
 
+        private static int[] ExpectedRacial(
+            ElementalHeritageDefinition definition)
+        {
+            return Enumerable.Range(0, 6).Select(index => definition
+                .ModifierFor((ElementalHeritageStat)index)).ToArray();
+        }
+
+        // Records every checkpoint (non-short-circuiting callers) so a label
+        // mismatch is visible even when another contract also failed.
+        private static bool LabelsExact(UnitDescriptor owner,
+            ElementalHeritageBlueprints heritage, string checkpoint,
+            TransitionEvidence result)
+        {
+            bool exact;
+            JObject observation = ElementalRacialLabelObservation.Observe(
+                owner, ExpectedRacial(heritage.Definition), null, out exact);
+            result.RacialLabelSequence.Add(checkpoint + ":" +
+                heritage.Definition.Name + "=" + ElementalRacialLabelObservation
+                    .Compact(observation) + (exact ? "" : " MISMATCH"));
+            result.RacialLabelsExact &= exact;
+            return exact;
+        }
+
+        // A native race is outside the elemental label context: its labels keep
+        // the native first-modifier rule even with a second Racial modifier.
+        private static JObject ExerciseNativeRaceControl(
+            ElementalRaceBlueprintSet set,
+            ICollection<UnitEntityData> createdUnits,
+            ICollection<BlueprintUnit> createdBlueprints, out bool exact)
+        {
+            BlueprintRace[] dwarves = BlueprintRoot.Instance.Progression
+                .CharacterRaces.Where(value => value != null &&
+                    value.name == "DwarfRace").ToArray();
+            if (dwarves.Length != 1)
+                throw new InvalidOperationException(
+                    "The native DwarfRace control is absent or ambiguous.");
+            BlueprintRace dwarf = dwarves[0];
+            if (set.OrderedRaces().Any(value => ReferenceEquals(value, dwarf)))
+                throw new InvalidOperationException(
+                    "The native control race is an elemental race.");
+            UnitEntityData unit = CreateUnit(dwarf, createdUnits,
+                createdBlueprints, "NativeControl_Dwarf");
+            UnitDescriptor owner = unit.Descriptor;
+            SetBaseStats(owner);
+            EnsureFact(owner, dwarf);
+            BlueprintFeature extra = CreateStatAdjustment(
+                "KMG_Runtime_NativeControl_RacialConstitution",
+                StatType.Constitution, -2, ModifierDescriptor.Racial);
+            EnsureFact(owner, extra);
+            int[] racial = ElementalRacialLabelObservation.AbilityStats
+                .Select(stat => owner.Stats.GetStat(stat).PermanentValue -
+                    owner.Stats.GetStat(stat).BaseValue).ToArray();
+            string[] nativeLabels = ElementalRacialLabelObservation
+                .AbilityStats.Select(stat => ElementalRacialLabelObservation
+                    .FirstRacialModifierLabel(owner.Stats.GetStat(stat)))
+                .ToArray();
+            JObject observation = ElementalRacialLabelObservation.Observe(
+                owner, racial, nativeLabels, out exact);
+            int constitutionRacialModifiers = owner.Stats.Constitution
+                .Modifiers.Count(value =>
+                    value.ModDescriptor == ModifierDescriptor.Racial);
+            // The control must exercise a stat whose first modifier differs
+            // from its effective racial total, or it proves nothing.
+            bool discriminating = constitutionRacialModifiers >= 2 &&
+                nativeLabels[2] != ElementalRacialLabelObservation
+                    .ExpectedLabel(racial[2]);
+            observation["raceGuid"] = dwarf.AssetGuid;
+            observation["raceName"] = dwarf.name;
+            observation["constitutionRacialModifiers"] =
+                constitutionRacialModifiers;
+            observation["discriminating"] = discriminating;
+            exact &= discriminating;
+            owner.RemoveFact(extra);
+            return observation;
+        }
+
         private static bool StatsExact(UnitDescriptor owner,
             ElementalHeritageDefinition definition)
         {
@@ -754,6 +870,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static BlueprintFeature CreateCharismaAdjustment(string name,
             int value, ModifierDescriptor descriptor)
         {
+            return CreateStatAdjustment(name, StatType.Charisma, value,
+                descriptor);
+        }
+
+        private static BlueprintFeature CreateStatAdjustment(string name,
+            StatType stat, int value, ModifierDescriptor descriptor)
+        {
             var feature = ScriptableObject.CreateInstance<BlueprintFeature>();
             feature.name = name;
             feature.Ranks = 1;
@@ -761,7 +884,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             feature.HideInUI = true;
             feature.Groups = Array.Empty<FeatureGroup>();
             var bonus = ScriptableObject.CreateInstance<AddStatBonus>();
-            bonus.Stat = StatType.Charisma;
+            bonus.Stat = stat;
             bonus.Value = value;
             bonus.Descriptor = descriptor;
             feature.ComponentsArray = new BlueprintComponent[] { bonus };
@@ -848,6 +971,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Add(assertions, key + "-stats", choice.ExpectedStats,
                     choice.ActualStats, choice.StatsExact,
                     "live racial modifiers on a request-local UnitDescriptor");
+                Add(assertions, key + "-racial-labels", "PC and console " +
+                    "racial labels equal the final racial modifier (0 => '-')",
+                    choice.RacialLabels + "; withEnhancementCha+2=" +
+                    choice.RacialLabelsWithEnhancement,
+                    choice.RacialLabelsExact &&
+                        choice.RacialLabelsWithEnhancementExact,
+                    "native CharSScoreEntry.SetData and CharInfoStatVM on the live stats");
                 Add(assertions, key + "-providers", "one marker, one exact " +
                     "affinity/SLA/ability/resource, no inactive providers",
                     observed, choice.ProviderContract,
@@ -871,6 +1001,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "legacy General; alternate A -> B -> General; add/remove orders; idempotence; spent amounts preserved",
                     transition.Summary(), transition.Pass(),
                     "live component activation/deactivation and reconciliation");
+            Add(assertions, "elemental-heritage-native-race-label-control",
+                "native DwarfRace keeps the first-modifier label with two Constitution Racial modifiers",
+                evidence.NativeRaceControl == null ? "absent" :
+                    ElementalRacialLabelObservation.Compact(
+                        evidence.NativeRaceControl) + ";discriminating=" +
+                    (bool)evidence.NativeRaceControl["discriminating"],
+                evidence.NativeRaceControlExact,
+                "native label code on a request-local native-race unit");
             Add(assertions, "elemental-heritage-mechanics-save-free", "false",
                 evidence.SaveStateTouched.ToString(),
                 !evidence.SaveStateTouched,

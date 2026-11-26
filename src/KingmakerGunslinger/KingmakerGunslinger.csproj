@@ -1832,6 +1832,7 @@
     <Compile Include="RuntimeTesting\ElementalCharacterCreationRegression.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationNativeRespec.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationRegressionPlan.cs" />
+    <Compile Include="RuntimeTesting\ElementalCharacterCreationRacialLabels.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterCreationVisualLifecycle.cs" />
     <Compile Include="RuntimeTesting\DisabledKmgCharacterCreationProbe.cs" />
     <Compile Include="RuntimeTesting\CharacterCreationObservationIdentity.cs" />
@@ -1870,6 +1871,7 @@
     <Compile Include="RuntimeTesting\ElementalAlternateTraitWeaponInteractionScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalAlternateTraitReconciliationScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageMechanicsScenario.cs" />
+    <Compile Include="RuntimeTesting\ElementalRacialLabelObservation.cs" />
     <Compile Include="RuntimeTesting\ElementalHeritageSlaScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceVisualAuditScenario.cs" />
     <Compile Include="RuntimeTesting\ElementalRaceMechanicsScenario.cs" />
