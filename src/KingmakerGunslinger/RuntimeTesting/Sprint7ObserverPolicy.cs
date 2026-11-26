@@ -800,18 +800,30 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal void TerminatePending()
         {
             Settle();
-            foreach (KeyValuePair<string, Func<bool?>> item in pending.ToList())
+            // Pre-build audit A1-F3: a terminator may publish a new residual (for example a retirement); it is settled or
+            // terminated in a later pass, so nothing published during terminal cleanup is left pending at phase exit.
+            for (int pass = 0; pass < 8 && pending.Count > 0; pass++)
             {
-                Func<List<string>> terminate;
-                List<string> failures = new List<string>();
-                if (terminators.TryGetValue(item.Key, out terminate))
-                    try { failures.AddRange(terminate() ?? new List<string>()); }
-                    catch (Exception error) { failures.Add("teardown: " + error.GetType().Name + ": " + error.Message); }
-                pending.Remove(item);
-                terminators.Remove(item.Key);
-                failures.Insert(0, "not settled at teardown");
-                foreach (string failure in failures) this.failures.Add(item.Key + ": " + failure);
+                foreach (KeyValuePair<string, Func<bool?>> item in pending.ToList())
+                {
+                    if (!pending.Contains(item)) continue;
+                    Func<List<string>> terminate;
+                    List<string> failures = new List<string>();
+                    pending.Remove(item);
+                    if (terminators.TryGetValue(item.Key, out terminate))
+                    {
+                        terminators.Remove(item.Key);
+                        try { failures.AddRange(terminate() ?? new List<string>()); }
+                        catch (Exception error) { failures.Add("teardown: " + error.GetType().Name + ": " + error.Message); }
+                    }
+                    failures.Insert(0, "not settled at teardown");
+                    foreach (string failure in failures) Fail(item.Key, failure);
+                }
+                if (pending.Count > 0) Settle();
             }
+            foreach (KeyValuePair<string, Func<bool?>> item in pending.ToList()) Fail(item.Key, "not settled at teardown (published during terminal cleanup)");
+            pending.Clear();
+            terminators.Clear();
         }
 
         /// <summary>Re-reads every residual once; a settled one leaves with a recovery observation. True when none remains.</summary>
@@ -972,16 +984,24 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// Recovery C3 (R2-F6): whether a retained process has the given context (read per process, so one unreadable process
         /// cannot hide another's delivery); the mutable command fields are not read.
         /// </summary>
-        internal bool RetainsContext(object context, Func<TProcess, object> contextOf)
+        internal bool RetainsContext(object context, Func<TProcess, object> contextOf) { return MatchContext(context, contextOf) == true; }
+
+        /// <summary>
+        /// Recovery C3 (R3-F2, pre-build audit A1-F1): true when a retained process's context is exactly <paramref name="context"/>;
+        /// null when none matched and some retained process's context could not be read (an unresolved attribution, not a
+        /// non-match); false otherwise. A positive match wins over an unreadable other process.
+        /// </summary>
+        internal bool? MatchContext(object context, Func<TProcess, object> contextOf)
         {
             if (context == null) return false;
+            bool unreadable = false;
             foreach (TProcess process in processes.ToList())
             {
                 object value;
-                try { value = contextOf(process); } catch (Exception) { continue; }
+                try { value = contextOf(process); } catch (Exception) { unreadable = true; continue; }
                 if (ReferenceEquals(value, context)) return true;
             }
-            return false;
+            return unreadable ? (bool?)null : false;
         }
 
         private void Failed(string failure)
@@ -1357,36 +1377,64 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             row["ownedExecutions"] = executions;
             row["ownedExecutionsLive"] = live.Count + unknown.Count;
-            bool settledNow = false;
-            Func<bool?> reconcile = null;
-            Func<bool?> settle = () =>
+            // Pre-build audit A1-F2: each operation of the reconciliation is tracked; the obligation is established only when the
+            // executions have settled, the late release ran, the remaining conditions read empty AND the subscription release was
+            // established. Anything unfinished keeps an executable terminal action until terminal accounting names it.
+            bool reconciled = false, unsubscribed = false, afterRan = false;
+            var unreadReported = new List<string>();
+            List<string> lastRemaining = null;
+            Func<string, List<string>> reconcileConditions = phase =>
             {
-                if (settledNow) { List<string> again = remaining(); return again == null ? (bool?)null : again.Count == 0; }
-                foreach (TProcess process in commands.Processes) { bool? ended = commands.Ended(process); if (ended != true) return ended; }
-                foreach (TCommand command in commands.Unknown) { bool? ended = commands.EndedOf(command); if (ended != true) return ended; }
-                return reconcile();
-            };
-            reconcile = () =>
-            {
-                settledNow = true;
-                // R3-F2: always reconcile once more at settlement: a condition that became attributable after the cleanup census
-                // (for example when a process identity was recovered) is released here; the earlier release is no proof of absence.
+                // R3-F2: always reconcile again: a condition that became attributable after the cleanup census (for example when a
+                // process identity was recovered) is released here; an earlier release is no proof of absence. Removals that
+                // already failed are not requested again (the ledger keeps them).
                 List<string> late;
                 try { late = releaseConditions(); }
                 catch (Exception error) { late = new List<string> { "condition release: " + error.GetType().Name + ": " + error.Message }; }
                 foreach (string failure in late) isolation.Fail(owner, "late release failure: " + failure);
                 List<string> after = remaining();
-                if (after == null) isolation.Fail(owner, "owned conditions unread after settlement");
-                else foreach (string identity in after.Where(value => !reported.Contains(value)).ToList()) { reported.Add(identity); isolation.Fail(owner, "late owned condition remaining after settlement: " + identity); }
-                try { unsubscribe(); } catch (Exception error) { isolation.Fail(owner, "condition ledger unsubscribe: " + error.GetType().Name + ": " + error.Message); }
-                List<string> steps;
-                try { steps = afterSettlement == null ? new List<string>() : (afterSettlement() ?? new List<string>()); }
-                catch (Exception error) { steps = new List<string> { "after settlement: " + error.GetType().Name + ": " + error.Message }; }
-                foreach (string failure in steps) isolation.Fail(owner, failure);
-                row["settledAtCleanup"] = live.Count + unknown.Count == 0;
+                if (after == null) { if (!unreadReported.Contains(phase)) { unreadReported.Add(phase); isolation.Fail(owner, "owned conditions unread " + phase); } }
+                else foreach (string identity in after.Where(value => !reported.Contains(value)).ToList()) { reported.Add(identity); isolation.Fail(owner, "late owned condition remaining " + phase + ": " + identity); }
                 row["lateReleaseFailures"] = new JArray(late.ToArray());
                 row["remainingAfterSettlement"] = after == null ? null : new JArray(after.ToArray());
-                return after == null ? (bool?)null : after.Count == 0;
+                lastRemaining = after;
+                return after;
+            };
+            Func<string, bool> unsubscribeOnce = attempt =>
+            {
+                if (unsubscribed) return true;
+                try { unsubscribe(); unsubscribed = true; }
+                catch (Exception error) { isolation.Fail(owner, "condition ledger unsubscribe" + attempt + ": " + error.GetType().Name + ": " + error.Message); }
+                row["subscriptionReleased"] = unsubscribed;
+                return unsubscribed;
+            };
+            Func<bool?> outcome = () => lastRemaining == null || !unsubscribed ? (bool?)null : lastRemaining.Count == 0;
+            Func<bool?> reconcile = () =>
+            {
+                reconciled = true;
+                reconcileConditions("after settlement");
+                unsubscribeOnce("");
+                if (!afterRan)
+                {
+                    afterRan = true;
+                    List<string> steps;
+                    try { steps = afterSettlement == null ? new List<string>() : (afterSettlement() ?? new List<string>()); }
+                    catch (Exception error) { steps = new List<string> { "after settlement: " + error.GetType().Name + ": " + error.Message }; }
+                    foreach (string failure in steps) isolation.Fail(owner, failure);
+                }
+                return outcome();
+            };
+            Func<bool?> settle = () =>
+            {
+                if (reconciled)
+                {
+                    // Re-read (and release anything newly attributable); an unestablished subscription release stays unresolved.
+                    reconcileConditions("after settlement");
+                    return outcome();
+                }
+                foreach (TProcess process in commands.Processes) { bool? ended = commands.Ended(process); if (ended != true) return ended; }
+                foreach (TCommand command in commands.Unknown) { bool? ended = commands.EndedOf(command); if (ended != true) return ended; }
+                return reconcile();
             };
             // R3-F4: one reconciliation obligation for both paths, registered (with its bounded teardown action) before any
             // settlement attempt; it leaves only when settlement is established. When nothing was live at the census it is
@@ -1394,12 +1442,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             const string obligation = "owned conditions reconciled after settlement";
             isolation.Residual(owner, obligation, settle, () =>
             {
-                if (settledNow) return new List<string>();
-                reconcile();
-                row["reconciledAtTeardown"] = true;
-                return new List<string> { "reconciled at teardown before every owned execution settled" };
+                var unresolved = new List<string>();
+                if (!reconciled)
+                {
+                    reconcile();
+                    row["reconciledAtTeardown"] = true;
+                    unresolved.Add("reconciled at teardown before every owned execution settled");
+                }
+                else
+                {
+                    // One more authorized attempt of each unfinished operation.
+                    reconcileConditions("at teardown");
+                    unsubscribeOnce(" (teardown attempt)");
+                }
+                if (!unsubscribed) unresolved.Add("condition subscription release not established");
+                if (lastRemaining == null) unresolved.Add("owned conditions unread at teardown");
+                return unresolved;
             });
             bool? immediate = live.Count + unknown.Count == 0 ? isolation.SettleResidual(owner, obligation) : null;
+            // Only what actually happened: settled at cleanup only when the immediate attempt established settlement.
+            row["settledAtCleanup"] = immediate == true;
             row["ledgerHeldUntilSettlement"] = immediate != true;
             return row;
         }
@@ -1423,49 +1485,77 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// Recovery C3 (R2-F4): reads each exact control after an owned release; a control that is missing or unreadable is a
-        /// named failure. Returns the failures (the caller publishes them).
+        /// Recovery C3 (R3-F3, pre-build audit A1-F4): the settlement of a path's controls: each declared control is read once
+        /// (present, absent or unreadable; no handle reads absent), the named failures and diagnostics come from that one result,
+        /// then each present control is released, the outside target is retired and the retirement record is published, every
+        /// release attempted on its own. Returns the failures; <paramref name="presence"/> receives each control's one result.
         /// </summary>
-        internal static List<string> ControlsKept(IEnumerable<KeyValuePair<string, Func<bool?>>> controls)
+        internal static List<string> SettleControls<T>(IEnumerable<Sprint7Control<T>> controls, Action retireOutside, Action publishRetirements, JObject row,
+            Dictionary<string, bool?> presence) where T : class
         {
-            var failures = new List<string>();
-            foreach (KeyValuePair<string, Func<bool?>> control in controls ?? Enumerable.Empty<KeyValuePair<string, Func<bool?>>>())
+            List<Sprint7Control<T>> list = (controls ?? Enumerable.Empty<Sprint7Control<T>>()).ToList();
+            var results = new List<KeyValuePair<Sprint7Control<T>, bool?>>();
+            foreach (Sprint7Control<T> control in list)
             {
                 bool? present;
-                try { present = control.Value(); } catch (Exception) { present = null; }
-                if (present == null) failures.Add("control unreadable after the owned release: " + control.Key);
-                else if (!present.Value) failures.Add("control missing after the owned release: " + control.Key);
+                if (control.Handle == null) present = false;
+                else try { present = control.Read(control.Handle); } catch (Exception) { present = null; }
+                results.Add(new KeyValuePair<Sprint7Control<T>, bool?>(control, present));
+                if (presence != null) presence[control.Key] = present;
             }
+            List<string> failures = ControlResults(results.Select(entry => new KeyValuePair<string, KeyValuePair<bool, bool?>>(entry.Key.Name,
+                new KeyValuePair<bool, bool?>(entry.Key.Required, entry.Value))), row);
+            if (row != null) row["controlsAfterOwnedRelease"] = new JArray(failures.ToArray());
+            var releases = new List<KeyValuePair<string, Action>>();
+            foreach (KeyValuePair<Sprint7Control<T>, bool?> entry in results)
+            {
+                KeyValuePair<Sprint7Control<T>, bool?> exact = entry;
+                releases.Add(new KeyValuePair<string, Action>(exact.Key.Key, () => { if (exact.Value == true) exact.Key.Release(exact.Key.Handle); }));
+            }
+            if (retireOutside != null) releases.Add(new KeyValuePair<string, Action>("outside target", retireOutside));
+            if (publishRetirements != null) releases.Add(new KeyValuePair<string, Action>("retirement settlement", publishRetirements));
+            failures.AddRange(RunReleases(releases));
             return failures;
         }
 
         /// <summary>
-        /// Recovery C3 (R2-F7): the phase teardown of the commands the effects runner issued, selected by reference (another
-        /// owner's command on the same actor is not touched). Each interruption, each actor's permitted queue maintenance and
-        /// each actor's combat exit is attempted on its own and named on failure.
+        /// Recovery C3 (R1-F9, pre-build audit A1-F7): one guarded phase set-up acquisition: its release is registered before it
+        /// runs; its own error is published to the phase isolation ("phase setup") and rethrown.
         /// </summary>
-        internal static List<string> ReleaseIssuedCommands<TUnit, TCommand>(IEnumerable<KeyValuePair<TUnit, TCommand>> issued, IEnumerable<TUnit> actors,
-            Func<TUnit, bool> live, Func<TCommand, bool> finished, Action<TUnit, TCommand> interrupt, Action<TUnit> maintainQueue, Action<TUnit> leaveCombat,
-            Func<TUnit, string> unitLabel, Func<TCommand, string> commandLabel) where TUnit : class where TCommand : class
+        internal static void PhaseAcquire(Sprint7SetupScope setup, Sprint7CellIsolation isolation, string name, Action acquire, Action release)
         {
-            var releases = new List<KeyValuePair<string, Action>>();
-            List<KeyValuePair<TUnit, TCommand>> commands = (issued ?? Enumerable.Empty<KeyValuePair<TUnit, TCommand>>()).ToList();
-            foreach (KeyValuePair<TUnit, TCommand> entry in commands)
-            {
-                KeyValuePair<TUnit, TCommand> exact = entry;
-                releases.Add(new KeyValuePair<string, Action>("interrupt " + commandLabel(exact.Value) + " on " + unitLabel(exact.Key),
-                    () => { if (live(exact.Key) && !finished(exact.Value)) interrupt(exact.Key, exact.Value); }));
-            }
-            var units = new List<TUnit>();
-            foreach (TUnit unit in commands.Select(entry => entry.Key).Concat(actors ?? Enumerable.Empty<TUnit>()))
-                if (unit != null && !units.Any(value => ReferenceEquals(value, unit))) units.Add(unit);
-            foreach (TUnit unit in units)
-            {
-                TUnit exact = unit;
-                releases.Add(new KeyValuePair<string, Action>("command queue " + unitLabel(exact), () => { if (live(exact)) maintainQueue(exact); }));
-                releases.Add(new KeyValuePair<string, Action>("combat " + unitLabel(exact), () => { if (live(exact)) leaveCombat(exact); }));
-            }
-            return RunReleases(releases);
+            try { setup.Acquire(name, acquire, release); }
+            catch (Exception error) { isolation.Fail("phase setup", name + ": " + error.GetType().Name + ": " + error.Message); throw; }
+        }
+
+        /// <summary>
+        /// Recovery C3 (R1-F9, pre-build audit A1-F7): the effects phase's set-up sequence, in order: hostile hit points, the
+        /// recorder subscription, the hostile saves subscription (its handler created first), then the ground lookup and baseline
+        /// hostile placement, each a guarded acquisition whose release restores it.
+        /// </summary>
+        internal static void EffectsPhaseSetup(Sprint7SetupScope setup, Sprint7CellIsolation isolation, Action raiseHitPoints, Action restoreHitPoints,
+            Action subscribeRecorder, Action unsubscribeRecorder, Action createSaves, Action subscribeSaves, Action disposeSaves, Action placeHostile, Action restorePosition)
+        {
+            PhaseAcquire(setup, isolation, "hostile hit points", raiseHitPoints, restoreHitPoints);
+            PhaseAcquire(setup, isolation, "phase recorder subscription", subscribeRecorder, unsubscribeRecorder);
+            createSaves();
+            PhaseAcquire(setup, isolation, "hostile saves subscription", subscribeSaves, disposeSaves);
+            PhaseAcquire(setup, isolation, "baseline hostile placement", placeHostile, restorePosition);
+        }
+
+        /// <summary>
+        /// Recovery C3 (pre-build audit A1-F3): the phase's terminal settlement order. Pending residuals (including a Dust
+        /// reconciliation a driver handed over, which reads its controls and retires its outside target) are settled or
+        /// terminated first; only then are units no layer requested retired, published, and accounted for once more.
+        /// </summary>
+        internal static List<string> PhaseTeardownSettlement(Sprint7CellIsolation isolation, Action retireOutstanding, Action publishRetirements)
+        {
+            isolation.Settle();
+            isolation.TerminatePending();
+            List<string> failures = RunReleases(new[] { new KeyValuePair<string, Action>("phase units", retireOutstanding),
+                new KeyValuePair<string, Action>("retirement settlement", publishRetirements) });
+            isolation.TerminatePending();
+            return failures;
         }
 
         /// <summary>
@@ -1518,10 +1608,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// context of a retained owned process (also one whose identity was recovered after its notifications were missed).
         /// Observed deliveries are only read here; recovering a process context never adds an observed delivery.
         /// </summary>
-        internal static bool AttributedTo<TCommand, TProcess>(object execution, IEnumerable<object> observed, Sprint7OwnedCommands<TCommand, TProcess> commands,
+        internal static bool? AttributedTo<TCommand, TProcess>(object execution, IEnumerable<object> observed, Sprint7OwnedCommands<TCommand, TProcess> commands,
             Func<TProcess, object> contextOf) where TCommand : class where TProcess : class
         {
-            return execution != null && ((observed ?? Enumerable.Empty<object>()).Any(value => ReferenceEquals(value, execution)) || commands.RetainsContext(execution, contextOf));
+            if (execution == null) return false;
+            if ((observed ?? Enumerable.Empty<object>()).Any(value => ReferenceEquals(value, execution))) return true;
+            // A1-F1: an unreadable retained context leaves the attribution unresolved (null), never a confirmed non-match.
+            return commands.MatchContext(execution, contextOf);
         }
 
         /// <summary>Recovery C3 (R2-F7): one release per item, each attempted on its own and named by its identity.</summary>
@@ -1611,6 +1704,101 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// execution by one of the cell's own Dust units), however its cast ended,
     /// and release removes exactly the acquired instances still present.
     /// </summary>
+    /// <summary>Recovery C3 (R3-F3): one declared control: its key, display name, whether the path requires it, its handle, read and release.</summary>
+    internal sealed class Sprint7Control<T> where T : class
+    {
+        internal string Key, Name; internal bool Required; internal T Handle; internal Func<T, bool?> Read; internal Action<T> Release;
+    }
+
+    /// <summary>
+    /// Recovery C3 (R2-F8, R3-F2, pre-build audit A1-F1, A1-F8): the cell's ownership of its conditions over the acquisition
+    /// ledger. Ownership is the tri-state attribution (a present condition whose attribution is unresolved stays named in the
+    /// remaining identities and is never released); every removal failure is bound to its exact instance at the boundary; the
+    /// early release publishes each failure once, at once.
+    /// </summary>
+    internal sealed class Sprint7ConditionOwner<T> where T : class
+    {
+        private readonly Func<IEnumerable<T>> present; private readonly Func<T, bool?> attribution; private readonly Action<T> remove;
+        private readonly Func<T, string> identity; private readonly Action<string> publish;
+        internal readonly AcquisitionLedger<T> Ledger;
+
+        internal Sprint7ConditionOwner(Func<IEnumerable<T>> present, Func<T, bool?> attribution, Action<T> remove, Func<T, string> identity, Action<string> publish)
+        {
+            this.present = present; this.attribution = attribution; this.remove = remove; this.identity = identity; this.publish = publish;
+            Ledger = new AcquisitionLedger<T>(present());
+        }
+
+        internal bool? Attribution(T value) { try { return value == null ? false : attribution(value); } catch (Exception) { return null; } }
+        internal bool Owned(T value) { return Attribution(value) == true; }
+        internal int Observe() { return Ledger.Observe(present(), Owned); }
+        internal List<string> Release() { return Ledger.Release(present(), Owned, remove, identity); }
+
+        /// <summary>The early release: each failure (bound to its instance) published once at once with the given context.</summary>
+        internal List<string> ReleaseAndPublish(string context)
+        {
+            List<string> failures;
+            try { failures = Release(); }
+            catch (Exception error) { failures = new List<string> { "condition release: " + error.GetType().Name + ": " + error.Message }; }
+            if (publish != null) foreach (string failure in failures) publish("release failure: " + context + failure);
+            return failures;
+        }
+
+        internal List<T> RemainingOwned() { return Ledger.RemainingItems(present(), Owned); }
+        internal int Remaining() { return RemainingOwned().Count; }
+
+        /// <summary>Owned conditions still present, and present ones whose attribution is unresolved, named as such.</summary>
+        internal List<string> RemainingIdentities()
+        {
+            return Ledger.RemainingItems(present(), value => Attribution(value) != false)
+                .Select(value => Attribution(value) == true ? identity(value) : "attribution unresolved: " + identity(value)).ToList();
+        }
+    }
+
+    /// <summary>
+    /// Recovery C3 (R2-F7, pre-build audit A1-F5, A1-F6): the commands the effects runner issued, recorded by reference before
+    /// each runs (also through a callback that runs the command elsewhere). The teardown interrupts only those; each actor's
+    /// queue maintenance runs only while its queue holds no command outside this record (maintenance would start a queued
+    /// foreign command), and is otherwise withheld and reported; every operation is attempted on its own.
+    /// </summary>
+    internal sealed class Sprint7IssuedCommands<TUnit, TCommand> where TUnit : class where TCommand : class
+    {
+        private readonly List<KeyValuePair<TUnit, TCommand>> issued = new List<KeyValuePair<TUnit, TCommand>>();
+        internal readonly List<string> Withheld = new List<string>();
+
+        internal List<KeyValuePair<TUnit, TCommand>> Issued { get { return issued.ToList(); } }
+        internal void Record(TUnit unit, TCommand command) { if (command != null && !Contains(command)) issued.Add(new KeyValuePair<TUnit, TCommand>(unit, command)); }
+        internal bool Contains(TCommand command) { return command != null && issued.Any(entry => ReferenceEquals(entry.Value, command)); }
+        internal void Run(TUnit unit, TCommand command, Action<TUnit, TCommand> run) { Record(unit, command); run(unit, command); }
+
+        internal List<string> Release(IEnumerable<TUnit> actors, Func<TUnit, bool> live, Func<TCommand, bool> finished, Action<TUnit, TCommand> interrupt,
+            Func<TUnit, IEnumerable<TCommand>> queued, Action<TUnit> maintainQueue, Action<TUnit> leaveCombat, Func<TUnit, string> unitLabel, Func<TCommand, string> commandLabel)
+        {
+            var releases = new List<KeyValuePair<string, Action>>();
+            foreach (KeyValuePair<TUnit, TCommand> entry in issued.ToList())
+            {
+                KeyValuePair<TUnit, TCommand> exact = entry;
+                releases.Add(new KeyValuePair<string, Action>("interrupt " + commandLabel(exact.Value) + " on " + unitLabel(exact.Key),
+                    () => { if (live(exact.Key) && !finished(exact.Value)) interrupt(exact.Key, exact.Value); }));
+            }
+            var units = new List<TUnit>();
+            foreach (TUnit unit in issued.Select(entry => entry.Key).Concat(actors ?? Enumerable.Empty<TUnit>()))
+                if (unit != null && !units.Any(value => ReferenceEquals(value, unit))) units.Add(unit);
+            foreach (TUnit unit in units)
+            {
+                TUnit exact = unit;
+                releases.Add(new KeyValuePair<string, Action>("command queue " + unitLabel(exact), () =>
+                {
+                    if (!live(exact)) return;
+                    List<TCommand> foreign = (queued(exact) ?? Enumerable.Empty<TCommand>()).Where(command => !Contains(command)).ToList();
+                    if (foreign.Count == 0) maintainQueue(exact);
+                    else Withheld.Add("queue maintenance withheld on " + unitLabel(exact) + ": queued command(s) not issued here: " + string.Join(", ", foreign.Select(commandLabel).ToArray()));
+                }));
+                releases.Add(new KeyValuePair<string, Action>("combat " + unitLabel(exact), () => { if (live(exact)) leaveCombat(exact); }));
+            }
+            return Sprint7ObserverPolicy.RunReleases(releases);
+        }
+    }
+
     internal sealed class AcquisitionLedger<T> where T : class
     {
         private readonly List<T> _preexisting;
