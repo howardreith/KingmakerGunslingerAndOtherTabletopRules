@@ -4,6 +4,7 @@ using System.Linq;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.UI._ConsoleUI.CharacterInfo;
+using Kingmaker.UI.Common;
 using Kingmaker.UI.ServiceWindow.CharacterScreen;
 using Kingmaker.UnitLogic;
 using Newtonsoft.Json.Linq;
@@ -26,17 +27,18 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static readonly StatType[] AbilityStats = { StatType.Strength, StatType.Dexterity,
             StatType.Constitution, StatType.Intelligence, StatType.Wisdom, StatType.Charisma };
 
+        // Nonzero values use the native signed format (UIUtility.AddSign renders
+        // negatives with an en dash, U+2013); zero means no racial bonus, "-".
         internal static string ExpectedLabel(int racial)
         {
-            return racial == 0 ? "-" : racial > 0 ? "+" + racial : racial.ToString();
+            return racial == 0 ? "-" : UIUtility.AddSign(racial);
         }
 
         /// <summary>Native unpatched label rule: the first enumerated Racial modifier.</summary>
         internal static string FirstRacialModifierLabel(ModifiableValue stat)
         {
             var first = stat.Modifiers.FirstOrDefault(value => value.ModDescriptor == ModifierDescriptor.Racial);
-            if (first == null) return "-";
-            return first.ModValue >= 0 ? "+" + first.ModValue : first.ModValue.ToString();
+            return first == null ? "-" : UIUtility.AddSign(first.ModValue);
         }
 
         internal static JArray RacialModifiers(ModifiableValue stat)
@@ -107,7 +109,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static int? ConsoleValue(string label)
         {
             if (label == "-") return null;
-            return int.Parse(label.TrimStart('+'));
+            return int.Parse(label.TrimStart('+').Replace('\u2013', '-'));
         }
 
         private static string RenderPcLabel(UnitDescriptor owner, ModifiableValueAttributeStat stat)
