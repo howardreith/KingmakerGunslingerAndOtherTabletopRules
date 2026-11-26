@@ -412,6 +412,39 @@ controller's: Codex CLI 0.170.0, `gpt-6.2-astra`, effort max, read-only sandbox,
   - A1-F8 (R2-F8): the test supplied the identity and publication. Corrected: the early release is production
     `Sprint7ConditionOwner.ReleaseAndPublish` (Dust's clear and early-exit cast); the test drives it.
   - A1-F9 (R1-F13): map rows misbound; R2-F7 text overstated. Corrected above and in the finding map.
+- Verification follow-up (the one authorized), 2026-11-26 16:56:03Z–17:14:06Z, on
+  `03a78d498749b499ac8c5f97617ca282311c7591`: **corrections_required**. Verified A1-F3, A1-F7, A1-F8. Not verified:
+  - A1-F1: no case drives missed notifications plus recovery between the initial release and a zero-live census.
+  - A1-F2: `ledgerHeldUntilSettlement` is still inferred from incomplete reconciliation, and a throwing late release followed
+    by an empty read and a successful unsubscribe still discharges the terminal action (the late sweep's completion is not tracked).
+  - A1-F4: the test chooses the controls and wires the retirement publication itself; removing the same-caster entry or the
+    publication from the Dust caller would stay green.
+  - A1-F5: the test defines its own passive callback; deleting the phase registration would stay green.
+  - A1-F6: native `LeaveCombat` can issue a return move (`UnitCombatState.ReturnToStartingPositionIfNeeded`) whose
+    `UnitCommands.Run` clears the queue, so a foreign queued command can disappear despite the withheld maintenance.
+  - A1-F9: the active map rows still disagree with the controller's `rounds/r03/result-1.json` bindings (the reviewer cites
+    R4-F1: R2-F7, R2-F8, R1-F11; R7-F2: R3-F1, R3-F2, R2-F7, R3-F3, R3-F4, R1-F11; R7-F4: R3-F3, R1-F11; R7-F5: R3-F1, R3-F4;
+    R1-F9 to C3 §5, R1-F13 to §8, R3-F5 to §§6–8), and the focused-coverage statement overstates the passive-callback and
+    combat-exit coverage. (The bindings recorded above were read from the posted round-3 PR comment; the two sources differ.)
+  New blocking findings:
+  - A2-F1 (A1-F3/R3-F3): the first `TerminatePending` in `PhaseTeardownSettlement` finalizes an outstanding retirement before a
+    later fallback retirement's destruction ticks could settle it, and `Publish` never re-reads a published target.
+  - A2-F2 (A1-F1/R3-F2): the exact-execution presence count (`PresentFrom`, used by the pre-delivery driver's safety readback)
+    filters out unresolved attributions and can report zero.
+  - A2-F3 (A1-F5/R2-F7/R3-F2): the phase retries a passive command's interruption before the transferred Dust owner can capture
+    a recovered process, so a clearing interruption can lose the recoverable execution identity.
+  The audit results are committed under `docs/evidence/sprint7/recovery-c3/pre-build-audit/` (initial `b31359cb…36d9`,
+  follow-up `7f29a05a…2384`).
+
+**C3 STOPPED at the pre-build audit gate (C3 amendment 2 §5), 2026-11-26.** The authorized follow-up did not clear the audit:
+it still identifies blocking C3 defects and untested failure boundaries. Under §5 ("Do not spend candidate 4 while this bounded
+audit still identifies a blocking C3 defect or an untested real failure boundary. Preserve and report an unresolved audit result
+if the authorized follow-up cannot clear it"), recovery candidate 4 was **not** built, no mechanics session ran, and formal
+review 4 was **not** used (§6 reserves it for the full corrected-byte result; no code-only submission). No code was changed
+after the audited commit `03a78d4987`. Controller: ACTIVE/develop at 3/4 under amendments revision 2 (unchanged; not
+finalized, no archive A). Remaining obligation: correct A1-F1, A1-F2, A1-F4, A1-F5, A1-F6, A1-F9 and A2-F1 to A2-F3, then
+build and qualify candidate 4 and use review 4. That needs an owner decision, because no further audit follow-up is
+authorized and nothing else can clear the gate.
 
 R1-F12 (scope disclosure, records only): the `s7-c3-fx` selection ran the whole inherited effects phase. Besides the
 mechanical ownership and evaluator observations, its passing run `20261126T054228Z` also produced the phase's presentation
@@ -433,7 +466,7 @@ Frozen inputs and reviewed identities (product source, reviewed head and control
 | #219 | `codex/s7-visual-audio-remediation` | `3e2baea4b4` (round 7) | n/a; frozen head `0542b0592a` | BLOCKED 7/7 | `9c39b1ff7f` (candidate 3) |
 | #221 C1 | `codex/s7-recovery-c1-cue-evaluator` | `5a56d480a2` | `2c67a049ee` | owner-accepted (implementation/domain) | none of its own; its evaluator ran in C3's candidate `6abd692fa7` |
 | #222 C2 | `codex/s7-recovery-c2-ghaele-late-units` | `da811b123c` | `eab90a5ac8` | AWAITING_OWNER_REVIEW, handoff current | external harness `d77754ba…b4f1` over candidate 3 |
-| #223 C3 | `codex/s7-recovery-c3-effects-ownership` | `7fff8b34f6` (round 1), `89d4efa347` (round 2), `f0ca78cbab` (round 3); round 4 pending | none yet | ACTIVE/develop at 3/4 under C3 amendment 2 (after the no-progress stop) | `6abd692fa7` (candidate `de63d6f4…4b46`, `20261126T054228Z`); `66b0ff3f14` (recovery candidate 3, `473f2f5a…8366`, `20261126T134425Z`); the amendment-2 corrections await recovery candidate 4 |
+| #223 C3 | `codex/s7-recovery-c3-effects-ownership` | `7fff8b34f6` (round 1), `89d4efa347` (round 2), `f0ca78cbab` (round 3); round 4 unused | none | ACTIVE/develop at 3/4 under C3 amendment 2; stopped at the pre-build audit gate (audited head `03a78d4987`) | `6abd692fa7` (candidate `de63d6f4…4b46`, `20261126T054228Z`); `66b0ff3f14` (recovery candidate 3, `473f2f5a…8366`, `20261126T134425Z`); the amendment-2 corrections await recovery candidate 4 |
 
 Dependency checks (2026-11-26): `0542b0592a` is an ancestor of `2c67a049ee`, which is an ancestor of `eab90a5ac8`, which is
 an ancestor of `7fff8b34f6`; every remote branch head matched the identities above when checked (2026-11-26, before C3
@@ -646,6 +679,7 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C3 r4 | Focused gate `sprint7-visual` (local) | PASS, 25 tests | 5.1 s | 60 min 6.5 s | 29 min 53.5 s |
 | C3 r4 | Focused gate `sprint7-visual` (local, after restoring the observer's observation-time source stilling) | PASS, 25 tests | 20.3 s | 60 min 26.8 s | 29 min 33.2 s |
 | C3 r4 | Focused gate `sprint7-visual` (local, pre-build audit A1-F1 to A1-F9 corrections) | PASS, 25 tests | 19.7 s | 60 min 46.5 s | 29 min 13.5 s |
+| C3 r4 | (stop at the pre-build audit gate: no build, session or controller gates run; model-review time outside the clock) | | | 60 min 46.5 s | 29 min 13.5 s unused |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
