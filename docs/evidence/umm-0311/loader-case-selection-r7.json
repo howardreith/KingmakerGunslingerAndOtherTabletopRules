@@ -1,0 +1,43 @@
+{
+    "schema":  "kmg.loader-case-selection-tests.v1",
+    "commit":  "b16ce7a47ced01a3c4db5388d89b467b08334ee8",
+    "passed":  7,
+    "total":  7,
+    "cases":  [
+                  {
+                      "name":  "wrapper-bound-dll-passes",
+                      "passed":  true,
+                      "detail":  "PASS loader.production-dll-references-pinned-loader"
+                  },
+                  {
+                      "name":  "direct-substring-selection-without-a-dll-fails",
+                      "passed":  true,
+                      "detail":  "exit 1; FAIL loader.production-dll-references-pinned-loader: System.InvalidOperationException: This check inspects a verified production compiler output and was selected without one (test-domain.ps1 sets KMG_PRODUCTION_DLL and K"
+                  },
+                  {
+                      "name":  "direct-test-prefix-selection-without-a-dll-fails",
+                      "passed":  true,
+                      "detail":  "exit 1; FAIL loader.production-dll-references-pinned-loader: System.InvalidOperationException: This check inspects a verified production compiler output and was selected without one (test-domain.ps1 sets KMG_PRODUCTION_DLL and K"
+                  },
+                  {
+                      "name":  "direct-unfiltered-run-reports-the-case-not-applicable",
+                      "passed":  true,
+                      "detail":  "exit 0; NOT APPLICABLE loader.production-dll-references-pinned-loader: no production compiler output is bound to this unfiltered run (test-domain.ps1 binds one). / NOT APPLICABLE loader.production-dll-references-pinned-loader: no production compiler output is bound to this unfiltered run (test-domain.ps1 binds one). / Completed 3189 tests; failures=0. Registered 3189; elapsed 90.0s. / Not applicable (no assertion ran; not a pass): 1."
+                  },
+                  {
+                      "name":  "deferred-case-reports-not-applicable",
+                      "passed":  true,
+                      "detail":  "NOT APPLICABLE loader.production-dll-references-pinned-loader: deferred: Build-Local runs this case on its exact compiler output."
+                  },
+                  {
+                      "name":  "wrapper-removed-dll-refused",
+                      "passed":  true,
+                      "detail":  "The production DLL for loader.production-dll-references-pinned-loader is missing (<user-profile>\\AppData\\Local\\Temp\\kmg-loader-selection-6ef24cf007174242b696993d12496124\\KingmakerGunslinger.dll); the case was not run."
+                  },
+                  {
+                      "name":  "digest-refusal-restores-bindings-and-removes-the-private-copy",
+                      "passed":  true,
+                      "detail":  "refusal: The production DLL changed after its compile (1111111111111111111111111111111111111111111111111111111111111111); the loader-reference case was not run.; bindings restored: True; private copies before 0, after 0"
+                  }
+              ]
+}

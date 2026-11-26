@@ -1,0 +1,5 @@
+BUILD exit=0 package=True
+CHILD exit=0 json=1
+CHILD admissionMode=build-local producerCommit=b16ce7a47ced01a3c4db5388d89b467b08334ee8 packageSha256=a0541197a979f18b9f7b99172e7ca4314c1be78a52d98699f1fb8b09a88d53b0 (ordinary ZIP a0541197a979f18b9f7b99172e7ca4314c1be78a52d98699f1fb8b09a88d53b0; commit b16ce7a47ced01a3c4db5388d89b467b08334ee8)
+REPORT build-local b16ce7a47ced01a3c4db5388d89b467b08334ee8 a0541197a979f18b9f7b99172e7ca4314c1be78a52d98699f1fb8b09a88d53b0
+RESULT ordinary-admission-child-returns-build-local-and-the-report-projects-it PASS
