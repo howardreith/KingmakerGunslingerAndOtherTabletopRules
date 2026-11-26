@@ -40,8 +40,10 @@ committed.
   `CharBScoresEntry`, the creator and level-up ability panel, calls this base method. The
   character sheet's `CharSScores` also calls it (`showPermanentValue: false`), but the sheet's
   entries have no `RaceBonus` component, so native `SetData` skips the label there: the sheet
-  shows totals only. This was observed natively on 2026-11-26 (all 36 bound sheet entries in the
-  respec and persistence runs below), not inferred from the decompilation.
+  shows totals only. This was observed natively on 2026-11-26, not inferred from the
+  decompilation. On the final candidate `a49dffd66c`, every bound sheet entry had a null
+  `RaceBonus`: 48 in the eight respec visits, 36 in the six module-OFF sheets and 36 in the six
+  module-ON sheets, 120 in total.
 - The console `CharInfoStatVM.OnStatUpdated` applies the same first-modifier rule to `RaceBonus`.
 - `ModifiableValue.AddModifier` keeps each descriptor's list sorted ascending by value, so the
   label is the most negative Racial modifier.
@@ -255,8 +257,9 @@ Candidate5 results (`a49dffd66c`):
 
 2. Pre-existing persistence capture check. `elemental-race-persistence-restored-captures` fails
    only through `PhysicalLifecycleEvidenceExact`. It requires the lifecycle rows to cover every
-   published alternate trait. Since 0.0.120 that is 21 traits (`NereidFascination` and
-   `TreacherousEarth` were published in `d5aa78b615`). The ordinary 24-fixture matrix exercises
+   published alternate trait. Since v0.0.120 that is 21 traits. `NereidFascination`
+   was published in `d5aa78b615`; `TreacherousEarth` became published in the merge
+   `c5fc5ab3b8`, the commit the v0.0.120 tag references. The ordinary 24-fixture matrix exercises
    19; those two belong to the separate `qualificationTrait`/`qualificationEffect` scopes. All
    168 lifecycle rows were present and exact; only the trait-set comparison fails. This was
    classified by inspecting that deterministic contract, not by rerunning unchanged code; it is
