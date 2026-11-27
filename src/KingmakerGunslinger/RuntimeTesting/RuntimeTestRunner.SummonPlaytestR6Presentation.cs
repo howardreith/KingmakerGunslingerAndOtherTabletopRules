@@ -222,7 +222,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         // Submit one native command and observe it: no direct ticking.
         private IEnumerable<int> R6RunPassive(UnitEntityData owner, AbilityData data, TargetWrapper target, JObject row, R6Clip clip,
-            Action<UnitUseAbility> issued = null)
+            Action<UnitUseAbility> submit = null)
         {
             row["blueprint"] = data.Blueprint.AssetGuid; row["blueprintName"] = data.Blueprint.name;
             row["actionType"] = data.Blueprint.ActionType.ToString();
@@ -231,8 +231,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             var command = new UnitUseAbility(data, target);
             int cuesSeen = SummonAbilityCastCueRuntime.Snapshot().Length;
             var cuePosts = new JArray(); row["cuePostsListener"] = cuePosts;
-            // Recovery C3 (audit A1-F5): the issue callback runs before the single native run, through the shared submission.
-            Sprint7ObserverPolicy.IssueAndRun(command, issued, value => owner.Commands.Run(value));
+            // Owner amendment 4 §2B (C3 review R2-F7): a caller that owns its submission (the Sprint 7 Dust cell) performs the
+            // single native run itself; every other caller keeps the plain native run.
+            if (submit != null) submit(command);
+            else owner.Commands.Run(command);
             DateTime deadline = DateTime.UtcNow.AddSeconds(30);
             int actedAt = -1, shots = 0;
             while (DateTime.UtcNow < deadline)

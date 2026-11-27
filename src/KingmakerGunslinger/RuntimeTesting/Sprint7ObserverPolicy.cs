@@ -947,13 +947,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly Func<TCommand, TProcess> processOf;
         private readonly Func<TProcess, bool?> ended;
         private readonly Action<string> publish;
+        // Owner amendment 4 §2A (C3 review R4-F1): the authoritative fact that a command was cancelled before any execution
+        // (true), not established (false), or unreadable (null). A successful null process read is never that fact, and neither
+        // is an interruption-eligibility predicate. Absent, cancellation is never established.
+        private readonly Func<TCommand, bool?> cancelledBeforeExecution;
         internal readonly List<string> Failures = new List<string>();
 
-        internal Sprint7OwnedCommands(Func<TCommand, TProcess> processOf, Func<TProcess, bool?> ended, Action<string> publish = null)
+        internal Sprint7OwnedCommands(Func<TCommand, TProcess> processOf, Func<TProcess, bool?> ended, Action<string> publish = null,
+            Func<TCommand, bool?> cancelledBeforeExecution = null)
         {
             this.processOf = processOf;
             this.ended = ended;
             this.publish = publish;
+            this.cancelledBeforeExecution = cancelledBeforeExecution;
         }
 
         internal List<TCommand> Commands { get { return commands.ToList(); } }
@@ -1059,6 +1065,45 @@ namespace KingmakerGunslinger.RuntimeTesting
             Capture(command);
             TProcess process = ProcessFor(command);
             return process == null ? (bool?)null : Ended(process);
+        }
+
+        private bool? CancellationEstablished(TCommand command)
+        {
+            if (cancelledBeforeExecution == null) return false;
+            try { bool? cancelled = cancelledBeforeExecution(command); return cancelled == true ? true : cancelled.HasValue ? false : (bool?)null; }
+            catch (Exception) { return null; }
+        }
+
+        /// <summary>
+        /// Owner amendment 4 §2A (C3 review R4-F1): the settlement state of an owned command's future effects. Process recovery
+        /// is attempted first; a retained execution governs (its end, even if the command later finishes or its mutable field
+        /// clears); with no execution retained, true only when cancellation before execution is positively established, false
+        /// while the command can still start, null when its process or terminal state cannot be read.
+        /// </summary>
+        internal bool? StartSettled(TCommand command)
+        {
+            Capture(command);
+            TProcess process = ProcessFor(command);
+            if (process != null) return Ended(process);
+            if (unknown.Any(value => ReferenceEquals(value, command))) return null;
+            return CancellationEstablished(command);
+        }
+
+        /// <summary>
+        /// Owner amendment 4 §2A (C3 review R4-F1): owned commands with no retained execution and no unreadable process read whose
+        /// cancellation before execution is not established (still able to start, or its terminal state unreadable). Process
+        /// recovery is attempted for each first.
+        /// </summary>
+        internal List<TCommand> Pending()
+        {
+            var pending = new List<TCommand>();
+            foreach (TCommand command in commands.ToList())
+            {
+                Capture(command);
+                if (ProcessFor(command) != null || unknown.Any(value => ReferenceEquals(value, command))) continue;
+                if (CancellationEstablished(command) != true) pending.Add(command);
+            }
+            return pending;
         }
     }
 
@@ -1346,6 +1391,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// settlement: once every execution has ended it releases the conditions they delivered late, names any late owned
         /// condition still present, then unsubscribes and runs the after-settlement steps (for example the cell's foreign-control
         /// check). Otherwise that settlement happens now. A condition already reported remaining is not reported twice.
+        /// Owner amendment 4 §2A (C3 review R4-F1): a command with no retained execution whose cancellation before execution is not
+        /// established (for example a successful null process read and a failed interruption) is a residual too and keeps the
+        /// reconciliation: a later captured execution then governs its settlement; only an established cancellation settles it.
         /// </summary>
         internal static JObject ReleaseOwnedEffects<TCommand, TProcess>(Sprint7CellIsolation isolation, string owner, Sprint7OwnedCommands<TCommand, TProcess> commands,
             Func<TCommand, bool> unfinished, Action<TCommand> interrupt, Func<TCommand, string> commandLabel, Func<TProcess, string> processLabel,
@@ -1369,6 +1417,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["remainingAtCleanup"] = now == null ? null : new JArray(now.ToArray());
             List<TProcess> live = commands.Live();
             List<TCommand> unknown = commands.Unknown;
+            List<TCommand> pending = commands.Pending();
             var executions = new JArray();
             foreach (TProcess process in commands.Processes)
             {
@@ -1383,8 +1432,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 executions.Add(new JObject { ["execution"] = "unreadable execution of " + commandLabel(exact), ["endedAtCleanup"] = null });
                 isolation.Residual(owner, "unreadable execution of " + commandLabel(exact), () => commands.EndedOf(exact));
             }
+            // R4-F1: no execution retained and no established cancellation: the command may still start.
+            foreach (TCommand command in pending)
+            {
+                TCommand exact = command;
+                executions.Add(new JObject { ["execution"] = "no execution retained by " + commandLabel(exact), ["endedAtCleanup"] = null, ["cancellationEstablished"] = false });
+                isolation.Residual(owner, "pending " + commandLabel(exact) + " (no execution retained; cancellation before execution not established)", () => commands.StartSettled(exact));
+            }
+            row["pendingCommands"] = new JArray(pending.Select(commandLabel).ToArray());
             row["ownedExecutions"] = executions;
-            row["ownedExecutionsLive"] = live.Count + unknown.Count;
+            row["ownedExecutionsLive"] = live.Count + unknown.Count + pending.Count;
             // Pre-build audit A1-F2: each operation of the reconciliation is tracked; the obligation is established only when the
             // executions have settled, the late sweep ran to its end, the remaining conditions read empty AND the subscription
             // release was established. Anything unfinished keeps an executable terminal action until terminal accounting names it.
@@ -1445,8 +1502,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     reconcileConditions("after settlement");
                     return outcome();
                 }
+                commands.Capture();
                 foreach (TProcess process in commands.Processes) { bool? ended = commands.Ended(process); if (ended != true) return ended; }
                 foreach (TCommand command in commands.Unknown) { bool? ended = commands.EndedOf(command); if (ended != true) return ended; }
+                // R4-F1: a command that can still start (or whose start cannot be read) keeps the reconciliation owned.
+                foreach (TCommand command in commands.Pending()) { bool? state = commands.StartSettled(command); if (state != true) return state; }
                 return reconcile();
             };
             // R3-F4: one reconciliation obligation for both paths, registered (with its bounded teardown action) before any
@@ -1473,7 +1533,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (lastRemaining == null) unresolved.Add("owned conditions unread at teardown");
                 return unresolved;
             });
-            bool? immediate = live.Count + unknown.Count == 0 ? isolation.SettleResidual(owner, obligation) : null;
+            bool? immediate = live.Count + unknown.Count + pending.Count == 0 ? isolation.SettleResidual(owner, obligation) : null;
             // Only what actually happened: settled at cleanup only when the immediate attempt established settlement.
             row["settledAtCleanup"] = immediate == true;
             // Audit 2 (A1-F2): the subscription is reported from its own release outcome, not inferred from the reconciliation.
@@ -1619,11 +1679,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (phase != null) phase.Record(unit, command, () => cell.Capture(command));
         }
 
-        /// <summary>Recovery C3 (audit A1-F5): the passive route's submission: the issue callback runs, then the single native run.</summary>
-        internal static void IssueAndRun<T>(T command, Action<T> issued, Action<T> run)
+        /// <summary>
+        /// Owner amendment 4 §2B (C3 review R2-F7): the Dust cell's command submission, shared by its passive and direct routes.
+        /// This operation itself registers the exact command with the cell's owner and in the phase's issued-command record
+        /// (with that owner's capture, run before any phase interruption), then performs the single native run. Both owners are
+        /// required: a submission without either is refused before the run.
+        /// </summary>
+        internal static void SubmitCellCommand<TUnit, TBase, TCommand, TProcess>(Sprint7OwnedCommands<TCommand, TProcess> cell, Sprint7IssuedCommands<TUnit, TBase> phase,
+            TUnit unit, TCommand command, Action<TUnit, TCommand> run) where TUnit : class where TBase : class where TCommand : class, TBase where TProcess : class
         {
-            if (issued != null) issued(command);
-            run(command);
+            if (cell == null) throw new ArgumentNullException("cell", "Dust command submission without its cell owner");
+            if (phase == null) throw new ArgumentNullException("phase", "Dust command submission without the phase's issued-command record");
+            RegisterCellCommand(cell, phase, unit, command);
+            run(unit, command);
         }
 
         /// <summary>

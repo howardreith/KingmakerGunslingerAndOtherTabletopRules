@@ -1764,6 +1764,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
+        /// Owner amendment 4 §2B (C3 review R2-F7): the Dust cell's single submission adapter: the shared production operation
+        /// registers the exact command with the cell's owner and in the phase record (with that owner's capture), then runs it
+        /// natively once. Used by the Dust cell's passive and direct routes and its owning cast.
+        /// </summary>
+        private void S7SubmitDust(S7DustConditions conditions, UnitEntityData unit, UnitUseAbility command)
+        {
+            Sprint7ObserverPolicy.SubmitCellCommand(conditions.Commands, _s7Issued, unit, command, (actor, value) => actor.Commands.Run(value));
+        }
+
+        /// <summary>
         /// Recovery C3 (R2-F7, audit A1-F6): interrupts exactly one issued command; the actor's queue maintenance (which would
         /// start the queue head) runs only while its queue holds no command outside the runner's record.
         /// </summary>
@@ -2417,7 +2427,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal S7DustConditions(BlueprintBuff sickened, Action<string> publish)
             {
                 _sickened = sickened;
-                _owned = new Sprint7OwnedCommands<UnitUseAbility, Kingmaker.Controllers.AbilityExecutionProcess>(command => command.ExecutionProcess, process => process.IsEnded, publish);
+                // Owner amendment 4 §2A (C3 review R4-F1): cancellation before execution is established only by a finished command
+                // that never acted and holds no process (UnitUseAbility assigns ExecutionProcess only in OnAction, immediately before
+                // IsActed is set; Interrupt finishes a command). A missing or destroyed executor establishes nothing.
+                _owned = new Sprint7OwnedCommands<UnitUseAbility, Kingmaker.Controllers.AbilityExecutionProcess>(command => command.ExecutionProcess, process => process.IsEnded, publish,
+                    command => command.IsFinished && !command.IsActed && command.ExecutionProcess == null);
                 _conditions = new Sprint7ConditionOwner<Buff>(Present, Attribution, Remove, Identity, publish);
             }
 
@@ -2609,13 +2623,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             JArray cellFailures)
         {
             var command = new UnitUseAbility(data, new TargetWrapper(target));
-            // Audit A2-F3: registered with the cell's owner and the phase record (with the owner's capture) before its run.
-            Sprint7ObserverPolicy.RegisterCellCommand(ledger.Commands, _s7Issued, dust, command);
             // Owner amendment 3 (R4-F1): this cast's own execution process, retained when first seen.
             Kingmaker.Controllers.AbilityExecutionProcess own = null;
             try
             {
-                S7Run(dust, command);
+                // Audit A2-F3, amendment 4 §2B: the shared submission registers it with the cell's owner and the phase record
+                // (with the owner's capture), then runs it once.
+                S7SubmitDust(ledger, dust, command);
                 DateTime deadline = DateTime.UtcNow.AddSeconds(20);
                 while (DateTime.UtcNow < deadline && !(command.IsFinished && (command.ExecutionProcess == null || command.ExecutionProcess.IsEnded)))
                 { if (own == null) own = command.ExecutionProcess; ledger.Capture(command); yield return 0; }
@@ -2750,15 +2764,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool unownedControlDue = false;
             var releaseFailures = new JArray();
             Action clearSickened = () => { foreach (string failure in conditions.ReleaseAndPublish("")) releaseFailures.Add(failure); };
-            // Every command this cell issues is registered with the ledger before it runs (R4-F4). Audit A1-F5, A2-F3: both routes
-            // use the production registration: the cell's owner and the phase record (with the owner's capture, which a phase retry
-            // runs before interrupting), before the single native run (the passive route's run is inside R6RunPassive).
+            // Every command this cell issues is registered with the ledger before it runs (R4-F4). Audit A1-F5, A2-F3, amendment 4
+            // §2B: both routes submit through the one production operation, which registers the command with the cell's owner and
+            // the phase record (with the owner's capture, which a phase retry runs before interrupting) and performs the single
+            // native run (on the passive route, R6RunPassive hands its run to that submission).
             Func<UnitEntityData, AbilityData, TargetWrapper, JObject, R6Clip, IEnumerable<int>> passive = (unit, data, target, cast, clip) =>
-                R6RunPassive(unit, data, target, cast, clip, command => Sprint7ObserverPolicy.RegisterCellCommand(conditions.Commands, _s7Issued, unit, command));
+                R6RunPassive(unit, data, target, cast, clip, command => S7SubmitDust(conditions, unit, command));
             Func<UnitEntityData, UnitUseAbility, UnitUseAbility> issue = (unit, command) =>
             {
-                Sprint7ObserverPolicy.RegisterCellCommand(conditions.Commands, _s7Issued, unit, command);
-                S7Run(unit, command);
+                S7SubmitDust(conditions, unit, command);
                 return command;
             };
             Func<UnitEntityData, int, int, JObject> laterCast = (caster, savesFrom, damageFrom) => new JObject {
