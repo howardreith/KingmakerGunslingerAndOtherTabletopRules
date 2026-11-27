@@ -1,0 +1,57 @@
+param([Parameter(Mandatory = $true)][string]$FixtureArea, [Parameter(Mandatory = $true)][string]$Producer, [Parameter(Mandatory = $true)][string]$Commit,
+    [Parameter(Mandatory = $true)][string]$Package, [Parameter(Mandatory = $true)][string]$OutFile, [switch]$CheckOnly)
+# Bound cleanup retry for the round-9 focused run (R8-F1), then the post-cleanup admission (R7-F2).
+# The only accepted target is THIS run's disposable fixture area, identified from the run's own records (driver log and
+# focused-r9.json case details): worktrees\focused-r9-35e4876cf5ba4935933f23594f0c5f09. The fixture area and the retained
+# producer must be disjoint in both directions. Only files whose hard-link count is 1 (owned by the fixture alone) are
+# deleted; a file with more than one hard-link name (a Git object file the local clone shares with the lab repository's
+# object store, or any other shared file) is left in place with its attributes unchanged, and so are the directories that
+# still contain one. No attribute of a shared file is changed. With -CheckOnly nothing is changed (the path controls).
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+$expected = '<dev>\KingmakerGunslingerLab\worktrees\focused-r9-35e4876cf5ba4935933f23594f0c5f09'
+function Get-Full([string] $Path) { [IO.Path]::GetFullPath($Path).TrimEnd('\') }
+function Test-Within([string] $Child, [string] $Parent) { (Get-Full $Child).StartsWith((Get-Full $Parent) + '\', [StringComparison]::OrdinalIgnoreCase) -or [string]::Equals((Get-Full $Child), (Get-Full $Parent), [StringComparison]::OrdinalIgnoreCase) }
+$fixture = Get-Full $FixtureArea; $producerFull = Get-Full $Producer
+if (-not [string]::Equals($fixture, $expected, [StringComparison]::OrdinalIgnoreCase)) { throw "REFUSED: not this run's fixture area ($fixture; expected $expected)." }
+if (Test-Within $producerFull $fixture) { throw "REFUSED: the retained producer $producerFull is inside the fixture area $fixture." }
+if (Test-Within $fixture $producerFull) { throw "REFUSED: the fixture area $fixture is inside the retained producer $producerFull." }
+if (-not (Test-Path -LiteralPath $fixture -PathType Container)) { throw "REFUSED: the fixture area $fixture does not exist; nothing is reported as cleaned." }
+if ($CheckOnly) { "CHECK-ONLY ACCEPTED $fixture (producer $producerFull disjoint)"; return }
+. '<dev>\KingmakerWakingRuneLab\worktrees\umm-0311-baseline\scripts\KwrFileIdentity.ps1'
+$deleted = 0; $sharedKept = 0; $failed = [Collections.Generic.List[string]]::new(); $sharedSample = [Collections.Generic.List[string]]::new()
+$before = @(Get-ChildItem -LiteralPath $fixture -Recurse -Force -File).Count
+foreach ($file in @(Get-ChildItem -LiteralPath $fixture -Recurse -Force -File)) {
+    $links = [KwrFileIdentityV6]::LinkCountOf($file.FullName)
+    if ($links -gt 1) { $sharedKept++; if ($sharedSample.Count -lt 3) { $sharedSample.Add($file.FullName.Substring($fixture.Length + 1) + " (links $links)") }; continue }
+    try {
+        if ($file.Attributes -band [IO.FileAttributes]::ReadOnly) { $file.Attributes = $file.Attributes -band (-bnot [IO.FileAttributes]::ReadOnly) }   # single-link: owned by the fixture alone
+        [IO.File]::Delete($file.FullName); $deleted++
+    }
+    catch { $failed.Add($file.FullName.Substring($fixture.Length + 1) + ': ' + $_.Exception.Message) }
+}
+foreach ($dir in @(Get-ChildItem -LiteralPath $fixture -Recurse -Force -Directory | Sort-Object { $_.FullName.Length } -Descending)) {
+    if (@(Get-ChildItem -LiteralPath $dir.FullName -Force).Count -eq 0) { [IO.Directory]::Delete($dir.FullName, $false) }
+}
+$remaining = @(Get-ChildItem -LiteralPath $fixture -Recurse -Force -File)
+$remainingShared = @($remaining | Where-Object { [KwrFileIdentityV6]::LinkCountOf($_.FullName) -gt 1 }).Count
+if ($remaining.Count -eq 0 -and @(Get-ChildItem -LiteralPath $fixture -Force).Count -eq 0) { [IO.Directory]::Delete($fixture, $false) }
+$cleanup = [ordered]@{ fixtureArea = $fixture; filesBefore = $before; ownedFilesDeleted = $deleted; sharedFilesKept = $sharedKept; sharedSample = @($sharedSample); deleteFailures = @($failed); filesRemaining = $remaining.Count; remainingShared = $remainingShared; fixtureAreaRemoved = -not (Test-Path -LiteralPath $fixture) }
+# Post-cleanup admission at the receipt-bound location (R7-F2).
+Set-Location -LiteralPath $producerFull
+$status = @(& git -C $producerFull status --porcelain).Count
+$head = (& git -C $producerFull rev-parse HEAD).Trim()
+$harness = Join-Path $producerFull 'scripts\RuntimeHarness.Common.ps1'
+$command = ". '$($harness.Replace("'", "''"))'; `$r = Read-KmgBuildLocalManifest -PackagePath '$($Package.Replace("'", "''"))' -RepositoryRoot '$($producerFull.Replace("'", "''"))' -DevelopmentPurpose 'umm-0311-admission' -RequireCurrentMaterialInputs; 'ADMITTED commit=' + `$r.commit + ' zip=' + `$r.packageSha256 + ' dll=' + `$r.dllSha256 + ' mvid=' + `$r.dllMvid + ' measuredDll=' + `$r.measuredDll.sha256 + ' measuredMvid=' + `$r.measuredDll.mvid"
+$previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+try { $out = (($null | & powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command $command 2>&1) | ForEach-Object { "$_" }) -join "`n"; $exit = $LASTEXITCODE } finally { $ErrorActionPreference = $previous }
+$m = [regex]::Match($out, 'ADMITTED commit=([0-9a-f]{40}) zip=([0-9a-f]{64}) dll=([0-9a-f]{64}) mvid=(\S+) measuredDll=([0-9a-f]{64}) measuredMvid=(\S+)')
+$result = [ordered]@{ schema = 'kmg.focused-r9-cleanup2.v1'; recordedUtc = [DateTime]::UtcNow.ToString('o'); cleanup = $cleanup
+    admission = [ordered]@{ command = "Read-KmgBuildLocalManifest -PackagePath <retained ZIP> -RepositoryRoot <retained producer> -DevelopmentPurpose umm-0311-admission -RequireCurrentMaterialInputs (fresh Windows PowerShell)"; exit = $exit
+        producerStatusEntries = $status; producerHead = $head
+        producer = $(if ($m.Success) { $m.Groups[1].Value }); packageSha256 = $(if ($m.Success) { $m.Groups[2].Value }); dllSha256 = $(if ($m.Success) { $m.Groups[3].Value }); dllMvid = $(if ($m.Success) { $m.Groups[4].Value })
+        measuredDllSha256 = $(if ($m.Success) { $m.Groups[5].Value }); measuredMvid = $(if ($m.Success) { $m.Groups[6].Value }); package = $Package; repositoryRoot = $producerFull } }
+$result | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $OutFile -Encoding UTF8
+"CLEANUP owned-deleted=$deleted shared-kept=$sharedKept failures=$($failed.Count) remaining=$($remaining.Count) (shared $remainingShared) removed=$($cleanup.fixtureAreaRemoved)"
+"ADMISSION exit=$exit " + $m.Value
+if ($exit -ne 0 -or -not $m.Success -or $m.Groups[1].Value -cne $Commit) { exit 1 }

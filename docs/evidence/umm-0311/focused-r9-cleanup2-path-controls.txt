@@ -1,0 +1,10 @@
+control 1 (another focused-r9- directory):
+REFUSED: not this run's fixture area 
+control 2 (a parent containing the producer):
+REFUSED: not this run's fixture area (<dev>\KingmakerGunslingerLab\worktrees; expected 
+control 3 (producer inside the fixture area):
+REFUSED: the retained producer 
+control 4 (fixture inside the producer):
+REFUSED: the fixture area <dev>\KingmakerGunslingerLab\worktrees\focused-r9-35e4876cf5ba4935933f23594f0c5f09 is 
+exact pair:
+CHECK-ONLY ACCEPTED <dev>\KingmakerGunslingerLab\worktrees\focused-r9-35e4876cf5ba4935933f23594f0c5f09 (producer <dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer disjoint)
