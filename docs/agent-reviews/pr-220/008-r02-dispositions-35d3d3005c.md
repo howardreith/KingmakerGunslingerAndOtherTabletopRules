@@ -1,0 +1,45 @@
+<!-- agent-review:v1 enrollment=kmg-codex-umm-0311-pinned-build-20261124-20261123223003-1af6 key=r02-dispositions-35d3d3005c part=1/1 sha256=35d3d3005cd24ce0290310cef80538487790e4fb4cb5fa22a7aca65f508059ce -->
+### Claude Opus — finding dispositions — round 2
+
+Candidate after corrections: `117e368bb487472ae09edfbda7e1d3a1bf30d794`
+
+- **R1-F2** — `fixed` — commits: `92539bb24a`, `117e368bb4`
+  docs/evidence/umm-0311/candidate-admission.json cases validator-genuine-baseline-zip-accepted, validator-extra-runtime-dll-at-archive-root-refused, validator-extra-runtime-dll-at-mod-tree-refused, validator-relative-path-after-location-change-accepted (Set-Location then '.\<package>'), validator-noncanonical-entry-beside-mod-directory-refused ('KingmakerGunslinger/../KingmakerGunslinger-notes.md' outside the mod root). common.ps1 Expand-KmgPackageEntries is the one checked extraction used by validate-package and staging.
+- **R1-F3** — `fixed` — commits: `92539bb24a`, `91139e4368`, `117e368bb4`
+  docs/evidence/umm-0311/candidate-admission.json cases receipt-records-matching-compiler-and-packaged-identities (compiler = packaged 2225cda1..., stamp = producer) and other-baseline-build-with-original-producer-receipt-refused (v0.0.195 DLL as both loose and packaged DLL, receipt digests/MVIDs rewritten to it, producer unchanged: 'built from ef0e1fe15d..., not the receipt's producing commit'); docs/evidence/umm-0311/development-receipt.json compilerDllSha256 = packagedDllSha256 = dllSha256 = 1ef167cc..., embeddedGitCommit 91139e4368.
+- **R1-F4** — `fixed` — commits: `92539bb24a`, `117e368bb4`
+  docs/evidence/umm-0311/candidate-admission.json cases candidate-after-shipped-readme-change-refused and candidate-after-packaging-helper-change-refused (scripts/common.ps1), both outside the earlier path list, plus project and reference-helper refusals; candidate-after-review-documentation-change-admitted (docs/agent-reviews/ only) and candidate-admitted-again-after-reverts (matching control).
+- **R1-F8** — `fixed` — commits: `92539bb24a`, `117e368bb4`
+  docs/evidence/umm-0311/pinned-loader-msbuild.json cases direct-msbuild-controlled-exact-set (accepted), direct-msbuild-controlled-umm-only-mismatch-set and direct-msbuild-controlled-harmony-only-mismatch-set (refused naming UnityModManager.dll and 0Harmony12.dll respectively), direct-msbuild-installed-loader-judged-by-bytes (expected verdict from measurement; installation only read).
+- **R1-F10** — `fixed` — commits: `92539bb24a`, `0440edf673`, `117e368bb4`
+  docs/UMM-LOADER-COMPATIBILITY.md 'Every MSBuild compile': both Publish-Release.ps1 routes (Build-Local exact-reference with a bundle; build.ps1 + package.ps1 MSBuild without one) and the assurance limited to the verified releases; scripts/Assert-PinnedLoaderReferences.ps1 diagnostic; docs/evidence/umm-0311/pin-diagnostics.txt captures both: mismatched ('left untouched: inspect it, move or delete that one file yourself, then rerun scripts\build.ps1') and absent ('Run scripts\build.ps1 (it fetches absent pinned files ...)'); docs/BUILDING.md aligned.
+- **R2-F1** — `fixed` — commits: `92539bb24a`, `117e368bb4`
+  docs/evidence/umm-0311/complete-suite-unfiltered.txt (unfiltered, no inherited gate variables: test-domain compiled production, loader case PASS, 3189 tests failures=0); controller gate receipt on 117e368bb4 PASS; mismatched-binding-refusal.txt (bound SHA-256 differs: 'not the bound compiler output'); development-gate.txt 13/13 (build.ps1 compiles production before the domain tests and passes the DLL).
+- **R2-F2** — `fixed` — commits: `92539bb24a`, `117e368bb4`
+  docs/evidence/umm-0311/candidate-admission.json cases historical-identified-older-release-admitted (v0.0.188 by scripts/historical-release-records.json: tag v0.0.188 -> 097e522f..., package 64d83955...), historical-changed-archive-refused, historical-same-version-development-package-refused, historical-conflicting-mode-arguments-refused (Deploy-Local -HistoricalReleaseControl with -DevelopmentPurpose, and without -HistoricalReleaseVersion, refused before anything is read; loader preflight likewise), loader-preflight-admits-recorded-historical-release.
+- **R2-F3** — `fixed` — commits: `92539bb24a`, `117e368bb4`
+  docs/evidence/umm-0311/candidate-admission.json cases staging-refuses-a-package-replaced-before-the-private-copy ('The package changed after admission; nothing was staged') and staging-uses-only-the-admitted-bytes-after-the-supplied-path-changes (Deploy-Local's New-KmgAdmittedPackageCopy/Expand-KmgAdmittedPackage and the loader harness's Set-LcGameCopyMods both stage the admitted DLL 2225cda1... after the supplied path was replaced).
+- **R2-F4** — `fixed` — commits: `92539bb24a`, `117e368bb4`
+  docs/evidence/umm-0311/candidate-admission.json cases loader-preflight-admits-matching-candidate (normal purpose) and loader-preflight-purpose-with-apostrophe-refused-by-purpose-validation ('Development purpose must be a lower-case hyphenated name' before any child; no 'Candidate admission refused'). Invoke-LcCandidateAdmission.ps1 receives every value as a bound parameter.
+- **R2-F5** — `fixed` — commits: `92539bb24a`, `117e368bb4`
+  docs/evidence/umm-0311/loader-compat-safety.txt: Invoke-LoaderCompatSession.ps1 -SafetyTests 'PASS=102 FAIL=0 (required scenarios 44 of 44 executed)', including missing-candidate-refused and missing-harness-refused (harness prerequisites now checked first); invalid candidates are covered by the candidate-admission preflight refusals.
+- **R2-F6** — `fixed` — commits: `92539bb24a`, `117e368bb4`
+  docs/evidence/umm-0311/candidate-admission.json cases validator-genuine-baseline-zip-accepted (scalar string) and validator-array-valued-packaged-minimum-refused ('Packaged ManagerVersion must equal the pinned loader floor').
+- **R2-F7** — `fixed` — commits: `92539bb24a`, `117e368bb4`
+  scripts/Test-CandidateAdmission.ps1 disposes both fixture archive handles and its finally removes the temporary clone with -ErrorAction Stop, warning and throwing if it remains; the 29/29 run exited 0 with the clone removed.
+- **R2-F8** — `fixed` — commits: `92539bb24a`, `117e368bb4`
+  tests/KingmakerGunslinger.DomainTests/LoaderReferenceContractTests.cs no longer parses the pin file; test-domain.ps1 passes the identities from Get-KmgLoaderReferencePins (structural read) in KMG_EXPECTED_LOADER_REFERENCES, so property order or layout cannot change the expected AssemblyRefs; complete-suite and gate runs pass.
+
+**Validation (developer-reported):**
+
+| Command | Required | Result | Duration | Scope and limits |
+|---|---|---|---|---|
+| python C:/Dev/agent-review/agent_review.py verify --enrollment kmg-codex-umm-0311-pinned-build-20261124-20261123223003-1af6 --gate focused -- -Filter loader.production-dll-references-pinned-loader | yes | pass | 2.8s | Controller receipt on 117e368bb4 (log gate-focused-117e368bb487-...-20261124T080717089675Z.log): production compiled, selected 1 of 3189, PASS loader.production-dll-references-pinned-loader, Completed 1 tests; failures=0. |
+| scripts/test-domain.ps1 -Configuration Release -SkipRepositoryValidation, unfiltered, KMG_TEST_FILTER and KMG_PRODUCTION_* unset, at 91139e4368 | no | pass | ~3 min | docs/evidence/umm-0311/complete-suite-unfiltered.txt: production compiled by test-domain, PASS loader.production-dll-references-pinned-loader, Completed 3189 tests; failures=0 (the worktree was given the ignored IL inspection artifact the bodyguard/whiteout native-contract cases read). |
+| scripts/Test-CandidateAdmission.ps1 (temporary clone of 91139e4368) | no | pass | ~16 min | docs/evidence/umm-0311/candidate-admission.json 29/29. |
+| scripts/Test-PinnedLoaderMsBuild.ps1 at 92539bb24a | no | pass | ~6 min | docs/evidence/umm-0311/pinned-loader-msbuild.json 12/12 (91139e4368 changes only Build-Local receipt fields). |
+| Build-Local -DevelopmentPurpose umm-0311-baseline at 91139e4368; validate-package -PassThru; Read-KmgBuildLocalManifest admission; LoaderApiAudit | no | pass | ~8 min build | development-receipt.json, development-validation.json, development-selected-tests.txt, package-validation.json, api-audit.json. The candidate was produced by a quiet-window loop whose console log was overwritten; its identity was verified independently (standalone validation, development admission with current material inputs, audit). |
+| Test-LoaderReferencePins.ps1, Test-DevelopmentGate.ps1, Invoke-LoaderCompatSession.ps1 -SafetyTests, local focused gate, mismatched-binding run, pin diagnostics at 0440edf673 | no | pass | ~4 min | loader-reference-pins.txt 35/35; development-gate.txt 13/13; loader-compat-safety.txt 102/102 (44 of 44 required scenarios); mismatched-binding-refusal.txt; pin-diagnostics.txt. |
+| Native loader rows and combined stacks | no | not_run | 0 | Unchanged: the disposable loader-compat game copy is in active use by enrollment kmg-codex-s7-visual-audio-remediation; no reviewed umm-0.33.4 profile. |
+
+_Model-generated developer response (Claude opus / high), posted by the agent-review controller through the owner's GitHub account; not a human review._

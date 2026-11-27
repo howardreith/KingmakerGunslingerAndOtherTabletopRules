@@ -1,0 +1,13 @@
+Kingmaker Gunslinger domain, firearm-state, and combat-rule tests
+KMG_TEST_FILTER=loader.production-dll-references-pinned-loader; selected 1 of 3189 registered tests. This is a focused run and is not a gate.
+FAIL loader.production-dll-references-pinned-loader: System.InvalidOperationException: The production DLL is not the bound compiler output: d001bcf0a72b926f55c94d7edd53f8907a74bfc3ebfa15574be0d775b5364146 vs 0000000000000000000000000000000000000000000000000000000000000000
+   at KingmakerGunslinger.DomainTests.LoaderReferenceContractTests.ProductionDllReferencesExactlyThePinnedLoader() in <repo>\tests\KingmakerGunslinger.DomainTests\LoaderReferenceContractTests.cs:line 23
+   at KingmakerGunslinger.DomainTests.Program.Main(String[] args) in <repo>\tests\KingmakerGunslinger.DomainTests\Program.cs:line 3279
+Completed 1 tests; failures=1. Registered 3189; elapsed 0.0s.
+EXIT 1
+test-domain.ps1 with a compile-time digest that is not the DLL now at the path:
+Repository validation skipped: the caller runs it, or this is a focused run.
+Building dependency-free domain/reflection tests (Release) with <buildtools>\MSBuild\Current\Bin\MSBuild.exe
+
+  KingmakerGunslinger.DomainTests -> <repo>\artifacts\tests\Release\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe
+REFUSED The production DLL changed after its compile (1111111111111111111111111111111111111111111111111111111111111111); the loader-reference case was not run.

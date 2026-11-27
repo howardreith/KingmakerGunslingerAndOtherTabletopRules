@@ -4,7 +4,9 @@ param(
     [string]$PackagePath,
     [ValidateSet('Debug', 'Release')]
     [string]$Configuration = 'Release',
-    [switch]$AllowMissingFirearmSoundBank
+    [switch]$AllowMissingFirearmSoundBank,
+    # Returns the measured packaged DLL identity (SHA-256, MVID, references) for admission callers.
+    [switch]$PassThru
 )
 
 Set-StrictMode -Version Latest
@@ -24,6 +26,8 @@ $info = Get-KmgModInfo -RepositoryRoot $repositoryRoot
 if (-not (Test-Path -LiteralPath $PackagePath -PathType Leaf)) {
     throw "Package does not exist: $PackagePath"
 }
+# Resolved once, against the PowerShell location, and used everywhere below.
+$PackagePath = (Resolve-Path -LiteralPath $PackagePath).ProviderPath
 
 $tempDirectory = Join-Path ([IO.Path]::GetTempPath()) ("KmgPackageValidation-" + [Guid]::NewGuid().ToString('N'))
 # Strict validation must use and remove only its private temp extraction even
@@ -33,13 +37,11 @@ New-Item -ItemType Directory -Path $tempDirectory -Force -WhatIf:$false | Out-Nu
 try {
     # The destination is unique and empty. Avoid the Force overwrite cleanup,
     # which can race on a just-extracted file.
-    Expand-Archive -LiteralPath $PackagePath -DestinationPath $tempDirectory -WhatIf:$false
-    $roots = @(Get-ChildItem -LiteralPath $tempDirectory -Directory)
-    if ($roots.Count -ne 1 -or $roots[0].Name -ne $info.Id) {
-        throw "Package must contain exactly one root directory named '$($info.Id)'."
-    }
-
-    $modDirectory = $roots[0].FullName
+    # The complete archive entry set: every entry lies under the single mod root, so nothing beside the mod directory
+    # (for example a runtime DLL at the archive root) can ship.
+    # Every entry's normalized destination is checked and exactly those entries are extracted (nothing beside the mod
+    # root, no files at the extraction root).
+    $modDirectory = Expand-KmgPackageEntries -ZipPath $PackagePath -Destination $tempDirectory -ModId $info.Id
     $expected = @(
         'CHANGELOG.md',
         'Info.json',
@@ -426,12 +428,13 @@ try {
 
     # Declared loader floor equals the pinned build floor; exactly one binary;
     # no loader, Harmony, game or Unity assembly copied into the mod.
-    Assert-KmgPackagedLoaderContract -ModDirectory $modDirectory
+    $packagedDllIdentity = Assert-KmgPackagedLoaderContract -ModDirectory $modDirectory
     $audioArtifacts=@(Get-ChildItem -LiteralPath $modDirectory -Recurse -File | Where-Object {$_.Extension -in @('.bnk','.wem')})
     if($audioArtifacts.Count -gt 1 -or ($audioArtifacts.Count -eq 1 -and $audioArtifacts[0].Name -cne 'KMG_Firearms.bnk')){throw 'Package contains forbidden or unexpected Wwise artifacts.'}
     if(Get-ChildItem -LiteralPath $modDirectory -Recurse -File | Where-Object {$_.Name -ieq 'Init.bnk'}){throw 'Package contains forbidden Init.bnk.'}
 }
 finally {
+    if ($PassThru -and $null -ne (Get-Variable -Name packagedDllIdentity -ValueOnly -ErrorAction SilentlyContinue)) { $packagedDllIdentity }
     if (Test-Path -LiteralPath $tempDirectory) {
         # Package validation owns this temporary extraction even when a caller
         # is in -WhatIf mode; keep that preference from leaking the scratch.

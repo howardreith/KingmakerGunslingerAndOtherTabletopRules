@@ -386,13 +386,24 @@ function Read-KmgBuildLocalManifest {
         # Names the one development purpose this caller may consume. Without
         # it, a development candidate is refused; with it, only a development
         # candidate built for that purpose is accepted.
-        [string]$DevelopmentPurpose
+        [string]$DevelopmentPurpose,
+        # Admission for staging (Deploy-Local, the loader harness): the candidate's material inputs must equal its
+        # producing commit. Callers name an explicitly historical control with -HistoricalReleaseControl instead.
+        [switch]$RequireCurrentMaterialInputs
     )
     $package = (Resolve-Path -LiteralPath $PackagePath).Path
     if (-not [string]::IsNullOrEmpty($DevelopmentPurpose)) {
         $receipt = Read-KmgDevelopmentCandidate -PackagePath $package `
             -RepositoryRoot $RepositoryRoot -Purpose $DevelopmentPurpose
-        & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $package
+        $measured = & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $package -PassThru | Select-Object -Last 1
+        Assert-KmgReceiptDescribesPackagedDll -Receipt $receipt -Measured $measured
+        if ($RequireCurrentMaterialInputs) {
+            Assert-KmgStampedByReceiptCommit -Receipt $receipt -Measured $measured
+            Assert-KmgProducedFromCleanCommit -Receipt $receipt
+            $null = Assert-KmgPackagedRepositoryFilesMatchCommit -PackagePath $package -RepositoryRoot $RepositoryRoot -Commit ([string]$receipt.commit) -ExpectedSha256 ([string]$receipt.packageSha256)
+            Assert-KmgCandidateMaterialInputsCurrent -RepositoryRoot $RepositoryRoot -Commit ([string]$receipt.commit)
+        }
+        $receipt | Add-Member -NotePropertyName measuredDll -NotePropertyValue $measured -Force
         return $receipt
     }
     Assert-KmgNotDevelopmentCandidate -PackagePath $package -RepositoryRoot $RepositoryRoot
@@ -420,8 +431,208 @@ function Read-KmgBuildLocalManifest {
     if ($manifest.packageSha256 -ne $actualHash) {
         throw 'Build-Local package hash does not match its manifest.'
     }
-    & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $package
+    $measured = & (Join-Path $PSScriptRoot 'validate-package.ps1') -PackagePath $package -PassThru | Select-Object -Last 1
+    Assert-KmgReceiptDescribesPackagedDll -Receipt $manifest -Measured $measured
+    if ($RequireCurrentMaterialInputs) {
+        Assert-KmgStampedByReceiptCommit -Receipt $manifest -Measured $measured
+        Assert-KmgProducedFromCleanCommit -Receipt $manifest
+        $null = Assert-KmgPackagedRepositoryFilesMatchCommit -PackagePath $package -RepositoryRoot $RepositoryRoot -Commit ([string]$manifest.commit) -ExpectedSha256 ([string]$manifest.packageSha256)
+        Assert-KmgCandidateMaterialInputsCurrent -RepositoryRoot $RepositoryRoot -Commit ([string]$manifest.commit)
+    }
+    $manifest | Add-Member -NotePropertyName measuredDll -NotePropertyValue $measured -Force
     return $manifest
+}
+
+# The DLL inside the finished ZIP must be the build its receipt names (SHA-256 and MVID), and carry the receipt's source
+# stamp (the producing commit in its informational version) when the build recorded one.
+# Current-candidate admission compares the material inputs with the receipt's producing commit, so that claim is
+# verified first: the packaged DLL must carry a source stamp, and the stamp must be that commit. A DLL without a stamp
+# (an MSBuild-route compile, or a receipt format that predates the stamp) is not admitted for staging.
+function Assert-KmgStampedByReceiptCommit {
+    param([Parameter(Mandatory = $true)]$Receipt, [Parameter(Mandatory = $true)]$Measured)
+    $stamp = if ($Measured.PSObject.Properties['gitCommit'] -and $Measured.gitCommit) { [string]$Measured.gitCommit } else { '' }
+    if (-not $stamp) { throw "The DLL inside the package carries no source stamp, so its producing commit $($Receipt.commit) cannot be verified; rebuild it with Build-Local." }
+    if ($stamp -cne [string]$Receipt.commit) { throw "The DLL inside the package was built from $stamp, not the receipt's producing commit $($Receipt.commit)." }
+}
+
+function Assert-KmgReceiptDescribesPackagedDll {
+    param([Parameter(Mandatory = $true)]$Receipt, $Measured)
+    if ($null -eq $Measured) { throw 'Package validation returned no measured DLL identity.' }
+    if ([string]$Receipt.dllSha256 -cne [string]$Measured.sha256 -or [string]$Receipt.dllMvid -cne [string]$Measured.mvid) {
+        throw "The DLL inside the package is not the build its receipt names (receipt $($Receipt.dllSha256)/$($Receipt.dllMvid), packaged $($Measured.sha256)/$($Measured.mvid))."
+    }
+    # A DLL that carries its source stamp (AssemblyMetadata GitCommit, written by the exact-reference builder) must have
+    # been built from the receipt's producing commit.
+    $embedded = if ($Measured.PSObject.Properties['gitCommit'] -and $Measured.gitCommit) { [string]$Measured.gitCommit } else { '' }
+    if ($embedded -and $embedded -cne [string]$Receipt.commit) {
+        throw "The DLL inside the package was built from $embedded, not the receipt's producing commit $($Receipt.commit)."
+    }
+    # A receipt that records the packaged DLL or the embedded source stamp must agree with the measured DLL; a recorded
+    # stamp requires the measured DLL to carry it.
+    if ($Receipt.PSObject.Properties['packagedDllSha256'] -and [string]$Receipt.packagedDllSha256 -cne [string]$Measured.sha256) {
+        throw "The DLL inside the package is not the packaged DLL its receipt records ($($Receipt.packagedDllSha256))."
+    }
+    if ($Receipt.PSObject.Properties['embeddedGitCommit']) {
+        if (-not $embedded) { throw "The receipt records the source stamp $($Receipt.embeddedGitCommit), but the DLL inside the package carries none." }
+        if ([string]$Receipt.embeddedGitCommit -cne $embedded -or [string]$Receipt.embeddedGitCommit -cne [string]$Receipt.commit) {
+            throw "The receipt's recorded source stamp $($Receipt.embeddedGitCommit) is not the packaged DLL's stamp $embedded or its producing commit."
+        }
+    }
+    # A receipt that records the exact compiler output must name that same DLL.
+    # Each recorded compiler field is checked on its own (a receipt may carry either without the other).
+    if ($Receipt.PSObject.Properties['compilerDllSha256'] -and [string]$Receipt.compilerDllSha256 -cne [string]$Measured.sha256) {
+        throw "The DLL inside the package is not the exact compiler output its receipt records ($($Receipt.compilerDllSha256))."
+    }
+    if ($Receipt.PSObject.Properties['compilerDllMvid'] -and [string]$Receipt.compilerDllMvid -cne [string]$Measured.mvid) {
+        throw "The DLL inside the package is not the exact compiler output its receipt records (MVID $($Receipt.compilerDllMvid))."
+    }
+}
+
+# An explicitly identified historical release, admitted only by its committed release record
+# (scripts/historical-release-records.json): the package bytes must be the recorded release package, the release tag
+# must resolve to the recorded commit, and the packaged DLL must be the recorded DLL built from that commit. A
+# development package or any other build of the same version is refused.
+function Read-KmgHistoricalReleasePackage {
+    param(
+        [Parameter(Mandatory = $true)][string]$PackagePath,
+        [Parameter(Mandatory = $true)][string]$RepositoryRoot,
+        [Parameter(Mandatory = $true)][string]$Version
+    )
+    # The trusted record is the one committed at HEAD; a working-tree record that differs from it is refused, so an
+    # uncommitted edit can never authorize another package.
+    $previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    try { $committedText = (@(& git -C $RepositoryRoot show 'HEAD:scripts/historical-release-records.json' 2>$null) -join "`n"); $showExit = $LASTEXITCODE }
+    finally { $ErrorActionPreference = $previous }
+    if ($showExit -ne 0 -or -not $committedText) { throw 'The historical release record is not committed at HEAD.' }
+    $records = $committedText | ConvertFrom-Json
+    $workingRecords = Get-Content -LiteralPath (Join-Path $RepositoryRoot 'scripts\historical-release-records.json') -Raw | ConvertFrom-Json
+    if (($workingRecords | ConvertTo-Json -Depth 8 -Compress) -cne ($records | ConvertTo-Json -Depth 8 -Compress)) { throw 'The working-tree historical release record differs from the committed record; commit or revert it.' }
+    if ($records.schemaVersion -ne 1) { throw 'The historical release record has an unknown schema.' }
+    $record = @($records.releases | Where-Object { [string]$_.version -ceq $Version })
+    if ($record.Count -ne 1) { throw "No historical release record names version '$Version'." }
+    $record = $record[0]
+    $package = (Resolve-Path -LiteralPath $PackagePath).ProviderPath
+    $packageSha = Get-KmgSha256 -Path $package
+    if ($packageSha -cne [string]$record.packageSha256) {
+        throw "The package is not the recorded v$Version release package (package $packageSha, recorded $($record.packageSha256))."
+    }
+    $previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    try { $tagCommit = (& git -C $RepositoryRoot rev-parse --verify --quiet ("refs/tags/$($record.tag)^{commit}") 2>$null | Select-Object -First 1) }
+    finally { $ErrorActionPreference = $previous }
+    if ([string]$tagCommit -cne [string]$record.tagCommit) { throw "The release tag $($record.tag) does not resolve to the recorded commit $($record.tagCommit)." }
+    $extraction = Join-Path ([IO.Path]::GetTempPath()) ('KmgHistoricalRelease-' + [Guid]::NewGuid().ToString('N'))
+    [void][IO.Directory]::CreateDirectory($extraction)
+    try {
+        $modDirectory = Expand-KmgPackageEntries -ZipPath $package -Destination $extraction -ModId 'KingmakerGunslinger'
+        $info = Get-Content -LiteralPath (Join-Path $modDirectory 'Info.json') -Raw | ConvertFrom-Json
+        if ([string]$info.Version -cne $Version) { throw "The package declares version $($info.Version), not $Version." }
+        $identity = Get-KmgPackagedDllIdentity -DllPath (Join-Path $modDirectory 'KingmakerGunslinger.dll')
+    }
+    finally { Remove-Item -LiteralPath $extraction -Recurse -Force -ErrorAction SilentlyContinue }
+    if ([string]$identity.sha256 -cne [string]$record.dllSha256 -or [string]$identity.mvid -cne [string]$record.dllMvid -or
+        [string]$identity.gitCommit -cne [string]$record.tagCommit) {
+        throw "The packaged DLL is not the recorded v$Version release DLL built from $($record.tagCommit)."
+    }
+    return [pscustomobject]@{ historicalRelease = $true; version = $Version; releaseTag = [string]$record.tag; commit = [string]$record.tagCommit
+        packagePath = $package; packageSha256 = $packageSha; dllSha256 = [string]$identity.sha256; dllMvid = [string]$identity.mvid; measuredDll = $identity }
+}
+
+# The admission mode a caller's arguments select: a recorded historical release, a purpose-bound development
+# candidate, or an ordinary Build-Local package.
+function Get-KmgAdmissionMode {
+    param([string]$HistoricalReleaseVersion, [string]$DevelopmentPurpose)
+    if ($HistoricalReleaseVersion -and $DevelopmentPurpose) { throw 'Historical release control and a development purpose are mutually exclusive admission modes.' }
+    if ($HistoricalReleaseVersion) { return 'historical-release' }
+    if ($DevelopmentPurpose) { return 'development' }
+    return 'build-local'
+}
+
+# Deploy-Local admits the candidate again under the runtime lease; it must be the candidate the first admission accepted.
+function Assert-KmgSameAdmission {
+    param([Parameter(Mandatory = $true)]$First, [Parameter(Mandatory = $true)]$Second)
+    foreach ($field in @('packageSha256', 'dllSha256', 'dllMvid', 'commit', 'version')) {
+        if ([string]$Second.$field -cne [string]$First.$field) { throw "The candidate changed between admission and the deployment lease ($field); nothing was deployed." }
+    }
+    if ([bool]($First.PSObject.Properties['historicalRelease'] -and $First.historicalRelease) -ne [bool]($Second.PSObject.Properties['historicalRelease'] -and $Second.historicalRelease)) {
+        throw 'The candidate changed between admission and the deployment lease (admission mode); nothing was deployed.'
+    }
+}
+
+# What a deployment expects of the extracted package and records, from its admission. A Build-Local candidate's audio
+# digests come from its receipt; a historical release has no receipt, so its audio is the audio inside the digest-bound
+# release package its committed record admitted, and its record names the release tag. Every record field must exist.
+function Get-KmgDeploymentExpectations {
+    param(
+        [Parameter(Mandatory = $true)]$Admission,
+        [switch]$HistoricalRelease,
+        [Parameter(Mandatory = $true)][string]$PackagedFirearmManifestSha256,
+        [Parameter(Mandatory = $true)][string]$PackagedFirearmSoundBankSha256
+    )
+    $isHistorical = [bool]($Admission.PSObject.Properties['historicalRelease'] -and $Admission.historicalRelease)
+    if ([bool]$HistoricalRelease -ne $isHistorical) { throw 'The deployment mode does not match the admission.' }
+    foreach ($field in @('packagePath', 'packageSha256', 'commit', 'version', 'dllSha256', 'dllMvid')) {
+        if (-not $Admission.PSObject.Properties[$field] -or [string]::IsNullOrEmpty([string]$Admission.$field)) { throw "A deployment-record field is missing for this admission ($field); nothing was deployed." }
+    }
+    if ($isHistorical) {
+        # A historical release has no build receipt: no branch or source-state fingerprint exists for it (recorded as
+        # null, with sourceStateAvailable false); the release tag is its own field.
+        if (-not $Admission.PSObject.Properties['releaseTag'] -or [string]::IsNullOrEmpty([string]$Admission.releaseTag)) { throw 'A deployment-record field is missing for this admission (releaseTag); nothing was deployed.' }
+        $expected = [ordered]@{ firearmManifestSha256 = $PackagedFirearmManifestSha256; firearmSoundBankSha256 = $PackagedFirearmSoundBankSha256
+            branch = $null; sourceStateSha256 = $null; sourceStateAvailable = $false; candidateKind = 'historical-release'; releaseTag = [string]$Admission.releaseTag }
+    }
+    else {
+        # A Build-Local receipt records its branch (empty for a detached checkout, which is valid) and its source-state
+        # fingerprint; an absent property is a missing field, an empty branch is not.
+        foreach ($field in @('branch', 'sourceStateSha256', 'firearmManifestSha256', 'firearmSoundBankSha256')) {
+            if (-not $Admission.PSObject.Properties[$field] -or $null -eq $Admission.$field) { throw "A deployment-record field is missing for this admission ($field); nothing was deployed." }
+        }
+        if ([string]$Admission.sourceStateSha256 -cnotmatch '^[0-9a-f]{64}$') { throw 'A deployment-record field is missing for this admission (sourceStateSha256); nothing was deployed.' }
+        $expected = [ordered]@{ firearmManifestSha256 = [string]$Admission.firearmManifestSha256; firearmSoundBankSha256 = [string]$Admission.firearmSoundBankSha256
+            branch = [string]$Admission.branch; sourceStateSha256 = [string]$Admission.sourceStateSha256; sourceStateAvailable = $true; candidateKind = $null; releaseTag = $null }
+    }
+    if ($PackagedFirearmManifestSha256 -cne $expected.firearmManifestSha256 -or $PackagedFirearmSoundBankSha256 -cne $expected.firearmSoundBankSha256) {
+        throw 'Extracted package firearm audio differs from its immutable build manifest.'
+    }
+    return [pscustomobject]$expected
+}
+
+# The identity fields of a deployment record, from the admission and its expectations (Deploy-Local writes exactly
+# these; a historical control adds candidateKind and releaseTag).
+function New-KmgDeploymentRecordIdentity {
+    param([Parameter(Mandatory = $true)]$Admission, [Parameter(Mandatory = $true)]$Expectations)
+    $identity = [ordered]@{ packagePath = [string]$Admission.packagePath; packageSha256 = [string]$Admission.packageSha256
+        commit = [string]$Admission.commit; branch = $Expectations.branch; sourceStateSha256 = $Expectations.sourceStateSha256
+        sourceStateAvailable = [bool]$Expectations.sourceStateAvailable; version = [string]$Admission.version
+        dllSha256 = [string]$Admission.dllSha256; dllMvid = [string]$Admission.dllMvid }
+    if ($Expectations.candidateKind) { $identity.candidateKind = [string]$Expectations.candidateKind; $identity.releaseTag = [string]$Expectations.releaseTag }
+    return $identity
+}
+
+# Staging takes an admitted package from a private copy: the copy must have the admitted package digest, so bytes that
+# replace the supplied path after admission are never staged.
+function New-KmgAdmittedPackageCopy {
+    param([Parameter(Mandatory = $true)]$Admission, [Parameter(Mandatory = $true)][string]$Destination)
+    if (Test-Path -LiteralPath $Destination) { throw "The admitted-copy directory already exists: $Destination" }
+    [void][IO.Directory]::CreateDirectory($Destination)
+    $copy = Join-Path $Destination 'admitted-package.zip'
+    [IO.File]::Copy([string]$Admission.packagePath, $copy)
+    if ((Get-KmgSha256 -Path $copy) -cne [string]$Admission.packageSha256) {
+        Remove-Item -LiteralPath $Destination -Recurse -Force
+        throw 'The package changed after admission; nothing was staged.'
+    }
+    return $copy
+}
+# Extracts the admitted private copy (checked entries) into an empty destination and requires the extracted DLL to be
+# the admitted DLL (SHA-256 and MVID) before anything is replaced. Returns the extracted mod directory.
+function Expand-KmgAdmittedPackage {
+    param([Parameter(Mandatory = $true)]$Admission, [Parameter(Mandatory = $true)][string]$AdmittedCopy, [Parameter(Mandatory = $true)][string]$Destination)
+    if ((Get-KmgSha256 -Path $AdmittedCopy) -cne [string]$Admission.packageSha256) { throw 'The admitted package copy changed; nothing was staged.' }
+    $modDirectory = Expand-KmgPackageEntries -ZipPath $AdmittedCopy -Destination $Destination -ModId 'KingmakerGunslinger'
+    $dll = Join-Path $modDirectory 'KingmakerGunslinger.dll'
+    if ((Get-KmgSha256 -Path $dll) -cne [string]$Admission.dllSha256 -or (Get-KmgDllMvid -Path $dll) -cne [string]$Admission.dllMvid) {
+        throw 'The extracted DLL is not the admitted DLL; nothing was staged.'
+    }
+    return $modDirectory
 }
 
 function Assert-KmgExplicitCandidateIdentity {
@@ -497,6 +708,38 @@ function Get-KmgGitState {
     $status = @(& git -C $RepositoryRoot status --porcelain)
     if ($LASTEXITCODE -ne 0) { throw 'Unable to read Git status.' }
     return [ordered]@{ Commit = $commit; Branch = $branch; Status = @($status) }
+}
+
+# The fingerprint a build records for an exactly clean checkout of a commit: the commit, with an empty status, tracked
+# diff and untracked list (the same payload Get-KmgSourceStateFingerprint builds for that state).
+function Get-KmgCleanSourceStateFingerprint {
+    param([Parameter(Mandatory = $true)][string]$Commit)
+    $payload = $Commit + "`nstatus`n" + "tracked-diff`n" + "untracked`n"
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try { return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($payload))) -replace '-', '').ToLowerInvariant() }
+    finally { $sha.Dispose() }
+}
+
+# Current-candidate admission compares material inputs with the receipt's commit, so the receipt must also show that
+# its producer built exactly that commit, clean: its recorded source-state fingerprint must be the clean-state
+# fingerprint of the commit. A build from modified inputs (even inputs restored afterwards) records another fingerprint.
+function Assert-KmgProducedFromCleanCommit {
+    param([Parameter(Mandatory = $true)]$Receipt)
+    $recorded = if ($Receipt.PSObject.Properties['sourceStateSha256']) { [string]$Receipt.sourceStateSha256 } else { '' }
+    $clean = Get-KmgCleanSourceStateFingerprint -Commit ([string]$Receipt.commit)
+    if ($recorded -cne $clean) {
+        throw "The receipt's producer source state ($recorded) is not an exactly clean checkout of its commit $($Receipt.commit) (expected $clean); the candidate was not produced from that commit's inputs."
+    }
+}
+
+# The consumed source state: the shipped and material inputs the compiler and packager read must still be the source state
+# fingerprinted when the build started. Every Build-Local route (ordinary, reproducibility and development) runs this
+# before it writes a receipt, so content changed between the starting fingerprint and packaging never gets a receipt.
+function Assert-KmgConsumedSourceState {
+    param([Parameter(Mandatory = $true)][string]$RepositoryRoot, [Parameter(Mandatory = $true)][string]$SourceStateSha256)
+    if ((Get-KmgSourceStateFingerprint -RepositoryRoot $RepositoryRoot) -cne $SourceStateSha256) {
+        throw 'The source state changed during the build: a shipped or material input differs from the state fingerprinted at its start; no receipt was written.'
+    }
 }
 
 function Get-KmgSourceStateFingerprint {

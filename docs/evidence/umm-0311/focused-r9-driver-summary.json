@@ -1,0 +1,113 @@
+{
+    "schema":  "kmg.focused-r9.v1",
+    "commit":  "c67881f3fb8892cae09cdf4cc4f370170f20afc8",
+    "purpose":  "umm-0311-admission",
+    "retainedProducer":  "<dev>\\KingmakerGunslingerLab\\worktrees\\umm-0311-final-candidate-c67881f3fb\\producer",
+    "build_exit":  0,
+    "build_seconds":  530,
+    "package":  "<dev>\\KingmakerGunslingerLab\\worktrees\\umm-0311-final-candidate-c67881f3fb\\producer\\artifacts\\development-candidates\\umm-0311-admission\\c67881f3fb88\\KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip",
+    "receipt":  "<dev>\\KingmakerGunslingerLab\\worktrees\\umm-0311-final-candidate-c67881f3fb\\producer\\artifacts\\development-candidates\\umm-0311-admission\\c67881f3fb88\\KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip.development-receipt.json",
+    "suiteSha256":  "3735a7f8d8450658e30ab70e0d91ee3060304836d12ce1f4890508f270a3eabe",
+    "regions":  [
+                    "focused-helpers",
+                    "focused-tree-probe",
+                    "focused-packaged-content"
+                ],
+    "package_sha256":  "d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929",
+    "steps":  [
+                  {
+                      "step":  "preflight-reference-bundle",
+                      "exit":  0,
+                      "output":  "BUNDLE-ROWS 16 bfee7eca22156d8b95c149ba1383f065124b7b44a62ed4eafc32a5e67f6bc68a"
+                  },
+                  {
+                      "step":  "preflight-host",
+                      "kingmakerProcesses":  0,
+                      "workingDirectory":  "<dev>\\KingmakerGunslingerLab\\worktrees\\umm-0311-final-candidate-c67881f3fb\\producer"
+                  }
+              ],
+    "passed":  16,
+    "total":  16,
+    "cases":  [
+                  {
+                      "name":  "final-candidate-built",
+                      "passed":  true,
+                      "detail":  "exit 0; 530 s; <dev>\\KingmakerGunslingerLab\\worktrees\\umm-0311-final-candidate-c67881f3fb\\producer\\artifacts\\development-candidates\\umm-0311-admission\\c67881f3fb88\\KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip"
+                  },
+                  {
+                      "name":  "final-candidate-admitted-for-staging",
+                      "passed":  true,
+                      "detail":  "exit 0; ADMITTED commit=c67881f3fb8892cae09cdf4cc4f370170f20afc8 zip=d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929 dll=17a42879a57dba9914cebd67b3855ad95a94ef64775a8c2f66886ef5f03c808a mvid=5efdffb9-c4ac-4a3e-91f7-089a12991064 measuredDll=17a42879a57dba9914cebd67b3855ad95a94ef64775a8c2f66886ef5f03c808a measuredMvid=5efdffb9-c4ac-4a3e-91f7-089a12991064"
+                  },
+                  {
+                      "name":  "loader-staging-refuses-a-changed-non-dll-file-with-the-previous-mods-intact",
+                      "passed":  true,
+                      "detail":  "AFTER-CHANGED-FILE sentinel=True modsEntries=1 zipIntact=True leftovers=0 REMOVED-INFO REFUSED The extracted candidate tree is not the admitted archive (a file differs, is missing or was added); nothing was staged. "
+                  },
+                  {
+                      "name":  "loader-staging-refuses-a-removed-info-json-with-the-previous-mods-intact",
+                      "passed":  true,
+                      "detail":  "AFTER-REMOVED-INFO sentinel=True modsEntries=1 zipIntact=True leftovers=0 DEST-CHECK REFUSED injected destination verification failure "
+                  },
+                  {
+                      "name":  "loader-staging-failed-destination-check-restores-the-previous-mods",
+                      "passed":  true,
+                      "detail":  "DEST-CHECK REFUSED injected destination verification failure AFTER-DEST-CHECK sentinel=True modsEnt"
+                  },
+                  {
+                      "name":  "loader-staging-stages-the-genuine-tree-completely",
+                      "passed":  true,
+                      "detail":  "GENUINE STAGED tree=True dll=True harness=True  AFTER-GENUINE sentinel=False modsEntries=2 zipIntact=True leftovers=0"
+                  },
+                  {
+                      "name":  "loader-staging-private-copy-cleanup-failure-restores-the-previous-mods",
+                      "passed":  true,
+                      "detail":  "CLEANUP REFUSED The process cannot access the file \u0027admitted-package.zip\u0027 because it is being used by another process. / AFTER-CLEANUP-FAILURE sentinel=True modsEntries=1 zipIntact=True leftovers=0 / CLEANUP SENTINEL-TEXT True product-at-mods=False / CLEANUP COPY-REMOVED-AFTER-RELEASE True"
+                  },
+                  {
+                      "name":  "packaged-readme-edit-restored-before-the-decision-refused-by-the-writer-check",
+                      "passed":  true,
+                      "detail":  "status entries at start 0, at the decision 0; package exit 0; ZIP README carries the edit: True; consumed-source check passed: True; not match its producing commit c67881f3fb: README"
+                  },
+                  {
+                      "name":  "packaged-readme-edit-restored-before-the-decision-refused-by-the-ordinary-reader",
+                      "passed":  true,
+                      "detail":  "ZIP 01a8c81ca5fe63ae533ae5fab73ace803bae4d942cd95c3b3d449b7cb6568651; not match its producing commit c67881f3fb: README"
+                  },
+                  {
+                      "name":  "packaged-remapped-icon-edit-restored-before-the-decision-refused-by-the-writer-check",
+                      "passed":  true,
+                      "detail":  "package exit 0; ZIP icon carries the edit: True; status entries at the decision 0; not match its producing commit c67881f3fb: assets/icons/black-powder"
+                  },
+                  {
+                      "name":  "packaged-remapped-icon-edit-restored-before-the-decision-refused-by-the-ordinary-reader",
+                      "passed":  true,
+                      "detail":  "ZIP bef7beb2406dbbc5e2e05327f105559131dbde71a587c56296d87b0da7db8ea0; not match its producing commit c67881f3fb: assets/icons/black-powder"
+                  },
+                  {
+                      "name":  "clean-package-from-the-same-route-passes-the-writer-check-and-is-admitted",
+                      "passed":  true,
+                      "detail":  "package exit 0; PACKAGED-FILES-MATCH 457 packaged members compared with their producer files; reader: ADMITTED d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929"
+                  },
+                  {
+                      "name":  "packaged-case-variant-readme-edit-refused-by-the-writer-check-and-the-ordinary-reader",
+                      "passed":  true,
+                      "detail":  "writer: not match its producing commit c67881f3fb: readme / reader: not match its producing commit c67881f3fb: readme"
+                  },
+                  {
+                      "name":  "packaged-content-check-refuses-an-archive-replaced-after-its-digest-was-measured",
+                      "passed":  true,
+                      "detail":  "edited measured, clean in place: 4876cf5ba4935933f23594f0c5f09\\packaged-content-variants\\measured-slot.zip has SHA-256 d8d14600c8 c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929, the receipt records 01a8c81ca5fe63ae533ae5fab73ace803bae4d 942cd95c3b3d449b7cb6568651.  / clean measured, edited in place: 4876cf5ba4935933f23594f0c5f09\\packaged-content-variants\\measured-slot.zip has SHA-256 01a8c81ca5 fe63ae533ae5fab73ace803bae4d942cd95c3b3d449b7cb6568651, the receipt records d8d14600c8c0fa0c0abc117cba1c1f0cb8fe44 6983d1bd23e2ddf5625bb29929. "
+                  },
+                  {
+                      "name":  "packaged-content-check-passes-the-matching-archive",
+                      "passed":  true,
+                      "detail":  "clean d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929: PACKAGED-FILES-MATCH 457"
+                  },
+                  {
+                      "name":  "clean-package-admitted-after-an-unshipped-review-note",
+                      "passed":  true,
+                      "detail":  "HEAD caf5e6e848; ADMITTED d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929"
+                  }
+              ]
+}

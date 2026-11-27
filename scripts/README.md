@@ -14,7 +14,13 @@ The PowerShell scripts target a local Windows installation of Pathfinder: Kingma
 only through Steam App ID 640820. See `docs\WORKING-SAVE-SMOKE.md`.
 
 - `qualify-runtime-candidate.ps1` is a historical broad qualification path. The 0.0.29 record used 599 tests three times and two Release compiles; those counts/repeats are not current development requirements.
-- `build.ps1` compiles the mod against the exact installed private Kingmaker, Unity, UMM, Harmony, and Newtonsoft references.
+- `build.ps1` compiles the mod against the installed Kingmaker, Unity and Newtonsoft references and the pinned
+  UnityModManager 0.31.1.0 / 0Harmony12 1.2.0.1 files in `artifacts\references\loader` (fetched and verified first;
+  never the installed loader). `build.ps1 -CompileOnly` is the compile-only bootstrap: no aggregate tests, package or
+  release gate.
+- `Build-Local.ps1 -DevelopmentPurpose <purpose> -DevelopmentTestFilter <test names>` builds a clean development package
+  under `artifacts\development-candidates\<purpose>\<commit12>\` with a development receipt no release path accepts
+  (see `docs\BUILDING.md`).
 - `package.ps1` produces the strict standalone UMM ZIP using the current validated inventory, including
   the installation/update/removal/compatibility guide.
 - `inspect-runtime-contracts.ps1` records the retained attack, natural-roll, save, damage, item, inventory, and state contracts from the supplied installation.

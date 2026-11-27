@@ -1,0 +1,25 @@
+{
+    "name":  "KingmakerGunslinger",
+    "sha256":  "3507c7554dc3a82bff7684616ab02ac8b0681c1ced4fdcdb7dda54319b5570d1",
+    "mvid":  "ac6e8b46-3e64-4251-bf96-14cd3e784869",
+    "references":  [
+                       "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                       "UnityModManager, Version=0.31.1.0, Culture=neutral, PublicKeyToken=null",
+                       "Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                       "0Harmony12, Version=1.2.0.1, Culture=neutral, PublicKeyToken=null",
+                       "Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UnityEngine.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                       "Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UnityEngine.ClothModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UniRx, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                       "UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                   ],
+    "gitCommit":  "49be3fd0e28c551a4a5fafb5e98d87daffb125d5"
+}

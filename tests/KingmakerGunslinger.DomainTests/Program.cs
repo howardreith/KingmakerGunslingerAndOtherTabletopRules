@@ -1945,6 +1945,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("armed-presentation.content-status", ArmedPresentationRepairTests.ContentStatusSeparatesLoaderActivityFromContent),
             Case("grit-ui-recipients.session-expects-audited-identities", GritUiRecipientContractTests.SessionExpectsExactlyTheAuditedIdentities),
             Case("grit-ui-recipients.membership-not-from-displayed-text", GritUiRecipientContractTests.MembershipDoesNotComeFromDisplayedText),
+            Case("loader.production-dll-references-pinned-loader", LoaderReferenceContractTests.ProductionDllReferencesExactlyThePinnedLoader),
             Case("loader-compat-probe.timed-out-probe-cannot-supply-next-result", LoaderCompatProbeLifecycleTests.TimedOutProbeCannotSupplyTheNextProbesResult),
             Case("loader-compat-probe.throwing-probe-ended-and-released", LoaderCompatProbeLifecycleTests.ProbeThatThrowsIsEndedAndReleased),
             Case("loader-compat-probe.one-failing-cleanup-does-not-stop-others", LoaderCompatProbeLifecycleTests.OneFailingCleanupDoesNotStopTheOthers),
@@ -3270,6 +3271,8 @@ namespace KingmakerGunslinger.DomainTests
             }
 
             int failures = 0;
+            int notApplicable = 0;
+            RunSelection.Focused = filtered;
             Console.WriteLine("Kingmaker Gunslinger domain, firearm-state, and combat-rule tests");
             if (filtered)
                 Console.WriteLine("KMG_TEST_FILTER=" + filter +
@@ -3283,6 +3286,11 @@ namespace KingmakerGunslinger.DomainTests
                 {
                     testCase.Body();
                     Console.WriteLine("PASS " + testCase.Name);
+                }
+                catch (NotApplicableException notApplicableCase)
+                {
+                    notApplicable++;
+                    Console.WriteLine("NOT APPLICABLE " + testCase.Name + ": " + notApplicableCase.Message);
                 }
                 catch (Exception exception)
                 {
@@ -3300,6 +3308,8 @@ namespace KingmakerGunslinger.DomainTests
                     failures,
                     Cases.Length,
                     clock.Elapsed.TotalSeconds));
+            if (notApplicable != 0)
+                Console.WriteLine("Not applicable (no assertion ran; not a pass): " + notApplicable + ".");
             return failures == 0 ? 0 : 1;
         }
 

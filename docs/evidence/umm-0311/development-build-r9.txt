@@ -1,0 +1,448 @@
+MSBuild: <buildtools>\MSBuild\Current\Bin\MSBuild.exe
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.006s
+System.Management.Automation.RemoteException
+OK
+...............................................
+----------------------------------------------------------------------
+Ran 47 tests in 1.901s
+System.Management.Automation.RemoteException
+OK
+........................................
+----------------------------------------------------------------------
+Ran 40 tests in 1.775s
+System.Management.Automation.RemoteException
+OK
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.255s
+System.Management.Automation.RemoteException
+OK
+Development candidate validation PASS (not a release qualification): purpose=umm-0311-admission; baseline=v0.0.195; identities=7935; appended=0; authorized released-row corrections=none.
+tests\fixtures\Sprint40FactoryBoundary.cs(24,24): warning CS0649: Field 'BlueprintScriptableObject.m_AssetGuid' is never assigned to, and will always have its default value null
+Sprint40 production enchantment factory PASS=12; external engine boundary only; no game/deployment/save.
+Sprint40 startup peer protection PASS=20; disposable files only.
+Sprint40 publisher refusal checks PASS=23; synthetic proofs only, no network/publication.
+Icon-overhaul asset validation passed: 14 records; 3 selectors; 10 item icons; retired selectors absent.
+Icon polish Round 2 validation passed: 29 protected files; 3 no-frame selectors; belt-like Cord aspect 1.8125.
+PASS: icon catalog coverage, identities, references, candidate PNGs, delegated manifests and protected bytes/assignment source.
+Visual approval and native UI/runtime qualification remain separate gates.
+test_absent_authorized_assignment_hunk_is_rejected (__main__.IconCatalogTests.test_absent_authorized_assignment_hunk_is_rejected) ... ok
+test_active_consumer_cannot_skip_live_census (__main__.IconCatalogTests.test_active_consumer_cannot_skip_live_census) ... ok
+test_approval_needs_exact_pixels_and_owner_evidence (__main__.IconCatalogTests.test_approval_needs_exact_pixels_and_owner_evidence) ... ok
+test_authorized_assignment_edit_is_rejected_outside_its_group (__main__.IconCatalogTests.test_authorized_assignment_edit_is_rejected_outside_its_group) ... ok
+test_authorized_assignment_edit_requires_a_recorded_authorization (__main__.IconCatalogTests.test_authorized_assignment_edit_requires_a_recorded_authorization) ... ok
+test_authorized_assignment_edit_still_proves_the_pinned_baseline (__main__.IconCatalogTests.test_authorized_assignment_edit_still_proves_the_pinned_baseline) ... ok
+test_brown_fur_ready_notification_is_an_exact_non_art_extension (__main__.IconCatalogTests.test_brown_fur_ready_notification_is_an_exact_non_art_extension) ... ok
+test_compiled_mapping_cannot_omit_a_child_action (__main__.IconCatalogTests.test_compiled_mapping_cannot_omit_a_child_action) ... ok
+test_compiled_mapping_cannot_repaint_a_native_spell_clone (__main__.IconCatalogTests.test_compiled_mapping_cannot_repaint_a_native_spell_clone) ... ok
+test_completed_scope_cannot_drop_both_record_and_authority (__main__.IconCatalogTests.test_completed_scope_cannot_drop_both_record_and_authority) ... ok
+test_creative_brief_cannot_omit_a_real_ui_surface (__main__.IconCatalogTests.test_creative_brief_cannot_omit_a_real_ui_surface) ... ok
+test_creative_brief_requires_real_confusable_siblings (__main__.IconCatalogTests.test_creative_brief_requires_real_confusable_siblings) ... ok
+test_crocodilian_emblem_bindings_cannot_lose_a_status_consumer (__main__.IconCatalogTests.test_crocodilian_emblem_bindings_cannot_lose_a_status_consumer) ... ok
+test_crocodilian_emblem_scope_does_not_change_painted_history (__main__.IconCatalogTests.test_crocodilian_emblem_scope_does_not_change_painted_history) ... ok
+test_crocodilian_emblems_retain_the_approved_size_family (__main__.IconCatalogTests.test_crocodilian_emblems_retain_the_approved_size_family) ... ok
+test_current_candidate_is_technically_consistent (__main__.IconCatalogTests.test_current_candidate_is_technically_consistent) ... ok
+test_current_delegated_authority_pin_rejects_stale_metadata (__main__.IconCatalogTests.test_current_delegated_authority_pin_rejects_stale_metadata) ... ok
+test_distinct_actions_cannot_hide_identical_art (__main__.IconCatalogTests.test_distinct_actions_cannot_hide_identical_art) ... ok
+test_duplicated_authorized_assignment_hunk_is_rejected (__main__.IconCatalogTests.test_duplicated_authorized_assignment_hunk_is_rejected) ... ok
+test_gameplay_extension_retains_exact_protected_mapping (__main__.IconCatalogTests.test_gameplay_extension_retains_exact_protected_mapping) ... ok
+test_integrated_export_cannot_use_source_path_as_install_path (__main__.IconCatalogTests.test_integrated_export_cannot_use_source_path_as_install_path) ... ok
+test_malformed_authorized_assignment_edit_is_rejected (__main__.IconCatalogTests.test_malformed_authorized_assignment_edit_is_rejected) ... ok
+test_manifest_approval_cannot_follow_changed_pixels (__main__.IconCatalogTests.test_manifest_approval_cannot_follow_changed_pixels) ... ok
+test_mismatched_export_is_rejected (__main__.IconCatalogTests.test_mismatched_export_is_rejected) ... ok
+test_missing_production_record_leaves_unresolved_authority (__main__.IconCatalogTests.test_missing_production_record_leaves_unresolved_authority) ... ok
+test_new_registered_target_requires_disposition (__main__.IconCatalogTests.test_new_registered_target_requires_disposition) ... ok
+test_omitted_consumer_is_not_silently_hidden (__main__.IconCatalogTests.test_omitted_consumer_is_not_silently_hidden) ... ok
+test_pilot_exporter_cannot_erase_catalog_approval (__main__.IconCatalogTests.test_pilot_exporter_cannot_erase_catalog_approval) ... ok
+test_presentation_exception_preserves_all_other_code (__main__.IconCatalogTests.test_presentation_exception_preserves_all_other_code) ... ok
+test_production_is_not_approved_by_family_direction (__main__.IconCatalogTests.test_production_is_not_approved_by_family_direction) ... ok
+test_registry_authority_pin_matches_exact_disk_bytes (__main__.IconCatalogTests.test_registry_authority_pin_matches_exact_disk_bytes) ... ok
+test_reserved_diagnostic_cannot_claim_ordinary_registration (__main__.IconCatalogTests.test_reserved_diagnostic_cannot_claim_ordinary_registration) ... ok
+test_saved_parameter_guid_cannot_drift (__main__.IconCatalogTests.test_saved_parameter_guid_cannot_drift) ... ok
+test_source_file_without_compile_item_is_rejected (__main__.IconCatalogTests.test_source_file_without_compile_item_is_rejected) ... ok
+test_stale_protected_hash_is_rejected (__main__.IconCatalogTests.test_stale_protected_hash_is_rejected) ... ok
+test_visual_resource_cannot_claim_blueprint_registration (__main__.IconCatalogTests.test_visual_resource_cannot_claim_blueprint_registration) ... ok
+
+----------------------------------------------------------------------
+Ran 36 tests in 11.748s
+
+OK
+test_different_foreign_sprite_is_rejected (__main__.ControlComparisonTests.test_different_foreign_sprite_is_rejected) ... ok
+test_extra_candidate_graph_edge_is_rejected (__main__.ControlComparisonTests.test_extra_candidate_graph_edge_is_rejected) ... ok
+test_matching_compatibility_transition_ignores_only_process_ids (__main__.ControlComparisonTests.test_matching_compatibility_transition_ignores_only_process_ids) ... ok
+test_missing_protection_is_rejected (__main__.ControlComparisonTests.test_missing_protection_is_rejected) ... ok
+test_removed_component_is_rejected (__main__.ControlComparisonTests.test_removed_component_is_rejected) ... ok
+test_wrong_artifact_profile_or_reused_run_is_rejected (__main__.ControlComparisonTests.test_wrong_artifact_profile_or_reused_run_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+OK
+test_active_row_outside_viewport_or_unrestored_scroll_is_rejected (__main__.NativeScreenEvidenceTests.test_active_row_outside_viewport_or_unrestored_scroll_is_rejected) ... ok
+test_buff_mesh_rejects_missing_glyphs_clipping_overlap_and_false_bounds (__main__.NativeScreenEvidenceTests.test_buff_mesh_rejects_missing_glyphs_clipping_overlap_and_false_bounds) ... ok
+test_buff_overflow_flag_can_coexist_with_complete_unclipped_native_mesh (__main__.NativeScreenEvidenceTests.test_buff_overflow_flag_can_coexist_with_complete_unclipped_native_mesh) ... ok
+test_buff_unmasked_row_is_diagnostic_but_real_clips_and_neighbor_rows_are_required (__main__.NativeScreenEvidenceTests.test_buff_unmasked_row_is_diagnostic_but_real_clips_and_neighbor_rows_are_required) ... ok
+test_complete_evidence_is_only_provenance (__main__.NativeScreenEvidenceTests.test_complete_evidence_is_only_provenance) ... ok
+test_duplicate_and_parent_paths_are_rejected_without_reading_them (__main__.NativeScreenEvidenceTests.test_duplicate_and_parent_paths_are_rejected_without_reading_them) ... ok
+test_exotic_row_requires_its_actual_learned_proficiency (__main__.NativeScreenEvidenceTests.test_exotic_row_requires_its_actual_learned_proficiency) ... ok
+test_first_occluded_capture_without_overlay_observation_is_rejected (__main__.NativeScreenEvidenceTests.test_first_occluded_capture_without_overlay_observation_is_rejected) ... ok
+test_inactive_axis_normalization_cannot_hide_actual_content_displacement (__main__.NativeScreenEvidenceTests.test_inactive_axis_normalization_cannot_hide_actual_content_displacement) ... ok
+test_learning_capture_requires_exact_preview_and_spell_row (__main__.NativeScreenEvidenceTests.test_learning_capture_requires_exact_preview_and_spell_row) ... ok
+test_modified_or_truncated_png_is_rejected (__main__.NativeScreenEvidenceTests.test_modified_or_truncated_png_is_rejected) ... ok
+test_native_extended_scroll_requires_exact_component_and_visible_row (__main__.NativeScreenEvidenceTests.test_native_extended_scroll_requires_exact_component_and_visible_row) ... ok
+test_no_frames_or_incomplete_capture_is_rejected (__main__.NativeScreenEvidenceTests.test_no_frames_or_incomplete_capture_is_rejected) ... ok
+test_oracle_recall_requires_exact_native_class_spell_level_and_preview (__main__.NativeScreenEvidenceTests.test_oracle_recall_requires_exact_native_class_spell_level_and_preview) ... ok
+test_racial_buff_sheet_requires_exact_native_dormant_facts_and_control (__main__.NativeScreenEvidenceTests.test_racial_buff_sheet_requires_exact_native_dormant_facts_and_control) ... ok
+test_racial_feat_requires_exact_native_filter_race_and_target_set (__main__.NativeScreenEvidenceTests.test_racial_feat_requires_exact_native_filter_race_and_target_set) ... ok
+test_racial_feat_requires_its_real_art_title_and_preserved_eligibility (__main__.NativeScreenEvidenceTests.test_racial_feat_requires_its_real_art_title_and_preserved_eligibility) ... ok
+test_scroll_description_requires_actual_named_item_and_icon (__main__.NativeScreenEvidenceTests.test_scroll_description_requires_actual_named_item_and_icon) ... ok
+test_scroll_merchant_requires_real_private_stock_and_empty_trade (__main__.NativeScreenEvidenceTests.test_scroll_merchant_requires_real_private_stock_and_empty_trade) ... ok
+test_scroll_requires_exact_item_spell_and_preserved_controls (__main__.NativeScreenEvidenceTests.test_scroll_requires_exact_item_spell_and_preserved_controls) ... ok
+test_selected_fact_requires_real_glyph_parameter_and_preserved_controls (__main__.NativeScreenEvidenceTests.test_selected_fact_requires_real_glyph_parameter_and_preserved_controls) ... ok
+test_strategic_text_control_requires_real_source_and_unmodified_native_presentation (__main__.NativeScreenEvidenceTests.test_strategic_text_control_requires_real_source_and_unmodified_native_presentation) ... ok
+test_total_layout_correction_requires_native_mode_and_sufficient_extent (__main__.NativeScreenEvidenceTests.test_total_layout_correction_requires_native_mode_and_sufficient_extent) ... ok
+test_unrestored_or_callback_dispatching_overlay_is_rejected (__main__.NativeScreenEvidenceTests.test_unrestored_or_callback_dispatching_overlay_is_rejected) ... ok
+test_wrong_run_or_artifact_is_rejected (__main__.NativeScreenEvidenceTests.test_wrong_run_or_artifact_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 0.104s
+
+OK
+PASS: eleven icon request preflight/JSON round-trip cases; no deployment, evidence directory or launch created.
+PASS gate.focused-keeps-its-filter
+PASS gate.focused-trims-its-filter
+PASS gate.focused-without-a-filter-fails
+PASS gate.focused-with-a-blank-filter-fails
+PASS gate.focused-with-a-null-filter-fails
+PASS gate.focused-with-only-separators-fails
+PASS gate.focused-keeps-multiple-real-terms
+PASS gate.sprint-clears-the-filter
+PASS gate.tranche-clears-the-filter
+PASS gate.sprint-refuses-a-filter
+PASS gate.tranche-refuses-a-filter
+PASS gate.inherited-filter-cannot-narrow-a-full-gate
+PASS gate.full-gate-restores-the-callers-filter
+PASS gate.focused-applies-its-filter
+PASS gate.focused-restores-the-callers-filter
+PASS gate.focused-leaves-an-unset-variable-unset
+PASS gate.a-failing-body-still-restores-the-filter
+MSBuild: <buildtools>\MSBuild\Current\Bin\MSBuild.exe
+PASS gate.real-build-refuses-missing-references
+PASS gate.missing-reference-refusal-preserves-budget
+PASS gate.refused-build-creates-no-reference-fixture
+Gate filter/refusal contracts passed.
+=== production compilation ===
+Building Kingmaker Gunslinger (Release) with <user-profile>\AppData\Local\Temp\kmg-development-gate-b2530446ec6d48fbb5a8d9feeec029d6\scripts\msbuild-fixture.ps1
+Development production compilation passed; package/release checks deferred.
+=== domain-tests (focused) ===
+Repository validation skipped: the caller runs it, or this is a focused run.
+Building dependency-free domain/reflection tests (Release) with <user-profile>\AppData\Local\Temp\kmg-development-gate-b2530446ec6d48fbb5a8d9feeec029d6\scripts\msbuild-fixture.ps1
+Running dependency-free domain/reflection tests: <user-profile>\AppData\Local\Temp\kmg-development-gate-b2530446ec6d48fbb5a8d9feeec029d6\artifacts\tests\Release\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe
+Dependency-free domain/reflection tests passed.
+
+Gate level: Focused  (commit 5fe993cf1f8eadefe1244574fbb771466c8d1989)
+Ran:
+  production compilation  0.1s
+  domain-tests (focused)  0.1s
+Deferred by policy:
+  repository wrapper  - Focused level; runs at the sprint candidate boundary
+  complete domain suite  - Focused level; runs at the sprint candidate boundary
+  exact-reference frozen Release candidate  - Focused compiled production; immutable packaging is an explicit candidate boundary
+  package assembly and strict validation  - Focused level; runs at the sprint candidate boundary
+Timings appended to <user-profile>\AppData\Local\Temp\kmg-development-gate-b2530446ec6d48fbb5a8d9feeec029d6\artifacts\gate-timings.jsonl
+FOCUSED DEVELOPMENT CHECKPOINT. Production compiled; filter 'selected-behavior' selected related tests. Full/native/release qualification deferred.
+=== production compilation ===
+Building Kingmaker Gunslinger (Release) with <user-profile>\AppData\Local\Temp\kmg-development-gate-b2530446ec6d48fbb5a8d9feeec029d6\scripts\msbuild-fixture.ps1
+Development production compilation passed; package/release checks deferred.
+=== domain-tests (focused) ===
+Repository validation skipped: the caller runs it, or this is a focused run.
+Building dependency-free domain/reflection tests (Release) with <user-profile>\AppData\Local\Temp\kmg-development-gate-b2530446ec6d48fbb5a8d9feeec029d6\scripts\msbuild-fixture.ps1
+Running dependency-free domain/reflection tests: <user-profile>\AppData\Local\Temp\kmg-development-gate-b2530446ec6d48fbb5a8d9feeec029d6\artifacts\tests\Release\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe
+Building Kingmaker Gunslinger (Release) with <user-profile>\AppData\Local\Temp\kmg-development-gate-b2530446ec6d48fbb5a8d9feeec029d6\scripts\msbuild-fixture.ps1
+Repository validation skipped: the caller runs it, or this is a focused run.
+Building dependency-free domain/reflection tests (Release) with <user-profile>\AppData\Local\Temp\kmg-development-gate-b2530446ec6d48fbb5a8d9feeec029d6\scripts\msbuild-fixture.ps1
+Running dependency-free domain/reflection tests: <user-profile>\AppData\Local\Temp\kmg-development-gate-b2530446ec6d48fbb5a8d9feeec029d6\artifacts\tests\Release\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe
+Dependency-free domain/reflection tests passed.
+=== repository wrapper, complete suite, exact build, package and strict validation ===
+=== repository wrapper, complete suite, exact build, package and strict validation ===
+
+Gate level: Sprint  (commit 5fe993cf1f8eadefe1244574fbb771466c8d1989)
+Ran:
+  repository wrapper, complete suite, exact build, package and strict validation  0s
+Deferred by policy:
+  inventory and player-path census  - Sprint level; samples the new creatures only, full census at tranche close
+  five-profile compatibility matrix  - Sprint level; standalone plus the touched seam only
+  whole-roster persistence and module-disabled matrix  - Sprint level; targeted persistence only, and only for new serialized state
+  runtime scenarios  - Driven by their own guarded orchestrators against the candidate this gate produced
+Timings appended to <user-profile>\AppData\Local\Temp\kmg-development-gate-b2530446ec6d48fbb5a8d9feeec029d6\artifacts\gate-timings.jsonl
+=== repository wrapper, complete suite, exact build, package and strict validation ===
+Development gate: PASS=13 FAIL=0; observed production/test children, publisher reuse/filter isolation, default names and package output guards. Offline orchestration only.
+Expanded Summoning orchestration tests passed: 311 assertions.
+UMM Params.xml restored: sha256=E1E3FDAF3AB022F451531AACD30D63588E47C33F25F2F6A3A2B86AAAEA0EFC31 receipt=<dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer\artifacts\umm-params-tests\recovery-script\backups\20261127T0205087470891Z-17ad35e77897423c834b1d7ec05f098f\umm-params-receipt.json
+UMM Params.xml protection tests PASS=85
+PASS: exact OFF pairs and released cleanup admitted; fifteen foreign and eight cross-paired OFF requests rejected; nine exact phases recognized. No runtime launch.
+Suggestion profile admission PASS=14; declared scenarios, unsafe selections, absent candidate and reference escape tested; no staging or game launch.
+Explicit candidate reuse safety passed: 7 checks. No lease, deployment or game launch.
+Candidate/reproducibility safety PASS=27; bounded fixtures only, no compilation, deployment or game launch.
+warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it
+MSBuild: <user-profile>\AppData\Local\Temp\kmg-development-candidate-48aa3ecf403845fd95d910149d5e9c50\msbuild-fixture.exe
+MSBuild: <buildtools>\MSBuild\Current\Bin\MSBuild.exe
+MSBuild: <user-profile>\AppData\Local\Temp\kmg-development-candidate-48aa3ecf403845fd95d910149d5e9c50\msbuild-fixture.exe
+Prior incomplete development attempt retained: <user-profile>\AppData\Local\Temp\kmg-development-candidate-48aa3ecf403845fd95d910149d5e9c50\build-fixture\artifacts\development-candidates\fixture-native-observation\94bf4726a051.failed-20261127T0205163775420Z-68ab59e4
+MSBuild: <buildtools>\MSBuild\Current\Bin\MSBuild.exe
+MSBuild: <user-profile>\AppData\Local\Temp\kmg-development-candidate-48aa3ecf403845fd95d910149d5e9c50\msbuild-fixture.exe
+Prior incomplete development attempt retained: <user-profile>\AppData\Local\Temp\kmg-development-candidate-48aa3ecf403845fd95d910149d5e9c50\build-fixture\artifacts\development-candidates\fixture-native-observation\94bf4726a051.failed-20261127T0205169280120Z-2bbd2e7a
+MSBuild: <buildtools>\MSBuild\Current\Bin\MSBuild.exe
+MSBuild: <user-profile>\AppData\Local\Temp\kmg-development-candidate-48aa3ecf403845fd95d910149d5e9c50\msbuild-fixture.exe
+MSBuild: <user-profile>\AppData\Local\Temp\kmg-development-candidate-48aa3ecf403845fd95d910149d5e9c50\msbuild-fixture.exe
+MSBuild: <user-profile>\AppData\Local\Temp\kmg-development-candidate-48aa3ecf403845fd95d910149d5e9c50\msbuild-fixture.exe
+Development candidate contract: PASS=98 FAIL=0. Offline fixtures only; no deployment, lease or game launch.
+Loader reference pin checks: PASS=35 FAIL=0. Offline fixtures only.
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.037s
+System.Management.Automation.RemoteException
+OK
+S30-31 publisher behavior PASS=31; synthetic unit fixtures only, no release qualification.
+S30-31 isolated admission tests PASS: independent build/game ceilings, read-only verification, last-admission completion, authority/deadline/stop and completed readiness. No live budget mutation or actual build/game.
+...
+----------------------------------------------------------------------
+Ran 3 tests in 1.507s
+System.Management.Automation.RemoteException
+OK
+Sprint22 release decision safety passed: 13 checks; no publication.
+Sprint24 release decision safety passed: 43 checks; no publication.
+Sprint 25 release decision: PASS=70; source-derived counts and refusal fixtures only; no publication.
+Sprint 26 release decision: PASS=79; source-derived counts and refusal fixtures only; no publication.
+Sprint 26 entrypoint refusals: total PASS=81; no native qualification or publication.
+Sprint 27 release decision: PASS=84; source-derived counts and refusal fixtures only; no publication.
+Sprint 27 entrypoint refusals: total PASS=86; no native qualification or publication.
+Griffon development persistence authority PASS=9; pure scope/refusal fixtures only; no save or game access.
+Sprint28 development persistence authority PASS=10; pure scope/refusal fixtures only; no save or game access.
+Sprint 29 hidden development persistence authority PASS=8; pure scope/refusal checks only.
+Sprint32 hidden development persistence authority PASS=8; pure scope/refusal checks only.
+What if: Performing the operation "build, validate, deploy, and launch guarded scenario 'working-save-expanded-summoning-prepare'" on target "Steam App ID 640820".
+Source-only/WhatIf validation passed. No deployment or process launch occurred.
+What if: Performing the operation "build, validate, deploy, and launch guarded scenario 'working-save-expanded-summoning-prepare'" on target "Steam App ID 640820".
+Source-only/WhatIf validation passed. No deployment or process launch occurred.
+What if: Performing the operation "build, validate, deploy, and launch guarded scenario 'working-save-expanded-summoning-prepare'" on target "Steam App ID 640820".
+Source-only/WhatIf validation passed. No deployment or process launch occurred.
+What if: Performing the operation "build, validate, deploy, and launch guarded scenario 'working-save-expanded-summoning-prepare'" on target "Steam App ID 640820".
+Source-only/WhatIf validation passed. No deployment or process launch occurred.
+What if: Performing the operation "build, validate, deploy, and launch guarded scenario 'working-save-expanded-summoning-verify-cleanup'" on target "Steam App ID 640820".
+Source-only/WhatIf validation passed. No deployment or process launch occurred.
+What if: Performing the operation "build, validate, deploy, and launch guarded scenario 'working-save-expanded-summoning-verify-cleanup'" on target "Steam App ID 640820".
+Source-only/WhatIf validation passed. No deployment or process launch occurred.
+What if: Performing the operation "build, validate, deploy, and launch guarded scenario 'working-save-expanded-summoning-verify-cleanup'" on target "Steam App ID 640820".
+Source-only/WhatIf validation passed. No deployment or process launch occurred.
+What if: Performing the operation "build, validate, deploy, and launch guarded scenario 'working-save-expanded-summoning-verify-cleanup'" on target "Steam App ID 640820".
+Source-only/WhatIf validation passed. No deployment or process launch occurred.
+What if: Performing the operation "build, validate, deploy, and launch guarded scenario 'working-save-expanded-summoning-verify-absent'" on target "Steam App ID 640820".
+Source-only/WhatIf validation passed. No deployment or process launch occurred.
+What if: Performing the operation "build, validate, deploy, and launch guarded scenario 'working-save-expanded-summoning-verify-absent'" on target "Steam App ID 640820".
+Source-only/WhatIf validation passed. No deployment or process launch occurred.
+What if: Performing the operation "build, validate, deploy, and launch guarded scenario 'working-save-expanded-summoning-verify-absent'" on target "Steam App ID 640820".
+Source-only/WhatIf validation passed. No deployment or process launch occurred.
+What if: Performing the operation "build, validate, deploy, and launch guarded scenario 'working-save-expanded-summoning-verify-absent'" on target "Steam App ID 640820".
+Source-only/WhatIf validation passed. No deployment or process launch occurred.
+Sprint32 finite persistence purpose/outer route checks PASS=28; no game/save/deployment.
+Sprint24 reporting-lineage safety passed: 18 checks; no tag, push or release mutation.
+Permitted root <dev>/KingmakerGunslingerLab/wt/s25 is absent; using this checkout: <dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer
+
+Reviewed wrapper   : <dev>\KingmakerGunslingerLab\codex-policy\Push-KingmakerGunslinger.ps1
+Reviewed SHA-256   : e40cdfc06986a46814007d92db1328c39ef82bf39986d4515aaf7684eb9a7393
+Parser errors      : 0; statements 18
+Wrapper contract   : exact worktree / codex namespace / clean tree / protected files / remote ancestry
+Permitted root     : <user-profile>\AppData\Local\Temp\kmg-push-audit-5fcc24597c974fd2a2e184ca5a986330\worktree
+
+
+Case                                                  Expected        Exit GitCalls Result Detail            
+----                                                  --------        ---- -------- ------ ------            
+current: exact review root and codex branch           push/1             0       15 PASS                     
+current: exact mixed-case refspec is preserved        push/1             0       15 PASS                     
+current: new remote branch                            push/1             0       14 PASS                     
+current: approved HTTPS origin                        push/1             0       15 PASS                     
+current: wrong exact worktree root                    refuse/0           1        1 PASS                     
+current: branch refused master                        refuse/0           1        2 PASS                     
+current: branch refused wip/cleanup                   refuse/0           1        2 PASS                     
+current: branch refused codex-pretender/cleanup       refuse/0           1        2 PASS                     
+current: branch refused wip/codex/cleanup             refuse/0           1        2 PASS                     
+current: detached HEAD                                refuse/0           1        2 PASS                     
+current: unfinished operation MERGE_HEAD              refuse/0           1        3 PASS                     
+current: unfinished operation CHERRY_PICK_HEAD        refuse/0           1        4 PASS                     
+current: unfinished operation REVERT_HEAD             refuse/0           1        5 PASS                     
+current: unfinished operation rebase-merge            refuse/0           1        6 PASS                     
+current: unfinished operation rebase-apply            refuse/0           1        7 PASS                     
+current: dirty worktree                               refuse/0           1        8 PASS                     
+current: unexpected origin                            refuse/0           1        9 PASS                     
+current: protected tracked file artifacts/package.zip refuse/0           1       10 PASS                     
+current: protected tracked file saves/fixture.zks     refuse/0           1       10 PASS                     
+current: protected tracked file private/report.txt    refuse/0           1       10 PASS                     
+current: protected tracked file reference.dll         refuse/0           1       10 PASS                     
+current: protected tracked file symbols.pdb           refuse/0           1       10 PASS                     
+current: protected tracked file secret.pem            refuse/0           1       10 PASS                     
+current: protected tracked file GamePath.props        refuse/0           1       10 PASS                     
+current: protected tracked file .env                  refuse/0           1       10 PASS                     
+current: credential-like tracked content              refuse/0           1       10 PASS                     
+current: divergent remote history                     refuse/0           1       13 PASS                     
+current: failed root read                             refuse/0           1        1 PASS                     
+current: failed status read                           refuse/0           1        8 PASS                     
+current: failed origin read                           refuse/0           1        9 PASS                     
+current: failed tracked files read                    refuse/0           1       10 PASS                     
+current: failed HEAD read                             refuse/0           1       11 PASS                     
+current: failed remote refs read                      refuse/0           1       12 PASS                     
+current: push rejected                                refuse/1           1       14 PASS                     
+current: remote verification mismatch                 refuse/1           1       15 PASS                     
+current: remote verification read fails               refuse/1           1       15 PASS                     
+control: push-before-refusal wrapper is rejected      audit-must-fail    1        2 PASS   correctly rejected
+
+
+
+Push policy wrapper behaviour audit passed: 37 isolated cases; fake Git only; no remote contacted and no push performed. Refusal-before-mutation and exact push argv are asserted, and the negative control proves it.
+
+Validator          : <dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer\scripts\validate-repository.ps1
+Dispatch statements: 26 top-level, executed as real source extents
+
+
+Check                                                             Result Detail                                                                                                                         
+-----                                                             ------ ------                                                                                                                         
+0.0.156 selects its firearm child exactly once                    PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_firearm_continuation_release156.py        
+0.0.156 does not select the Sprint 25 child                       PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_firearm_continuation_release156.py        
+0.0.159 selects its Sprint 25 child exactly once                  PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint25158.py         
+0.0.159 does not select the 0.0.156-only firearm child            PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint25158.py         
+released 0.0.158 keeps its visual refinement child, not Sprint 25 PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_visual_refinement_re...
+0.0.156 keeps the shared Sprint 23 child                          PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_firearm_continuation_release156.py        
+0.0.156 keeps the shared Sprint 24 child                          PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_firearm_continuation_release156.py        
+0.0.157 keeps the shared Sprint 23 child                          PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_alternate_summoning_release157.py         
+0.0.157 keeps the shared Sprint 24 child                          PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_alternate_summoning_release157.py         
+0.0.158 keeps the shared Sprint 23 child                          PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_visual_refinement_re...
+0.0.158 keeps the shared Sprint 24 child                          PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_visual_refinement_re...
+0.0.159 keeps the shared Sprint 23 child                          PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint25158.py         
+0.0.159 keeps the shared Sprint 24 child                          PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint25158.py         
+0.0.155 selects neither version-specific child                    PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py                                                 
+a failing Sprint 25 child throws rather than continuing           PASS   Sprint 25 corruption fixtures failed.                                                                                          
+a failing firearm child throws rather than continuing             PASS   Firearm continuation patch corruption fixtures failed.                                                                         
+0.0.160 selects its Sprint 26 child exactly once                  PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint26160.py         
+0.0.160 preserves shared dependency children                      PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint26160.py         
+0.0.160 does not invoke an unrelated release child                PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint26160.py         
+a failing Sprint 26 child stops validation                        PASS   Sprint 26 corruption fixtures failed.                                                                                          
+0.0.169 selects its Sprint32 release child exactly once           PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint27161.py, test...
+0.0.169 keeps shared Sprint23/24/27 children                      PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint27161.py, test...
+a failing Sprint32 release child stops validation                 PASS   Sprint 32 release corruption fixtures failed.                                                                                  
+0.0.170 selects its repair release child exactly once             PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint27161.py, test...
+0.0.170 keeps shared Sprint23/24/27 children                      PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint27161.py, test...
+a failing repair release child stops validation                   PASS   Satyr Lillend repair release corruption fixtures failed.                                                                       
+0.0.171 selects its Sprint33 release child exactly once           PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint27161.py, test...
+0.0.171 keeps shared Sprint23/24/27 children                      PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint27161.py, test...
+a failing Sprint33 release child stops validation                 PASS   Sprint33 release source corruption fixtures failed.                                                                            
+0.0.172 selects its Sprint34 release child exactly once           PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint27161.py, test...
+0.0.172 keeps shared Sprint23/24/27 children                      PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint27161.py, test...
+a failing Sprint34 release child stops validation                 PASS   Sprint34 release source corruption fixtures failed.                                                                            
+0.0.173 selects its Sprint35 release child exactly once           PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint27161.py, test...
+0.0.173 keeps shared Sprint23/24/27 children                      PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint27161.py, test...
+a failing Sprint35 release child stops validation                 PASS   Sprint35 release source corruption fixtures failed.                                                                            
+0.0.174 selects its Sprint36 release child exactly once           PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint27161.py, test...
+0.0.174 keeps shared Sprint23/24/27 children                      PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint27161.py, test...
+a failing Sprint36 release child stops validation                 PASS   Sprint36 release source corruption fixtures failed.                                                                            
+the roster coverage suite is invoked from exactly one place       PASS   1 references                                                                                                                   
+the source fixtures run the roster coverage suite exactly once    PASS   test_repository_validator.py, test_development_candidate_validator.py, test_expanded_summoning_ideal_roster.py, test_determi...
+the roster suite runs before the deterministic-package fixtures   PASS   test_repository_validator.py, test_development_candidate_validator.py, test_expanded_summoning_ideal_roster.py, test_determi...
+a failing roster coverage suite stops validation                  PASS   Expanded Summoning roster coverage fixtures failed.                                                                            
+nothing downstream runs after the roster suite fails              PASS   test_repository_validator.py, test_development_candidate_validator.py, test_expanded_summoning_ideal_roster.py                 
+0.0.191 version dispatch does not run the roster suite again      PASS                                                                                                                                  
+0.0.159 version dispatch does not run the roster suite again      PASS   test_expanded_summoning_sprint23152.py, test_expanded_summoning_sprint24154.py, test_expanded_summoning_sprint25158.py         
+no version dispatch is nested inside another                      PASS                                                                                                                                  
+
+
+
+Repository validator dispatch regression passed: 46 checks; real dispatch statements with a recorded child shim; nothing built, deployed or launched.
+PASS production gate parses
+PASS the production gate contains a preflight invocation statement
+PASS the statement immediately after the preflight call is its throwing guard; preflight=210 guard=211
+PASS the repository wrapper still runs, and runs before the preflight; wrapper=185 preflight=210
+PASS no release build/package statement precedes the preflight guard; early=
+PASS the release build and package steps are downstream of the guard; found=2
+PASS the gate reaches the preflight child exactly once (passing)
+PASS the child real exit code reaches the gate (passing): 0
+PASS valid registry agreement succeeds and the gate continues
+PASS the gate reaches the preflight child exactly once (failing)
+PASS the child real exit code reaches the gate (failing): 3
+PASS a deliberately failing child throws, preventing build/package/deploy
+PASS the owned-save contract scenario is readable, as the real preflight reads it
+PASS no scenario is registered in PowerShell alone; extra=
+PASS the research-only census scenario is absent from the production C# catalog
+PASS the research-only census scenario is absent from the production PowerShell metadata
+PASS a scenario in no PowerShell registry is refused by the real metadata lookup
+PASS the research-only scenario is refused by production, at the metadata boundary, before any deployment
+PASS reuse/confirmation semantics preserved: Deployment/package paths are valid only with an explicit artifact-reuse authority.
+PASS reuse/confirmation semantics preserved: Artifact reuse requires exact -DeploymentManifestPath and -PackagePath.
+PASS reuse/confirmation semantics preserved: Current-source and qualified-legacy artifact reuse are mutually exclusive.
+PASS reuse/confirmation semantics preserved: ShouldProcess
+PASS snapshot/confirmation contract preserved: ConfirmImpact = 'High'
+PASS snapshot/confirmation contract preserved: Get-KmgTreeFingerprint
+PASS snapshot/confirmation contract preserved: Backup-Live-Mod.ps1
+PASS snapshot/confirmation contract preserved: Assert-KmgNotRunning
+PASS the ported evidence-name expression is array-wrapped, not collapsing
+
+Production preflight integration passed: 27 assertions. Nothing built, deployed or launched.
+Sprint22 installed-stack safety PASS: 57 predicates; fixture filesystem only; no game, native settings or real installation touched.
+Development-candidate repository validation passed for 'umm-0311-admission'. This is not a release qualification.
+Sprint34 publisher refusal checks PASS=42; synthetic proofs only, no network/publication.
+Sprint35 publisher refusal checks PASS=30; synthetic proofs only, no network/publication.
+Closed Sprint 35 publisher policy is unchanged and its reviewed refusal suite passed in isolation.
+Sprint36 publisher refusal checks PASS=22; synthetic proofs only, no network/publication.
+Closed Sprint 36 publisher policy is unchanged and its reviewed refusal suite passed in isolation.
+Sprint37 publisher refusal checks PASS=45; synthetic proofs only, no network/publication.
+Closed Sprint 37 publisher policy is unchanged and its reviewed refusal suite passed in isolation.
+Sprint38 publisher refusal checks PASS=72; synthetic proofs only, no network/publication.
+Closed Sprint 38 publisher policy is unchanged and its reviewed refusal suite passed in isolation.
+Sprint39 publisher refusal checks PASS=87; synthetic proofs only, no network/publication.
+Closed Sprint 39 publisher policy is unchanged and its reviewed refusal suite passed in isolation.
+Repository validation skipped: the caller runs it, or this is a focused run.
+Building dependency-free domain/reflection tests (Release) with <buildtools>\MSBuild\Current\Bin\MSBuild.exe
+
+  KingmakerGunslinger.DomainTests -> <dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer\artifacts\tests\Release\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe
+Running dependency-free domain/reflection tests: <dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer\artifacts\tests\Release\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe
+Kingmaker Gunslinger domain, firearm-state, and combat-rule tests
+KMG_TEST_FILTER=model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged; selected 1 of 3189 registered tests. This is a focused run and is not a gate.
+PASS model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged
+Completed 1 tests; failures=0. Registered 3189; elapsed 0.1s.
+Dependency-free domain/reflection tests passed.
+<dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer\artifacts\development-candidates\umm-0311-admission\c67881f3fb88\exact-build\KingmakerGunslinger-0.0.195-compile-candidate.zip
+Compile candidate produced; Kingmaker runtime qualification is still required.
+Repository validation skipped: the caller runs it, or this is a focused run.
+Building dependency-free domain/reflection tests (Release) with <buildtools>\MSBuild\Current\Bin\MSBuild.exe
+
+  KingmakerGunslinger.DomainTests -> <dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer\artifacts\tests\Release\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe
+Running dependency-free domain/reflection tests: <dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer\artifacts\tests\Release\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.exe
+Kingmaker Gunslinger domain, firearm-state, and combat-rule tests
+KMG_TEST_FILTER=loader.production-dll-references-pinned-loader; selected 1 of 3189 registered tests. This is a focused run and is not a gate.
+PASS loader.production-dll-references-pinned-loader
+Completed 1 tests; failures=0. Registered 3189; elapsed 0.1s.
+Dependency-free domain/reflection tests passed.
+Focused supply-icon and exact-reference BlueprintItem icon tests passed.
+  animal companion (Animal 3), before fix: Animal, Gunslinger
+  animal companion (Animal 3): Animal
+  animal companion already holding Gunslinger 1: Animal
+  player character (Fighter 2): Fighter, Rogue, Gunslinger
+  humanoid companion (Rogue 4): Fighter, Rogue, Gunslinger
+  existing Gunslinger (Gunslinger 5): Fighter, Rogue, Gunslinger
+Gunslinger animal-companion eligibility: 37 assertions PASS against native SelectClass.Check/MeetsPrerequisites (Assembly-CSharp SHA-256 3B6450FFEC440E296E586F71C711B195AED144B28D53E1CBB29406D18FEF5AFB; mod SHA-256 17A42879A57DBA9914CEBD67B3855AD95A94EF64775A8C2F66886EF5F03C808A). Native-contract evidence only; no game launch, save, selector rendering or registered in-game blueprint.
+Build output validation passed: <dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer\artifacts\bin\Release\KingmakerGunslinger
+Firearm SoundBank validation passed: <dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer\assets\soundbanks\KMG_Firearms.bnk
+<dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer\artifacts\development-candidates\umm-0311-admission\c67881f3fb88\KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip
+PASS production firearm manifest and SoundBank artifact validation.
+Strict standalone UMM package validation passed: <dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer\artifacts\development-candidates\umm-0311-admission\c67881f3fb88\KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip
+Created standalone UMM package: <dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer\artifacts\development-candidates\umm-0311-admission\c67881f3fb88\KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip
+Created checksum: <dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer\artifacts\development-candidates\umm-0311-admission\c67881f3fb88\KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip.sha256
+<dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer\artifacts\development-candidates\umm-0311-admission\c67881f3fb88\KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip
+DEVELOPMENT CANDIDATE (never a release): <dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer\artifacts\development-candidates\umm-0311-admission\c67881f3fb88\KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip
+Purpose: umm-0311-admission
+Receipt: <dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer\artifacts\development-candidates\umm-0311-admission\c67881f3fb88\KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip.development-receipt.json
+Selected tests: 1 of 3189 registered; filter 'model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged'
+Package SHA-256: d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929
+DLL SHA-256: 17a42879a57dba9914cebd67b3855ad95a94ef64775a8c2f66886ef5f03c808a
+No deployment was performed.
+BUILD-EXIT 0 SECONDS 530 START 2026-11-27T02:04:17.2658517Z

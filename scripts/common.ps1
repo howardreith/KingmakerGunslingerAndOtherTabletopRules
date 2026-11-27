@@ -102,3 +102,68 @@ function Get-KmgReleaseOutputRows {
         else { 'file|' + $relative + '|' + $_.Length + '|' + (Get-KmgSha256 -Path $_.FullName) }
     })
 }
+
+# Extracts a mod ZIP into an empty destination after checking every entry's normalized destination: each must lie under
+# <Destination>\<ModId>\, with no '.' or '..' segment, no duplicate, and nothing may land at the extraction root. The
+# entries checked are exactly the entries extracted. Returns the extracted mod directory.
+function Expand-KmgPackageEntries {
+    param(
+        [Parameter(Mandatory = $true)][string]$ZipPath,
+        [Parameter(Mandatory = $true)][string]$Destination,
+        [Parameter(Mandatory = $true)][string]$ModId
+    )
+    Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
+    $destinationRoot = [IO.Path]::GetFullPath($Destination).TrimEnd('\') + '\'
+    if (-not (Test-Path -LiteralPath $destinationRoot -PathType Container) -or @(Get-ChildItem -LiteralPath $destinationRoot -Force).Count -ne 0) {
+        throw "The extraction destination must be an existing empty directory: $destinationRoot"
+    }
+    $modRoot = $destinationRoot + $ModId + '\'
+    $archive = [IO.Compression.ZipFile]::OpenRead($ZipPath)
+    try {
+        $outside = [Collections.Generic.List[string]]::new()
+        $files = [Collections.Generic.List[object]]::new()
+        $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+        $directories = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+        foreach ($entry in $archive.Entries) {
+            $name = $entry.FullName
+            $normalized = $name.Replace('\', '/')
+            $isDirectory = $normalized.EndsWith('/')
+            $segments = @($normalized.TrimEnd('/').Split('/'))
+            $target = [IO.Path]::GetFullPath([IO.Path]::Combine($destinationRoot, $normalized.Replace('/', '\')))
+            $insideMod = $target.StartsWith($modRoot, [StringComparison]::OrdinalIgnoreCase) -or ($isDirectory -and ($target.TrimEnd('\') + '\').Equals($modRoot, [StringComparison]::OrdinalIgnoreCase))
+            if ($normalized.StartsWith('/') -or $normalized.Contains(':') -or @($segments | Where-Object { $_ -eq '.' -or $_ -eq '..' -or $_ -eq '' }).Count -ne 0 -or -not $insideMod) {
+                $outside.Add($name); continue
+            }
+            if (-not $isDirectory) {
+                if (-not $seen.Add($target)) { throw "Package contains a duplicate entry: $name" }
+                $files.Add([pscustomobject]@{ Entry = $entry; Target = $target })
+            }
+            else {
+                # A directory record carries no data (declared and decoded) and appears once.
+                $directoryStream = $entry.Open()
+                try { $decodedByte = $directoryStream.ReadByte() } finally { $directoryStream.Dispose() }
+                if ($entry.Length -ne 0 -or $decodedByte -ne -1) { throw "Package contains a data-bearing directory record: $name" }
+                if (-not $directories.Add($target.TrimEnd('\'))) { throw "Package contains a duplicate directory record: $name" }
+            }
+        }
+        if ($outside.Count -ne 0) { throw "Package contains entries outside the '$ModId' mod root: $($outside -join ', ')" }
+        # No destination may be both a file and a directory (a directory record, or the parent of another file).
+        foreach ($file in $files) {
+            if ($directories.Contains($file.Target)) { throw "Package contains a directory record and a file at the same destination: $($file.Entry.FullName)" }
+            # Any entry below a file (another file or a directory record) makes that file a parent.
+            if (@($files | Where-Object { $_.Target.StartsWith($file.Target + '\', [StringComparison]::OrdinalIgnoreCase) }).Count -ne 0 -or
+                @($directories | Where-Object { $_.StartsWith($file.Target + '\', [StringComparison]::OrdinalIgnoreCase) }).Count -ne 0) { throw "Package contains a file that is also the parent of other entries: $($file.Entry.FullName)" }
+        }
+        foreach ($file in $files) {
+            [void][IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($file.Target))
+            [IO.Compression.ZipFileExtensions]::ExtractToFile($file.Entry, $file.Target, $false)
+        }
+    }
+    finally { $archive.Dispose() }
+    $rootFiles = @(Get-ChildItem -LiteralPath $destinationRoot -File -Force)
+    $rootDirectories = @(Get-ChildItem -LiteralPath $destinationRoot -Directory -Force)
+    if ($rootFiles.Count -ne 0 -or $rootDirectories.Count -ne 1 -or $rootDirectories[0].Name -cne $ModId) {
+        throw "Package must contain exactly one root directory named '$ModId' and nothing beside it."
+    }
+    return $rootDirectories[0].FullName
+}

@@ -1,0 +1,1 @@
+Loader-compatibility safety checks: PASS=102 FAIL=0 (required scenarios 44 of 44 executed). Offline fixtures only.

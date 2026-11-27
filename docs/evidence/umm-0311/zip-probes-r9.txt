@@ -1,0 +1,13 @@
+CLEAN PASSED compared=457 ms=6363
+REMAPPED-ICON-EDITED REFUSED ms=5893 :: The packaged content does not match its producing commit c0b54ba4ad: assets/icons/black-powder.png (producer file assets/game/icons/black-powder.png) differ from that commit's files as checked out; the package was not produced from that commit's inputs.
+CASE-README-EDITED REFUSED ms=5174 :: The packaged content does not match its producing commit c0b54ba4ad: readme.md (producer file README.md) differ from that commit's files as checked out; the package was not produced from that commit's inputs.
+CASE-README-UNEDITED PASSED compared=457 ms=5551
+CASE-ICON-UNEDITED PASSED compared=457 ms=6941
+UNMAPPED-MEMBER REFUSED ms=2516 :: The package ships members that no file tracked at its producing commit c0b54ba4ad produces and that are not generated outputs: assets/icons/not-a-producer-file.png.
+OUTSIDE-MEMBER REFUSED ms=2983 :: The package ships members that no file tracked at its producing commit c0b54ba4ad produces and that are not generated outputs: Other/notes.txt.
+REPLACED-EDITED-BY-CLEAN REFUSED ms=1829 :: The package is not the archive its receipt records: <dev>\missions\kingmaker-umm-0311\release-20261126\tre-r9\probe-work\slot.zip has SHA-256 d86d9a7cdd4a66f763b8ee77f8c1e22c67e54c0a8feb844af35e29d6ec12caa1, the receipt records e67433674943e5abee7e6e260fca5e75f9494d3b1571c7f21ef03be8215bbb04.
+REPLACED-CLEAN-BY-EDITED REFUSED ms=1928 :: The package is not the archive its receipt records: <dev>\missions\kingmaker-umm-0311\release-20261126\tre-r9\probe-work\slot.zip has SHA-256 d4a33a8fd4fa0ee1dc907b009c4c5acc66c5cf9457323b2c3b2b9a7ef0d13933, the receipt records d86d9a7cdd4a66f763b8ee77f8c1e22c67e54c0a8feb844af35e29d6ec12caa1.
+MATCHING-ARCHIVE PASSED compared=457 ms=6192
+HELD-HANDLE REPLACE REFUSED MethodInvocationException
+HELD-HANDLE DELETE REFUSED MethodInvocationException
+EXIT 0 START 2026-11-27T01:54:34Z SECONDS 73

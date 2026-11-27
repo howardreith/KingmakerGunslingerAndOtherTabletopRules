@@ -1,0 +1,51 @@
+import os, subprocess, sys
+here = os.path.dirname(os.path.abspath(__file__))
+repo = r"<repo>"
+files = [os.path.join(repo, r"tests\KingmakerGunslinger.DomainTests\Assertions.cs"),
+         os.path.join(repo, r"tests\KingmakerGunslinger.DomainTests\LoaderReferenceContractTests.cs")]
+items = "\n".join('    <Compile Include="%s" />' % f for f in files)
+# Same properties as tools/run_portable_domain_tests.py's generated project.
+proj = """<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <ItemGroup>
+%s
+    <Compile Include="Probe.cs" />
+  </ItemGroup>
+</Project>
+""" % items
+open(os.path.join(here, "Probe.csproj"), "w", encoding="utf-8").write(proj)
+open(os.path.join(here, "Probe.cs"), "w", encoding="utf-8").write("""using System;
+namespace KingmakerGunslinger.DomainTests
+{
+    internal static class Probe
+    {
+        // RunSelection.Focused is what the runner sets when KMG_TEST_FILTER or --test-prefix chose the case.
+        static string Run(bool focused, string dll)
+        {
+            RunSelection.Focused = focused;
+            Environment.SetEnvironmentVariable("KMG_PRODUCTION_DLL", dll);
+            Environment.SetEnvironmentVariable("KMG_PRODUCTION_DLL_SHA256", dll == null ? null : new string('a', 64));
+            try { LoaderReferenceContractTests.ProductionDllReferencesExactlyThePinnedLoader(); return "PASS"; }
+            catch (NotApplicableException e) { return "NOT APPLICABLE " + e.Message; }
+            catch (InvalidOperationException e) { return "REFUSED " + e.Message; }
+        }
+        static int Main()
+        {
+            Console.WriteLine("net8 unbound, unfiltered run: " + Run(false, null));
+            Console.WriteLine("net8 unbound, focused selection: " + Run(true, null));
+            Console.WriteLine("net8 bound: " + Run(false, "bound-production.dll"));
+            return 0;
+        }
+    }
+}
+""")
+print("written")

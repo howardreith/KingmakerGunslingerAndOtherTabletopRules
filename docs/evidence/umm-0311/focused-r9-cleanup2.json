@@ -1,0 +1,35 @@
+{
+    "schema":  "kmg.focused-r9-cleanup2.v1",
+    "recordedUtc":  "2026-11-27T03:43:00.3939395Z",
+    "cleanup":  {
+                    "fixtureArea":  "<dev>\\KingmakerGunslingerLab\\worktrees\\focused-r9-35e4876cf5ba4935933f23594f0c5f09",
+                    "filesBefore":  25391,
+                    "ownedFilesDeleted":  7416,
+                    "sharedFilesKept":  17975,
+                    "sharedSample":  [
+                                         "clone with space\\.git\\objects\\bitmap-ref-tips_HEJ31q (links 4)",
+                                         "clone with space\\.git\\objects\\maintenance.lock (links 4)",
+                                         "clone with space\\.git\\objects\\pack\\multi-pack-index (links 4)"
+                                     ],
+                    "deleteFailures":  [
+
+                                       ],
+                    "filesRemaining":  17975,
+                    "remainingShared":  17975,
+                    "fixtureAreaRemoved":  false
+                },
+    "admission":  {
+                      "command":  "Read-KmgBuildLocalManifest -PackagePath \u003cretained ZIP\u003e -RepositoryRoot \u003cretained producer\u003e -DevelopmentPurpose umm-0311-admission -RequireCurrentMaterialInputs (fresh Windows PowerShell)",
+                      "exit":  0,
+                      "producerStatusEntries":  0,
+                      "producerHead":  "c67881f3fb8892cae09cdf4cc4f370170f20afc8",
+                      "producer":  "c67881f3fb8892cae09cdf4cc4f370170f20afc8",
+                      "packageSha256":  "d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929",
+                      "dllSha256":  "17a42879a57dba9914cebd67b3855ad95a94ef64775a8c2f66886ef5f03c808a",
+                      "dllMvid":  "5efdffb9-c4ac-4a3e-91f7-089a12991064",
+                      "measuredDllSha256":  "17a42879a57dba9914cebd67b3855ad95a94ef64775a8c2f66886ef5f03c808a",
+                      "measuredMvid":  "5efdffb9-c4ac-4a3e-91f7-089a12991064",
+                      "package":  "<dev>\\KingmakerGunslingerLab\\worktrees\\umm-0311-final-candidate-c67881f3fb\\producer\\artifacts\\development-candidates\\umm-0311-admission\\c67881f3fb88\\KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip",
+                      "repositoryRoot":  "<dev>\\KingmakerGunslingerLab\\worktrees\\umm-0311-final-candidate-c67881f3fb\\producer"
+                  }
+}

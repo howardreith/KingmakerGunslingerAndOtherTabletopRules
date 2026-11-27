@@ -90,10 +90,16 @@ if ($Level -eq 'Focused') {
         if ($KingmakerInstallDir) { $compileArguments.KingmakerInstallDir = $KingmakerInstallDir }
         if ($MSBuildPath) { $compileArguments.MSBuildPath = $MSBuildPath }
         & (Join-Path $PSScriptRoot 'build.ps1') @compileArguments
+        # Measured at the compile boundary; test-domain inspects a private copy with this digest.
+        $compiledDll = Join-Path (Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot) 'artifacts\bin\Release\KingmakerGunslinger\KingmakerGunslinger.dll'
+        $script:KmgGateProductionDllSha256 = if (Test-Path -LiteralPath $compiledDll -PathType Leaf) { (Get-FileHash -LiteralPath $compiledDll -Algorithm SHA256).Hash.ToLowerInvariant() } else { '' }
     }
+    # The production DLL this gate just compiled; test-domain binds it (path and SHA-256) for the loader-reference case.
+    $productionDll = Join-Path (Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot) 'artifacts\bin\Release\KingmakerGunslinger\KingmakerGunslinger.dll'
+    $productionDllSha256 = [string]$script:KmgGateProductionDllSha256
     Invoke-KmgWithTestFilter -Filter $effectiveFilter -Body {
         Invoke-KmgGateStep 'domain-tests (focused)' {
-            & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -SkipRepositoryValidation -MSBuildPath $MSBuildPath
+            & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -SkipRepositoryValidation -MSBuildPath $MSBuildPath -ProductionDll $productionDll -ProductionDllSha256 $productionDllSha256
         }
     }
     Add-KmgDeferred 'repository wrapper' 'Focused level; runs at the sprint candidate boundary'

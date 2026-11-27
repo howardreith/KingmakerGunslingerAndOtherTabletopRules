@@ -1,0 +1,150 @@
+{
+    "schemaVersion":  1,
+    "candidateKind":  "development",
+    "releaseQualification":  false,
+    "generator":  "scripts/Build-Local.ps1 -DevelopmentPurpose",
+    "purpose":  "umm-0311-baseline",
+    "generatedAtUtc":  "2026-11-24T19:48:52.3787499Z",
+    "repositoryRoot":  "<repo>",
+    "commit":  "49be3fd0e28c551a4a5fafb5e98d87daffb125d5",
+    "branch":  "codex/umm-0311-pinned-build-20261124",
+    "sourceStateSha256":  "ed06a2da4577b69fab7651b43ecffb22b4f42d46fa3573d17ee8db41fb0f71bc",
+    "version":  "0.0.195",
+    "informationalVersion":  "0.0.195-gunslinger-remediation-sprint6",
+    "packagePath":  "<repo>\\artifacts\\development-candidates\\umm-0311-baseline\\49be3fd0e28c\\KingmakerGunslinger-0.0.195-development-umm-0311-baseline-49be3fd0e28c.zip",
+    "packageSha256":  "71347c1273b1a212f3af38d43231010fa7c40acc7794880c1a80cbfc104aa84b",
+    "dllSha256":  "3507c7554dc3a82bff7684616ab02ac8b0681c1ced4fdcdb7dda54319b5570d1",
+    "dllMvid":  "ac6e8b46-3e64-4251-bf96-14cd3e784869",
+    "packagedDllSha256":  "3507c7554dc3a82bff7684616ab02ac8b0681c1ced4fdcdb7dda54319b5570d1",
+    "compilerDllSha256":  "3507c7554dc3a82bff7684616ab02ac8b0681c1ced4fdcdb7dda54319b5570d1",
+    "compilerDllMvid":  "ac6e8b46-3e64-4251-bf96-14cd3e784869",
+    "embeddedGitCommit":  "49be3fd0e28c551a4a5fafb5e98d87daffb125d5",
+    "firearmManifestSha256":  "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
+    "firearmSoundBankSha256":  "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+    "references":  {
+                       "bundleDirectory":  "<dev>\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\artifacts\\repair-packet-0.0.169\\current-private-references\\KingmakerGunslinger-private-build-references",
+                       "installDirectory":  "<game>",
+                       "loaderDirectory":  "<repo>\\artifacts\\references\\loader",
+                       "loaderPinsSha256":  "b13bed40b1687c03ac256acdfd233cf2546bf7fcbde2d2ea3445fb0c52d88534",
+                       "minimumManagerVersion":  "0.31.1",
+                       "files":  [
+                                     {
+                                         "relativePath":  "Assembly-CSharp.dll",
+                                         "sha256":  "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+                                         "role":  "installed-game"
+                                     },
+                                     {
+                                         "relativePath":  "Assembly-CSharp-firstpass.dll",
+                                         "sha256":  "069a7362ce5e3ccd597206174aec13743c2db5a1bfbc2a42f15a5fbd1ea30d30",
+                                         "role":  "installed-game"
+                                     },
+                                     {
+                                         "relativePath":  "UniRx.dll",
+                                         "sha256":  "bfee7eca22156d8b95c149ba1383f065124b7b44a62ed4eafc32a5e67f6bc68a",
+                                         "role":  "installed-game"
+                                     },
+                                     {
+                                         "relativePath":  "Newtonsoft.Json.dll",
+                                         "sha256":  "3a23988f473e9e8304fbbcfff16872cca919bd1a1f3dee1e374acc1f0cbbbc80",
+                                         "role":  "installed-game"
+                                     },
+                                     {
+                                         "relativePath":  "UnityEngine.dll",
+                                         "sha256":  "50b79c57f46bf4e060bb27461b6d4fac6f078e08b57e776c7a811554c4899fd6",
+                                         "role":  "installed-game"
+                                     },
+                                     {
+                                         "relativePath":  "UnityEngine.AnimationModule.dll",
+                                         "sha256":  "18636cc226c7e6299e80210d4ae808eb2552cbcdb92c8713caee6a7f0e1be1a5",
+                                         "role":  "installed-game"
+                                     },
+                                     {
+                                         "relativePath":  "UnityEngine.AudioModule.dll",
+                                         "sha256":  "fb42210ac3bc75107fed62ec1e9ef4aeee500318af14aae1a47eadb4c5fd7dd9",
+                                         "role":  "installed-game"
+                                     },
+                                     {
+                                         "relativePath":  "UnityEngine.AssetBundleModule.dll",
+                                         "sha256":  "a11128e604a59eadd61ea870f2017ea18d4c19240dd1c1b8b6d4ffb7976b569b",
+                                         "role":  "installed-game"
+                                     },
+                                     {
+                                         "relativePath":  "UnityEngine.CoreModule.dll",
+                                         "sha256":  "3a76df7f709d465e3273502e08edbffb536b1c2f78c3a132b8668e59fddd2803",
+                                         "role":  "installed-game"
+                                     },
+                                     {
+                                         "relativePath":  "UnityEngine.ClothModule.dll",
+                                         "sha256":  "390e7edea7c242f764c4645c8582cf02bfdb3d2d86f51d4ea8d8b91ac5e57e91",
+                                         "role":  "installed-game"
+                                     },
+                                     {
+                                         "relativePath":  "UnityEngine.PhysicsModule.dll",
+                                         "sha256":  "724ac786e5dceae9d24521b6dcfb3c595de7529b4a7096e70fd6871809ad2ac7",
+                                         "role":  "installed-game"
+                                     },
+                                     {
+                                         "relativePath":  "UnityEngine.UI.dll",
+                                         "sha256":  "4dee942e8974492511733e5482f89fde39e3964008f072ec9c12d05e40a9080d",
+                                         "role":  "installed-game"
+                                     },
+                                     {
+                                         "relativePath":  "UnityEngine.UIModule.dll",
+                                         "sha256":  "51b32055e2a03c78d3e7b2d7d8a6425ee80d415c1e07ea0ec7b1dd84eddc9f12",
+                                         "role":  "installed-game"
+                                     },
+                                     {
+                                         "relativePath":  "UnityEngine.TextRenderingModule.dll",
+                                         "sha256":  "9ece6f5f1d1221809aeee9c591d67a38d51cde32dc6f525719f2ae2b20bf7fac",
+                                         "role":  "installed-game"
+                                     },
+                                     {
+                                         "relativePath":  "UnityModManager/UnityModManager.dll",
+                                         "sha256":  "2e038ff23ab01d538dfef792096e1f5c04802d1edac3660db20d0d54c167c2c4",
+                                         "role":  "pinned-loader",
+                                         "assemblyVersion":  "0.31.1.0",
+                                         "source":  "https://api.nuget.org/v3-flatcontainer/unitymodmanager/0.31.1/unitymodmanager.0.31.1.nupkg",
+                                         "pinsSha256":  "b13bed40b1687c03ac256acdfd233cf2546bf7fcbde2d2ea3445fb0c52d88534"
+                                     },
+                                     {
+                                         "relativePath":  "UnityModManager/0Harmony12.dll",
+                                         "sha256":  "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+                                         "role":  "pinned-loader",
+                                         "assemblyVersion":  "1.2.0.1",
+                                         "source":  "https://raw.githubusercontent.com/newman55/unity-mod-manager/10cfb1cce51914a5114928c5bc6a06d1d2c31fe2/lib/Harmony/1.2/0Harmony12.dll",
+                                         "pinsSha256":  "b13bed40b1687c03ac256acdfd233cf2546bf7fcbde2d2ea3445fb0c52d88534"
+                                     }
+                                 ]
+                   },
+    "validation":  {
+                       "wrapper":  "scripts/validate-repository.ps1 -DevelopmentPurpose",
+                       "validator":  "tools/validate_development_candidate.py",
+                       "purpose":  "umm-0311-baseline",
+                       "releaseQualification":  false,
+                       "baselineCommit":  "ef0e1fe15d59fc6f04ef4956337690f14de3c528",
+                       "baselineVersion":  "0.0.195",
+                       "releasedIdentities":  7935,
+                       "identities":  7935,
+                       "appendedIdentities":  0,
+                       "ledgerSha256":  "35c8e73d4178520968bdec193f10771adaf892d86e655321451f9edb6c10ce76",
+                       "summarySha256":  "6badab24baec22b702c48c5b25f9c8001e4f9844c025dd06cf5aaf72bd7e291d"
+                   },
+    "selectedTests":  {
+                          "filter":  "",
+                          "selected":  3189,
+                          "registered":  3189,
+                          "failures":  0,
+                          "passedNamesSha256":  "c0d4d9de2858b16af1e83699d21d4ad2cbf0456090f1790f64ef01c3eb39838e",
+                          "notApplicable":  [
+                                                "loader.production-dll-references-pinned-loader"
+                                            ],
+                          "logSha256":  "c64daeb3ed567ac255ea137c81ace63d33837f258e87a0d037e621fc8143f923",
+                          "completeSuite":  true
+                      },
+    "toolchain":  {
+                      "msbuild":  "<buildtools>\\MSBuild\\Current\\Bin\\MSBuild.exe",
+                      "python":  "<user-profile>\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe",
+                      "dotnet":  "<dotnet>\\dotnet.exe",
+                      "csc":  "<dotnet>\\sdk\\8.0.424\\Roslyn\\bincore\\csc.dll"
+                  }
+}

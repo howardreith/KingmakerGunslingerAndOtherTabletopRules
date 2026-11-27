@@ -1,0 +1,480 @@
+<!-- agent-review:v1 enrollment=kmg-codex-umm-0311-pinned-build-20261124-20261123223003-1af6 key=r03-review part=1/1 sha256=77a0ab3b6a766ca19502821460567bf13b0bc6065acc8f18b96a2c725cd99ce2 -->
+### Codex GPT-6.2 Astra — review — round 3 — candidate `117e368bb4`
+
+**Decision:** `changes_required` — The focused gate passed, and the recorded development DLL has the required loader references. The candidate still admits stale packages after changes to 24 shipped documents, can write inconsistent build receipts, and cannot complete a historical deployment. The staging and test paths also lose parts of the identity they are meant to verify.
+
+Continuation for Claude
+
+Use the packaging inventory to identify material inputs. Carry the compiler, package and release identities measured at production or admission through receipt writing, staging, deployment records and runtime comparisons. Keep historical release records bound to committed data and validate the fields each deployment mode needs before replacing its target.
+
+Keep the production-DLL assertion meaningful in the focused gate while preserving the portable domain runner and Build-Local’s single-build, single-validation contract. Correct the pin-recovery instructions and the archive and temporary-copy handling described in the findings.
+
+Use disposable offline fixtures for these corrections. Record the actual child exit codes, before-and-after identities and cleanup results, then rerun the named controller gate on the corrected commit. Refresh package and static-audit evidence for changed artifact inputs. Keep this enrollment within TRE build and validation tooling, preserve historical evidence, and retain the documented native blockers.
+
+#### Findings
+
+**R1-F4** · P1 · defect · blocks readiness — Include shipped documentation in candidate freshness checks
+- Location: `scripts/ReferenceProvenance.Common.ps1:306`; acceptance: —
+- Trigger: A document copied by package.ps1 changes after the candidate is built.
+- Expected: Admission detects changes to every shipped input and preserves reuse across changes confined to unshipped review records.
+- Actual: Assert-KmgCandidateMaterialInputsCurrent excludes all of docs/. package.ps1 copies 24 files from that directory into the ZIP, including docs/WEAPON-FINDABILITY-RECOVERY.md. The standalone validator checks that file’s presence. The old ZIP therefore remains admissible after its shipped content changes. The freshness check also assumes the receipt’s commit describes its producing source state without verifying that claim.
+- Why it blocks / does not: A previous ZIP can be reported as current after a packaging input changes.
+- Requested correction: Cover the actual packaging inventory in the material comparison and bind it to the verified producer state. Update the compatibility guide’s blanket docs/ exception.
+- Requested evidence: At a fixed mod version, change one shipped docs/ file and show the old ZIP refused. Retain the matching-package and unshipped-review-note controls.
+
+**R1-F3** · P1 · defect · blocks readiness — Write and check the same measured DLL identity throughout
+- Location: `scripts/Build-Local.ps1:506`; acceptance: —
+- Trigger: The shared Release output changes after the finished ZIP has passed comparison, or a receipt carries inconsistent identity fields.
+- Expected: Both receipts contain the identities already verified against the exact compiler output. Admission checks agreement among the identity fields recorded by that receipt format.
+- Actual: Build-Local compares the compiler, loose and packaged identities, then both receipt writers reread the shared loose DLL for dllSha256 and dllMvid. A later compile can change those values between comparison and receipt writing. Admission also ignores the new packagedDllSha256 and embeddedGitCommit fields and skips the producer check when the measured stamp is absent.
+- Why it blocks / does not: A successful build can emit a receipt that rejects its genuine package, and a receipt with contradictory recorded package or stamp fields can pass admission.
+- Requested correction: Write the captured measurements into both receipts. Check every recorded package, compiler and source-stamp field against the supplied DLL, including the presence of a stamp when the receipt records one.
+- Requested evidence: Show that a change to the shared output after measurement cannot alter the written receipt. Show refusal for an inconsistent packaged digest or recorded stamp alongside the genuine passing control.
+
+**R2-F2** · P1 · defect · blocks readiness — Anchor historical admission to the committed release record
+- Location: `scripts/RuntimeHarness.Common.ps1:467`; acceptance: —
+- Trigger: Historical admission runs from a checkout with a local edit to the release-record file.
+- Expected: A historical control is identified by the committed release record, and the session records which release supplied its candidate.
+- Actual: Historical admission reads scripts/historical-release-records.json from the working tree. The tag check verifies a source commit, but the expected ZIP digest comes entirely from that mutable file. An uncommitted change to the digest can authorize a repack containing the original tagged DLL. The loader admission child also drops the producer commit and release tag before the session writes its summary.
+- Why it blocks / does not: The historical exception can treat unpublished archive bytes as the recorded release and loses the producer identity in the resulting evidence.
+- Requested correction: Read the trusted record from the reviewed Git revision or verify that the record matches it. Carry the historical mode, release tag, producer commit and verified digests into session evidence.
+- Requested evidence: In a temporary clone, show that a working-tree-only release-record edit cannot authorize a changed ZIP. Show the recorded v0.0.188 identity in the evidence produced for the genuine control.
+
+**R3-F1** · P1 · defect · blocks readiness — Make the historical release record usable by Deploy-Local
+- Location: `scripts/Deploy-Local.ps1:100`; acceptance: —
+- Trigger: Deploy-Local consumes a genuine package with HistoricalReleaseControl and its recorded version.
+- Expected: Historical admission supplies the verified data its deployment path consumes, and the completed record accurately identifies a historical release.
+- Actual: Read-KmgHistoricalReleasePackage returns the version, tag, commit, ZIP and DLL identities. Deploy-Local then reads firearmManifestSha256 and firearmSoundBankSha256, which the object lacks. Strict mode stops the deployment after backup and extraction. Its later deployment-record writer also requires absent branch and sourceStateSha256 properties.
+- Why it blocks / does not: An authentic supported historical control cannot complete the deployment path advertised for it.
+- Requested correction: Handle historical admission explicitly in audio verification and record construction. Derive applicable measurements from the digest-bound release and validate all required fields before target replacement.
+- Requested evidence: Pass the recorded older release through the actual deployment verification and record-construction logic using an offline fixture. Keep the live-directory and lease guards intact.
+
+**R2-F3** · P1 · defect · blocks readiness — Preserve the first admission through target replacement and launch
+- Location: `scripts/Deploy-Local.ps1:70`; acceptance: —
+- Trigger: The package identity changes across deployment preflight, or the loader’s private copy fails verification during staging.
+- Expected: The first admitted ZIP and DLL remain the expected identities through lease acquisition, target replacement and in-process verification. A failed staging check preserves the previous target.
+- Actual: Deploy-Local overwrites the first admission after acquiring the lease without comparing the two identities. The loader harness deletes and recreates Mods before checking its private package copy or extracted DLL, then sets expectedProduct from a fresh hash of the staged file. The fixture exercises the copy helpers, omits the staging child’s exit code and compares the final package hash with itself.
+- Why it blocks / does not: A refusal can follow target mutation, and a second measurement can replace the identity the caller originally approved.
+- Requested correction: Keep the under-lease revalidation and require it to agree with the initial admission. Finish checking the private staging tree before replacing Mods, and compare the runtime DLL directly with the admitted digest. Make the fixture check child success and the saved original hash.
+- Requested evidence: Use disposable targets with an existing sentinel tree. Demonstrate refusal before replacement on an identity change, preservation of the target and original ZIP, and propagation of the original digest on success.
+
+**R2-F1** · P1 · defect · blocks readiness — Keep the production assertion compatible with existing test entry points
+- Location: `tests/KingmakerGunslinger.DomainTests/LoaderReferenceContractTests.cs:29`; acceptance: —
+- Trigger: The portable wrapper builds the common test project, or a caller runs the unfiltered domain executable directly.
+- Expected: The Windows integration check inspects a verified production DLL while the documented portable and direct domain-test entry points remain usable.
+- Actual: The Windows wrapper now supplies the required environment variables. The unconditional test is also compiled by scripts/test-domain-portable.ps1 into a net8.0 warnings-as-errors project, where Assembly.ReflectionOnlyLoad is obsolete and unsupported. Direct domain-runner invocations also lack the wrapper’s required binding.
+- Why it blocks / does not: The common test project introduces a build or execution failure for existing dependency-free entry points.
+- Requested correction: Place the production-artifact assertion in an appropriate integration stage or provide a compatible implementation for every runner that selects it. Preserve the named focused gate’s real assertion and zero-selection refusal.
+- Requested evidence: Show the portable build and ordinary domain invocation without gate variables exercising the corrected boundary, plus the named Windows gate and its mismatched-artifact refusal. Attribute any unrelated baseline failures separately.
+
+**R3-F2** · P1 · defect · blocks readiness — Bind the focused test’s DLL at production compile completion
+- Location: `scripts/test-domain.ps1:85`; acceptance: —
+- Trigger: The shared production DLL changes while test-domain.ps1 compiles the runner.
+- Expected: The producing step captures the DLL identity before another build or test step can replace its output.
+- Actual: The focused gate passes only a shared DLL path. test-domain.ps1 builds the test executable first and then computes the expected SHA-256 from whatever occupies that path. A replacement baseline-compatible DLL supplies both the expected hash and the bytes inspected by the test.
+- Why it blocks / does not: The required gate can report success for a different DLL from its production compile.
+- Requested correction: Pass the producer-measured digest with the path, or give the test a verified private copy captured at the compile boundary.
+- Requested evidence: Use an offline orchestration fixture that changes the shared output during test-runner preparation. The focused gate must inspect the original bytes or refuse the replacement.
+
+**R1-F10** · P2 · required_gap · blocks readiness — Give pin-recovery advice that works from the actual build entry point
+- Location: `scripts/Assert-PinnedLoaderReferences.ps1:27`; acceptance: —
+- Trigger: A developer follows the emitted diagnostic after a direct-build pin failure.
+- Expected: The diagnostic gives a working compile-only bootstrap and confines cache-file recovery to the repository-owned cache.
+- Actual: The publisher routes are now documented correctly. Both recovery messages still recommend bare build.ps1, which runs the version-specific repository validator before fetching pins. For a mismatched installed-loader override, the message advises moving or deleting the differing DLL. On a cold direct build, ValidateKingmakerReferences can also stop before the helper emits its missing-cache advice.
+- Why it blocks / does not: The documented recovery can stop before fetching the reference or direct a developer to remove a working installed loader file.
+- Requested correction: Use build.ps1 -CompileOnly for bootstrap. For an external loader directory, direct the developer to the verified cache. Ensure the first missing-reference error in direct MSBuild gives the same actionable guidance.
+- Requested evidence: Capture direct-MSBuild diagnostics for an absent cache, a mismatched cache file and a disposable directory representing a newer installation. Verify the external files stay intact.
+
+**R3-F3** · P2 · required_gap · blocks readiness — Reuse Build-Local’s existing compile and package validation
+- Location: `scripts/Build-Local.ps1:474`; acceptance: —
+- Trigger: Build-Local assembles a development or release candidate, especially with the complete suite selected.
+- Expected: Build-Local reuses the exact compiled DLL and the strict validation result from package assembly.
+- Actual: package.ps1 already invokes the full standalone validator at line 381. Build-Local invokes it again on the same ZIP to obtain the DLL identity. A Build-Local complete suite also asks test-domain.ps1 to compile production with MSBuild before Build-Local runs its exact compiler.
+- Why it blocks / does not: The candidate path repeats production and package checks contrary to its documented single-pass validation contract. The extra compile can select different configuration inputs from the exact builder.
+- Requested correction: Return the measured package identity from the existing validation pass while preserving package.ps1’s normal output for callers. Arrange any artifact-dependent assertion around the exact output already produced.
+- Requested evidence: Show the nested calls in an offline orchestration check for the complete-suite path, with one production candidate compile, one strict package validation and matching compiler and packaged DLL identities.
+
+**R3-F4** · P2 · defect · blocks readiness — Clean up the admitted ZIP when the loader session stops early
+- Location: `scripts/compatibility/loader-compat/Invoke-LoaderCompatSession.ps1:171`; acceptance: —
+- Trigger: Candidate admission succeeds and the session exits before reaching the extraction cleanup.
+- Expected: The caller that acquires a private copy removes it on every exit after admission, including refusal before staging.
+- Actual: Assert-LcSessionInputs creates a full private ZIP before Assert-LcPreflight and lease acquisition. Cleanup belongs to a later block inside Set-LcGameCopyMods. A busy host, acquisition refusal or early staging error leaves the ZIP in TEMP. The successful preflight-only admission fixture also discards the returned copy path.
+- Why it blocks / does not: A routine refusal on the occupied lab leaves a full package behind on every attempt.
+- Requested correction: Give the private copy one owner whose cleanup covers preflight, acquisition and staging. Apply the same cleanup to preflight-only tests.
+- Requested evidence: An offline busy-host refusal and a successful preflight-only check both leave their owned temporary copy directories absent.
+
+**R3-F5** · P2 · defect · blocks readiness — Validate directory records in the new ZIP extractor
+- Location: `scripts/common.ps1:136`; acceptance: —
+- Trigger: A supplied ZIP contains explicit directory entries alongside its files.
+- Expected: All archive entries describe one consistent file and directory tree across validation and staging.
+- Actual: The new extractor counts and checks duplicate destinations only for entries classified as files. It discards directory entries without checking their declared data length or conflicts with file destinations. Standalone validation can therefore approve an archive whose directory records conflict with the tree consumed by the loader harness’s Expand-Archive.
+- Why it blocks / does not: Approval by the standalone validator does not establish that the supplied archive has an unambiguous installable entry set.
+- Requested correction: Validate directory records as well as files, reject conflicting destinations and data-bearing directory records, and use consistent checked extraction in the loader staging path.
+- Requested evidence: Show an ordinary ZIP with explicit directory records passing and harmless malformed directory-record controls failing in standalone validation before staging.
+
+#### Prior finding assessments
+
+- **R1-F10** — `fix_rejected` — Both publisher branches are now described accurately. The recorded diagnostic still selects bare build.ps1 and gives cache-removal advice for an external loader directory.
+- **R1-F2** — `fix_verified` — The validator resolves the supplied path once, opens that archive and rejects parent segments and files beside the mod root. The four relevant positive and negative controls passed. R3-F5 concerns directory records in the new extractor.
+- **R1-F3** — `fix_rejected` — The genuine measurements agree, and the fixture rejects a DLL stamped with a different producer. The writers still reread mutable output after that comparison, and the reader leaves recorded package and stamp fields unchecked.
+- **R1-F4** — `fix_rejected` — The shipped README and packaging-helper controls pass. The actual packaging script also ships 24 documents under the directory excluded from the comparison.
+- **R1-F8** — `fix_verified` — The fixture measures both files and records the expected verdict for the exact set, the UMM-only mismatch and the Harmony-only mismatch. All three controlled cases passed.
+- **R2-F1** — `fix_rejected` — The Windows wrapper now completes all 3,189 cases and the mismatched-binding control fails as intended. The same unconditional case still requires wrapper-only state and a .NET Framework-only API in other domain runners.
+- **R2-F2** — `fix_rejected` — The genuine published ZIP, changed ZIP, same-version development ZIP and conflicting arguments now get the intended verdicts against the supplied record. Historical admission still trusts uncommitted changes to that record.
+- **R2-F3** — `fix_rejected` — The private-copy fixture establishes protection against replacement of the supplied path after copying. The real deployment can replace its initial admission, and the loader staging refusal can occur after it has replaced the destination tree.
+- **R2-F4** — `fix_verified` — The parent validates the purpose before invoking a script through bound -File parameters. The ordinary purpose passed and the apostrophe case reached the purpose validator.
+- **R2-F5** — `fix_verified` — The harness-file check now runs before package admission. The safety output records 102 passes across all 44 required scenarios, and the admission fixture covers invalid candidates.
+- **R2-F6** — `fix_verified` — The packaged minimum must now have JSON string type and the pinned value. The scalar control passed and the array-valued control was refused.
+- **R2-F7** — `fix_verified` — Both archive lookups dispose their handles, and the fixture’s finally block surfaces failure to remove its clone. R3-F4 concerns a separate private ZIP allocated outside that clone.
+- **R2-F8** — `fix_verified` — The wrapper constructs expected identities from properties returned by the structural pin reader. The C# case no longer parses JSON text or depends on property order.
+
+#### Evidence assessment
+
+- **Inspected:** Enrolled mission, repository review and validation instructions, developer report, transcript notice, controller gate receipt and log, prior-findings ledger, feature diff and correction history.; Production project, pin reader and MSBuild targets, both publisher routes, exact compiler, packaging and standalone validation, receipt readers, Deploy-Local and loader-session staging.; Windows and portable domain-test entry points, admission and safety fixtures, compatibility documentation, release records and static-audit inputs and results.
+- **Executed verification:** Verified HEAD, merge base and mission SHA-256. Compared the full 5,987-line feature diff with Git and verified all 19 indexed evidence exports against their Git-blob SHA-256 values.; Verified the controller receipt and log digest at 117e368bb487472ae09edfbda7e1d3a1bf30d794. The focused gate completed production compilation and passed loader.production-dll-references-pinned-loader, selecting 1 of 3,189 tests in 2.8 seconds.; Checked the exported results at their recorded producers. At 91139e4368 the Windows unfiltered log has 3,189 distinct PASS lines and zero failures, and the admission fixture records 29/29. The MSBuild fixture records 12/12 at 92539bb24a. The later development-gate, pin and loader-safety outputs record 13/13, 35/35 and 102/102 respectively.; Cross-checked the 91139e4368 development receipt, packaged-DLL measurement and four-profile audit. They agree on DLL SHA-256 1ef167cca4135ef8f561ac437c55984ed59777c3962012bf90d738cdc4d1c0e9 and MVID 7c7a1479-98af-4eea-af25-e88ea9986839. The receipt identifies ZIP SHA-256 376ce2532e7895bcb7dfe6bea89177e8cb93a853bc81136ac285c58f4698edd0.; Compared package.ps1’s 24 explicit docs/ inputs with the actual Git pathspec used at admission. The pathspec selects zero of them. Checked the two historical release records against the exported published-asset identities.
+- **Source inspection only:** Traced the historical admission object into strict-mode deployment reads, the two deployment admissions across lease acquisition, loader staging order and the temporary-copy cleanup paths.; Traced receipt field reads and writes, the time at which the focused gate binds its DLL hash, portable test compilation and duplicate package validation. These failure paths were assessed from source.
+- **Required gaps:** Offline coverage of shipped documentation changes, inconsistent receipt fields, immutable historical records and the historical deployment consumer.; A staging refusal that preserves an existing destination and cleans its private copy, with the original admission identity carried through the runtime comparison.; Evidence for the portable runner, compiler-output binding across the test build, single-pass Build-Local orchestration, direct-MSBuild pin recovery and consistent handling of directory entries.
+- **Limitations:** The review was read-only. The foreground shell transcript was withheld. The controller receipt establishes the gate execution at H. The other reported runs are supported by committed outputs attributed to their named producers. The exact development build’s console log was unavailable.; Native testing for this candidate is NOT RUN on 0.31.1, 0.32.4 and owner 0.33.0 because another enrollment was using the disposable game copy. Version 0.33.4 lacks a reviewed harness profile. No combined-stack run was recorded.
+
+#### Summary
+
+- **Delivered behavior:** TRE declares UMM 0.31.1. The recorded production package references UnityModManager 0.31.1.0 and 0Harmony12 1.2.0.1. Its static audit resolved 23 types and 67 members on 0.31.1, 0.32.4, owner 0.33.0 and 0.33.4. Current native coverage is NOT RUN.
+- **Scope reviewed:** The final TRE candidate for PR #220, including production reference selection, artifact provenance, package admission, staging, affected test entry points and compatibility evidence. The other six repositories have separate enrollments or coordinating records.
+- **Pending later-phase work:** none
+- **Unresolved questions:** none
+- **Remaining owner review:** Disposition of draft PR #220 after the technical findings are resolved and the controller produces a current handoff.
+
+#### Provenance (controller-recorded)
+
+| | Requested | Observed |
+|---|---|---|
+| Model | `gpt-6.2-astra` | `gpt-6.2-astra` (turns ['gpt-6.2-astra']) |
+| Reasoning effort | `max` | `max` (turns ['max']) |
+| Sandbox / approvals | read-only / never | `read-only` / `never` |
+
+Owner guidance bound to this review: none.
+
+Owner amendments bound to this review: none.
+
+Codex CLI `0.170.0`, thread `01a20c9a-0e4e-7bc3-9eb8-b4968f2ddf46`, duration 1016.1s, response sha256 `7067cb363a10ebca60d727ef1c726bbfc4ea59e7ad2cad17b91508d625052dc1`, request `kmg-codex-umm-0311-pinned-build-20261124-20261123223003-1af6-r03-16bb2d`. Observed values come from the Codex session rollout's recorded thread settings, not from the model's own statements; the serving backend's model identity is not separately exposed.
+
+<details><summary>Complete structured review (agent-review.review.v1)</summary>
+
+```json
+{
+  "candidate_commit": "117e368bb487472ae09edfbda7e1d3a1bf30d794",
+  "checkpoint_id": "final",
+  "checkpoint_type": "final",
+  "decision": "changes_required",
+  "decision_rationale": "The focused gate passed, and the recorded development DLL has the required loader references. The candidate still admits stale packages after changes to 24 shipped documents, can write inconsistent build receipts, and cannot complete a historical deployment. The staging and test paths also lose parts of the identity they are meant to verify.\n\nContinuation for Claude\n\nUse the packaging inventory to identify material inputs. Carry the compiler, package and release identities measured at production or admission through receipt writing, staging, deployment records and runtime comparisons. Keep historical release records bound to committed data and validate the fields each deployment mode needs before replacing its target.\n\nKeep the production-DLL assertion meaningful in the focused gate while preserving the portable domain runner and Build-Local\u2019s single-build, single-validation contract. Correct the pin-recovery instructions and the archive and temporary-copy handling described in the findings.\n\nUse disposable offline fixtures for these corrections. Record the actual child exit codes, before-and-after identities and cleanup results, then rerun the named controller gate on the corrected commit. Refresh package and static-audit evidence for changed artifact inputs. Keep this enrollment within TRE build and validation tooling, preserve historical evidence, and retain the documented native blockers.",
+  "evidence_assessment": {
+    "executed_verification": [
+      "Verified HEAD, merge base and mission SHA-256. Compared the full 5,987-line feature diff with Git and verified all 19 indexed evidence exports against their Git-blob SHA-256 values.",
+      "Verified the controller receipt and log digest at 117e368bb487472ae09edfbda7e1d3a1bf30d794. The focused gate completed production compilation and passed loader.production-dll-references-pinned-loader, selecting 1 of 3,189 tests in 2.8 seconds.",
+      "Checked the exported results at their recorded producers. At 91139e4368 the Windows unfiltered log has 3,189 distinct PASS lines and zero failures, and the admission fixture records 29/29. The MSBuild fixture records 12/12 at 92539bb24a. The later development-gate, pin and loader-safety outputs record 13/13, 35/35 and 102/102 respectively.",
+      "Cross-checked the 91139e4368 development receipt, packaged-DLL measurement and four-profile audit. They agree on DLL SHA-256 1ef167cca4135ef8f561ac437c55984ed59777c3962012bf90d738cdc4d1c0e9 and MVID 7c7a1479-98af-4eea-af25-e88ea9986839. The receipt identifies ZIP SHA-256 376ce2532e7895bcb7dfe6bea89177e8cb93a853bc81136ac285c58f4698edd0.",
+      "Compared package.ps1\u2019s 24 explicit docs/ inputs with the actual Git pathspec used at admission. The pathspec selects zero of them. Checked the two historical release records against the exported published-asset identities."
+    ],
+    "inspected": [
+      "Enrolled mission, repository review and validation instructions, developer report, transcript notice, controller gate receipt and log, prior-findings ledger, feature diff and correction history.",
+      "Production project, pin reader and MSBuild targets, both publisher routes, exact compiler, packaging and standalone validation, receipt readers, Deploy-Local and loader-session staging.",
+      "Windows and portable domain-test entry points, admission and safety fixtures, compatibility documentation, release records and static-audit inputs and results."
+    ],
+    "limitations": [
+      "The review was read-only. The foreground shell transcript was withheld. The controller receipt establishes the gate execution at H. The other reported runs are supported by committed outputs attributed to their named producers. The exact development build\u2019s console log was unavailable.",
+      "Native testing for this candidate is NOT RUN on 0.31.1, 0.32.4 and owner 0.33.0 because another enrollment was using the disposable game copy. Version 0.33.4 lacks a reviewed harness profile. No combined-stack run was recorded."
+    ],
+    "required_gaps": [
+      "Offline coverage of shipped documentation changes, inconsistent receipt fields, immutable historical records and the historical deployment consumer.",
+      "A staging refusal that preserves an existing destination and cleans its private copy, with the original admission identity carried through the runtime comparison.",
+      "Evidence for the portable runner, compiler-output binding across the test build, single-pass Build-Local orchestration, direct-MSBuild pin recovery and consistent handling of directory entries."
+    ],
+    "source_inspection_only": [
+      "Traced the historical admission object into strict-mode deployment reads, the two deployment admissions across lease acquisition, loader staging order and the temporary-copy cleanup paths.",
+      "Traced receipt field reads and writes, the time at which the focused gate binds its DLL hash, portable test compilation and duplicate package validation. These failure paths were assessed from source."
+    ]
+  },
+  "findings": [
+    {
+      "acceptance_ids": [],
+      "actual": "Assert-KmgCandidateMaterialInputsCurrent excludes all of docs/. package.ps1 copies 24 files from that directory into the ZIP, including docs/WEAPON-FINDABILITY-RECOVERY.md. The standalone validator checks that file\u2019s presence. The old ZIP therefore remains admissible after its shipped content changes. The freshness check also assumes the receipt\u2019s commit describes its producing source state without verifying that claim.",
+      "blocking_rationale": "A previous ZIP can be reported as current after a packaging input changes.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Admission detects changes to every shipped input and preserves reuse across changes confined to unshipped review records.",
+      "id": "R1-F4",
+      "location": {
+        "file": "scripts/ReferenceProvenance.Common.ps1",
+        "line": 306
+      },
+      "priority": "P1",
+      "requested_correction": "Cover the actual packaging inventory in the material comparison and bind it to the verified producer state. Update the compatibility guide\u2019s blanket docs/ exception.",
+      "requested_evidence": "At a fixed mod version, change one shipped docs/ file and show the old ZIP refused. Retain the matching-package and unshipped-review-note controls.",
+      "title": "Include shipped documentation in candidate freshness checks",
+      "trigger": "A document copied by package.ps1 changes after the candidate is built."
+    },
+    {
+      "acceptance_ids": [],
+      "actual": "Build-Local compares the compiler, loose and packaged identities, then both receipt writers reread the shared loose DLL for dllSha256 and dllMvid. A later compile can change those values between comparison and receipt writing. Admission also ignores the new packagedDllSha256 and embeddedGitCommit fields and skips the producer check when the measured stamp is absent.",
+      "blocking_rationale": "A successful build can emit a receipt that rejects its genuine package, and a receipt with contradictory recorded package or stamp fields can pass admission.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Both receipts contain the identities already verified against the exact compiler output. Admission checks agreement among the identity fields recorded by that receipt format.",
+      "id": "R1-F3",
+      "location": {
+        "file": "scripts/Build-Local.ps1",
+        "line": 506
+      },
+      "priority": "P1",
+      "requested_correction": "Write the captured measurements into both receipts. Check every recorded package, compiler and source-stamp field against the supplied DLL, including the presence of a stamp when the receipt records one.",
+      "requested_evidence": "Show that a change to the shared output after measurement cannot alter the written receipt. Show refusal for an inconsistent packaged digest or recorded stamp alongside the genuine passing control.",
+      "title": "Write and check the same measured DLL identity throughout",
+      "trigger": "The shared Release output changes after the finished ZIP has passed comparison, or a receipt carries inconsistent identity fields."
+    },
+    {
+      "acceptance_ids": [],
+      "actual": "Historical admission reads scripts/historical-release-records.json from the working tree. The tag check verifies a source commit, but the expected ZIP digest comes entirely from that mutable file. An uncommitted change to the digest can authorize a repack containing the original tagged DLL. The loader admission child also drops the producer commit and release tag before the session writes its summary.",
+      "blocking_rationale": "The historical exception can treat unpublished archive bytes as the recorded release and loses the producer identity in the resulting evidence.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "A historical control is identified by the committed release record, and the session records which release supplied its candidate.",
+      "id": "R2-F2",
+      "location": {
+        "file": "scripts/RuntimeHarness.Common.ps1",
+        "line": 467
+      },
+      "priority": "P1",
+      "requested_correction": "Read the trusted record from the reviewed Git revision or verify that the record matches it. Carry the historical mode, release tag, producer commit and verified digests into session evidence.",
+      "requested_evidence": "In a temporary clone, show that a working-tree-only release-record edit cannot authorize a changed ZIP. Show the recorded v0.0.188 identity in the evidence produced for the genuine control.",
+      "title": "Anchor historical admission to the committed release record",
+      "trigger": "Historical admission runs from a checkout with a local edit to the release-record file."
+    },
+    {
+      "acceptance_ids": [],
+      "actual": "Read-KmgHistoricalReleasePackage returns the version, tag, commit, ZIP and DLL identities. Deploy-Local then reads firearmManifestSha256 and firearmSoundBankSha256, which the object lacks. Strict mode stops the deployment after backup and extraction. Its later deployment-record writer also requires absent branch and sourceStateSha256 properties.",
+      "blocking_rationale": "An authentic supported historical control cannot complete the deployment path advertised for it.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "Historical admission supplies the verified data its deployment path consumes, and the completed record accurately identifies a historical release.",
+      "id": "R3-F1",
+      "location": {
+        "file": "scripts/Deploy-Local.ps1",
+        "line": 100
+      },
+      "priority": "P1",
+      "requested_correction": "Handle historical admission explicitly in audio verification and record construction. Derive applicable measurements from the digest-bound release and validate all required fields before target replacement.",
+      "requested_evidence": "Pass the recorded older release through the actual deployment verification and record-construction logic using an offline fixture. Keep the live-directory and lease guards intact.",
+      "title": "Make the historical release record usable by Deploy-Local",
+      "trigger": "Deploy-Local consumes a genuine package with HistoricalReleaseControl and its recorded version."
+    },
+    {
+      "acceptance_ids": [],
+      "actual": "Deploy-Local overwrites the first admission after acquiring the lease without comparing the two identities. The loader harness deletes and recreates Mods before checking its private package copy or extracted DLL, then sets expectedProduct from a fresh hash of the staged file. The fixture exercises the copy helpers, omits the staging child\u2019s exit code and compares the final package hash with itself.",
+      "blocking_rationale": "A refusal can follow target mutation, and a second measurement can replace the identity the caller originally approved.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "The first admitted ZIP and DLL remain the expected identities through lease acquisition, target replacement and in-process verification. A failed staging check preserves the previous target.",
+      "id": "R2-F3",
+      "location": {
+        "file": "scripts/Deploy-Local.ps1",
+        "line": 70
+      },
+      "priority": "P1",
+      "requested_correction": "Keep the under-lease revalidation and require it to agree with the initial admission. Finish checking the private staging tree before replacing Mods, and compare the runtime DLL directly with the admitted digest. Make the fixture check child success and the saved original hash.",
+      "requested_evidence": "Use disposable targets with an existing sentinel tree. Demonstrate refusal before replacement on an identity change, preservation of the target and original ZIP, and propagation of the original digest on success.",
+      "title": "Preserve the first admission through target replacement and launch",
+      "trigger": "The package identity changes across deployment preflight, or the loader\u2019s private copy fails verification during staging."
+    },
+    {
+      "acceptance_ids": [],
+      "actual": "The Windows wrapper now supplies the required environment variables. The unconditional test is also compiled by scripts/test-domain-portable.ps1 into a net8.0 warnings-as-errors project, where Assembly.ReflectionOnlyLoad is obsolete and unsupported. Direct domain-runner invocations also lack the wrapper\u2019s required binding.",
+      "blocking_rationale": "The common test project introduces a build or execution failure for existing dependency-free entry points.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "The Windows integration check inspects a verified production DLL while the documented portable and direct domain-test entry points remain usable.",
+      "id": "R2-F1",
+      "location": {
+        "file": "tests/KingmakerGunslinger.DomainTests/LoaderReferenceContractTests.cs",
+        "line": 29
+      },
+      "priority": "P1",
+      "requested_correction": "Place the production-artifact assertion in an appropriate integration stage or provide a compatible implementation for every runner that selects it. Preserve the named focused gate\u2019s real assertion and zero-selection refusal.",
+      "requested_evidence": "Show the portable build and ordinary domain invocation without gate variables exercising the corrected boundary, plus the named Windows gate and its mismatched-artifact refusal. Attribute any unrelated baseline failures separately.",
+      "title": "Keep the production assertion compatible with existing test entry points",
+      "trigger": "The portable wrapper builds the common test project, or a caller runs the unfiltered domain executable directly."
+    },
+    {
+      "acceptance_ids": [],
+      "actual": "The focused gate passes only a shared DLL path. test-domain.ps1 builds the test executable first and then computes the expected SHA-256 from whatever occupies that path. A replacement baseline-compatible DLL supplies both the expected hash and the bytes inspected by the test.",
+      "blocking_rationale": "The required gate can report success for a different DLL from its production compile.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "The producing step captures the DLL identity before another build or test step can replace its output.",
+      "id": "R3-F2",
+      "location": {
+        "file": "scripts/test-domain.ps1",
+        "line": 85
+      },
+      "priority": "P1",
+      "requested_correction": "Pass the producer-measured digest with the path, or give the test a verified private copy captured at the compile boundary.",
+      "requested_evidence": "Use an offline orchestration fixture that changes the shared output during test-runner preparation. The focused gate must inspect the original bytes or refuse the replacement.",
+      "title": "Bind the focused test\u2019s DLL at production compile completion",
+      "trigger": "The shared production DLL changes while test-domain.ps1 compiles the runner."
+    },
+    {
+      "acceptance_ids": [],
+      "actual": "The publisher routes are now documented correctly. Both recovery messages still recommend bare build.ps1, which runs the version-specific repository validator before fetching pins. For a mismatched installed-loader override, the message advises moving or deleting the differing DLL. On a cold direct build, ValidateKingmakerReferences can also stop before the helper emits its missing-cache advice.",
+      "blocking_rationale": "The documented recovery can stop before fetching the reference or direct a developer to remove a working installed loader file.",
+      "blocks_readiness": true,
+      "category": "required_gap",
+      "expected": "The diagnostic gives a working compile-only bootstrap and confines cache-file recovery to the repository-owned cache.",
+      "id": "R1-F10",
+      "location": {
+        "file": "scripts/Assert-PinnedLoaderReferences.ps1",
+        "line": 27
+      },
+      "priority": "P2",
+      "requested_correction": "Use build.ps1 -CompileOnly for bootstrap. For an external loader directory, direct the developer to the verified cache. Ensure the first missing-reference error in direct MSBuild gives the same actionable guidance.",
+      "requested_evidence": "Capture direct-MSBuild diagnostics for an absent cache, a mismatched cache file and a disposable directory representing a newer installation. Verify the external files stay intact.",
+      "title": "Give pin-recovery advice that works from the actual build entry point",
+      "trigger": "A developer follows the emitted diagnostic after a direct-build pin failure."
+    },
+    {
+      "acceptance_ids": [],
+      "actual": "package.ps1 already invokes the full standalone validator at line 381. Build-Local invokes it again on the same ZIP to obtain the DLL identity. A Build-Local complete suite also asks test-domain.ps1 to compile production with MSBuild before Build-Local runs its exact compiler.",
+      "blocking_rationale": "The candidate path repeats production and package checks contrary to its documented single-pass validation contract. The extra compile can select different configuration inputs from the exact builder.",
+      "blocks_readiness": true,
+      "category": "required_gap",
+      "expected": "Build-Local reuses the exact compiled DLL and the strict validation result from package assembly.",
+      "id": "R3-F3",
+      "location": {
+        "file": "scripts/Build-Local.ps1",
+        "line": 474
+      },
+      "priority": "P2",
+      "requested_correction": "Return the measured package identity from the existing validation pass while preserving package.ps1\u2019s normal output for callers. Arrange any artifact-dependent assertion around the exact output already produced.",
+      "requested_evidence": "Show the nested calls in an offline orchestration check for the complete-suite path, with one production candidate compile, one strict package validation and matching compiler and packaged DLL identities.",
+      "title": "Reuse Build-Local\u2019s existing compile and package validation",
+      "trigger": "Build-Local assembles a development or release candidate, especially with the complete suite selected."
+    },
+    {
+      "acceptance_ids": [],
+      "actual": "Assert-LcSessionInputs creates a full private ZIP before Assert-LcPreflight and lease acquisition. Cleanup belongs to a later block inside Set-LcGameCopyMods. A busy host, acquisition refusal or early staging error leaves the ZIP in TEMP. The successful preflight-only admission fixture also discards the returned copy path.",
+      "blocking_rationale": "A routine refusal on the occupied lab leaves a full package behind on every attempt.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "The caller that acquires a private copy removes it on every exit after admission, including refusal before staging.",
+      "id": "R3-F4",
+      "location": {
+        "file": "scripts/compatibility/loader-compat/Invoke-LoaderCompatSession.ps1",
+        "line": 171
+      },
+      "priority": "P2",
+      "requested_correction": "Give the private copy one owner whose cleanup covers preflight, acquisition and staging. Apply the same cleanup to preflight-only tests.",
+      "requested_evidence": "An offline busy-host refusal and a successful preflight-only check both leave their owned temporary copy directories absent.",
+      "title": "Clean up the admitted ZIP when the loader session stops early",
+      "trigger": "Candidate admission succeeds and the session exits before reaching the extraction cleanup."
+    },
+    {
+      "acceptance_ids": [],
+      "actual": "The new extractor counts and checks duplicate destinations only for entries classified as files. It discards directory entries without checking their declared data length or conflicts with file destinations. Standalone validation can therefore approve an archive whose directory records conflict with the tree consumed by the loader harness\u2019s Expand-Archive.",
+      "blocking_rationale": "Approval by the standalone validator does not establish that the supplied archive has an unambiguous installable entry set.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "All archive entries describe one consistent file and directory tree across validation and staging.",
+      "id": "R3-F5",
+      "location": {
+        "file": "scripts/common.ps1",
+        "line": 136
+      },
+      "priority": "P2",
+      "requested_correction": "Validate directory records as well as files, reject conflicting destinations and data-bearing directory records, and use consistent checked extraction in the loader staging path.",
+      "requested_evidence": "Show an ordinary ZIP with explicit directory records passing and harmless malformed directory-record controls failing in standalone validation before staging.",
+      "title": "Validate directory records in the new ZIP extractor",
+      "trigger": "A supplied ZIP contains explicit directory entries alongside its files."
+    }
+  ],
+  "prior_finding_assessments": [
+    {
+      "assessment": "fix_rejected",
+      "finding_id": "R1-F10",
+      "rationale": "Both publisher branches are now described accurately. The recorded diagnostic still selects bare build.ps1 and gives cache-removal advice for an external loader directory."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R1-F2",
+      "rationale": "The validator resolves the supplied path once, opens that archive and rejects parent segments and files beside the mod root. The four relevant positive and negative controls passed. R3-F5 concerns directory records in the new extractor."
+    },
+    {
+      "assessment": "fix_rejected",
+      "finding_id": "R1-F3",
+      "rationale": "The genuine measurements agree, and the fixture rejects a DLL stamped with a different producer. The writers still reread mutable output after that comparison, and the reader leaves recorded package and stamp fields unchecked."
+    },
+    {
+      "assessment": "fix_rejected",
+      "finding_id": "R1-F4",
+      "rationale": "The shipped README and packaging-helper controls pass. The actual packaging script also ships 24 documents under the directory excluded from the comparison."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R1-F8",
+      "rationale": "The fixture measures both files and records the expected verdict for the exact set, the UMM-only mismatch and the Harmony-only mismatch. All three controlled cases passed."
+    },
+    {
+      "assessment": "fix_rejected",
+      "finding_id": "R2-F1",
+      "rationale": "The Windows wrapper now completes all 3,189 cases and the mismatched-binding control fails as intended. The same unconditional case still requires wrapper-only state and a .NET Framework-only API in other domain runners."
+    },
+    {
+      "assessment": "fix_rejected",
+      "finding_id": "R2-F2",
+      "rationale": "The genuine published ZIP, changed ZIP, same-version development ZIP and conflicting arguments now get the intended verdicts against the supplied record. Historical admission still trusts uncommitted changes to that record."
+    },
+    {
+      "assessment": "fix_rejected",
+      "finding_id": "R2-F3",
+      "rationale": "The private-copy fixture establishes protection against replacement of the supplied path after copying. The real deployment can replace its initial admission, and the loader staging refusal can occur after it has replaced the destination tree."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R2-F4",
+      "rationale": "The parent validates the purpose before invoking a script through bound -File parameters. The ordinary purpose passed and the apostrophe case reached the purpose validator."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R2-F5",
+      "rationale": "The harness-file check now runs before package admission. The safety output records 102 passes across all 44 required scenarios, and the admission fixture covers invalid candidates."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R2-F6",
+      "rationale": "The packaged minimum must now have JSON string type and the pinned value. The scalar control passed and the array-valued control was refused."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R2-F7",
+      "rationale": "Both archive lookups dispose their handles, and the fixture\u2019s finally block surfaces failure to remove its clone. R3-F4 concerns a separate private ZIP allocated outside that clone."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R2-F8",
+      "rationale": "The wrapper constructs expected identities from properties returned by the structural pin reader. The C# case no longer parses JSON text or depends on property order."
+    }
+  ],
+  "request_id": "kmg-codex-umm-0311-pinned-build-20261124-20261123223003-1af6-r03-16bb2d",
+  "round": 3,
+  "schema_version": "agent-review.review.v1",
+  "summary": {
+    "delivered_behavior": "TRE declares UMM 0.31.1. The recorded production package references UnityModManager 0.31.1.0 and 0Harmony12 1.2.0.1. Its static audit resolved 23 types and 67 members on 0.31.1, 0.32.4, owner 0.33.0 and 0.33.4. Current native coverage is NOT RUN.",
+    "pending_later_phase_work": [],
+    "remaining_owner_review": [
+      "Disposition of draft PR #220 after the technical findings are resolved and the controller produces a current handoff."
+    ],
+    "scope_reviewed": "The final TRE candidate for PR #220, including production reference selection, artifact provenance, package admission, staging, affected test entry points and compatibility evidence. The other six repositories have separate enrollments or coordinating records.",
+    "unresolved_questions": []
+  }
+}
+```
+</details>
+
+_Model-generated review by Codex using the requested model, posted by the agent-review controller through the owner's GitHub account. Not a human review or approval._

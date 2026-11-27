@@ -40,6 +40,10 @@ param(
     [string]$SessionFile,
     [ValidateSet('umm-0.31.1', 'umm-0.32.4', 'owner-0.33.0')][string]$LoaderProfile,
     [string]$CandidateZip,
+    # The development purpose the candidate was built for (development candidates), and the explicit marker for a
+    # historical release control (package contract only).
+    [string]$CandidateDevelopmentPurpose,
+    [switch]$HistoricalReleaseControl,
     [string]$HarnessDir,
     [string]$GameCopy = 'C:\Dev\KingmakerGunslingerLab\game-copies\loader-compat',
     [string]$FixtureDir = 'C:\Dev\KingmakerSkipCinematicLab\fixtures',
@@ -52,7 +56,9 @@ param(
     # With -Report: print that launch's records (label prefix, e.g. 02) instead of the session summary.
     [string]$ReportLaunch,
     # Runs the offline session-guard checks (Test-LoaderCompatSafety.ps1) and exits.
-    [switch]$SafetyTests
+    [switch]$SafetyTests,
+    # With -HistoricalReleaseControl: the recorded release version (scripts/historical-release-records.json).
+    [string]$HistoricalReleaseVersion
 )
 
 . (Join-Path $PSScriptRoot 'LoaderCompat.Common.ps1')
@@ -62,14 +68,6 @@ if ($Report) {
     $reportDir = Join-Path $script:LcEvidenceRoot $Report
     $summaryPath = Join-Path $reportDir 'session-summary.json'
     if (-not (Test-Path -LiteralPath $summaryPath)) { throw "No session summary at $summaryPath" }
-    function Get-LcReportValue($Object, [string]$Name) {
-        if ($null -eq $Object) { return $null }
-        $property = $Object.PSObject.Properties[$Name]
-        if ($null -eq $property) { return $null }
-        # The unary comma keeps an array (empty and single-element included) as one value through the function
-        # pipeline, so the report preserves each field's JSON type and cardinality.
-        return , $property.Value
-    }
     # Shape self-check, before any evidence is printed: empty and single-element arrays must survive the projection.
     $shapeProbe = '{"problems":[],"activeMods":["only"],"steps":[{"step":"a"}]}' | ConvertFrom-Json
     $shapeText = ([ordered]@{ problems = (Get-LcReportValue $shapeProbe 'problems'); activeMods = (Get-LcReportValue $shapeProbe 'activeMods')
@@ -79,12 +77,7 @@ if ($Report) {
     $summaryData = Get-Content -LiteralPath $summaryPath -Raw | ConvertFrom-Json
     if (-not $ReportLaunch) {
         Write-Host "READ-ONLY REPORT $summaryPath sha256=$(Get-LcSha256 $summaryPath)"
-        $head = [ordered]@{}
-        foreach ($name in @('sessionId', 'session', 'loaderProfile', 'candidateZip', 'candidateZipSha256', 'git', 'candidateVersion', 'status',
-                'ownerSaveFiles', 'registryRestored', 'registryRestore', 'registryVerification', 'transactionSucceeded', 'scenarioPassed', 'ownerSavesUnchanged',
-                'ownerInstallUnchanged', 'ownerIntegrity', 'ownership', 'transactionId', 'runtimeLease', 'hostConflict', 'retained', 'failure', 'integrityFailures', 'stagedMods')) {
-            $head[$name] = Get-LcReportValue $summaryData $name
-        }
+        $head = Get-LcReportHead $summaryData
         # The session's shared runtime lease as it stands now: its journal status and whether the shared lock is free.
         $leaseId = Get-LcReportValue $summaryData 'runtimeLease'
         if ($leaseId) {
@@ -162,14 +155,16 @@ $evidence = Join-Path $script:LcEvidenceRoot $sessionId
 $profileDir = Join-Path $evidence 'profile'
 
 # Everything checkable is checked before anything is acquired.
-$candidateSha = Assert-LcSessionInputs $CandidateZip $HarnessDir
+$admitted = Assert-LcSessionInputs $CandidateZip $HarnessDir $CandidateDevelopmentPurpose -HistoricalReleaseControl:$HistoricalReleaseControl -HistoricalReleaseVersion $HistoricalReleaseVersion
 $summary = [ordered]@{ sessionId = $sessionId; session = $session.name; loaderProfile = $LoaderProfile
-    candidateZip = $CandidateZip; candidateZipSha256 = $candidateSha; gameCopy = $copyRoot
+    candidateZip = $CandidateZip; candidateZipSha256 = [string]$admitted.packageSha256; candidateDllSha256 = [string]$admitted.dllSha256; gameCopy = $copyRoot
+    admission = [ordered]@{ mode = [string]$admitted.admissionMode; version = [string]$admitted.version; producerCommit = [string]$admitted.producerCommit
+        releaseTag = $admitted.releaseTag; packageSha256 = [string]$admitted.packageSha256; dllSha256 = [string]$admitted.dllSha256; dllMvid = [string]$admitted.dllMvid }
     git = (& git -C (Split-Path (Split-Path (Split-Path $PSScriptRoot))) rev-parse HEAD); launches = @(); status = 'started' }
-Assert-LcPreflight
+# A busy host or a refused acquisition stops the session before staging; the admitted private copy is removed then.
 # One journaled transaction for the whole session: the shared runtime lease (compatibility.lock) and the private
 # loader-compat lock. From here on every fallible step is inside the try, whose finally completes or retains it.
-$transaction = Enter-LcSessionTransaction $sessionId
+$transaction = Enter-LcSessionForAdmission $admitted $sessionId
 $scope = $transaction.Scope
 $journal = $transaction.Journal
 $summary.runtimeLease = $scope.Lease.RunId
@@ -187,7 +182,7 @@ try {
 
     Initialize-LcGameCopy $paths
     $summary.loaderInstall = Install-LcLoaderProfile $paths $LoaderProfile
-    $summary.stagedMods = Set-LcGameCopyMods $paths @($session.ownerMods) $CandidateZip $HarnessDir
+    $summary.stagedMods = Set-LcGameCopyMods $paths @($session.ownerMods) $admitted $HarnessDir
     # The product's guarded request must name the staged candidate's own version.
     $candidateVersion = [string](Get-Content -LiteralPath (Join-Path $paths.ModsDir 'KingmakerGunslinger\Info.json') -Raw | ConvertFrom-Json).Version
     $summary.candidateVersion = $candidateVersion
@@ -197,7 +192,7 @@ try {
     $expectedUmm = $summary.loaderInstall.files['UnityModManager.dll']
     $expectedHarmony2 = $summary.loaderInstall.files['0Harmony.dll']
     $expectedHarmony12 = $summary.loaderInstall.files['0Harmony12.dll']
-    $expectedProduct = $summary.stagedMods['KingmakerGunslinger'].dllSha256
+    $expectedProduct = [string]$admitted.dllSha256
 
     $index = 0
     foreach ($launch in @($session.launches)) {
@@ -370,6 +365,8 @@ catch {
 }
 finally {
     $problems = @()
+    # The admitted private copy is the session's: removed if staging did not consume it.
+    try { Remove-LcAdmittedCopy $admitted } catch { $problems += "admitted private copy cleanup failed: $($_.Exception.Message)" }
     # At a safe boundary only: restore the verified game settings, read them back, verify the owner's files, then
     # complete the lease and release this session's claims. Any failure retains the session for manual recovery.
     $ownership = $null

@@ -1,0 +1,51 @@
+param([string]$Worktree, [string]$Zip, [string]$Commit, [string]$Work)
+# Lightweight focused ZIP checks for the round-9 batch (no build): the corrected packaged-content helper on the round-8
+# frozen candidate (producer c0b54ba4ad) and ZIP variants derived from it.
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
+. (Join-Path $Worktree 'scripts\ReferenceProvenance.Common.ps1')
+[void][IO.Directory]::CreateDirectory($Work)
+function Get-Sha([string]$Path) { (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant() }
+function New-Variant([string]$To, [hashtable]$Rename = @{}, [hashtable]$Append = @{}, [hashtable]$Add = @{}) {
+    $in = [IO.Compression.ZipFile]::OpenRead($Zip); $out = [IO.Compression.ZipFile]::Open($To, [IO.Compression.ZipArchiveMode]::Create)
+    try {
+        foreach ($entry in $in.Entries) {
+            $name = if ($Rename.ContainsKey($entry.FullName)) { $Rename[$entry.FullName] } else { $entry.FullName }
+            $w = $out.CreateEntry($name).Open()
+            try { $r = $entry.Open(); try { $r.CopyTo($w) } finally { $r.Dispose() }; if ($Append.ContainsKey($entry.FullName)) { $b = [Text.Encoding]::UTF8.GetBytes($Append[$entry.FullName]); $w.Write($b, 0, $b.Length) } }
+            finally { $w.Dispose() }
+        }
+        foreach ($name in $Add.Keys) { $w = $out.CreateEntry($name).Open(); try { $b = [Text.Encoding]::UTF8.GetBytes($Add[$name]); $w.Write($b, 0, $b.Length) } finally { $w.Dispose() } }
+    } finally { $out.Dispose(); $in.Dispose() }
+}
+function Try-Check([string]$Label, [string]$Path, [string]$Expected) {
+    $t = [Diagnostics.Stopwatch]::StartNew()
+    try { $n = Assert-KmgPackagedRepositoryFilesMatchCommit -PackagePath $Path -RepositoryRoot $Worktree -Commit $Commit -ExpectedSha256 $Expected; "$Label PASSED compared=$n ms=$($t.ElapsedMilliseconds)" }
+    catch { "$Label REFUSED ms=$($t.ElapsedMilliseconds) :: $($_.Exception.Message)" }
+}
+$clean = Join-Path $Work 'clean.zip'; Copy-Item -LiteralPath $Zip -Destination $clean -Force
+$icon = Join-Path $Work 'icon-edited.zip'; New-Variant $icon -Append @{ 'KingmakerGunslinger/assets/icons/black-powder.png' = 'altered pixels' }
+$readme = Join-Path $Work 'readme-case-edited.zip'; New-Variant $readme -Rename @{ 'KingmakerGunslinger/README.md' = 'KingmakerGunslinger/readme.md' } -Append @{ 'KingmakerGunslinger/README.md' = "`n<!-- edited -->`n" }
+$readmeSame = Join-Path $Work 'readme-case-unedited.zip'; New-Variant $readmeSame -Rename @{ 'KingmakerGunslinger/README.md' = 'KingmakerGunslinger/readme.md' }
+$iconCase = Join-Path $Work 'icon-case-unedited.zip'; New-Variant $iconCase -Rename @{ 'KingmakerGunslinger/assets/icons/black-powder.png' = 'KingmakerGunslinger/Assets/Icons/Black-Powder.png' }
+$extra = Join-Path $Work 'unmapped-member.zip'; New-Variant $extra -Add @{ 'KingmakerGunslinger/assets/icons/not-a-producer-file.png' = 'x' }
+$outside = Join-Path $Work 'outside-member.zip'; New-Variant $outside -Add @{ 'Other/notes.txt' = 'x' }
+Try-Check 'CLEAN' $clean (Get-Sha $clean)
+Try-Check 'REMAPPED-ICON-EDITED' $icon (Get-Sha $icon)
+Try-Check 'CASE-README-EDITED' $readme (Get-Sha $readme)
+Try-Check 'CASE-README-UNEDITED' $readmeSame (Get-Sha $readmeSame)
+Try-Check 'CASE-ICON-UNEDITED' $iconCase (Get-Sha $iconCase)
+Try-Check 'UNMAPPED-MEMBER' $extra (Get-Sha $extra)
+Try-Check 'OUTSIDE-MEMBER' $outside (Get-Sha $outside)
+# R7-F1: the digest is measured, then the pathname's archive is replaced before content inspection.
+$slot = Join-Path $Work 'slot.zip'
+Copy-Item -LiteralPath $icon -Destination $slot -Force; $measured = Get-Sha $slot; Copy-Item -LiteralPath $clean -Destination $slot -Force
+Try-Check 'REPLACED-EDITED-BY-CLEAN' $slot $measured
+Copy-Item -LiteralPath $clean -Destination $slot -Force; $measured = Get-Sha $slot; Copy-Item -LiteralPath $readme -Destination $slot -Force
+Try-Check 'REPLACED-CLEAN-BY-EDITED' $slot $measured
+Copy-Item -LiteralPath $clean -Destination $slot -Force
+Try-Check 'MATCHING-ARCHIVE' $slot (Get-Sha $slot)
+# The held handle: while the helper's read handle is open, the pathname cannot be replaced or deleted.
+$h = [IO.File]::Open($slot, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
+try { try { [IO.File]::Copy($icon, $slot, $true); 'HELD-HANDLE REPLACE ALLOWED' } catch { 'HELD-HANDLE REPLACE REFUSED ' + $_.Exception.GetType().Name } ; try { [IO.File]::Delete($slot); 'HELD-HANDLE DELETE ALLOWED' } catch { 'HELD-HANDLE DELETE REFUSED ' + $_.Exception.GetType().Name } } finally { $h.Dispose() }

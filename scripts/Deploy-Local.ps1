@@ -9,11 +9,19 @@ param(
     [switch]$PassThru,
     # The one development purpose this deployment may stage. Without it a
     # development candidate is refused; with it only that purpose's candidate.
-    [string]$DevelopmentPurpose
+    [string]$DevelopmentPurpose,
+    # An explicitly identified historical release control: admitted by its own package identity without requiring the
+    # current material inputs (every other candidate must be current).
+    [switch]$HistoricalReleaseControl,
+    # The recorded release version of a historical control (scripts/historical-release-records.json).
+    [string]$HistoricalReleaseVersion
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+# Admission modes are mutually exclusive, decided before anything else is read.
+if ($HistoricalReleaseControl -and -not [string]::IsNullOrEmpty($DevelopmentPurpose)) { throw '-HistoricalReleaseControl and -DevelopmentPurpose are mutually exclusive admission modes.' }
+if ([bool]$HistoricalReleaseControl -ne (-not [string]::IsNullOrEmpty($HistoricalReleaseVersion))) { throw '-HistoricalReleaseControl requires -HistoricalReleaseVersion, and the version is valid only with it.' }
 $deploymentWhatIfRequested = [bool]$WhatIfPreference
 $WhatIfPreference = $false
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
@@ -23,8 +31,12 @@ $requiredEvidenceRoot = [IO.Path]::GetFullPath('C:\Dev\KingmakerGunslingerLab\ru
 if (-not [IO.Path]::GetFullPath($EvidenceRoot).TrimEnd('\').Equals($requiredEvidenceRoot, [StringComparison]::OrdinalIgnoreCase)) {
     throw "Evidence root must be exactly: $requiredEvidenceRoot"
 }
-$manifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root `
-    -DevelopmentPurpose $DevelopmentPurpose
+function Read-DeployAdmission {
+    if ($HistoricalReleaseControl) { return Read-KmgHistoricalReleasePackage -PackagePath $PackagePath -RepositoryRoot $root -Version $HistoricalReleaseVersion }
+    return Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root -DevelopmentPurpose $DevelopmentPurpose -RequireCurrentMaterialInputs
+}
+$manifest = Read-DeployAdmission
+if ($HistoricalReleaseControl) { Write-Host "Historical release control $($manifest.releaseTag) ($($manifest.commit)): $($manifest.packagePath) $($manifest.packageSha256)" }
 $developmentDeployment = -not [string]::IsNullOrEmpty($DevelopmentPurpose)
 $candidateLabel = if ($developmentDeployment) {
     "development candidate '$DevelopmentPurpose' (never a release)"
@@ -55,8 +67,14 @@ $WhatIfPreference = $false
 $runtimeScope = Enter-KmgRuntimeLease -ParentLease $RuntimeLease -Purpose 'deploy local candidate'
 try {
 Assert-KmgNotRunning
-$manifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root `
-    -DevelopmentPurpose $DevelopmentPurpose
+# Admission again under the lease; it must be the same candidate the first admission accepted.
+$firstAdmission = $manifest
+$manifest = Read-DeployAdmission
+Assert-KmgSameAdmission -First $firstAdmission -Second $manifest
+# Staging uses a private copy with the admitted digest; the extracted DLL must be the admitted DLL.
+$admittedRoot = Join-Path $root 'artifacts\deploy-admitted'
+if (Test-Path -LiteralPath $admittedRoot) { Remove-Item -LiteralPath (Assert-KmgPathWithin -Path $admittedRoot -Root (Join-Path $root 'artifacts')) -Recurse -Force }
+$admittedCopy = New-KmgAdmittedPackageCopy -Admission $manifest -Destination $admittedRoot
 $backup = & (Join-Path $PSScriptRoot 'Backup-Live-Mod.ps1') `
     -LiveModDirectory $live -BackupRoot $BackupRoot `
     -AllowEmptySource:$AllowEmptyFirstInstall -Confirm:$false
@@ -71,7 +89,7 @@ if (Test-Path -LiteralPath $stagingRoot) {
     Remove-Item -LiteralPath $resolved -Recurse -Force
 }
 New-Item -ItemType Directory -Path $stagingRoot | Out-Null
-Expand-Archive -LiteralPath $manifest.packagePath -DestinationPath $stagingRoot
+[void](Expand-KmgAdmittedPackage -Admission $manifest -AdmittedCopy $admittedCopy -Destination $stagingRoot)
 $source = Join-Path $stagingRoot 'KingmakerGunslinger'
 if (-not (Test-Path -LiteralPath (Join-Path $source 'Info.json') -PathType Leaf)) {
     throw 'Validated package did not extract to the expected single mod root.'
@@ -82,10 +100,10 @@ $packagedFirearmSoundBank = Join-Path $source `
     'assets\soundbanks\KMG_Firearms.bnk'
 $packagedFirearmManifestSha256 = Get-KmgSha256 -Path $packagedFirearmManifest
 $packagedFirearmSoundBankSha256 = Get-KmgSha256 -Path $packagedFirearmSoundBank
-if ($packagedFirearmManifestSha256 -ne $manifest.firearmManifestSha256 -or
-    $packagedFirearmSoundBankSha256 -ne $manifest.firearmSoundBankSha256) {
-    throw 'Extracted package firearm audio differs from its immutable build manifest.'
-}
+# The expected audio and every deployment-record field are established before the target is replaced.
+$expectations = Get-KmgDeploymentExpectations -Admission $manifest -HistoricalRelease:$HistoricalReleaseControl `
+    -PackagedFirearmManifestSha256 $packagedFirearmManifestSha256 -PackagedFirearmSoundBankSha256 $packagedFirearmSoundBankSha256
+$recordIdentity = New-KmgDeploymentRecordIdentity -Admission $manifest -Expectations $expectations
 
 $deployedDll = Join-Path $live 'KingmakerGunslinger.dll'
 $deployedFirearmBundle = Join-Path $live 'assets\bundles\kingmakergunslinger.firearms'
@@ -132,14 +150,15 @@ New-Item -ItemType Directory -Path $deploymentDirectory | Out-Null
 $deploymentRecord = [ordered]@{
     schemaVersion = 2
     deployedAtUtc = [DateTime]::UtcNow.ToString('o')
-    packagePath = $manifest.packagePath
-    packageSha256 = $manifest.packageSha256
-    commit = $manifest.commit
-    branch = $manifest.branch
-    sourceStateSha256 = $manifest.sourceStateSha256
-    version = $manifest.version
-    dllSha256 = $manifest.dllSha256
-    dllMvid = $manifest.dllMvid
+    packagePath = $recordIdentity.packagePath
+    packageSha256 = $recordIdentity.packageSha256
+    commit = $recordIdentity.commit
+    branch = $recordIdentity.branch
+    sourceStateSha256 = $recordIdentity.sourceStateSha256
+    sourceStateAvailable = $recordIdentity.sourceStateAvailable
+    version = $recordIdentity.version
+    dllSha256 = $recordIdentity.dllSha256
+    dllMvid = $recordIdentity.dllMvid
     deployedDllSha256 = Get-KmgSha256 -Path $deployedDll
     firearmBundleSha256 = Get-KmgSha256 -Path $deployedFirearmBundle
     firearmManifestSha256 = $packagedFirearmManifestSha256
@@ -154,6 +173,10 @@ $deploymentRecord = [ordered]@{
     backupDirectory = $backup.Destination
     backupWasEmpty = [bool]$backup.EmptySource
     files = $actualFiles
+}
+if ($recordIdentity.Contains('candidateKind')) {
+    $deploymentRecord.candidateKind = $recordIdentity.candidateKind
+    $deploymentRecord.releaseTag = $recordIdentity.releaseTag
 }
 if ($developmentDeployment) {
     $deploymentRecord.candidateKind = 'development'

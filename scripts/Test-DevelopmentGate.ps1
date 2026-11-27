@@ -10,7 +10,19 @@ $oldTrace = $env:KMG_GATE_FIXTURE_TRACE
 $oldFilter = $env:KMG_TEST_FILTER
 try {
     New-Item -ItemType Directory -Path $fixtureScripts,(Join-Path $boundary 'artifacts\tests\Release\KingmakerGunslinger.DomainTests') -Force | Out-Null
-    foreach ($name in @('Invoke-KmgGate.ps1','build.ps1','test-domain.ps1','common.ps1','KmgGate.Common.ps1')) { Copy-Item (Join-Path $PSScriptRoot $name) $fixtureScripts }
+    foreach ($name in @('Invoke-KmgGate.ps1','build.ps1','test-domain.ps1','common.ps1','KmgGate.Common.ps1','ReferenceProvenance.Common.ps1')) { Copy-Item (Join-Path $PSScriptRoot $name) $fixtureScripts }
+    # build.ps1 verifies the pinned loader references before compiling. The fixture pins describe fixture files that are
+    # already in place, so nothing is downloaded.
+    $fixtureLoader = Join-Path $boundary 'artifacts\references\loader\UnityModManager'
+    New-Item -ItemType Directory -Path $fixtureLoader -Force | Out-Null
+    $fixturePins = foreach ($pinFile in @('UnityModManager.dll', '0Harmony12.dll')) {
+        $pinPath = Join-Path $fixtureLoader $pinFile
+        [IO.File]::WriteAllText($pinPath, "fixture $pinFile")
+        [ordered]@{ relativePath = "UnityModManager/$pinFile"; assemblyVersion = 'fixture'; url = 'https://fixture.invalid/never-fetched'
+            archiveSha256 = $null; archiveEntry = $null; sha256 = (Get-FileHash -LiteralPath $pinPath -Algorithm SHA256).Hash.ToLowerInvariant() }
+    }
+    ([ordered]@{ schemaVersion = 1; minimumManagerVersion = '0.31.1'; references = @($fixturePins) } | ConvertTo-Json -Depth 4) |
+        Set-Content (Join-Path $fixtureScripts 'loader-reference-pins.json') -Encoding UTF8
     '<Project />' | Set-Content (Join-Path $boundary 'GamePath.props')
     '{"Id":"KingmakerGunslinger","Version":"0.0.150"}' | Set-Content (Join-Path $boundary 'Info.json')
     '<Project><PropertyGroup><KmgInformationalVersion>0.0.150-fixture-patch</KmgInformationalVersion></PropertyGroup></Project>' | Set-Content (Join-Path $boundary 'Directory.Build.props')

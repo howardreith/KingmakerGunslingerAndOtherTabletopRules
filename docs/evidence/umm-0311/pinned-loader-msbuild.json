@@ -1,0 +1,89 @@
+{
+    "schema":  "kmg.pinned-loader-msbuild-tests.v1",
+    "commit":  "49be3fd0e28c551a4a5fafb5e98d87daffb125d5",
+    "baseline_commit":  "35763430acc9eefc306b861045526a444690bc77",
+    "installed_loader_measured":  {
+                                      "unityModManager":  "0.33.0.0",
+                                      "sha256":  "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
+                                  },
+    "product_dll_sha256":  "b138380226b2f7d08dc55c0439865cfc0a6cbb0883f0596fab350aad4a33b514",
+    "passed":  15,
+    "total":  15,
+    "cases":  [
+                  {
+                      "name":  "before-change-defaults-compile-against-installed-loader",
+                      "passed":  true,
+                      "detail":  "baseline 35763430ac: build.ps1 -CompileOnly exit 0; DLL references 0Harmony12 1.2.0.1, UnityModManager 0.33.0.0 (installed UnityModManager 0.33.0.0)"
+                  },
+                  {
+                      "name":  "build-ps1-compiles-against-pinned-loader",
+                      "passed":  true,
+                      "detail":  "exit 0; DLL references 0Harmony12 1.2.0.1, UnityModManager 0.31.1.0"
+                  },
+                  {
+                      "name":  "direct-msbuild-default-uses-pinned-cache",
+                      "passed":  true,
+                      "detail":  "exit 0"
+                  },
+                  {
+                      "name":  "direct-msbuild-controlled-exact-set",
+                      "passed":  true,
+                      "detail":  "expected accepted; exit 0"
+                  },
+                  {
+                      "name":  "direct-msbuild-controlled-umm-only-mismatch-set",
+                      "passed":  true,
+                      "detail":  "expected UnityModManager/UnityModManager.dll; exit 1"
+                  },
+                  {
+                      "name":  "direct-msbuild-controlled-harmony-only-mismatch-set",
+                      "passed":  true,
+                      "detail":  "expected UnityModManager/0Harmony12.dll; exit 1"
+                  },
+                  {
+                      "name":  "direct-msbuild-installed-loader-judged-by-bytes",
+                      "passed":  true,
+                      "detail":  "expected UnityModManager/UnityModManager.dll; exit 1"
+                  },
+                  {
+                      "name":  "direct-msbuild-altered-pinned-copy-refused",
+                      "passed":  true,
+                      "detail":  "KMGPIN: Pinned loader reference differs from its pin: UnityModManager/0Harmony12.dll"
+                  },
+                  {
+                      "name":  "direct-msbuild-external-folder-advice-points-to-the-verified-cache",
+                      "passed":  true,
+                      "detail":  "KMGPIN: Pinned loader reference differs from its pin: UnityModManager/UnityModManager.dll; pinnedSha256=2e038ff23ab01d538dfef792096e1f5c04802d1edac3660db20d0d54c167c2c4; actualSha256=d66516fa748b671a852085ae63953b9ba516f984b1958c0f9e2e73075d390336 This loader folder is not the pinned cache and was left untouched; do not change it. Build"
+                  },
+                  {
+                      "name":  "direct-msbuild-mismatched-cache-file-advice",
+                      "passed":  true,
+                      "detail":  "KMGPIN: Pinned loader reference differs from its pin: UnityModManager/UnityModManager.dll; pinnedSha256=2e038ff23ab01d538dfef792096e1f5c04802d1edac3660db20d0d54c167c2c4; actualSha256=01c7f7b3cd752b2bb9b0756e9033debcf4a643b89b92a128caabd812265297fa The cache file has different bytes and was left untouched: i"
+                  },
+                  {
+                      "name":  "direct-msbuild-absent-cache-first-error-gives-the-bootstrap",
+                      "passed":  true,
+                      "detail":  "error KMGPIN: Pinned loader reference missing: <temp>\\kmg-pinned-loader-45060ec9a6164b288a59e675ce7b5421\\clone with space\\src\\KingmakerGunslinger\\..\\..\\artifacts\\references\\loader\\UnityModManager\\UnityModManager.dll. Run scripts\\build.ps1 -Compile"
+                  },
+                  {
+                      "name":  "direct-msbuild-mismatched-source-manifest-refused",
+                      "passed":  true,
+                      "detail":  "Info.json ManagerVersion \u00270"
+                  },
+                  {
+                      "name":  "direct-msbuild-verified-copy-accepted",
+                      "passed":  true,
+                      "detail":  "exit 0"
+                  },
+                  {
+                      "name":  "direct-msbuild-folder-not-named-unitymodmanager-refused",
+                      "passed":  true,
+                      "detail":  "exit 1"
+                  },
+                  {
+                      "name":  "stray-hintpath-to-unitymodmanager-copy-refused",
+                      "passed":  true,
+                      "detail":  "Loader compiler references must be the verified pinned files in <temp>\\kmg-pinned-loader-45060ec9a6164b288a59e675ce7b5421\\clone with space\\artifacts\\references\\loader\\UnityModManager\\; resolved: <temp>\\kmg-"
+                  }
+              ]
+}

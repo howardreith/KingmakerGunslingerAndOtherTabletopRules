@@ -1,0 +1,975 @@
+{
+ "schema": "kmg.focused-r9.v1",
+ "commit": "c67881f3fb8892cae09cdf4cc4f370170f20afc8",
+ "purpose": "umm-0311-admission",
+ "retainedProducer": "<dev>\\KingmakerGunslingerLab\\worktrees\\umm-0311-final-candidate-c67881f3fb\\producer",
+ "build_exit": 0,
+ "build_seconds": 530,
+ "package": "<dev>\\KingmakerGunslingerLab\\worktrees\\umm-0311-final-candidate-c67881f3fb\\producer\\artifacts\\development-candidates\\umm-0311-admission\\c67881f3fb88\\KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip",
+ "receipt": "<dev>\\KingmakerGunslingerLab\\worktrees\\umm-0311-final-candidate-c67881f3fb\\producer\\artifacts\\development-candidates\\umm-0311-admission\\c67881f3fb88\\KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip.development-receipt.json",
+ "suiteSha256": "3735a7f8d8450658e30ab70e0d91ee3060304836d12ce1f4890508f270a3eabe",
+ "regions": [
+  "focused-helpers",
+  "focused-tree-probe",
+  "focused-packaged-content"
+ ],
+ "package_sha256": "d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929",
+ "steps": [
+  {
+   "step": "preflight-reference-bundle",
+   "exit": 0,
+   "output": "BUNDLE-ROWS 16 bfee7eca22156d8b95c149ba1383f065124b7b44a62ed4eafc32a5e67f6bc68a"
+  },
+  {
+   "step": "preflight-host",
+   "kingmakerProcesses": 0,
+   "workingDirectory": "<dev>\\KingmakerGunslingerLab\\worktrees\\umm-0311-final-candidate-c67881f3fb\\producer"
+  }
+ ],
+ "passed": 17,
+ "total": 18,
+ "cases": [
+  {
+   "name": "final-candidate-built",
+   "passed": true,
+   "detail": "exit 0; 530 s; <dev>\\KingmakerGunslingerLab\\worktrees\\umm-0311-final-candidate-c67881f3fb\\producer\\artifacts\\development-candidates\\umm-0311-admission\\c67881f3fb88\\KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip"
+  },
+  {
+   "name": "final-candidate-admitted-for-staging",
+   "passed": true,
+   "detail": "exit 0; ADMITTED commit=c67881f3fb8892cae09cdf4cc4f370170f20afc8 zip=d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929 dll=17a42879a57dba9914cebd67b3855ad95a94ef64775a8c2f66886ef5f03c808a mvid=5efdffb9-c4ac-4a3e-91f7-089a12991064 measuredDll=17a42879a57dba9914cebd67b3855ad95a94ef64775a8c2f66886ef5f03c808a measuredMvid=5efdffb9-c4ac-4a3e-91f7-089a12991064"
+  },
+  {
+   "name": "loader-staging-refuses-a-changed-non-dll-file-with-the-previous-mods-intact",
+   "passed": true,
+   "detail": "AFTER-CHANGED-FILE sentinel=True modsEntries=1 zipIntact=True leftovers=0 REMOVED-INFO REFUSED The extracted candidate tree is not the admitted archive (a file differs, is missing or was added); nothing was staged. "
+  },
+  {
+   "name": "loader-staging-refuses-a-removed-info-json-with-the-previous-mods-intact",
+   "passed": true,
+   "detail": "AFTER-REMOVED-INFO sentinel=True modsEntries=1 zipIntact=True leftovers=0 DEST-CHECK REFUSED injected destination verification failure "
+  },
+  {
+   "name": "loader-staging-failed-destination-check-restores-the-previous-mods",
+   "passed": true,
+   "detail": "DEST-CHECK REFUSED injected destination verification failure AFTER-DEST-CHECK sentinel=True modsEnt"
+  },
+  {
+   "name": "loader-staging-stages-the-genuine-tree-completely",
+   "passed": true,
+   "detail": "GENUINE STAGED tree=True dll=True harness=True  AFTER-GENUINE sentinel=False modsEntries=2 zipIntact=True leftovers=0"
+  },
+  {
+   "name": "loader-staging-private-copy-cleanup-failure-restores-the-previous-mods",
+   "passed": true,
+   "detail": "CLEANUP REFUSED The process cannot access the file 'admitted-package.zip' because it is being used by another process. / AFTER-CLEANUP-FAILURE sentinel=True modsEntries=1 zipIntact=True leftovers=0 / CLEANUP SENTINEL-TEXT True product-at-mods=False / CLEANUP COPY-REMOVED-AFTER-RELEASE True"
+  },
+  {
+   "name": "packaged-readme-edit-restored-before-the-decision-refused-by-the-writer-check",
+   "passed": true,
+   "detail": "status entries at start 0, at the decision 0; package exit 0; ZIP README carries the edit: True; consumed-source check passed: True; not match its producing commit c67881f3fb: README"
+  },
+  {
+   "name": "packaged-readme-edit-restored-before-the-decision-refused-by-the-ordinary-reader",
+   "passed": true,
+   "detail": "ZIP 01a8c81ca5fe63ae533ae5fab73ace803bae4d942cd95c3b3d449b7cb6568651; not match its producing commit c67881f3fb: README"
+  },
+  {
+   "name": "packaged-remapped-icon-edit-restored-before-the-decision-refused-by-the-writer-check",
+   "passed": true,
+   "detail": "package exit 0; ZIP icon carries the edit: True; status entries at the decision 0; not match its producing commit c67881f3fb: assets/icons/black-powder"
+  },
+  {
+   "name": "packaged-remapped-icon-edit-restored-before-the-decision-refused-by-the-ordinary-reader",
+   "passed": true,
+   "detail": "ZIP bef7beb2406dbbc5e2e05327f105559131dbde71a587c56296d87b0da7db8ea0; not match its producing commit c67881f3fb: assets/icons/black-powder"
+  },
+  {
+   "name": "clean-package-from-the-same-route-passes-the-writer-check-and-is-admitted",
+   "passed": true,
+   "detail": "package exit 0; PACKAGED-FILES-MATCH 457 packaged members compared with their producer files; reader: ADMITTED d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929"
+  },
+  {
+   "name": "packaged-case-variant-readme-edit-refused-by-the-writer-check-and-the-ordinary-reader",
+   "passed": true,
+   "detail": "writer: not match its producing commit c67881f3fb: readme / reader: not match its producing commit c67881f3fb: readme"
+  },
+  {
+   "name": "packaged-content-check-refuses-an-archive-replaced-after-its-digest-was-measured",
+   "passed": true,
+   "detail": "edited measured, clean in place: 4876cf5ba4935933f23594f0c5f09\\packaged-content-variants\\measured-slot.zip has SHA-256 d8d14600c8 c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929, the receipt records 01a8c81ca5fe63ae533ae5fab73ace803bae4d 942cd95c3b3d449b7cb6568651.  / clean measured, edited in place: 4876cf5ba4935933f23594f0c5f09\\packaged-content-variants\\measured-slot.zip has SHA-256 01a8c81ca5 fe63ae533ae5fab73ace803bae4d942cd95c3b3d449b7cb6568651, the receipt records d8d14600c8c0fa0c0abc117cba1c1f0cb8fe44 6983d1bd23e2ddf5625bb29929. "
+  },
+  {
+   "name": "packaged-content-check-passes-the-matching-archive",
+   "passed": true,
+   "detail": "clean d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929: PACKAGED-FILES-MATCH 457"
+  },
+  {
+   "name": "clean-package-admitted-after-an-unshipped-review-note",
+   "passed": true,
+   "detail": "HEAD caf5e6e848; ADMITTED d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929"
+  },
+  {
+   "name": "retained-candidate-admitted-at-the-receipt-bound-location-after-fixture-cleanup-attempt",
+   "passed": true,
+   "detail": "producer status entries 0; HEAD c67881f3fb8892cae09cdf4cc4f370170f20afc8; exit 0; ADMITTED commit=c67881f3fb8892cae09cdf4cc4f370170f20afc8 zip=d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929 dll=17a42879a57dba9914cebd67b3855ad95a94ef64775a8c2f66886ef5f03c808a mvid=5efdffb9-c4ac-4a3e-91f7-089a12991064 measuredDll=17a42879a57dba9914cebd67b3855ad95a94ef64775a8c2f66886ef5f03c808a measuredMvid=5efdffb9-c4ac-4a3e-91f7-089a12991064 (split from the completion step's combined case; recorded output, no rerun)"
+  },
+  {
+   "name": "disposable-fixture-area-removed",
+   "passed": false,
+   "detail": "Not removed: fixture area removed False (error: Access to the path 'multi-pack-index' is denied.) The fixture clone's Git object files are hard links shared with the lab repository's object store (ordinary local clone); the remnant is preserved and reported (no other deletion route tried)."
+  }
+ ],
+ "fixture_area_removed": false,
+ "fixture_area_note": "The driver's own removal failed (PermissionDenied on a read-only Git multi-pack-index in the fixture clone), so its post-cleanup steps did not run; this completion step removed the fixture area and ran them at 2026-11-27T02:18:30.5492423Z.",
+ "retainedAdmission": {
+  "producer": "c67881f3fb8892cae09cdf4cc4f370170f20afc8",
+  "packageSha256": "d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929",
+  "dllSha256": "17a42879a57dba9914cebd67b3855ad95a94ef64775a8c2f66886ef5f03c808a",
+  "dllMvid": "5efdffb9-c4ac-4a3e-91f7-089a12991064",
+  "packagePath": "<dev>\\KingmakerGunslingerLab\\worktrees\\umm-0311-final-candidate-c67881f3fb\\producer\\artifacts\\development-candidates\\umm-0311-admission\\c67881f3fb88\\KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip",
+  "repositoryRoot": "<dev>\\KingmakerGunslingerLab\\worktrees\\umm-0311-final-candidate-c67881f3fb\\producer"
+ },
+ "retainedLayout": [
+  {
+   "path": "development-validation.json",
+   "sha256": "1cb1a21f3323737ef1ca968ed4212acaedc4b5a207a10660037f6dd5bc34588a",
+   "bytes": 686
+  },
+  {
+   "path": "exact-build\\bin\\KingmakerGunslinger.dll",
+   "sha256": "17a42879a57dba9914cebd67b3855ad95a94ef64775a8c2f66886ef5f03c808a",
+   "bytes": 21314560
+  },
+  {
+   "path": "exact-build\\bin\\KingmakerGunslinger.pdb",
+   "sha256": "17f3fa52af16186fa38f9d4d34c76409d5acbe83b3384636933f5300fee84dac",
+   "bytes": 35552768
+  },
+  {
+   "path": "exact-build\\compile.rsp",
+   "sha256": "8b1025da8dd871ab7036b42042f5b7a5b468549c44cd7559f7f2aee021f0846a",
+   "bytes": 316720
+  },
+  {
+   "path": "exact-build\\compile.stderr.txt",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "exact-build\\compile.stdout.txt",
+   "sha256": "ef334fca9911b466a86938b49b82d9c4e4a3891f98f5bf3448473e0e69d22c8d",
+   "bytes": 545
+  },
+  {
+   "path": "exact-build\\compile-candidate.json",
+   "sha256": "14445e1810d11b5dc787f805013afdf8b05fe112d663f338ce48d16e9dc3d2b8",
+   "bytes": 3048
+  },
+  {
+   "path": "exact-build\\GeneratedBuildIdentity.cs",
+   "sha256": "225b67651da7f423d53af62fd13fb2b077d51c2bad73269d95de4132fed5c2d4",
+   "bytes": 111
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\acid-affinity.png",
+   "sha256": "3497f155bb2a84063d307aaea81e8ddab4043da8437e4bdcdb7261a71be9a668",
+   "bytes": 47395
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\acid-breath.png",
+   "sha256": "916f5b72b691f27357061f0838609e8710e250fd749e3d3d0985b5c99a8f6cba",
+   "bytes": 41308
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\acid-resistance.png",
+   "sha256": "e19624675dcb80c212aad7ba36eb90a8dd26c0718bee8c585ad0fffff9fd63bb",
+   "bytes": 43924
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\aerial-observer.png",
+   "sha256": "462408b925f912e2a1063ac9e8a0ff25b33c68b80fcccb1fa85d05f706fc117f",
+   "bytes": 45327
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\air-affinity.png",
+   "sha256": "2c854f2a1861be4e4c48e3a96da0c2d5640dc303e166160c63ecef3e7af548b8",
+   "bytes": 46368
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\air-insight.png",
+   "sha256": "2c5d6520998be370f5158cecc47f3e3e50cc6f07f6a6dd05805207351ece4e41",
+   "bytes": 41606
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\airy-step.png",
+   "sha256": "4dab2f75300b537f016351bd8ff9da19014fb651282d02f76eb9d90974530d3b",
+   "bytes": 41758
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\black-powder.png",
+   "sha256": "fb580658689e1ee5ec015a891a55b029ac1d1fd81dc4f3d7dc3bd1a5692cbe58",
+   "bytes": 27544
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\blazing-aura.png",
+   "sha256": "d4306527418e66878248061c1303c861deb746bfdd91ce28d742f745c6c0b2f4",
+   "bytes": 43696
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\blunderbuss.png",
+   "sha256": "e5923f9b5820eef3ca3d41e5af559b09ef8ea21b0052dc04909fd72f73ac929f",
+   "bytes": 10412
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\bonus-feat.png",
+   "sha256": "6b66e41a642a90164070a37a60193a0d4ee492f37f0f9cc5546462e05f83b6c3",
+   "bytes": 6076
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\brazen-flame.png",
+   "sha256": "003f1a8bc963618a4f4783693bf6cf9910686d0f0e1e52727c8da3e91db481ca",
+   "bytes": 41993
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\breeze-bull-rush.png",
+   "sha256": "568c86d86b5487ac9bd600d9c7187f50d973e7f7b51d4cf60f705af7de1270f1",
+   "bytes": 45357
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\breeze-gust.png",
+   "sha256": "903283e7bebfebfc2e55bb876c9a0f3c27559f6e65a203f8cd19d4901044578f",
+   "bytes": 44588
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\breeze-kissed.png",
+   "sha256": "dc113d994bd34fe3043cb786cdfcba2022195d7499f1c782570b3a359061f1c3",
+   "bytes": 41104
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\breeze-trip.png",
+   "sha256": "4913cdfaed47a290222ab4c6dad303d18a3126116e2ebaf2838511721eb0111b",
+   "bytes": 46160
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\bulette-leap.png",
+   "sha256": "b3deefb33e0ad604a42f3e049b5d5ef6a91077ad3963af7db7aae40081a24b5c",
+   "bytes": 3566
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\calm-winds.png",
+   "sha256": "28b4f9a4b1b50e820e62df8426e13d814f2f7cf6a6a508f94a0479105cee4657",
+   "bytes": 39557
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\chill-touch.png",
+   "sha256": "e04154000a8b04545db9465b3a27949112fa35ae19d7c81932791074389db6cf",
+   "bytes": 42476
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\cloud-gazer.png",
+   "sha256": "acb6c7afd71d5522718d6c21f19e7ae7976b0faa166f2e2fadba4dc3f52a26ce",
+   "bytes": 45831
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\cold-resistance.png",
+   "sha256": "a7d5d81c98583fe604c4232806829dc3561af2fa88a2e801331674a0b95cebd2",
+   "bytes": 47222
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\cord-of-stubborn-resolve.png",
+   "sha256": "101e1b2fbd7083c5db20be1a0ee40840bc8201520dff83be0acd9bae06f91a6a",
+   "bytes": 11300
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\crocodilian-death-roll.png",
+   "sha256": "c17272a78fb7a4443e0fb8461e96873440f2865b8029ccb0039bcc0c95a63a2c",
+   "bytes": 3991
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\crocodilian-sprint.png",
+   "sha256": "50919ada896b8f9b60a8ecd8b65021d9eff00ea4e9524393d826fd167622a9a3",
+   "bytes": 3363
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\crystal-affinity.png",
+   "sha256": "580c53b4b579bc02fb50cf860a92e25fc83cec85baa2197cf50049d960e64b27",
+   "bytes": 46854
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\crystalline-form.png",
+   "sha256": "28cf1364ebfb87b17a02b1841c27f41c5a68917075cc5ac626032bc4e26b971b",
+   "bytes": 47403
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\deadeye.png",
+   "sha256": "0ad757a54720788d64328b101f3905ac5e9c8720a686baa32a9436f92418bcb5",
+   "bytes": 22657
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\deeds.png",
+   "sha256": "7256e4769fa0f05bed5871fd3fc2454b74879a9cde3c43b8809ce6f279b84b2e",
+   "bytes": 37648
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\deflect-next-ray.png",
+   "sha256": "1d9eed7bebc482b47ef1f3f325db8aa6242c43dcc2036c34d268ee2d4fbd4691",
+   "bytes": 41653
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\dire-crocodile-swallowed.png",
+   "sha256": "ac9ae26f578f701983049b330b2c254bab77d139fc943170ecbd26f49665ef5f",
+   "bytes": 3580
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\early-pistol.png",
+   "sha256": "1cd06b9aeea63b4842951568812791e50e8fd9472884078449dd84c1c9bf0719",
+   "bytes": 15035
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\earth-insight.png",
+   "sha256": "27b338ad027967eaeadf8e72f6763664ff84eaca27f6fbcbaf65c6f2fbde5997",
+   "bytes": 44309
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\efreeti-magic.png",
+   "sha256": "abaa34b135db6c68b174075e6a45e6aa261f4727cd5bc686ee46db39e62134eb",
+   "bytes": 41055
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\electricity-resistance.png",
+   "sha256": "874338c2b734e966b6de731e11f71c6edab49b07e21e3dd5310f3e0533063c1f",
+   "bytes": 45521
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\elemental-strike.png",
+   "sha256": "4ef61ba290be43fea8917141b2eb0a4ba7c38b7d45274a5a1cb7b3a9e29ffa0b",
+   "bytes": 42570
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\elven-branched-spear.png",
+   "sha256": "5a8d3d10f95af61c6afd324c8791b37bb675d4a74d3dcd4eca7cdb4d0464109a",
+   "bytes": 4351
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\fiery-glare.png",
+   "sha256": "0ff889c3321e0d30b82e9d8c2fc5b80f81f134b48c636f6fc231826fccf993f5",
+   "bytes": 39428
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\fire-affinity.png",
+   "sha256": "d5ef14e589d286ba39dc6ce8880f6ef3f8b4eb6454653c3d06c0ffe7543a4394",
+   "bytes": 42074
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\firearm-monogram-blunderbuss.png",
+   "sha256": "65272c2ccfca2c3a766e0b11767e44ea65b1e9b05038dcb7d07c97f3fdce89f7",
+   "bytes": 5588
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\firearm-monogram-musket.png",
+   "sha256": "7bb189ad50bc578217adeca1d280e31312053a13cddf112760a5611eb79a82ee",
+   "bytes": 5577
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\firearm-monogram-pistol.png",
+   "sha256": "ec9ed32c71b137f8d8b65184b6e92e946d034a2ef329cd0f8fe7f52194e3f07d",
+   "bytes": 5401
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\firearm-proficiency.png",
+   "sha256": "aa8ff9a9e773c732c95d24eda36bd38ee868cf38dc0e503e8420461c0e638413",
+   "bytes": 37458
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\fire-insight.png",
+   "sha256": "573f9958eaa4453c766c66b5480faceddbc91a3d29ea624b9ed43d0b8e3f7c0d",
+   "bytes": 41850
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\fire-in-the-blood.png",
+   "sha256": "8f260a07dbc9e9b4f585d694531f4731d259b797773b7aae0bdf4b7f7a42f2dc",
+   "bytes": 40090
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\fire-resistance.png",
+   "sha256": "731f529ddd1caf072b7fc77e440cb1b824d78729c83d5b8ff6e7bf2ba8692a8e",
+   "bytes": 42919
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\firesight.png",
+   "sha256": "3f5b3774a76ecb22c5ebc8e8bf0279296f1151afaef4035e28105a82b57813de",
+   "bytes": 42857
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\focused-aim.png",
+   "sha256": "ba962ad9dbd58f52fad6097dd973508f98ac000db8629f698126c7c5026ec7a8",
+   "bytes": 16654
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\forge-hardened.png",
+   "sha256": "6bafff5307797835939b38cc0c9abb82a43ff9b40de72a2e4cc20de7c2dd2972",
+   "bytes": 39379
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\gemsoul.png",
+   "sha256": "ae299940c0c2ad7679c11497cad2f27ece810891b84fed4b19470ed074b39cdc",
+   "bytes": 43439
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\general-ifrit.png",
+   "sha256": "839637f60fa9a268db577ad549d45fae9b77884465ca6c47e3988c70c9193341",
+   "bytes": 40397
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\general-oread.png",
+   "sha256": "6e7038b66235f8a7e22e5ff293f23954ca68088551b48daa9bdb40fd7545112b",
+   "bytes": 45289
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\general-sylph.png",
+   "sha256": "1c0bac3cc876890baf97d3771a188dc5f99c93afac402798d66b8537700a8cc5",
+   "bytes": 46235
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\general-undine.png",
+   "sha256": "83248b89438432027afc34d8c5986a32df7c83b66a46eacb7dc67d4a19dab1ff",
+   "bytes": 45617
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\granite-skin.png",
+   "sha256": "bc317b417fa3e9ec6e8599189780839f9df01df0d51a1d145750c484d143a4fd",
+   "bytes": 41626
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\greater-teleport.png",
+   "sha256": "0381ca8dff106fcff7173945a0cb08c96d34a0e65640c73b12b95e1ab043785a",
+   "bytes": 42773
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\grit.png",
+   "sha256": "2649c1d419d15eb1ea6f346681a26ebb03170f6ae50f1c75cba8f1f6dfa24f1e",
+   "bytes": 36855
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\gunslinger-class.png",
+   "sha256": "93a7411fded73dc2ebefcdc20279629a82bb40a0d0bf54168dce3b5bb0730adb",
+   "bytes": 29448
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\gunslingers-dodge.png",
+   "sha256": "87fd7d7161cd44ec42d5af82e21fe97249c806ace95f89a17c2bb2f4205989a7",
+   "bytes": 33502
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\gunsmithing.png",
+   "sha256": "0a6e9e122fa8be3b2ab2e8f37fb47228c8b27619e32446e765ddcf11936b9a5e",
+   "bytes": 32735
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\gunsmith-kit.png",
+   "sha256": "56cb9e3415b9866d85fc6c7d402cdd4bcd29368495a25c631027dcf50a7776f8",
+   "bytes": 32097
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\gun-training.png",
+   "sha256": "39274857001746b0eb2e7bf9d74a4fac3410701dc865e343547b44913b83b413",
+   "bytes": 7042
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\heavens-measure.png",
+   "sha256": "428c6c8099b27926cbe962fe5ff40e7a24db75826eee060b654345a9ba0f63f4",
+   "bytes": 4087
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\hydraulic-blind.png",
+   "sha256": "b2c2b97de8b0738d0fa59914ba63a91d96ae673631f45ef718091206ade134ac",
+   "bytes": 43253
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\hydraulic-bull-rush.png",
+   "sha256": "514d199b2b3e0a57d40e695b196553f7925c8551b4843634e0b937de736fbc30",
+   "bytes": 43423
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\hydraulic-disarm.png",
+   "sha256": "64e053499556fb9f4c18f4e8a4af3dacac23116c6716c29dea8a2d95fe1640f2",
+   "bytes": 35204
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\hydraulic-maneuver.png",
+   "sha256": "220226251a04ecb9e2fda4b8883aa8cabef3ceb3646d095f504c7ad3c0d9e397",
+   "bytes": 43976
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\hydraulic-push.png",
+   "sha256": "012c3884189406a49fb1cee19dd6df435c4869d420742fb95e9176bf0be15e10",
+   "bytes": 37361
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\hydraulic-trip.png",
+   "sha256": "3d4052dd1bff02c9434857bd729b47d03998e7c6ec67520ad2b93e9aa2883de9",
+   "bytes": 36992
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\ice-affinity.png",
+   "sha256": "2ecd3bdb92973a49b5a42c703f315c46fb46c14aa56d6956394285ccb2b48c3a",
+   "bytes": 47516
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\ifrit-elemental-affinity-selection.png",
+   "sha256": "f3ad8190b4268a3ec4d9da5d6d78e357d3835a49e5d87ff94e6296f5ff263d19",
+   "bytes": 41303
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\ifrit-energy-resistance-selection.png",
+   "sha256": "643fc7aea5298a42adf5faf06ab301a9a0173d0d7d02c97d897f1bb15b795caf",
+   "bytes": 39141
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\ifrit-racial-spell-like-ability-selection.png",
+   "sha256": "7420bed5fb53c697b492adb3fb845f71607dd46899cc5de02c072b546121bfe6",
+   "bytes": 37913
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\inner-breath.png",
+   "sha256": "62d5bd7fa64669fbf8a29947754a55d40383802c258761180e2b1b0a24dc97e9",
+   "bytes": 44993
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\inner-flame.png",
+   "sha256": "56089b0ed0391ee352b43d0013ad1a5ea7763b58d87dfa7ce8516089bece3684",
+   "bytes": 32497
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\ironsoul.png",
+   "sha256": "57fc93739bfa19afd71eea45bad58a3b328a92e1e56b464ce77381dcd3166f02",
+   "bytes": 42111
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\katana.png",
+   "sha256": "139ff7292bb4d8270b92083e90b4c46be50b54a9e0ac9382eb9397acd6f09a90",
+   "bytes": 3845
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\lavasoul.png",
+   "sha256": "efaa4f807a2fda8b40530055a993f8c56f1c9d564445f93e489b1405ce73d310",
+   "bytes": 41269
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\lead-ball.png",
+   "sha256": "707970370fab32e09efc6fdb058932e17cb483c2e235b98dbdde16e9227a3d38",
+   "bytes": 34864
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\lightning-affinity.png",
+   "sha256": "52939c9eb36b7b8bedc7c9172697aa6996957183075ff9585294d1c6c72a4c21",
+   "bytes": 44873
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\like-the-wind.png",
+   "sha256": "bdfcf3147cbbf53d76912d696d3f3497c6002125428c302316c301a155348826",
+   "bytes": 41953
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\magic-circle-against-chaos.png",
+   "sha256": "ccb4146826e29a0fb6bf6620fe56167091f0a962474d2b6b8b902893764d3971",
+   "bytes": 53918
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\magic-circle-against-evil.png",
+   "sha256": "991f1cbaebfa87d21630f9ad0fbea8bf51be48521a53e185addb7ac021c837cb",
+   "bytes": 57499
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\magic-circle-against-good.png",
+   "sha256": "e44b0d5e6000dcad22c8ec5a31e1d9624cd566c700c63bc9cdd88f351b5ff65d",
+   "bytes": 56678
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\magic-circle-against-law.png",
+   "sha256": "8e65876bbe86b70a3a24d4ca1218f1ebb5f8007f83e52e4ccc19a49cf870bbe8",
+   "bytes": 57747
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\magma-affinity.png",
+   "sha256": "7b81b87fa8c869d87d234fd3005831f2979ee6bb85de30b7f77276a34c34165b",
+   "bytes": 43688
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\metal-affinity.png",
+   "sha256": "185520fdc6bc771a3fbaec65182f0475942d156af883229119c1a0ae08bf7895",
+   "bytes": 41408
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\mist-affinity.png",
+   "sha256": "04964be0db78d661539b501af4f78cd3aa8727c27c28686fcf3d6201809862a0",
+   "bytes": 48710
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\mistsoul.png",
+   "sha256": "1d40bead315dcceed10152d8349b7e29ec378f05f3947f3290729ebc4844c9c5",
+   "bytes": 44987
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\musket.png",
+   "sha256": "638077254f298a626f3fa8a8c098bb1e9f2c4f3678df90a1e28920f4a9ffd086",
+   "bytes": 6831
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\nereid-fascination.png",
+   "sha256": "f7d243ef43b59633e47d5f4008a3bc70de93e78c2e7cfd01f539943d98838e80",
+   "bytes": 47922
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\night-without-moon.png",
+   "sha256": "a6681e97cc07e3d4a3c894e2c1b479f647ef60cf24f40eaa945d6fdc96824f0e",
+   "bytes": 4588
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\nimble.png",
+   "sha256": "46f58fc353e00962d33ae184edfa10a3cdd00189de858f7b3833aa9c07d354a5",
+   "bytes": 5789
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\nodachi.png",
+   "sha256": "1e3f8d208e4d4733a32ee71968b051182f818ffe407dfd76a7b8a731b8bfa8da",
+   "bytes": 3283
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\ooze-breath.png",
+   "sha256": "2ca3535917cfea6fdf31eed70cc2a30ae09d63af5810d8b87851b818be33e56d",
+   "bytes": 39606
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\oread-elemental-affinity-selection.png",
+   "sha256": "e4c7b86115239e3d887b844bbc2778e17a9cfcefa571ff2a0ddddd0dcef8660c",
+   "bytes": 41719
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\oread-energy-resistance-selection.png",
+   "sha256": "54e565c98471c382361532cd639098773541bfde7bbc8667e50fd9afcf088adc",
+   "bytes": 37568
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\oread-racial-spell-like-ability-selection.png",
+   "sha256": "ad9e3c206c9289472468d9aeb45f6c778918cd19fa877b38b6e21c8baa189ae5",
+   "bytes": 36502
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\overhaul-firearm.png",
+   "sha256": "338e332e51cf99f5d0145df0162885a8eba4f3d83c4826e4d193e1d8d1615cf0",
+   "bytes": 33963
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\overhaul-kit.png",
+   "sha256": "b0e423f50d1c1ee0cccf497097ec0ff3032c7c13ccd4eeba30ec6409fc3b5dfc",
+   "bytes": 35259
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\paper-cartridge.png",
+   "sha256": "0a7c72b7fa41ccb84180b8be37d6ebbf6baf957f87e0609ab8c30fb68d9a2f61",
+   "bytes": 12395
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\quick-clear.png",
+   "sha256": "7e2711bffd7abb27f57d0b2322763f74e6929d483f12d45399d2a73f9931f196",
+   "bytes": 27138
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\rapid-reload.png",
+   "sha256": "5c3280145815f7b161602da161264ac1f43fb3ac3c4bf47ff907b0919a2aa9d3",
+   "bytes": 3025
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\reload-firearm.png",
+   "sha256": "064905fd552d685f7ba1bd8e579e07e9977211e0ee8f7e3f8e8d24f0feefcad5",
+   "bytes": 27699
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\renew-winds.png",
+   "sha256": "907b56a82bd565c546aa8a299e70c118639a26399034d179c08c109435a22fcc",
+   "bytes": 45862
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\repair-firearm.png",
+   "sha256": "cfcb7c94bd7e6f148437540a9ef5d655943df5045654ea614e1119d3de3be846",
+   "bytes": 33999
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\repair-kit.png",
+   "sha256": "940cc9e4e135c316457c6797f58e5256c268ed3f13d084d727f71f93dd4ee04f",
+   "bytes": 26536
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\revolver.png",
+   "sha256": "ff4aab9347f7c8515509c3957f2b4db42742711e17b0e67811720b954509a5b2",
+   "bytes": 18018
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\rifle.png",
+   "sha256": "0fa35d1d917006b6ab36d2e0a449a142cf24d3e9c3cc02634d88ab17e7ac1f66",
+   "bytes": 13700
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\rimesoul.png",
+   "sha256": "610b0c32bbe57aba1354f370da80222533c0e8625d00c1596cdcda64ba72013a",
+   "bytes": 41640
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\scorching-weapons.png",
+   "sha256": "46d1eb3300b3c4b0dcaa1871c5d0517f0a8361df0071813926f716d7de112ea4",
+   "bytes": 37314
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\scroll-of-greater-teleport.png",
+   "sha256": "413c935aa139daec845250d696f0a862062f84ba84a3ff80d6a6dd2e61df0c6b",
+   "bytes": 39482
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\scroll-of-magic-circle-against-chaos.png",
+   "sha256": "8af48a956130b5245d9c403911903c9566caa0f894b7ff7ff12febffb62dded2",
+   "bytes": 41029
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\scroll-of-magic-circle-against-evil.png",
+   "sha256": "ba6e1ebda8c151f01e77d034ba6d0178d7eb1515d784e375f240f8972809c433",
+   "bytes": 42047
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\scroll-of-magic-circle-against-good.png",
+   "sha256": "8c0729adc5c1c972b9a8cf57aaf6bac0b622a1d3a4065b59ce0e5105d59a9724",
+   "bytes": 41654
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\scroll-of-magic-circle-against-law.png",
+   "sha256": "46a14efc1ef1ac8f21ee856ce0505ccfefec254c600e11d27477ca8b77dc076b",
+   "bytes": 41890
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\scroll-of-teleport.png",
+   "sha256": "10cf212631bbc4e319c6e71afab466f86eadc2051fe2ffdd16ceacee6047975d",
+   "bytes": 38955
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\scroll-of-word-of-recall.png",
+   "sha256": "512c572bb55d6c9b182f4ede08041dd15c8c0c4aaa8617e26766853d832bec90",
+   "bytes": 40127
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\secretive.png",
+   "sha256": "81ea5039d908ab4cbbe8e996170c07f13edf2c284d8340020fa4481f10fa2c46",
+   "bytes": 43811
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\shake-free.png",
+   "sha256": "7215d7518fe52286b1e211d25c43dac177272269bbfbea16fcd31b795258bf7f",
+   "bytes": 37705
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\shield-other.png",
+   "sha256": "deee4e10392f26e175ffe5bfeaee025284267c8ee8431e8c0c002bf9a4a8b076",
+   "bytes": 45185
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\smoke-affinity.png",
+   "sha256": "ba87d30aafc55e276a7f58a6f7e3423887d9d1632ea8c1346cddd0263c2b75a9",
+   "bytes": 40046
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\smokesoul.png",
+   "sha256": "9d4b50f8156209f8e6fcaf57cba0524d893ec71aef7d217d21ae524a6517a179",
+   "bytes": 37382
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\solar-affinity.png",
+   "sha256": "7e73b7926547e58e23401bc86bf5a374265679a5d453448603436025d6544114",
+   "bytes": 42313
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\stoic-dignity.png",
+   "sha256": "e1f619d17470cff018799db9b1c6554cf11e6b0626723360603f332ce7fb6f51",
+   "bytes": 44073
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\stone-in-the-blood.png",
+   "sha256": "e9e29194b7cad438edb4063cd212913a41515d116cf551eccf9bfd6f0369f15c",
+   "bytes": 42898
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\storm-in-the-blood.png",
+   "sha256": "f7e0329e80f998ab0d1685a93efab75a0e81b1d651c8095810784e66e47fc474",
+   "bytes": 45905
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\stormsoul.png",
+   "sha256": "17dcaf00bd536228b757205416760b8f1bc77500ba2ddf5dd315ca6a8175470a",
+   "bytes": 44394
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\sunsoul.png",
+   "sha256": "78891535f589bb396b4f94d4676c3d3115dcda68ebb93d0985ac84b6ceb25541",
+   "bytes": 44293
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\sylph-elemental-affinity-selection.png",
+   "sha256": "676296709cfa43480e059e5ac20dcfb8974c5d7efaabbe2175b044f9ca7c9a71",
+   "bytes": 41533
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\sylph-energy-resistance-selection.png",
+   "sha256": "32cbea8062c0d653738269836e5ec154914d03066e94d19dd9f7794d0561ce3c",
+   "bytes": 40859
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\sylph-racial-spell-like-ability-selection.png",
+   "sha256": "ea4549319fe6b8b3cfded0f124521518bcfd4c53795e71e557b10ff6497c789c",
+   "bytes": 36315
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\teleport.png",
+   "sha256": "debe99749ebfd00c6b66307b2a113f0427d29abb095355b47435524b6f760858",
+   "bytes": 40556
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\thunderous-resilience.png",
+   "sha256": "919d80cca252719591aa1a38e781834ed0ee45edd01184fdd93148207358c7ee",
+   "bytes": 38415
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\treacherous-earth.png",
+   "sha256": "a176477d2eb63ca08cf63dd7adc8402a3c2e795e550f0ba25d9943a370c0131e",
+   "bytes": 41260
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\triton-portal.png",
+   "sha256": "06c2d14a488e915fed5cd0058d5de3d6917d3113c7ac7ce10efa60c0e994f88d",
+   "bytes": 42872
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\true-grit.png",
+   "sha256": "8fd0475dcefcce46ad460c6687a5bdd4463e868b2c43a95a9982b9840348613f",
+   "bytes": 5852
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\undine-racial-spell-like-ability-selection.png",
+   "sha256": "2fbb25375275d0023232958b64ce45a674c5f921d54ef9a22c8534008b31a529",
+   "bytes": 35532
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\unerring-weapon.png",
+   "sha256": "3b576a308a0f025fd14594b5faff232efd11297570a2be5c5d0b63cd99b467db",
+   "bytes": 34199
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\unerring-weapon-primary.png",
+   "sha256": "42498f5e0e7caef88589000f482ce0c8028e7f88b6e4f15a1c2482c84d1a9662",
+   "bytes": 40522
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\unerring-weapon-secondary.png",
+   "sha256": "2330239826e42c2b5d46e1c61297173847ae6242882d0543329af60320d26f92",
+   "bytes": 39470
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\wakizashi.png",
+   "sha256": "cb32f5afdc9522bebf45d863b7a2f153c8ea908292c96cb30601f739a27d9dc1",
+   "bytes": 3252
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\water-affinity.png",
+   "sha256": "a8c68a30694f6e4cb73a341bf4b8e6e75179254eec02e57bbceff3f0a8a5a985",
+   "bytes": 44066
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\weapon-focus-firearm.png",
+   "sha256": "edc404430317c2e1a35d51f675e631faca49d0d9e440bcf9adba606e696a9ee2",
+   "bytes": 7008
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\whispering-wind.png",
+   "sha256": "b56e923bd1bd777d18f084d89fff8777f1a1dcab9fccc1839f085f71ed3d3492",
+   "bytes": 33396
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\whiteout.png",
+   "sha256": "3afdb75457b431530356e26ce32c005d2e8dbb8634474e20814b6cfa6d1e9f6b",
+   "bytes": 31953
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\wildfire-heart.png",
+   "sha256": "a7a62b2edac9630e7a4f27c859872c2bd85bb2d0849bcd474fc2ec8a5ea167b7",
+   "bytes": 41562
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\wings-of-air.png",
+   "sha256": "bd351a85618aa50e00348587610184ce0d4db4d65ca95672728d651f24caa1e6",
+   "bytes": 42370
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\word-of-recall.png",
+   "sha256": "5e0a4c5a5519abe46d026d7e5ccfd7be521655b3403e9b0caee149d0bc29e175",
+   "bytes": 45275
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\assets\\icons\\world-tree-severer.png",
+   "sha256": "730072a080d7b4c405d554e2f34e498cde973d36627976b964d4b69c81c20e32",
+   "bytes": 3617
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\blueprints\\blueprints.json",
+   "sha256": "35c8e73d4178520968bdec193f10771adaf892d86e655321451f9edb6c10ce76",
+   "bytes": 2808170
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\blueprints\\blueprints.schema.json",
+   "sha256": "60433421fc40be98373401ebd1103dff366fcc62609dc300bd0a79d033852374",
+   "bytes": 1930
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\Info.json",
+   "sha256": "b5754ffbc9b865a644c241c1e86736f715e06d581d24d8d038d251480997f3a5",
+   "bytes": 282
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger\\KingmakerGunslinger.dll",
+   "sha256": "17a42879a57dba9914cebd67b3855ad95a94ef64775a8c2f66886ef5f03c808a",
+   "bytes": 21314560
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger-0.0.195-compile-candidate.zip",
+   "sha256": "1a08a51b42d5347f97bb66fdb083922055f2578c0ee9ac55307d0cd34e18125d",
+   "bytes": 12328545
+  },
+  {
+   "path": "exact-build\\KingmakerGunslinger-0.0.195-compile-candidate.zip.sha256",
+   "sha256": "fcc2979a5048742ba6b450ce97912fa94f867640544586ada20a207dcf30d207",
+   "bytes": 117
+  },
+  {
+   "path": "KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip",
+   "sha256": "d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929",
+   "bytes": 73911441
+  },
+  {
+   "path": "KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip.development-receipt.json",
+   "sha256": "e5518092654d1fa7315329be517f6774c92ce90ce9cffb9a69c8e6804afe2b7e",
+   "bytes": 10851
+  },
+  {
+   "path": "KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip.sha256",
+   "sha256": "54720e36e6b5c161897f6084d15570458cff81df9f2b207dba2fa3f6e8029cee",
+   "bytes": 143
+  },
+  {
+   "path": "selected-domain-tests.log",
+   "sha256": "d7c6e1c0f2b6ded4af11270c49dd9fa53733c0e58073b7a628812e5ab311c51a",
+   "bytes": 356
+  },
+  {
+   "path": "selected-domain-tests.log.stderr",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  }
+ ]
+}

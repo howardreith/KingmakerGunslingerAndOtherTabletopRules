@@ -3,6 +3,19 @@ using System.Collections.Generic;
 
 namespace KingmakerGunslinger.DomainTests
 {
+    // A case that has nothing to assert in this run (for example no bound artifact in an unfiltered run, or deferred to
+    // a later run): the runner reports NOT APPLICABLE, never PASS, and does not count it as a failure.
+    internal sealed class NotApplicableException : Exception
+    {
+        internal NotApplicableException(string message) : base(message) { }
+    }
+
+    // How the runner selected this run's cases: Focused is true when KMG_TEST_FILTER or --test-prefix chose them.
+    internal static class RunSelection
+    {
+        internal static bool Focused;
+    }
+
     internal static class Assertions
     {
         internal static void True(bool condition, string message)

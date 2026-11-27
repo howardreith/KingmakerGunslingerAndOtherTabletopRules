@@ -187,7 +187,7 @@ if ($development) {
         -DevelopmentSummaryPath $developmentLayout.ValidationSummaryPath
     Invoke-KmgWithTestFilter -Filter $DevelopmentTestFilter -Body {
         & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean `
-            -MSBuildPath $msbuild -SkipRepositoryValidation `
+            -MSBuildPath $msbuild -SkipRepositoryValidation -LoaderCaseAfterExactBuild `
             -RunnerLogPath $developmentLayout.TestLogPath
     }
     if ((Get-Item -LiteralPath "$($developmentLayout.TestLogPath).stderr").Length -ne 0) {
@@ -215,7 +215,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Runtime scenario preflight failed.' }
 if (-not $SkipDomainTests) {
     Invoke-KmgWithTestFilter -Filter '' -Body {
         & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean `
-            -MSBuildPath $msbuild -SkipRepositoryValidation
+            -MSBuildPath $msbuild -SkipRepositoryValidation -LoaderCaseAfterExactBuild
     }
 }
 }
@@ -237,6 +237,17 @@ if (-not $development) {
     --csc $csc.FullName --net47-ref-dir $net47 --output-dir $exactRoot `
     --configuration Release --git-commit $git.Commit
 if ($LASTEXITCODE -ne 0) { throw "Exact-reference Release build failed with exit code $LASTEXITCODE." }
+# The exact compiler output, measured in its private output folder before anything is copied or packaged.
+$compilerDllIdentity = Get-KmgPackagedDllIdentity -DllPath (Join-Path $exactRoot 'bin\KingmakerGunslinger.dll')
+if ([string]$compilerDllIdentity.gitCommit -cne $git.Commit) { throw "The exact build carries source stamp '$($compilerDllIdentity.gitCommit)', not $($git.Commit)." }
+# The loader-reference domain case on this exact compiler output (one production compile per candidate: the domain-test
+# run above deferred it instead of compiling production with MSBuild).
+if (-not $SkipDomainTests) {
+    Invoke-KmgWithTestFilter -Filter 'loader.production-dll-references-pinned-loader' -Body {
+        & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -MSBuildPath $msbuild -SkipRepositoryValidation `
+            -ProductionDll (Join-Path $exactRoot 'bin\KingmakerGunslinger.dll') -ProductionDllSha256 ([string]$compilerDllIdentity.sha256)
+    }
+}
 & powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
     (Join-Path $PSScriptRoot 'Test-SupplyItemIcons.ps1') `
     -ReferenceBundleDir $ReferenceBundleDir
@@ -439,7 +450,12 @@ foreach ($part in @('griffon-mesh.json','griffon-albedo.png')) {
 $packagePath = if ($development) { $developmentLayout.PackagePath } else {
     Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.zip"
 }
-& (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release -PackagePath $packagePath
+$packageOutput = @(& (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release -PackagePath $packagePath -PassThruMeasurement)
+if ($packageOutput.Count -ne 1 -or $null -eq $packageOutput[0] -or -not $packageOutput[0].PSObject.Properties['packageSha256'] -or -not $packageOutput[0].PSObject.Properties['dll']) {
+    throw "Package assembly must return exactly one measurement object; it returned $($packageOutput.Count) value(s)."
+}
+$packageMeasurement = $packageOutput[0]
+Write-Output $packagePath
 if ($LASTEXITCODE -ne 0 -and $null -ne $LASTEXITCODE) {
     throw "Package assembly failed with exit code $LASTEXITCODE."
 }
@@ -466,10 +482,33 @@ $firearmManifestPath = Join-Path $stagedMod `
     'assets\soundbanks\firearm-soundbank-manifest.json'
 $firearmSoundBankPath = Join-Path $stagedMod `
     'assets\soundbanks\KMG_Firearms.bnk'
+# The DLL inside the finished ZIP must be the exact compiler output (and the loose copy in the shared output folder must
+# be it too) before either receipt is written; the receipt records all of them.
+# The strict validation package.ps1 already ran (one per package) supplies the measured identities.
+$measuredPackageSha256 = [string]$packageMeasurement.packageSha256
+$packagedDllIdentity = $packageMeasurement.dll
+if ((Get-KmgSha256 -Path $packagePath) -cne $measuredPackageSha256) { throw 'The package changed after its validation.' }
+# Both receipts are written from these measurements (taken once and compared below), never by rereading shared output.
+$measuredFirearmManifestSha256 = Get-KmgSha256 -Path $firearmManifestPath
+$measuredFirearmSoundBankSha256 = Get-KmgSha256 -Path $firearmSoundBankPath
+if ($null -eq $packagedDllIdentity) { throw 'Package validation returned no measured DLL identity.' }
+$looseDllSha256 = Get-KmgSha256 -Path $dllPath
+$looseDllMvid = Get-KmgDllMvid -Path $dllPath
+if ([string]$packagedDllIdentity.sha256 -cne [string]$compilerDllIdentity.sha256 -or [string]$packagedDllIdentity.mvid -cne [string]$compilerDllIdentity.mvid -or
+    $looseDllSha256 -cne [string]$compilerDllIdentity.sha256 -or $looseDllMvid -cne [string]$compilerDllIdentity.mvid -or
+    [string]$packagedDllIdentity.gitCommit -cne $git.Commit) {
+    throw "The packaged DLL ($($packagedDllIdentity.sha256)) or the loose output ($looseDllSha256) is not the exact compiler output ($($compilerDllIdentity.sha256)) of $($git.Commit)."
+}
+# Every route (ordinary, reproducibility and development): no receipt unless the consumed source state is the one
+# fingerprinted when the build started.
+Assert-KmgConsumedSourceState -RepositoryRoot $root -SourceStateSha256 $sourceStateSha256
+# A receipt from a clean start claims that its commit's files are what the package ships: every ZIP member is resolved to
+# its producer file (the project's copy rules included) and compared with that commit, not with the working tree (which may
+# have been restored after packaging), on the same read of the ZIP whose digest the receipt records.
+if ($sourceStateSha256 -ceq (Get-KmgCleanSourceStateFingerprint -Commit $git.Commit)) {
+    $null = Assert-KmgPackagedRepositoryFilesMatchCommit -PackagePath $packagePath -RepositoryRoot $root -Commit $git.Commit -ExpectedSha256 $measuredPackageSha256
+}
 if ($development) {
-    if ((Get-KmgSourceStateFingerprint -RepositoryRoot $root) -cne $sourceStateSha256) {
-        throw 'The source state changed during the development build.'
-    }
     [xml]$developmentProps = Get-Content -LiteralPath (Join-Path $root 'Directory.Build.props') -Raw
     $validationSummary = Get-Content -LiteralPath $developmentLayout.ValidationSummaryPath -Raw |
         ConvertFrom-Json
@@ -487,11 +526,16 @@ if ($development) {
         version = $info.Version
         informationalVersion = [string]$developmentProps.Project.PropertyGroup.KmgInformationalVersion
         packagePath = $packagePath
-        packageSha256 = Get-KmgSha256 -Path $packagePath
-        dllSha256 = Get-KmgSha256 -Path $dllPath
-        dllMvid = Get-KmgDllMvid -Path $dllPath
-        firearmManifestSha256 = Get-KmgSha256 -Path $firearmManifestPath
-        firearmSoundBankSha256 = Get-KmgSha256 -Path $firearmSoundBankPath
+        packageSha256 = $measuredPackageSha256
+        # Equal to the packaged and compiler identities (checked above); written from the captured measurement.
+        dllSha256 = [string]$compilerDllIdentity.sha256
+        dllMvid = [string]$compilerDllIdentity.mvid
+        packagedDllSha256 = [string]$packagedDllIdentity.sha256
+        compilerDllSha256 = [string]$compilerDllIdentity.sha256
+        compilerDllMvid = [string]$compilerDllIdentity.mvid
+        embeddedGitCommit = [string]$packagedDllIdentity.gitCommit
+        firearmManifestSha256 = $measuredFirearmManifestSha256
+        firearmSoundBankSha256 = $measuredFirearmSoundBankSha256
         references = [ordered]@{
             bundleDirectory = $ReferenceBundleDir
             installDirectory = $KingmakerInstallDir
@@ -539,11 +583,16 @@ $manifest = [ordered]@{
     sourceStateSha256 = $sourceStateSha256
     version = $info.Version
     packagePath = $packagePath
-    packageSha256 = Get-KmgSha256 -Path $packagePath
-    dllSha256 = Get-KmgSha256 -Path $dllPath
-    dllMvid = Get-KmgDllMvid -Path $dllPath
-    firearmManifestSha256 = Get-KmgSha256 -Path $firearmManifestPath
-    firearmSoundBankSha256 = Get-KmgSha256 -Path $firearmSoundBankPath
+    packageSha256 = $measuredPackageSha256
+    # Equal to the packaged and compiler identities (checked above).
+    dllSha256 = [string]$compilerDllIdentity.sha256
+    dllMvid = [string]$compilerDllIdentity.mvid
+    packagedDllSha256 = [string]$packagedDllIdentity.sha256
+    compilerDllSha256 = [string]$compilerDllIdentity.sha256
+    compilerDllMvid = [string]$compilerDllIdentity.mvid
+    embeddedGitCommit = [string]$packagedDllIdentity.gitCommit
+    firearmManifestSha256 = $measuredFirearmManifestSha256
+    firearmSoundBankSha256 = $measuredFirearmSoundBankSha256
     validated = $true
     completeDomainSuite = -not [bool]$SkipDomainTests
     reproducibilityBuild = [bool]$ReproducibilityBuild

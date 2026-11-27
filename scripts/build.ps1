@@ -32,9 +32,6 @@ if ($CompileOnly -and ($Package -or $IncludeSymbols)) {
 }
 if (-not $CompileOnly) {
     & (Join-Path $PSScriptRoot 'validate-repository.ps1')
-    if (-not $SkipDomainTests) {
-        & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration $Configuration -MSBuildPath $MSBuildPath -SkipRepositoryValidation
-    }
 }
 
 if (-not $KingmakerInstallDir -and -not (Test-Path -LiteralPath $localPropsPath -PathType Leaf)) {
@@ -50,6 +47,10 @@ if ($KingmakerInstallDir) {
 }
 
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
+# The product compiles against the pinned loader references (the project's default UnityModManagerDir); fetch and verify
+# them first, exactly as Build-Local.ps1 does.
+. (Join-Path $PSScriptRoot 'ReferenceProvenance.Common.ps1')
+[void](Initialize-KmgPinnedLoaderReferences -LoaderReferenceDir (Join-Path $repositoryRoot 'artifacts\references\loader'))
 $target = if ($Clean) { 'Rebuild' } else { 'Build' }
 # test-domain already compiles the runner. Building the solution here would
 # compile it again along with production.
@@ -77,6 +78,13 @@ if ($LASTEXITCODE -ne 0) {
 if ($CompileOnly) {
     Write-Host 'Development production compilation passed; package/release checks deferred.'
     return
+}
+
+# The domain tests run after the production compilation, so the loader-reference case inspects this compiler output.
+if (-not $SkipDomainTests) {
+    $productionDll = Join-Path $repositoryRoot "artifacts\bin\$Configuration\KingmakerGunslinger\KingmakerGunslinger.dll"
+    $productionDllSha256 = if (Test-Path -LiteralPath $productionDll -PathType Leaf) { (Get-FileHash -LiteralPath $productionDll -Algorithm SHA256).Hash.ToLowerInvariant() } else { '' }
+    & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration $Configuration -MSBuildPath $MSBuildPath -SkipRepositoryValidation -ProductionDll $productionDll -ProductionDllSha256 $productionDllSha256
 }
 
 if ($Package) {
