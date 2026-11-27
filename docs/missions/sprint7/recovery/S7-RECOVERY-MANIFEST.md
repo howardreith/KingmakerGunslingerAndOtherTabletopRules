@@ -809,6 +809,13 @@ needs an agreed no-Kingmaker window, and C3 amendment 5 also asks that build and
   Kingmaker, builds or gates during the window); kingmakerskipcinematic-1b replied "free" about 14:53Z (no Kingmaker or guarded run
   active, new launches held until released; it listed its runs that afternoon as 14:03Z to 14:55Z, the last ending about 14:55Z),
   and the gates were started after 14:55Z.
+- Review-8 gates (C3 amendment 7): at 17:38:39Z kingmakerskipcinematic-1b held its runtime lock (run started 17:38:12Z, Kingmaker
+  running), and the controller's first amendment-7 admission was refused for that lock with nothing captured. Roster check about
+  17:39Z (dev-a6 shell, kingmakermountedcombat-0f idle, kingmakerskipcinematic-1b busy); requests to both about 17:39Z for about
+  10 minutes after that run restored (controller resume and the four gates; no Kingmaker launch). kingmakermountedcombat-0f replied
+  "free" about 17:39Z; the lock was gone and no Kingmaker process ran at 17:39:48Z; kingmakerskipcinematic-1b replied "free"
+  about 17:40Z (run finished and restored; it holds runtime locks, launches and builds until released). The release follows the
+  gates and is recorded in the review-8 developer report, not here, so the gate head stays unchanged.
 
 **C3 native qualification of the amendment-5 bytes (recovery candidate 6 of 6, under C3 amendment 6).** Built once from records
 head `962bf27694` (compiled source identical to code commit `360ce86f54`; the records commit changes only `docs/`): package
@@ -866,20 +873,24 @@ DATA, whose CPU-only Python suite was running meanwhile): PASS, 43/43 checks.
 Candidate 5's `20261127T022022Z` PASS stays at its own scope (source `511db044b1`, package `15307748…638e`, DLL `1dde22e0…ba7e`);
 it does not qualify these bytes.
 
-**C3 current state (2026-11-27, under C3 amendment 6; this block and the map below are the current records).** Controller BLOCKED
-in develop at final 7/7 (review cap), amendments revision 6. Recovery candidate 6 built (PASS) from records head `962bf27694` (code
+**C3 current state (pre-review-8 snapshot, dated 2026-11-27 17:41Z, under C3 amendment 7; this block and the round-6 and round-7 tables below are the
+current records).** Controller ACTIVE in develop at final 7/8: owner amendment 7 was admitted at 17:39:57Z as amendments revision 7
+(sha256 `af773cd7996f9445ffd9207c112ccb14be96c5497f5203052cea0ae94c3b7982`), and a separate `resume --max-rounds 8` raised the
+review ceiling from seven to eight for formal review 8 of the records-only stop-commit corrections. Recovery candidate 6 built (PASS) from records head `962bf27694` (code
 `360ce86f54`): package `6c71d928ea4293945af43a4b33f81238047176b07ed10fc88edee342649cd55a`, DLL
 `6af754eb06f72a261916d2dcd6e5fea125b62b13dcc9eeae53ad000e94341411`, 25 selected tests; its build exceeded the amendment-5 allowance
 (the dated stop at `a78dba163b` is history), and amendment 6 authorized reusing it. Its mechanics session `20261127T133020Z`
 passed (43/43, seven required cells admitted and completed, physical restoration separately true; see the qualification paragraph
 above); formal review 6 (H `e5b1e4af85`, all four controller gates PASS) verified R5-F1, R5-F2, R5-F3, R1-F13 and R5-F4
 and opened two records findings, R6-F1 (P2, peer coordination documented only for the game session) and R6-F2 (P3, cite the
-abandoned driver's census); both were corrected in records for the conditional review 7. **C3 STOPPED at the seven-review cap:** formal review
+abandoned driver's census); both were corrected in records for the conditional review 7. Formal review
 7 (records-only H `74c3d43288`, all four controller gates PASS) verified R6-F1, rejected the optional R6-F2 citation and opened
 R7-F1 (P2 records, blocks readiness: the integration row and reconciliation paragraph still presented the pre-review-6 state);
-the controller is BLOCKED in develop at final 7/7 with R6-F2 and R7-F1 open, and no eighth review is authorized. Both are
-corrected in this stop commit (stop-commit correction after review 7, not formally reviewed); they need owner authority for any further formal review. Formal reviews:
-seven spent (reviewed H `7fff8b34f6`, `89d4efa347`, `f0ca78cbab`, `43dd44a2ba`, `ed02905b7f`, `e5b1e4af85`, `74c3d43288`). The
+the controller then stopped BLOCKED at the 7/7 cap (history). Both were corrected in records in the stop commit `db2a90a3fd`
+(stop-commit correction after review 7, not formally reviewed). **Pending formal review 8:** R7-F1 (readiness-blocking records
+finding) and R6-F2 (optional, nonblocking); both stay formally open until the controller records their disposition. Formal reviews:
+seven completed of eight authorized (reviewed H `7fff8b34f6`, `89d4efa347`, `f0ca78cbab`, `43dd44a2ba`, `ed02905b7f`,
+`e5b1e4af85`, `74c3d43288`); the latest completed review is round 7 on `74c3d43288`. The
 qualified package, harness and native evidence are unchanged; no archive A and no handoff. Recovery candidates:
 six spent of six. Validation: see the ledger. Settlement correction: code
 `360ce86f54` (focused gate PASS, 25 tests). No C3 archive A and no handoff. Source, reviewed H, records head and archive A stay
@@ -910,11 +921,11 @@ unchanged; review 7 verified R6-F1 and rejected R6-F2, corrected again in the st
 | R6-F1 (P2 evidence gap, blocks readiness) | A dated account of the peer coordination for the candidate-6 build and final gates, identifying any interval that cannot be verified | Peer-coordination paragraph under C3 amendment 6: dated exchanges for every amendment-5/6 validation command; the build's coordination is unverifiable for about 05:46Z–08:58:46Z; the 13:20Z–13:58Z window is verified for kingmakermountedcombat-0f only (no roster check then; kingmakerskipcinematic-1b's after-the-fact account recorded) |
 | R6-F2 (P3 optional) | Cite the abandoned driver's exported census for its pending-command result | Candidate-6 qualification paragraph: the abandoned driver exports no `pendingCommands`; its execution census cited; after review 7 its residuals cited from `childAfterDisposal.pending` and their settlement from `childAfterResume.recoveries` (stop-commit correction after review 7, not formally reviewed) |
 
-Round-7 finding (review 7, H `74c3d43288`; the current open findings are R6-F2 and R7-F1):
+Round-7 finding (review 7, H `74c3d43288`; the open findings, pending formal review 8, are R6-F2 and R7-F1):
 
 | C3 finding (round 7) | Requested | Correction (records) |
 |---|---|---|
-| R7-F1 (P2 required gap, blocks readiness) | Use the current-state block as the reference for the C3 integration row and reconciliation paragraph; date the round-5 table as historical, keeping its verified dispositions | Integration row, dependency paragraph and finding-reconciliation paragraph now refer to the C3 current state (BLOCKED 7/7); the round-5 map is labelled history (stop-commit correction after review 7, not formally reviewed) |
+| R7-F1 (P2 required gap, blocks readiness) | Use the current-state block as the reference for the C3 integration row and reconciliation paragraph; date the round-5 table as historical, keeping its verified dispositions | Integration row, dependency paragraph and finding-reconciliation paragraph now refer to the C3 current state (BLOCKED 7/7 at the stop commit; now the pre-review-8 snapshot); the round-5 map is labelled history (stop-commit correction after review 7, not formally reviewed) |
 
 (History, dated 2026-11-27 before C3 amendment 5; superseded by the round-5 pending-finding map in the C3 current state below.)
 Pending-finding map after formal review 4 (one-off extraction of the accepted structured round-4 result, identical in the
@@ -953,7 +964,7 @@ Frozen inputs and reviewed identities (product source, reviewed head and control
 | #219 | `codex/s7-visual-audio-remediation` | `3e2baea4b4` (round 7) | n/a; frozen head `0542b0592a` | BLOCKED 7/7 | `9c39b1ff7f` (candidate 3) |
 | #221 C1 | `codex/s7-recovery-c1-cue-evaluator` | `5a56d480a2` | `2c67a049ee` | owner-accepted (implementation/domain) | none of its own; its evaluator ran in C3's candidate `6abd692fa7` |
 | #222 C2 | `codex/s7-recovery-c2-ghaele-late-units` | `da811b123c` | `eab90a5ac8` | AWAITING_OWNER_REVIEW, handoff current | external harness `d77754ba…b4f1` over candidate 3 |
-| #223 C3 | `codex/s7-recovery-c3-effects-ownership` | `7fff8b34f6` (round 1), `89d4efa347` (round 2), `f0ca78cbab` (round 3), `43dd44a2ba` (round 4), `ed02905b7f` (round 5), `e5b1e4af85` (round 6), `74c3d43288` (round 7) | none | BLOCKED/develop at the 7/7 review cap under C3 amendment 6 (see the C3 current state); review 6 (`e5b1e4af85`) verified R5-F1 to R5-F4 and R1-F13; review 7 (`74c3d43288`) verified R6-F1 and left R6-F2 and R7-F1 open (records; corrected unreviewed in the stop commit); settlement correction `360ce86f54` | `6abd692fa7` (candidate `de63d6f4…4b46`, `20261126T054228Z`); `66b0ff3f14` (recovery candidate 3, `473f2f5a…8366`, `20261126T134425Z`); `6cef765a8a` (recovery candidate 4, `242f9a27…0d93`, `20261126T232851Z`); `511db044b1` (recovery candidate 5, `15307748…638e`, `20261127T022022Z`); `962bf27694` (recovery candidate 6, `6c71d928…d55a`, `20261127T133020Z`) |
+| #223 C3 | `codex/s7-recovery-c3-effects-ownership` | `7fff8b34f6` (round 1), `89d4efa347` (round 2), `f0ca78cbab` (round 3), `43dd44a2ba` (round 4), `ed02905b7f` (round 5), `e5b1e4af85` (round 6), `74c3d43288` (round 7) | none | ACTIVE/develop at 7/8 under C3 amendment 7 (pre-review-8 snapshot; see the C3 current state); review 6 (`e5b1e4af85`) verified R5-F1 to R5-F4 and R1-F13; review 7 (`74c3d43288`) verified R6-F1 and left R6-F2 and R7-F1 open (records; corrected in the stop commit `db2a90a3fd`, pending formal review 8); settlement correction `360ce86f54` | `6abd692fa7` (candidate `de63d6f4…4b46`, `20261126T054228Z`); `66b0ff3f14` (recovery candidate 3, `473f2f5a…8366`, `20261126T134425Z`); `6cef765a8a` (recovery candidate 4, `242f9a27…0d93`, `20261126T232851Z`); `511db044b1` (recovery candidate 5, `15307748…638e`, `20261127T022022Z`); `962bf27694` (recovery candidate 6, `6c71d928…d55a`, `20261127T133020Z`) |
 
 Dependency checks (2026-11-26): `0542b0592a` is an ancestor of `2c67a049ee`, which is an ancestor of `eab90a5ac8`, which is
 an ancestor of `7fff8b34f6`; every remote branch head matched the identities above when checked (2026-11-26, before C3
@@ -974,15 +985,16 @@ changes_required with two compiled-code defects (R5-F1, R5-F2) and the work stop
 (2026-11-27, C3 amendment 5): the heads were re-verified unchanged at the amendment (#219 `0542b0592a`, C1 `2c67a049ee`, C2
 `eab90a5ac8`, C3 `bfeec8d8a9`); the settlement correction is code `360ce86f54`. Current (2026-11-27, C3 amendment 6): heads
 re-verified unchanged (C3 `a78dba163b`); recovery candidate 6 (`962bf27694`) was qualified by `20261127T133020Z`; reviews 6 and 7
-followed, and C3 is BLOCKED at the 7/7 review cap (C3 current state). C3
+followed; review 7 stopped C3 at the 7/7 cap, and owner amendment 7 resumed it at 7/8 for formal review 8 (C3 current state,
+pre-review-8 snapshot). C3
 has no archive A and no handoff, so the integration operation below cannot start for C3 until a handoff exists. Source, reviewed
 H, current records head and archive A stay separate identities. The stack is linear on the frozen parent, so stacking the children onto #219 needs no conflict
 resolution while #219 stays frozen; that says nothing about integration with `master`, which has moved independently and may
 conflict.
 
-Finding reconciliation (current, 2026-11-27 after formal review 7): review 5 verified C3/R4-F1, C3/R2-F7, C3/R4-F2 and C3/R4-F3;
-review 6 verified R5-F1 to R5-F4 and R1-F13 (round-5 map, now history); review 7 verified R6-F1; R6-F2 and R7-F1 remain open at
-the 7/7 cap, corrected unreviewed in the stop commit (C3 current state, above). (History, dated before formal review 5: formal review 4 verified R3-F1 to R3-F5, R2-F8, R1-F9 and
+Finding reconciliation (current, pre-review-8 snapshot, dated 2026-11-27 17:41Z, under C3 amendment 7): review 5 verified C3/R4-F1, C3/R2-F7, C3/R4-F2
+and C3/R4-F3; review 6 verified R5-F1 to R5-F4 and R1-F13 (round-5 map, now history); review 7 verified R6-F1; R6-F2 and R7-F1
+remain open, corrected in records in the stop commit and pending formal review 8 (C3 current state, above). (History, dated before formal review 5: formal review 4 verified R3-F1 to R3-F5, R2-F8, R1-F9 and
 R1-F11; the round-4 pending findings were then corrected in code `9d99563ec7` and in records and qualified by recovery candidate 5,
 for review 5.) Parent bindings: #219 R7-F1, R7-F6 and R6-F5 (C1, owner-accepted), R5-F1 (C2, owner-accepted),
 #219 R4-F1 and R7-F2 to R7-F5 (C3, in this enrollment).
@@ -1230,6 +1242,8 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C3 r7 | Prospective estimate before the round-7 controller gates (records-only corrections; recorded before them): batch about 7 min 12 s (the round-6 batch), leaving about 19 min 54 s | estimate | — | 332 min 54.2 s | 27 min 5.8 s |
 | C3 r7 | Controller focused gates on H `74c3d43288` (`sprint7-visual` 86.2 s, `summon-playtest-r6` 85.8 s, `native-profile` 91.6 s, `loader-compat-probe` 96.4 s outer; receipts 46.4 + 42.6 + 48.2 + 48.4 = 185.6 s, worktree unchanged) | PASS, 4/4 | 361.0 s (batch; estimated about 7 min 12 s) | 338 min 55.2 s | 21 min 4.8 s |
 | C3 r7 | Formal review 7 (model review, outside the clock) | changes_required at the cap: R6-F1 verified; R6-F2 (P3) rejected; R7-F1 (P2 records) opened; controller BLOCKED 7/7. Stop commit: records only, no validation | — | 338 min 55.2 s | 21 min 4.8 s unused |
+| C3 r8 | (C3 amendment 7: formal-review ceiling raised from seven to eight for formal review 8 of the records-only stop-commit corrections; allowance unchanged at 360 minutes, candidates six of six; no validation for the admission) | | | 338 min 55.2 s | 21 min 4.8 s |
+| C3 r8 | Prospective estimate before the round-8 controller gates (records-only submission head; recorded before them): batch about 7 min 12 s (the larger of the last two batches, 361.0 s and 432.3 s), leaving about 13 min 53 s; the actual batch is recorded in the review-8 developer report (this manifest stays a pre-review-8 snapshot so the gate head is unchanged) | estimate | — | 338 min 55.2 s | 21 min 4.8 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
