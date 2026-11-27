@@ -108,5 +108,27 @@
    "summon-s7-effects-mechanics.json": "56f42596b1dfc022697b7173d239e4140eb34b375739478bb3894435e4cf31bd",
    "harness-result.json": "de63b0ec97e07967c465725fde3bf72e43377b31df7a3c7ae3cd3783a271870c"
   }
+ },
+ {
+  "file": "20261127T133020Z-owner-0.33.0-s7-c3-mechanics-session.json",
+  "session": "20261127T133020Z-owner-0.33.0-s7-c3-mechanics",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "ad16e298ec7df0a16c53c206efb36086bebb45eefbcd59a8c97a29f8f62f14dd"
+  }
+ },
+ {
+  "file": "20261127T133020Z-owner-0.33.0-s7-c3-mechanics-01-mechanics.json",
+  "session": "20261127T133020Z-owner-0.33.0-s7-c3-mechanics",
+  "launch": "01-mechanics",
+  "checks": 43,
+  "passed": 43,
+  "sources": {
+   "sprint32-review.json": "35ac617e5139dfed954d10ca8da1a00a95bd1c33865a33e94fb430cfd4561260",
+   "summon-s7-effects-mechanics.json": "ab456698f93f1b62e3b52ea5f5c0d131c93c6d87b375f5827dfae4ee03c3de2d",
+   "harness-result.json": "baf21c8cde1c2efaddbfb9dedc14dcd77f01d1aef8b6a96dfed006e1c9fde1c6"
+  }
  }
 ]

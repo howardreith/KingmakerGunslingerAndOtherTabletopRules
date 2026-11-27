@@ -783,12 +783,60 @@ no timestamps in that span. Unknown: which step or steps took that time, and why
 only a small part; peer activity is not established as the cause. Charged baseline kept at 319 min 19.8 s (outer time); no
 process-only duration different from the outer time was found, so nothing is reclaimed.
 
+**C3 native qualification of the amendment-5 bytes (recovery candidate 6 of 6, under C3 amendment 6).** Built once from records
+head `962bf27694` (compiled source identical to code commit `360ce86f54`; the records commit changes only `docs/`): package
+`6c71d928ea4293945af43a4b33f81238047176b07ed10fc88edee342649cd55a`, DLL
+`6af754eb06f72a261916d2dcd6e5fea125b62b13dcc9eeae53ad000e94341411` (Build-Local `-DevelopmentPurpose s7-recovery-c3`, 25 selected
+tests), reused without a rebuild: the package hash re-read before the run matched the receipt and its `.sha256`, and the session
+read back the staged package and DLL hashes. Harness C2's `d77754ba…b4f1` (unchanged; staged DLL hash read back), the same admitted
+disposable outdoor native Default fixture, loader profile `owner-0.33.0`, selection `summon-s7-effects-mechanics` (session file
+`s7-c3-mechanics.json`, unchanged, seven required cells declared before the run). Session `20261127T133020Z-owner-0.33.0-s7-c3-mechanics` (run from
+records head `2ea63edb22`, the build source and later records kept distinct; window 13:30Z–13:37Z, granted by the other session on
+DATA, whose CPU-only Python suite was running meanwhile): PASS, 43/43 checks.
+- Required cells: all seven (`s7-ankylosaurus`, `s7-callback-abandoned`, `s7-callback-setup-failed`, `s7-trace-setup-failed`,
+  `s7-dust`, `s7-dust-pre-delivery-disposed`, `s7-dust-abandoned`) admitted and completed (`requiredCellsCompleted` true); separately,
+  physical restoration true: no failure, pending, unreadable or unreported entry; one recovery (the ordinary Dust cell's
+  reconciliation observed settled); `restoreErrors` empty.
+- Settlement observations (new in these bytes): the ordinary Dust release recorded one observation per owned command in its
+  settlement evaluation, fifteen in all: fourteen `execution ended` and one `cancelled before execution` (a readable null process on
+  a command that had finished without acting). That cancellation branch of the adapter therefore ran natively once, and the cell
+  settled at cleanup with nothing remaining, 0 live, the late sweep completed and the subscription released. This executes the
+  classification on a real engine command; the engine contract that such a command cannot start later remains source-derived (the
+  run shows no later execution from it, which is consistent with it but does not prove it). No unreadable observation occurred.
+- Pending commands and transferred residuals: `pendingCommands` empty in every Dust release (ordinary, pre-delivery, abandoned);
+  the five drivers (callback-abandoned, callback-setup-failed, trace-setup-failed, dust-pre-delivery-disposed, dust-abandoned) are
+  all proven with empty `transferredResiduals`. So the native run did not reach the pending, null-to-unreadable, null-to-live or
+  transient-failure-then-cancellation transitions, or failures after a handoff; those remain focused evidence (cases A–D, R5-F3).
+- Command ownership: every cell-owned Dust command goes through `SubmitCellCommand` in these bytes; the deliberately unowned
+  same-caster control cast is submitted directly and its row records its Sickened applied and outside the ledger
+  (`unownedExecution`: `ownedByLedger` false); no owned command failure, none left running (`ownedCommandsLeft` 0).
+- Ordinary disposal before delivery: disposed in readiness frame 11091 with execution
+  `KMG_Summoning_Special_DustMephit_Breath#-473504512` started and no condition from it present (known 0) at disposal; at settlement
+  (frame 11470) that execution had ended and delivered one Sickened (acquired 1), released (present from it a known 0); the ledger
+  was held until settlement, the late sweep completed, the subscription was released, the foreign Sickened control intact; the next
+  cell was admitted and completed.
+- Command cleanup: `commandCleanupPerformed` lists 18 permitted-and-returned callbacks (`LeaveCombat` itself runs only when
+  `IsInCombat`); `commandCleanupWithheld` empty.
+- Callback loss (constructed setup, labelled as such): declared same-frame delivery posted real cues from the production handler,
+  both playing (IDs 537 survivor, 538 other, frame 5312); C1's evaluator judged the row live: verdict null. The committed persisted
+  row `docs/evidence/sprint7/recovery-c3/20261127T133020Z-callback-loss-row.json` (source sha256 `ab456698…de2d`) and its
+  collector-shaped counterpart receive the same verdict (`sprint7-visual.combined-run-verdicts-agree`, local focused gate PASS).
+- Retirements: 19 requests through the phase's one record (8 by the phase's fallback at teardown), none failed.
+- Restoration (receipts in the session summary): transaction `0771c4fc32b24273900c38ae36205ec7` succeeded; owner integrity verified,
+  owner saves and owner install unchanged; game settings applied; registry restored (readback verified, sha256
+  `5ffd5922…6b38`); runtime lease `runtime-20261127T133020Z-d8682d2c…`. Mechanics-only: no frame captures,
+  native-look comparison or listening samples.
+Candidate 5's `20261127T022022Z` PASS stays at its own scope (source `511db044b1`, package `15307748…638e`, DLL `1dde22e0…ba7e`);
+it does not qualify these bytes.
+
 **C3 current state (2026-11-27, under C3 amendment 6; this block and the map below are the current records).** Controller ACTIVE
 in develop at final 5/7, amendments revision 6. Recovery candidate 6 built (PASS) from records head `962bf27694` (code
 `360ce86f54`): package `6c71d928ea4293945af43a4b33f81238047176b07ed10fc88edee342649cd55a`, DLL
 `6af754eb06f72a261916d2dcd6e5fea125b62b13dcc9eeae53ad000e94341411`, 25 selected tests; its build exceeded the amendment-5 allowance
-(the dated stop at `a78dba163b` is history), and amendment 6 authorizes reusing it: its mechanics session, the evidence
-comparison, the controller final gates and formal review 6 are next, with review 7 only for unchanged-runtime work. Formal
+(the dated stop at `a78dba163b` is history), and amendment 6 authorized reusing it. Its mechanics session `20261127T133020Z`
+passed (43/43, seven required cells admitted and completed, physical restoration separately true; see the qualification paragraph
+above); the controller final gates and formal review 6 on this records head are next, with review 7 only for unchanged-runtime
+work. Formal
 reviews: five spent (reviewed H `7fff8b34f6`, `89d4efa347`, `f0ca78cbab`, `43dd44a2ba`, `ed02905b7f`). Recovery candidates:
 six spent of six. Validation: see the ledger. Settlement correction: code
 `360ce86f54` (focused gate PASS, 25 tests). No C3 archive A and no handoff. Source, reviewed H, records head and archive A stay
@@ -805,8 +853,8 @@ C3/R4-F2 and C3/R4-F3 stand.
 
 | C3 finding (round 5) | Bindings (`acceptance_ids`) | Correction and evidence (current; formal verification is review 6's) |
 |---|---|---|
-| R5-F1 (P1 defect) | #219 R7-F2; C3 §5; amendment 4 §2A | Code `360ce86f54`: one observation per command per settlement evaluation (each consumer accounts for its own observations; no phase-wide snapshot), one decision over the complete set; focused (A), (B), (D); native: candidate 6 mechanics regression (pending, amendment 6) |
-| R5-F2 (P2 defect) | #219 R7-F2; C3 §5; amendment 4 §§2A,2C | Code `360ce86f54`: a readable null replaces earlier uncertainty in the census, both command residuals and the reconciliation; focused (C), (D); native: candidate 6 mechanics regression (pending, amendment 6) |
+| R5-F1 (P1 defect) | #219 R7-F2; C3 §5; amendment 4 §2A | Code `360ce86f54`: one observation per command per settlement evaluation (each consumer accounts for its own observations; no phase-wide snapshot), one decision over the complete set; focused (A), (B), (D); native: candidate 6 regression PASS (`20261127T133020Z`; settlement observations ended/cancelled only, no pending or transferred residual reached natively) |
+| R5-F2 (P2 defect) | #219 R7-F2; C3 §5; amendment 4 §§2A,2C | Code `360ce86f54`: a readable null replaces earlier uncertainty in the census, both command residuals and the reconciliation; focused (C), (D); native: candidate 6 regression PASS (`20261127T133020Z`; the cancellation branch ran once natively; the null-after-uncertainty transition is focused only) |
 | R5-F3 (P2 evidence gap) | C3 §5; amendment 4 §2C | Domain test at `360ce86f54`: the exact forwarded interruption failure in the phase after physical cleanup; rejects a generic-only phase |
 | R1-F13 (P2 records) | C3 §8; amendment 2 §4; amendment 3 §4; amendment 4 §3 | Stop-commit corrections kept (C3/R4-F1 binds #219 R7-F2; candidate 4 ran `6cef765a8a`); this current-state block and map; the round-4 map and pre-review-5 status prose marked history |
 | R5-F4 (P2 evidence gap) | C3 §6; amendment 3 §4; amendment 4 §§2B,4 | Stop-commit scoping kept: `SubmitCellCommand` coverage is for cell-owned Dust commands; the separate same-caster control submits directly (`unownedExecution`) |
@@ -848,7 +896,7 @@ Frozen inputs and reviewed identities (product source, reviewed head and control
 | #219 | `codex/s7-visual-audio-remediation` | `3e2baea4b4` (round 7) | n/a; frozen head `0542b0592a` | BLOCKED 7/7 | `9c39b1ff7f` (candidate 3) |
 | #221 C1 | `codex/s7-recovery-c1-cue-evaluator` | `5a56d480a2` | `2c67a049ee` | owner-accepted (implementation/domain) | none of its own; its evaluator ran in C3's candidate `6abd692fa7` |
 | #222 C2 | `codex/s7-recovery-c2-ghaele-late-units` | `da811b123c` | `eab90a5ac8` | AWAITING_OWNER_REVIEW, handoff current | external harness `d77754ba…b4f1` over candidate 3 |
-| #223 C3 | `codex/s7-recovery-c3-effects-ownership` | `7fff8b34f6` (round 1), `89d4efa347` (round 2), `f0ca78cbab` (round 3), `43dd44a2ba` (round 4), `ed02905b7f` (round 5) | none | ACTIVE/develop at 5/7 under C3 amendment 6 (continuing with recovery candidate 6 after the amendment-5 allowance stop; see the C3 current state); review 5 (`ed02905b7f`) returned changes_required (R5-F1 to R5-F4, R1-F13); settlement correction `360ce86f54` | `6abd692fa7` (candidate `de63d6f4…4b46`, `20261126T054228Z`); `66b0ff3f14` (recovery candidate 3, `473f2f5a…8366`, `20261126T134425Z`); `6cef765a8a` (recovery candidate 4, `242f9a27…0d93`, `20261126T232851Z`); `511db044b1` (recovery candidate 5, `15307748…638e`, `20261127T022022Z`); `962bf27694` (recovery candidate 6, `6c71d928…d55a`, session pending) |
+| #223 C3 | `codex/s7-recovery-c3-effects-ownership` | `7fff8b34f6` (round 1), `89d4efa347` (round 2), `f0ca78cbab` (round 3), `43dd44a2ba` (round 4), `ed02905b7f` (round 5) | none | ACTIVE/develop at 5/7 under C3 amendment 6 (continuing with recovery candidate 6 after the amendment-5 allowance stop; see the C3 current state); review 5 (`ed02905b7f`) returned changes_required (R5-F1 to R5-F4, R1-F13); settlement correction `360ce86f54` | `6abd692fa7` (candidate `de63d6f4…4b46`, `20261126T054228Z`); `66b0ff3f14` (recovery candidate 3, `473f2f5a…8366`, `20261126T134425Z`); `6cef765a8a` (recovery candidate 4, `242f9a27…0d93`, `20261126T232851Z`); `511db044b1` (recovery candidate 5, `15307748…638e`, `20261127T022022Z`); `962bf27694` (recovery candidate 6, `6c71d928…d55a`, `20261127T133020Z`) |
 
 Dependency checks (2026-11-26): `0542b0592a` is an ancestor of `2c67a049ee`, which is an ancestor of `eab90a5ac8`, which is
 an ancestor of `7fff8b34f6`; every remote branch head matched the identities above when checked (2026-11-26, before C3
@@ -867,14 +915,15 @@ dated 2026-11-27 under C3 amendment 4, superseded: the heads were re-verified un
 once as recovery candidate 5 from `511db044b1` and qualified by `20261127T022022Z`; formal review 5 on H `ed02905b7f` returned
 changes_required with two compiled-code defects (R5-F1, R5-F2) and the work stopped at the amendment-4 limit.) Current
 (2026-11-27, C3 amendment 5): the heads were re-verified unchanged at the amendment (#219 `0542b0592a`, C1 `2c67a049ee`, C2
-`eab90a5ac8`, C3 `bfeec8d8a9`); the settlement correction is code `360ce86f54`; its package, qualification and review are in the
-C3 current state. C3
+`eab90a5ac8`, C3 `bfeec8d8a9`); the settlement correction is code `360ce86f54`. Current (2026-11-27, C3 amendment 6): heads
+re-verified unchanged (C3 `a78dba163b`); recovery candidate 6 (`962bf27694`) was qualified by `20261127T133020Z`; review 6 is
+in the C3 current state. C3
 has no archive A and no handoff, so the integration operation below cannot start for C3 until a handoff exists. Source, reviewed
 H, current records head and archive A stay separate identities. The stack is linear on the frozen parent, so stacking the children onto #219 needs no conflict
 resolution while #219 stays frozen; that says nothing about integration with `master`, which has moved independently and may
 conflict.
 
-Finding reconciliation (current, 2026-11-27 under C3 amendment 5): formal review 5 verified C3/R4-F1, C3/R2-F7, C3/R4-F2 and
+Finding reconciliation (current, 2026-11-27 under C3 amendments 5–6): formal review 5 verified C3/R4-F1, C3/R2-F7, C3/R4-F2 and
 C3/R4-F3 and opened R5-F1 to R5-F4 with R1-F13 still open; their corrections and evidence are in the current round-5 pending-finding
 map (C3 current state, above). (History, dated before formal review 5: formal review 4 verified R3-F1 to R3-F5, R2-F8, R1-F9 and
 R1-F11; the round-4 pending findings were then corrected in code `9d99563ec7` and in records and qualified by recovery candidate 5,
@@ -1116,6 +1165,9 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C3 r6 | Stop under amendment 5 ("If a concrete remaining obligation or the actual time allowance prevents this sequence, preserve the exact state and report it without extending your authority"), recorded 2026-11-27 after 08:58:46Z: candidate 6's mechanics session, the evidence comparison, the controller final gates and formal review 6 were not run; no same-package rerun, no candidate 7, no controller submission and no counter, threshold or state edit | stop | — | 319 min 19.8 s | exceeded by 174 min 19.8 s |
 | C3 r6 | (C3 amendment 6: allowance raised from 145 to 360 minutes total; 319 min 19.8 s charged, the build's outer time kept as charged after the records check) | | | 319 min 19.8 s | 40 min 40.2 s of 360 |
 | C3 r6 | Prospective estimate before candidate 6's mechanics session (recorded before launch): session about 6 min 11 s, evidence comparison and local focused gate about 30 s, controller final-gate batch about 6 min 52 s: about 13 min 33 s together, leaving about 27 min 7 s; a conditional round-7 gate batch (about 6 min 52 s) would leave about 20 min 15 s. The candidate-6 build showed a several-fold overrun is possible; a stop is preserved if the remaining work cannot fit | estimate | — | 319 min 19.8 s | 40 min 40.2 s |
+| C3 r6 | Session `20261127T133020Z-owner-0.33.0-s7-c3-mechanics` (recovery candidate 6, reused; C2 harness `d77754ba…b4f1`) | PASS, 43/43 checks; seven required cells completed; physical restoration true; transaction succeeded, owner files and saves verified, registry restored | 6 min 16.4 s | 325 min 36.2 s | 34 min 23.8 s |
+| C3 r6 | Focused gate `sprint7-visual` (local, with the candidate-6 same-run agreement) | PASS, 25 tests | 5.7 s | 325 min 41.9 s | 34 min 18.1 s |
+| C3 r6 | Prospective estimate before the controller final gates on this head (recorded before them): batch about 6 min 52 s, leaving about 27 min 26 s; a conditional round-7 batch would leave about 20 min 34 s | estimate | — | 325 min 41.9 s | 34 min 18.1 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
