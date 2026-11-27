@@ -931,6 +931,23 @@ namespace KingmakerGunslinger.RuntimeTesting
     }
 
     /// <summary>
+    /// Owner amendment 5 §2 (C3 review R5-F1, R5-F2): one settlement observation of one owned command, made from a single read of
+    /// its process. <see cref="Execution"/> is its retained (or, by this read, newly recovered) exact execution, whose end
+    /// governs; with none, <see cref="ProcessReadable"/> false is a currently unavailable process read (unknown), and a
+    /// successful null read settles only with established cancellation before execution (<see cref="Cancelled"/> true).
+    /// <see cref="Settled"/>: true settled, false live or still able to start, null unreadable.
+    /// </summary>
+    internal sealed class Sprint7CommandObservation<TCommand, TProcess> where TCommand : class where TProcess : class
+    {
+        internal TCommand Command;
+        internal TProcess Execution;
+        internal bool ProcessReadable;
+        internal bool? Cancelled;
+        internal bool? Settled;
+        internal string State;
+    }
+
+    /// <summary>
     /// Recovery C3 (R7-F2, C3 review R1-F3, R1-F4): the commands a cell issued and the exact execution processes they started.
     /// A process is retained when first seen and before any interruption can clear the command's field; a command whose
     /// process cannot be read is a named unknown (never a known null). Each command is released on its own, so an interruption
@@ -942,47 +959,69 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<TCommand> commands = new List<TCommand>();
         private readonly List<TProcess> processes = new List<TProcess>();
         private readonly List<TCommand> unknown = new List<TCommand>();
+        // Owner amendment 5 §2 (R5-F2): commands whose process read ever failed (history; current readability is unknown).
+        private readonly List<TCommand> unreadableObserved = new List<TCommand>();
         // Recovery C3 (R2-F6): each command's exact process once observed; later reads use it, never the mutable field again.
         private readonly List<KeyValuePair<TCommand, TProcess>> bound = new List<KeyValuePair<TCommand, TProcess>>();
         private readonly Func<TCommand, TProcess> processOf;
         private readonly Func<TProcess, bool?> ended;
         private readonly Action<string> publish;
-        // Owner amendment 4 §2A (C3 review R4-F1): the authoritative fact that a command was cancelled before any execution
-        // (true), not established (false), or unreadable (null). A successful null process read is never that fact, and neither
-        // is an interruption-eligibility predicate. Absent, cancellation is never established.
-        private readonly Func<TCommand, bool?> cancelledBeforeExecution;
+        // Owner amendment 4 §2A (C3 review R4-F1), amendment 5 §2 (R5-F1): the command's terminal facts: finished and never
+        // acted (true), not (false), or unreadable (null). Cancellation before execution is established only by these facts
+        // together with a successful null process read of the same observation; the delegate does not read the process itself.
+        // A successful null process read alone is never that fact, and neither is an interruption-eligibility predicate.
+        // Absent, cancellation is never established.
+        private readonly Func<TCommand, bool?> finishedNeverActed;
         internal readonly List<string> Failures = new List<string>();
 
         internal Sprint7OwnedCommands(Func<TCommand, TProcess> processOf, Func<TProcess, bool?> ended, Action<string> publish = null,
-            Func<TCommand, bool?> cancelledBeforeExecution = null)
+            Func<TCommand, bool?> finishedNeverActed = null)
         {
             this.processOf = processOf;
             this.ended = ended;
             this.publish = publish;
-            this.cancelledBeforeExecution = cancelledBeforeExecution;
+            this.finishedNeverActed = finishedNeverActed;
         }
 
         internal List<TCommand> Commands { get { return commands.ToList(); } }
         internal List<TProcess> Processes { get { return processes.ToList(); } }
-        /// <summary>Owned commands whose execution process could not be read (and was not later read).</summary>
+        /// <summary>Owned commands whose latest process read failed (a later successful read, null included, removes them).</summary>
         internal List<TCommand> Unknown { get { return unknown.ToList(); } }
+
+        /// <summary>Owner amendment 5 §2: owned commands whose process read failed at least once (kept after readability returns).</summary>
+        internal List<TCommand> UnreadableObserved { get { return unreadableObserved.ToList(); } }
 
         internal void Own(TCommand command) { if (command != null && !commands.Any(value => ReferenceEquals(value, command))) commands.Add(command); }
 
         /// <summary>Retains the current process of an owned command (of every owned command when null); an unreadable one is a named unknown.</summary>
         internal void Capture(TCommand command = null)
         {
-            foreach (TCommand owned in command == null ? commands.ToList() : new List<TCommand> { command })
+            foreach (TCommand owned in command == null ? commands.ToList() : new List<TCommand> { command }) ReadProcess(owned);
+        }
+
+        /// <summary>
+        /// Owner amendment 5 §2 (C3 review R5-F2): the one process read of an owned command, consumed into this owner's state: a
+        /// non-null process is retained (bound) and the command leaves the unknown set; a successful null read also removes it
+        /// from the unknown set (a current readable result replaces earlier uncertainty; the failure stays in
+        /// <see cref="UnreadableObserved"/>); a throwing read makes it unknown. A command with a retained process is not read
+        /// again. Returns false only when this read threw.
+        /// </summary>
+        private bool ReadProcess(TCommand owned)
+        {
+            if (ProcessFor(owned) != null) return true;
+            TProcess process;
+            try { process = processOf(owned); }
+            catch (Exception)
             {
-                if (ProcessFor(owned) != null) continue;
-                TProcess process;
-                try { process = processOf(owned); }
-                catch (Exception) { if (!unknown.Any(value => ReferenceEquals(value, owned))) unknown.Add(owned); continue; }
-                if (process == null) continue;
-                unknown.RemoveAll(value => ReferenceEquals(value, owned));
-                bound.Add(new KeyValuePair<TCommand, TProcess>(owned, process));
-                if (!processes.Any(value => ReferenceEquals(value, process))) processes.Add(process);
+                if (!unknown.Any(value => ReferenceEquals(value, owned))) unknown.Add(owned);
+                if (!unreadableObserved.Any(value => ReferenceEquals(value, owned))) unreadableObserved.Add(owned);
+                return false;
             }
+            unknown.RemoveAll(value => ReferenceEquals(value, owned));
+            if (process == null) return true;
+            bound.Add(new KeyValuePair<TCommand, TProcess>(owned, process));
+            if (!processes.Any(value => ReferenceEquals(value, process))) processes.Add(process);
+            return true;
         }
 
         internal bool Retains(TProcess process) { return process != null && processes.Any(value => ReferenceEquals(value, process)); }
@@ -1047,11 +1086,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             return failures;
         }
 
-        /// <summary>Retained processes not read ended: running, or unreadable.</summary>
+        /// <summary>
+        /// Retained processes not read ended (running, or unreadable), from one observation of every owned command (so a process
+        /// recovered by that observation is included).
+        /// </summary>
         internal List<TProcess> Live()
         {
-            Capture();
-            return processes.Where(process => Ended(process) != true).ToList();
+            List<Sprint7CommandObservation<TCommand, TProcess>> observed = ObserveAll();
+            return processes.Where(process => observed.Any(item => ReferenceEquals(item.Execution, process) && item.Settled != true)).ToList();
         }
 
         internal bool? Ended(TProcess process)
@@ -1059,51 +1101,70 @@ namespace KingmakerGunslinger.RuntimeTesting
             try { return process == null ? (bool?)null : ended(process); } catch (Exception) { return null; }
         }
 
-        /// <summary>The state of an unknown command's execution read again: its process's end, or null while still unreadable.</summary>
-        internal bool? EndedOf(TCommand command)
+        private bool? FinishedNeverActed(TCommand command)
         {
-            Capture(command);
-            TProcess process = ProcessFor(command);
-            return process == null ? (bool?)null : Ended(process);
-        }
-
-        private bool? CancellationEstablished(TCommand command)
-        {
-            if (cancelledBeforeExecution == null) return false;
-            try { bool? cancelled = cancelledBeforeExecution(command); return cancelled == true ? true : cancelled.HasValue ? false : (bool?)null; }
+            if (finishedNeverActed == null) return false;
+            try { bool? value = finishedNeverActed(command); return value == true ? true : value.HasValue ? false : (bool?)null; }
             catch (Exception) { return null; }
         }
 
         /// <summary>
-        /// Owner amendment 4 §2A (C3 review R4-F1): the settlement state of an owned command's future effects. Process recovery
-        /// is attempted first; a retained execution governs (its end, even if the command later finishes or its mutable field
-        /// clears); with no execution retained, true only when cancellation before execution is positively established, false
-        /// while the command can still start, null when its process or terminal state cannot be read.
+        /// Owner amendment 5 §2 (C3 review R5-F1, R5-F2): one settlement observation of an owned command, from a single process
+        /// read consumed into this owner (<see cref="ReadProcess"/>). A retained or newly recovered execution governs (its end,
+        /// even if the command later finishes or its mutable field clears; live or unreadable keeps cleanup owned); a failed
+        /// read is unknown; a successful null read settles only when the command's terminal facts establish cancellation
+        /// before execution (finished, never acted), stays pending while it can still start, and is unknown when those facts
+        /// cannot be read. A failure in an earlier read never outlives a later successful one.
         /// </summary>
-        internal bool? StartSettled(TCommand command)
+        internal Sprint7CommandObservation<TCommand, TProcess> Observe(TCommand command)
         {
-            Capture(command);
-            TProcess process = ProcessFor(command);
-            if (process != null) return Ended(process);
-            if (unknown.Any(value => ReferenceEquals(value, command))) return null;
-            return CancellationEstablished(command);
+            var observation = new Sprint7CommandObservation<TCommand, TProcess> { Command = command, ProcessReadable = ReadProcess(command) };
+            observation.Execution = ProcessFor(command);
+            if (observation.Execution != null)
+            {
+                observation.Settled = Ended(observation.Execution);
+                observation.State = observation.Settled == true ? "execution ended" : observation.Settled == false ? "execution live" : "execution unreadable";
+            }
+            else if (!observation.ProcessReadable)
+            {
+                observation.Settled = null;
+                observation.State = "process unreadable";
+            }
+            else
+            {
+                observation.Cancelled = FinishedNeverActed(command);
+                observation.Settled = observation.Cancelled;
+                observation.State = observation.Cancelled == true ? "cancelled before execution" : observation.Cancelled == false ? "pending (can still start)" : "terminal state unreadable";
+            }
+            return observation;
+        }
+
+        /// <summary>One observation of every owned command, each read once, in registration order.</summary>
+        internal List<Sprint7CommandObservation<TCommand, TProcess>> ObserveAll()
+        {
+            return commands.ToList().Select(Observe).ToList();
         }
 
         /// <summary>
-        /// Owner amendment 4 §2A (C3 review R4-F1): owned commands with no retained execution and no unreadable process read whose
-        /// cancellation before execution is not established (still able to start, or its terminal state unreadable). Process
-        /// recovery is attempted for each first.
+        /// Owner amendment 5 §2: the settlement of one owned command from one observation; the census residuals of a retained
+        /// execution's absence (unreadable or pending command) both read this, so a later readable null with established
+        /// cancellation settles either.
         /// </summary>
-        internal List<TCommand> Pending()
+        internal bool? Settlement(TCommand command) { return Observe(command).Settled; }
+
+        /// <summary>
+        /// Owner amendment 5 §2 (C3 review R5-F1): the decision over a complete set of observations: null when any is unreadable,
+        /// false when any is live or can still start, true only when every one settled.
+        /// </summary>
+        internal static bool? Aggregate(IEnumerable<Sprint7CommandObservation<TCommand, TProcess>> observations)
         {
-            var pending = new List<TCommand>();
-            foreach (TCommand command in commands.ToList())
+            bool unreadable = false, open = false;
+            foreach (Sprint7CommandObservation<TCommand, TProcess> observation in observations)
             {
-                Capture(command);
-                if (ProcessFor(command) != null || unknown.Any(value => ReferenceEquals(value, command))) continue;
-                if (CancellationEstablished(command) != true) pending.Add(command);
+                if (observation.Settled == null) unreadable = true;
+                else if (observation.Settled == false) open = true;
             }
-            return pending;
+            return unreadable ? (bool?)null : open ? false : true;
         }
     }
 
@@ -1394,6 +1455,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// Owner amendment 4 §2A (C3 review R4-F1): a command with no retained execution whose cancellation before execution is not
         /// established (for example a successful null process read and a failed interruption) is a residual too and keeps the
         /// reconciliation: a later captured execution then governs its settlement; only an established cancellation settles it.
+        /// Owner amendment 5 §2 (C3 review R5-F1, R5-F2): the census, each command residual and the reconciliation classify
+        /// through the same per-command observation (the owned commands' Observe), each poll
+        /// observing every owned command once and deciding over that complete set, so no read can move a command into a
+        /// collection already checked and a process recovered by the poll takes part in its decision.
         /// </summary>
         internal static JObject ReleaseOwnedEffects<TCommand, TProcess>(Sprint7CellIsolation isolation, string owner, Sprint7OwnedCommands<TCommand, TProcess> commands,
             Func<TCommand, bool> unfinished, Action<TCommand> interrupt, Func<TCommand, string> commandLabel, Func<TProcess, string> processLabel,
@@ -1415,33 +1480,45 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (now == null) isolation.Fail(owner, "owned conditions unread");
             else if (now.Count != 0) { reported.AddRange(now); isolation.Fail(owner, "owned conditions remaining: " + now.Count + " (" + string.Join(", ", now.ToArray()) + ")"); }
             row["remainingAtCleanup"] = now == null ? null : new JArray(now.ToArray());
-            List<TProcess> live = commands.Live();
-            List<TCommand> unknown = commands.Unknown;
-            List<TCommand> pending = commands.Pending();
+            // Amendment 5 §2: one observation of every owned command; the census lists, counts and residuals all come from it.
+            List<Sprint7CommandObservation<TCommand, TProcess>> census = commands.ObserveAll();
             var executions = new JArray();
-            foreach (TProcess process in commands.Processes)
+            var listedExecutions = new List<TProcess>();
+            var pendingLabels = new List<string>();
+            int open = 0;
+            foreach (Sprint7CommandObservation<TCommand, TProcess> observation in census)
             {
-                TProcess exact = process;
-                bool? ended = commands.Ended(exact);
-                executions.Add(new JObject { ["execution"] = processLabel(exact), ["endedAtCleanup"] = ended });
-                if (ended != true) isolation.Residual(owner, "owned execution " + processLabel(exact), () => commands.Ended(exact));
+                TCommand exact = observation.Command;
+                if (observation.Execution != null)
+                {
+                    TProcess process = observation.Execution;
+                    if (listedExecutions.Any(value => ReferenceEquals(value, process))) continue;
+                    listedExecutions.Add(process);
+                    executions.Add(new JObject { ["execution"] = processLabel(process), ["endedAtCleanup"] = observation.Settled });
+                    if (observation.Settled == true) continue;
+                    open++;
+                    isolation.Residual(owner, "owned execution " + processLabel(process), () => commands.Ended(process));
+                }
+                else if (!observation.ProcessReadable)
+                {
+                    open++;
+                    executions.Add(new JObject { ["execution"] = "unreadable execution of " + commandLabel(exact), ["endedAtCleanup"] = null });
+                    // R5-F2: the same observation as the reconciliation: a later readable null with established cancellation settles it.
+                    isolation.Residual(owner, "unreadable execution of " + commandLabel(exact), () => commands.Settlement(exact));
+                }
+                else if (observation.Cancelled != true)
+                {
+                    // R4-F1: no execution retained and no established cancellation: the command may still start (or its terminal
+                    // facts are unreadable).
+                    open++;
+                    pendingLabels.Add(commandLabel(exact));
+                    executions.Add(new JObject { ["execution"] = "no execution retained by " + commandLabel(exact), ["endedAtCleanup"] = null, ["cancellationEstablished"] = observation.Cancelled });
+                    isolation.Residual(owner, "pending " + commandLabel(exact) + " (no execution retained; cancellation before execution not established)", () => commands.Settlement(exact));
+                }
             }
-            foreach (TCommand command in unknown)
-            {
-                TCommand exact = command;
-                executions.Add(new JObject { ["execution"] = "unreadable execution of " + commandLabel(exact), ["endedAtCleanup"] = null });
-                isolation.Residual(owner, "unreadable execution of " + commandLabel(exact), () => commands.EndedOf(exact));
-            }
-            // R4-F1: no execution retained and no established cancellation: the command may still start.
-            foreach (TCommand command in pending)
-            {
-                TCommand exact = command;
-                executions.Add(new JObject { ["execution"] = "no execution retained by " + commandLabel(exact), ["endedAtCleanup"] = null, ["cancellationEstablished"] = false });
-                isolation.Residual(owner, "pending " + commandLabel(exact) + " (no execution retained; cancellation before execution not established)", () => commands.StartSettled(exact));
-            }
-            row["pendingCommands"] = new JArray(pending.Select(commandLabel).ToArray());
+            row["pendingCommands"] = new JArray(pendingLabels.ToArray());
             row["ownedExecutions"] = executions;
-            row["ownedExecutionsLive"] = live.Count + unknown.Count + pending.Count;
+            row["ownedExecutionsLive"] = open;
             // Pre-build audit A1-F2: each operation of the reconciliation is tracked; the obligation is established only when the
             // executions have settled, the late sweep ran to its end, the remaining conditions read empty AND the subscription
             // release was established. Anything unfinished keeps an executable terminal action until terminal accounting names it.
@@ -1502,11 +1579,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     reconcileConditions("after settlement");
                     return outcome();
                 }
-                commands.Capture();
-                foreach (TProcess process in commands.Processes) { bool? ended = commands.Ended(process); if (ended != true) return ended; }
-                foreach (TCommand command in commands.Unknown) { bool? ended = commands.EndedOf(command); if (ended != true) return ended; }
-                // R4-F1: a command that can still start (or whose start cannot be read) keeps the reconciliation owned.
-                foreach (TCommand command in commands.Pending()) { bool? state = commands.StartSettled(command); if (state != true) return state; }
+                // Amendment 5 §2 (R5-F1): every owned command observed once, then one decision over the complete set; a command that
+                // can still start, or whose execution or start cannot be read, keeps the reconciliation owned (R4-F1).
+                List<Sprint7CommandObservation<TCommand, TProcess>> observed = commands.ObserveAll();
+                row["settlementObservations"] = new JArray(observed.Select(item => commandLabel(item.Command) + ": " + item.State).ToArray());
+                bool? state = Sprint7OwnedCommands<TCommand, TProcess>.Aggregate(observed);
+                if (state != true) return state;
                 return reconcile();
             };
             // R3-F4: one reconciliation obligation for both paths, registered (with its bounded teardown action) before any
@@ -1533,7 +1611,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (lastRemaining == null) unresolved.Add("owned conditions unread at teardown");
                 return unresolved;
             });
-            bool? immediate = live.Count + unknown.Count + pending.Count == 0 ? isolation.SettleResidual(owner, obligation) : null;
+            bool? immediate = open == 0 ? isolation.SettleResidual(owner, obligation) : null;
             // Only what actually happened: settled at cleanup only when the immediate attempt established settlement.
             row["settledAtCleanup"] = immediate == true;
             // Audit 2 (A1-F2): the subscription is reported from its own release outcome, not inferred from the reconciliation.

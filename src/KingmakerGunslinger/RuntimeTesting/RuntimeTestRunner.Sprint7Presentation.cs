@@ -2429,9 +2429,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _sickened = sickened;
                 // Owner amendment 4 §2A (C3 review R4-F1): cancellation before execution is established only by a finished command
                 // that never acted and holds no process (UnitUseAbility assigns ExecutionProcess only in OnAction, immediately before
-                // IsActed is set; Interrupt finishes a command). A missing or destroyed executor establishes nothing.
+                // IsActed is set; Interrupt finishes a command; source-derived from the decompiled 2.1.7b assembly). A missing or
+                // destroyed executor establishes nothing. Amendment 5 §2 (R5-F1): this delegate reads only the terminal facts
+                // (finished, never acted); "no process" is the successful null process read of the same settlement observation,
+                // so no second mutable process read is made here and then discarded.
                 _owned = new Sprint7OwnedCommands<UnitUseAbility, Kingmaker.Controllers.AbilityExecutionProcess>(command => command.ExecutionProcess, process => process.IsEnded, publish,
-                    command => command.IsFinished && !command.IsActed && command.ExecutionProcess == null);
+                    command => command.IsFinished && !command.IsActed);
                 _conditions = new Sprint7ConditionOwner<Buff>(Present, Attribution, Remove, Identity, publish);
             }
 
