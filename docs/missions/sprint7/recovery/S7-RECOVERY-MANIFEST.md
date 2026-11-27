@@ -752,13 +752,19 @@ defects found by the reviewer's source inspection; no ordinary player-facing Dus
   amendment-4 scenario, the cancellation control, the unreadable-terminal-state control, the throwing-getter handoff case and the
   earlier R2-F6/R3-F4 cases (the R3-F4 case's scripted end-state read now throws at the second read, the corrected census
   reading each command once; the earlier implementation read twice).
-- **Native:** not yet run on these bytes; recovery candidate 6's mechanics session follows. The new uncertainty transitions and
-  failures after transfer are focused evidence only unless that run actually shows them.
+- **Native:** not run on these bytes. Recovery candidate 6 was built from `962bf27694` (package `6c71d928…d55a`, DLL
+  `6af754eb…1411`), but the build's outer duration exceeded the validation allowance, so its mechanics session was not run (see the
+  C3 current state). The new uncertainty transitions and failures after transfer are focused evidence only.
 
-**C3 current state (2026-11-27, under C3 amendment 5; this block and the map below are the current records).** Controller ACTIVE in
-develop at final 5/7, amendments revision 5. Formal reviews: five spent (reviewed H `7fff8b34f6`, `89d4efa347`, `f0ca78cbab`,
-`43dd44a2ba`, `ed02905b7f`); review 6 is next, after recovery candidate 6's qualification; review 7 only if review 6 leaves
-unchanged-runtime work. Recovery candidates: five spent of six. Validation: see the ledger. Settlement correction: code
+**C3 current state (2026-11-27, under C3 amendment 5; this block and the map below are the current records).** **C3 STOPPED at the
+validation allowance (amendment 5's stop rule).** Recovery candidate 6 built (PASS) from records head `962bf27694` (code
+`360ce86f54`): package `6c71d928ea4293945af43a4b33f81238047176b07ed10fc88edee342649cd55a`, DLL
+`6af754eb06f72a261916d2dcd6e5fea125b62b13dcc9eeae53ad000e94341411`, 25 selected tests. The outer build command took 215 min 44.9 s, bringing the
+total to 319 min 19.8 s of 145, so the mechanics session, evidence comparison, controller final gates and formal review 6 were
+not run. Controller state was left as found, ACTIVE in develop at final 5/7, amendments revision 5; nothing was submitted.
+Formal reviews: five spent (reviewed H `7fff8b34f6`, `89d4efa347`, `f0ca78cbab`, `43dd44a2ba`, `ed02905b7f`). Recovery
+candidates: six spent of six. Validation: see the ledger. Continuing needs the owner (validation allowance; candidate 6's
+session, gates and review 6). Settlement correction: code
 `360ce86f54` (focused gate PASS, 25 tests). No C3 archive A and no handoff. Source, reviewed H, records head and archive A stay
 distinct identities. Candidate 5 and its PASS stay at their scope: build source `511db044b1`, package `15307748…638e`, DLL
 `1dde22e0…ba7e`, harness `d77754ba…b4f1`, session `20261127T022022Z` (43/43, seven required cells admitted and completed,
@@ -773,8 +779,8 @@ C3/R4-F2 and C3/R4-F3 stand.
 
 | C3 finding (round 5) | Bindings (`acceptance_ids`) | Correction and evidence (current; formal verification is review 6's) |
 |---|---|---|
-| R5-F1 (P1 defect) | #219 R7-F2; C3 §5; amendment 4 §2A | Code `360ce86f54`: one observation per command per poll, one decision over the complete set; focused (A), (B), (D); native: candidate 6 regression (pending) |
-| R5-F2 (P2 defect) | #219 R7-F2; C3 §5; amendment 4 §§2A,2C | Code `360ce86f54`: a readable null replaces earlier uncertainty in the census, both command residuals and the reconciliation; focused (C), (D); native: candidate 6 regression (pending) |
+| R5-F1 (P1 defect) | #219 R7-F2; C3 §5; amendment 4 §2A | Code `360ce86f54`: one observation per command per poll, one decision over the complete set; focused (A), (B), (D); native: not run (candidate 6 built; allowance exceeded before its session) |
+| R5-F2 (P2 defect) | #219 R7-F2; C3 §5; amendment 4 §§2A,2C | Code `360ce86f54`: a readable null replaces earlier uncertainty in the census, both command residuals and the reconciliation; focused (C), (D); native: not run (candidate 6 built; allowance exceeded before its session) |
 | R5-F3 (P2 evidence gap) | C3 §5; amendment 4 §2C | Domain test at `360ce86f54`: the exact forwarded interruption failure in the phase after physical cleanup; rejects a generic-only phase |
 | R1-F13 (P2 records) | C3 §8; amendment 2 §4; amendment 3 §4; amendment 4 §3 | Stop-commit corrections kept (C3/R4-F1 binds #219 R7-F2; candidate 4 ran `6cef765a8a`); this current-state block and map; the round-4 map and pre-review-5 status prose marked history |
 | R5-F4 (P2 evidence gap) | C3 §6; amendment 3 §4; amendment 4 §§2B,4 | Stop-commit scoping kept: `SubmitCellCommand` coverage is for cell-owned Dust commands; the separate same-caster control submits directly (`unownedExecution`) |
@@ -816,7 +822,7 @@ Frozen inputs and reviewed identities (product source, reviewed head and control
 | #219 | `codex/s7-visual-audio-remediation` | `3e2baea4b4` (round 7) | n/a; frozen head `0542b0592a` | BLOCKED 7/7 | `9c39b1ff7f` (candidate 3) |
 | #221 C1 | `codex/s7-recovery-c1-cue-evaluator` | `5a56d480a2` | `2c67a049ee` | owner-accepted (implementation/domain) | none of its own; its evaluator ran in C3's candidate `6abd692fa7` |
 | #222 C2 | `codex/s7-recovery-c2-ghaele-late-units` | `da811b123c` | `eab90a5ac8` | AWAITING_OWNER_REVIEW, handoff current | external harness `d77754ba…b4f1` over candidate 3 |
-| #223 C3 | `codex/s7-recovery-c3-effects-ownership` | `7fff8b34f6` (round 1), `89d4efa347` (round 2), `f0ca78cbab` (round 3), `43dd44a2ba` (round 4), `ed02905b7f` (round 5) | none | ACTIVE/develop at 5/7 under C3 amendment 5 (see the C3 current state); review 5 (`ed02905b7f`) returned changes_required (R5-F1 to R5-F4, R1-F13); settlement correction `360ce86f54` | `6abd692fa7` (candidate `de63d6f4…4b46`, `20261126T054228Z`); `66b0ff3f14` (recovery candidate 3, `473f2f5a…8366`, `20261126T134425Z`); `6cef765a8a` (recovery candidate 4, `242f9a27…0d93`, `20261126T232851Z`); `511db044b1` (recovery candidate 5, `15307748…638e`, `20261127T022022Z`) |
+| #223 C3 | `codex/s7-recovery-c3-effects-ownership` | `7fff8b34f6` (round 1), `89d4efa347` (round 2), `f0ca78cbab` (round 3), `43dd44a2ba` (round 4), `ed02905b7f` (round 5) | none | ACTIVE/develop at 5/7 under C3 amendment 5, stopped at the validation allowance after building recovery candidate 6 (see the C3 current state); review 5 (`ed02905b7f`) returned changes_required (R5-F1 to R5-F4, R1-F13); settlement correction `360ce86f54` | `6abd692fa7` (candidate `de63d6f4…4b46`, `20261126T054228Z`); `66b0ff3f14` (recovery candidate 3, `473f2f5a…8366`, `20261126T134425Z`); `6cef765a8a` (recovery candidate 4, `242f9a27…0d93`, `20261126T232851Z`); `511db044b1` (recovery candidate 5, `15307748…638e`, `20261127T022022Z`); `962bf27694` (recovery candidate 6, `6c71d928…d55a`, no session) |
 
 Dependency checks (2026-11-26): `0542b0592a` is an ancestor of `2c67a049ee`, which is an ancestor of `eab90a5ac8`, which is
 an ancestor of `7fff8b34f6`; every remote branch head matched the identities above when checked (2026-11-26, before C3
@@ -1080,13 +1086,15 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C3 r6 | Focused gate `sprint7-visual` (local, amendment-5 correction) | FAIL, 24/25: the existing R3-F4 case scripted its throwing end-state read for the old census's two reads (`ThrowAfter = 2`); the corrected census reads once, so the throw came too late; arrangement set to 1 (amendment 5 §3). Time from the log file's creation and last write (the outer timer failed: `bc` missing) | 23.6 s | 103 min 29.5 s | 41 min 30.5 s |
 | C3 r6 | Focused gate `sprint7-visual` (local, = code `360ce86f54`) | PASS, 25 tests (production compilation passed) | 5.4 s | 103 min 34.9 s | 41 min 25.1 s |
 | C3 r6 | Prospective estimate before recovery candidate 6 (recorded here before the build), from amendment 5's reference durations: Build-Local about 12 min 41 s, mechanics session about 6 min 11 s, evidence comparison and focused gate about 20 s, controller final-gate batch about 6 min 52 s: about 26 min 4 s together, leaving about 15 min 21 s; a conditional round-7 gate batch (about 6 min 52 s) would leave about 8 min 29 s | estimate | — | 103 min 34.9 s | 41 min 25.1 s |
+| C3 r6 | Build-Local `-DevelopmentPurpose s7-recovery-c3 -DevelopmentTestFilter sprint7-visual` on `962bf27694` (recovery candidate 6 of 6: package `6c71d928ea4293945af43a4b33f81238047176b07ed10fc88edee342649cd55a`, DLL `6af754eb06f72a261916d2dcd6e5fea125b62b13dcc9eeae53ad000e94341411`; 25 selected tests) | PASS. Outer command 05:23:01Z to 08:58:46Z, against the estimated 12 min 41 s. Its step output matches candidate 5's build except that the Python packaging suite's 47 tests took 60.2 s (2.0 s before); the System event log shows no sleep, resume or boot event in the period. Cause not established; as amendment 5 directs, no performance investigation was started, and concurrent peer work is at most a possible contribution | 215 min 44.9 s | 319 min 19.8 s | exceeded by 174 min 19.8 s |
+| C3 r6 | Stop under amendment 5 ("If a concrete remaining obligation or the actual time allowance prevents this sequence, preserve the exact state and report it without extending your authority"), recorded 2026-11-27 after 08:58:46Z: candidate 6's mechanics session, the evidence comparison, the controller final gates and formal review 6 were not run; no same-package rerun, no candidate 7, no controller submission and no counter, threshold or state edit | stop | — | 319 min 19.8 s | exceeded by 174 min 19.8 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
   built its harness four times and ran four short lifecycle sessions on the existing candidate-3 package (rows above).
 - Failed validation attempts so far: twenty-two (two in C1 round 2, four in C1 round 4, one in C1 round 5, fifteen in C3; seventeen through the review-3 stop, eighteen at C3 amendment 3, twenty at C3 amendment 4, twenty-one at C3 amendment 5, one since); refused controller submissions with no validation launched are listed in their rows. The two amendment-4 mutation controls failed by design (the controls detecting the removed behavior) and are listed in their rows, not counted as failed attempts.
 - R3-F5 (records): a 1.0 s arithmetic drift from the 45 min 5.1 s row was corrected on 2026-11-26 in every later running total; the round-3 report's 59 min 36.0 s should read 59 min 37.0 s and its receipt subtotal 8.9 s.
-- Earlier spend stays separate: 65 min 42 s in parent rounds 6 and 7. New product candidates used: 5 of 6 (C3's first combined candidate, its contingency, recovery candidate 3 under C3 amendment 1, recovery candidate 4 under C3 amendment 3, and recovery candidate 5 under C3 amendment 4); recovery candidate 6 is authorized by C3 amendment 5 (candidate 7 is not).
+- Earlier spend stays separate: 65 min 42 s in parent rounds 6 and 7. New product candidates used: 6 of 6 (C3's first combined candidate, its contingency, recovery candidate 3 under C3 amendment 1, recovery candidate 4 under C3 amendment 3, recovery candidate 5 under C3 amendment 4, and recovery candidate 6 under C3 amendment 5, built but never run in a session); candidate 7 is not authorized.
 - Reserve before the C2 round-3 session: C3 still needs one combined Build-Local candidate and its affected native
   qualification (the effects session, estimated at about 18 minutes, plus the build and gates). After the planned C2 short
   session (about 2 min 15 s) and controller gates, about 32 minutes remain for C3.
