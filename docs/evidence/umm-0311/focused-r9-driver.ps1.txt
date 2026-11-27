@@ -1,0 +1,148 @@
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory = $true)][string]$Source,
+    [Parameter(Mandatory = $true)][string]$Commit,
+    [Parameter(Mandatory = $true)][string]$OutDir,
+    # The retained final producer: a new directory under the lab's worktrees folder (Build-Local requires a checkout inside
+    # the lab). The producer clone, its build output and its canonical candidate layout stay there after this run.
+    [Parameter(Mandatory = $true)][string]$RetainedRoot,
+    [Parameter(Mandatory = $true)][string]$ReferenceBundleDir
+)
+# Focused round-9 reproduction for TRE PR #220 (R7-F2 retention). Builds ONE development candidate with Build-Local in a
+# producer clone of the commit under test at $RetainedRoot\producer, which is never removed: the receipt's package path,
+# the candidate layout (ZIP, checksum, receipt, development-validation.json, selected-domain-tests.log) and the producer
+# worktree stay where the receipt binds them. Negative and destructive fixture variants run in a separate disposable clone
+# of the same commit (the producer's build output copied into it) under worktrees\focused-r9-<guid>, which is removed
+# afterwards. The committed Test-CandidateAdmission.ps1 regions run unmodified: 'focused-tree-probe' (staging, on the
+# retained candidate, read only; its work directory and private copies are disposable) and 'focused-packaged-content'
+# (R1-F4 and R7-F1, in the fixture clone). After cleanup the development reader runs at the retained location with
+# RequireCurrentMaterialInputs. Nothing is deployed or launched.
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
+[void][IO.Directory]::CreateDirectory($OutDir)
+$purpose = 'umm-0311-admission'
+$lab = Split-Path -Parent (Split-Path -Parent $Source)
+$worktrees = Join-Path $lab 'worktrees'
+$RetainedRoot = [IO.Path]::GetFullPath($RetainedRoot)
+if (-not $RetainedRoot.StartsWith($worktrees.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) { throw "The retained root must be under $worktrees." }
+if (Test-Path -LiteralPath $RetainedRoot) { throw "The retained root already exists; choose a new one: $RetainedRoot" }
+$producer = Join-Path $RetainedRoot 'producer'
+$temp = Join-Path $worktrees ('focused-r9-' + [Guid]::NewGuid().ToString('N'))
+$fixture = Join-Path $temp 'clone with space'
+$cases = [Collections.Generic.List[object]]::new()
+$steps = [Collections.Generic.List[object]]::new()
+function Get-Region([string]$Text, [string]$Name) {
+    $m = [regex]::Match($Text, '(?s)#region ' + [regex]::Escape($Name) + '\r?\n(.*?)#endregion ' + [regex]::Escape($Name))
+    if (-not $m.Success) { throw "Region $Name not found in the committed suite." }
+    return $m.Groups[1].Value
+}
+function New-CommitClone([string]$From, [string]$To) {
+    & git clone -q $From $To
+    if ($LASTEXITCODE -ne 0) { throw "git clone failed: $To" }
+    & git -C $To checkout -q --detach $Commit
+    $head = (& git -C $To rev-parse HEAD).Trim()
+    if ($head -cne $Commit) { throw "The clone did not select the commit under test: $To" }
+    Copy-Item -LiteralPath (Join-Path $Source 'GamePath.props') -Destination $To
+    New-Item -ItemType Directory -Path (Join-Path $To 'artifacts\references\loader\UnityModManager') -Force | Out-Null
+    Copy-Item -Path (Join-Path $Source 'artifacts\references\loader\UnityModManager\*.dll') -Destination (Join-Path $To 'artifacts\references\loader\UnityModManager')
+}
+$summaryPath = Join-Path $OutDir 'focused-r9.json'
+$summary = [ordered]@{ schema = 'kmg.focused-r9.v1'; commit = $Commit; purpose = $purpose; retainedProducer = $producer }
+try {
+    # --- Producer (retained).
+    [void][IO.Directory]::CreateDirectory($RetainedRoot)
+    New-CommitClone $Source $producer
+    $suiteText = [IO.File]::ReadAllText((Join-Path $producer 'scripts\Test-CandidateAdmission.ps1'))
+    . ([scriptblock]::Create((Get-Region $suiteText 'focused-helpers')))
+    # Pre-build conditions, each checked here and recorded: working directory, reference bundle identity, host.
+    Set-Location -LiteralPath $producer
+    $cwd = (Get-Location).ProviderPath
+    $top = (& git rev-parse --show-toplevel).Trim().Replace('/', '\')
+    if ($cwd -ne $producer -or $top -ne $producer) { throw "Working directory is not the producer clone: $cwd ($top)" }
+    $bundleCheck = Invoke-PS @('-Command', ". '$((Join-Path $producer 'scripts\common.ps1').Replace("'", "''"))'; . '$((Join-Path $producer 'scripts\ReferenceProvenance.Common.ps1').Replace("'", "''"))'; `$rows = @(Assert-KmgReferenceBundleMatchesInstall -ReferenceBundleDir '$($ReferenceBundleDir.Replace("'", "''"))' -KingmakerInstallDir '<game>' -LoaderReferenceDir '$((Join-Path $producer 'artifacts\references\loader').Replace("'", "''"))'); 'BUNDLE-ROWS ' + `$rows.Count + ' ' + ((`$rows | Where-Object { `$_.relativePath -eq 'UniRx.dll' } | ForEach-Object { `$_.sha256 }) -join '')")
+    $steps.Add([ordered]@{ step = 'preflight-reference-bundle'; exit = $bundleCheck.ExitCode; output = $bundleCheck.Output })
+    if ($bundleCheck.ExitCode -ne 0 -or $bundleCheck.Output -notmatch 'BUNDLE-ROWS \d+ [0-9a-f]{64}') { throw "The selected reference bundle failed its existing identity check: $($bundleCheck.Output)" }
+    $running = @(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue)
+    $steps.Add([ordered]@{ step = 'preflight-host'; kingmakerProcesses = $running.Count; workingDirectory = $cwd })
+    if ($running.Count -ne 0) { throw 'A Kingmaker process is running; the build would be refused by the source-only tests. Wait for a quiet host.' }
+
+    # --- The one build: complete stdout/stderr and exit status from its start.
+    $buildLog = Join-Path $OutDir 'development-build-r9.txt'
+    $buildStart = [DateTime]::UtcNow
+    $previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    try {
+        $null | & powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File (Join-Path $producer 'scripts\Build-Local.ps1') -ReferenceBundleDir $ReferenceBundleDir `
+            -DevelopmentPurpose $purpose -DevelopmentTestFilter 'model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged' 2>&1 |
+            ForEach-Object { "$_" } | Set-Content -LiteralPath $buildLog -Encoding UTF8
+        $buildExit = $LASTEXITCODE
+    }
+    finally { $ErrorActionPreference = $previous }
+    $buildSeconds = [int]([DateTime]::UtcNow - $buildStart).TotalSeconds
+    Add-Content -LiteralPath $buildLog -Value ("BUILD-EXIT $buildExit SECONDS $buildSeconds START $($buildStart.ToString('o'))") -Encoding UTF8
+    $buildText = [IO.File]::ReadAllText($buildLog)
+    $package = [regex]::Match($buildText, 'DEVELOPMENT CANDIDATE \(never a release\): (.+?\.zip)').Groups[1].Value
+    $receiptPath = [regex]::Match($buildText, 'Receipt: (.+?\.json)').Groups[1].Value
+    $summary.build_exit = $buildExit; $summary.build_seconds = $buildSeconds; $summary.package = $package; $summary.receipt = $receiptPath
+    Add-Case 'final-candidate-built' ($buildExit -eq 0 -and $package -and (Test-Path -LiteralPath $package)) "exit $buildExit; $buildSeconds s; $package"
+    if (-not $package) { throw "Build-Local produced no candidate (exit $buildExit); see $buildLog" }
+    $harness = Join-Path $producer 'scripts\RuntimeHarness.Common.ps1'
+    $admitAt = { param([string]$zip, [string]$repo) Invoke-PS @('-Command', ". '$((Join-Path $repo 'scripts\RuntimeHarness.Common.ps1').Replace("'", "''"))'; `$r = Read-KmgBuildLocalManifest -PackagePath '$($zip.Replace("'", "''"))' -RepositoryRoot '$($repo.Replace("'", "''"))' -DevelopmentPurpose '$purpose' -RequireCurrentMaterialInputs; 'ADMITTED commit=' + `$r.commit + ' zip=' + `$r.packageSha256 + ' dll=' + `$r.dllSha256 + ' mvid=' + `$r.dllMvid + ' measuredDll=' + `$r.measuredDll.sha256 + ' measuredMvid=' + `$r.measuredDll.mvid") }
+    $r = & $admitAt $package $producer
+    Add-Case 'final-candidate-admitted-for-staging' ($r.ExitCode -eq 0 -and $r.Output -match 'ADMITTED commit=[0-9a-f]{40}') ("exit $($r.ExitCode); " + [regex]::Match($r.Output, 'ADMITTED .*').Value)
+
+    # --- Disposable fixture area: a separate clone of the same commit with the producer's build output.
+    [void][IO.Directory]::CreateDirectory($temp)
+    New-CommitClone $producer $fixture
+    foreach ($part in @('artifacts\bin', 'artifacts\tests')) {
+        $null = & robocopy.exe (Join-Path $producer $part) (Join-Path $fixture $part) /E /NFL /NDL /NJH /NJS /NP
+        if ($LASTEXITCODE -ge 8) { throw "Copying $part into the fixture clone failed ($LASTEXITCODE)." }
+    }
+    $variants = Join-Path $temp 'variants'; New-Item -ItemType Directory -Path $variants | Out-Null
+    $harnessDir = Join-Path $temp 'harness'; New-Item -ItemType Directory -Path $harnessDir | Out-Null
+    foreach ($name in @('KmgLoaderCompatHarness.dll', 'Info.json')) { Set-Content -LiteralPath (Join-Path $harnessDir $name) -Value 'fixture' }
+
+    # Staging probes on the retained candidate (read only); work directory and private copies are disposable.
+    $lc = Join-Path $producer 'scripts\compatibility\loader-compat'
+    $clone = $producer
+    . ([scriptblock]::Create((Get-Region $suiteText 'focused-tree-probe')))
+
+    # Packaged-content cases in the fixture clone (edits, packages, receipts and a review-note commit stay there).
+    $clone = $fixture
+    $harness = Join-Path $fixture 'scripts\RuntimeHarness.Common.ps1'
+    $git = { param([string[]]$a) & git -C $clone -c user.name=candidate-admission -c user.email=candidate-admission@invalid @a }
+    Set-Location -LiteralPath $fixture
+    . ([scriptblock]::Create((Get-Region $suiteText 'focused-packaged-content')))
+    Set-Location -LiteralPath $producer
+
+    # --- Clean only the disposable fixture area.
+    Remove-Item -LiteralPath $temp -Recurse -Force
+    $summary.fixture_area_removed = -not (Test-Path -LiteralPath $temp)
+
+    # --- Admission at the retained canonical location, after cleanup.
+    $status = @(& git -C $producer status --porcelain)
+    $head = (& git -C $producer rev-parse HEAD).Trim()
+    $post = & $admitAt $package $producer
+    $m = [regex]::Match($post.Output, 'ADMITTED commit=([0-9a-f]{40}) zip=([0-9a-f]{64}) dll=([0-9a-f]{64}) mvid=(\S+) measuredDll=([0-9a-f]{64}) measuredMvid=(\S+)')
+    Add-Case 'retained-candidate-admitted-after-fixture-cleanup' ($summary.fixture_area_removed -and $status.Count -eq 0 -and $head -ceq $Commit -and $post.ExitCode -eq 0 -and $m.Success -and
+        $m.Groups[1].Value -ceq $Commit -and $m.Groups[2].Value -ceq (Get-Sha $package) -and $m.Groups[3].Value -ceq $m.Groups[5].Value -and $m.Groups[4].Value -ceq $m.Groups[6].Value) ("fixture area removed $($summary.fixture_area_removed); producer status entries $($status.Count); HEAD $head; " + [regex]::Match($post.Output, 'ADMITTED .*').Value)
+    if ($m.Success) { $summary.retainedAdmission = [ordered]@{ producer = $m.Groups[1].Value; packageSha256 = $m.Groups[2].Value; dllSha256 = $m.Groups[3].Value; dllMvid = $m.Groups[4].Value; packagePath = $package; repositoryRoot = $producer } }
+    $layout = Split-Path -Parent $package
+    $summary.retainedLayout = @(Get-ChildItem -LiteralPath $layout -Recurse -File | Sort-Object FullName | ForEach-Object { [ordered]@{ path = $_.FullName.Substring($layout.Length + 1); sha256 = Get-Sha $_.FullName; bytes = $_.Length } })
+}
+finally {
+    Set-Location -LiteralPath $OutDir
+    if (Test-Path -LiteralPath $temp) {
+        try { Remove-Item -LiteralPath $temp -Recurse -Force -ErrorAction Stop }
+        catch { Write-Warning "The disposable fixture area could not be removed: $temp ($($_.Exception.Message))" }
+    }
+    $failed = @($cases | Where-Object { -not $_.passed })
+    $summary.suiteSha256 = if (Test-Path -LiteralPath (Join-Path $producer 'scripts\Test-CandidateAdmission.ps1')) { (Get-FileHash -LiteralPath (Join-Path $producer 'scripts\Test-CandidateAdmission.ps1') -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
+    $summary.regions = @('focused-helpers', 'focused-tree-probe', 'focused-packaged-content')
+    $summary.package_sha256 = if ($summary.Contains('package') -and $summary.package -and (Test-Path -LiteralPath $summary.package)) { (Get-FileHash -LiteralPath $summary.package -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }
+    $summary.steps = @($steps)
+    $summary.passed = $cases.Count - $failed.Count; $summary.total = $cases.Count; $summary.cases = @($cases)
+    $summary | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $summaryPath -Encoding UTF8
+    Write-Host ("RESULT {0}/{1} focused checks passed" -f $summary.passed, $summary.total)
+}
+if (@($cases | Where-Object { -not $_.passed }).Count -gt 0) { throw 'Focused check(s) failed.' }

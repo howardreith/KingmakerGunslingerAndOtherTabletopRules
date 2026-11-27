@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "validator": "tools/validate_development_candidate.py",
+  "purpose": "umm-0311-admission",
+  "releaseQualification": false,
+  "baselineTag": "v0.0.195",
+  "baselineCommit": "ef0e1fe15d59fc6f04ef4956337690f14de3c528",
+  "baselineVersion": "0.0.195",
+  "releasedIdentities": 7935,
+  "identities": 7935,
+  "appendedIdentities": 0,
+  "authorizedReleasedRowCorrections": [],
+  "ledgerSha256": "35c8e73d4178520968bdec193f10771adaf892d86e655321451f9edb6c10ce76",
+  "manifestValidation": [
+    "Expanded Summoning manifest PASS: foundation=2819 active=7928 reserved=7 total=7935",
+    "Alternate summoning adapter manifest PASS: adapters=4073"
+  ]
+}

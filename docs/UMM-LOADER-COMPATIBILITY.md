@@ -12,10 +12,33 @@ Each package contains exactly one DLL (the mod's), and its bundled `INSTALLATION
 minimum. The DLL references were read from the AssemblyRef table of the packaged file. The newer loaders remain separate
 compatibility targets; the in-game matrix below was run once, on the development candidate that became v0.0.188.
 
-## Current development candidate: round 8 (2026-11-26)
+## Current development candidate: round 9 (2026-11-27)
 
 This is the frozen package selected for handoff of the pinned-loader build change (PR #220). It is a development receipt,
-not a release.
+not a release. It is retained, complete and admissible at the location its receipt binds: the producer clone
+`<dev>\KingmakerGunslingerLab\worktrees\umm-0311-final-candidate-c67881f3fb\producer` (owner machine; not in Git) with
+its canonical layout `artifacts\development-candidates\umm-0311-admission\c67881f3fb88\`.
+
+| Item | Value |
+|---|---|
+| Producing commit | `c67881f3fb8892cae09cdf4cc4f370170f20afc8` (round-9 code: every packaged member resolved to its producer file through the project's copy rules and Windows-compatible spelling, R1-F4; content inspection bound to the receipt's package digest on one held read, R7-F1) |
+| Command | `scripts\Build-Local.ps1 -DevelopmentPurpose umm-0311-admission -DevelopmentTestFilter model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged -ReferenceBundleDir <private bundle>` in the retained producer clone, 530 seconds, exit 0, run once by the focused driver (`docs/evidence/umm-0311/focused-r9-driver.ps1.txt`) after its recorded pre-build checks (working directory is the producer clone, `Assert-KmgReferenceBundleMatchesInstall` on the selected bundle, no Kingmaker process); complete output `development-build-r9.txt`, receipt `development-receipt-r9.json` (clean producer fingerprint `61ee6c83…`) |
+| Package | `KingmakerGunslinger-0.0.195-development-umm-0311-admission-c67881f3fb88.zip`, SHA-256 `d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929` |
+| Packaged DLL | SHA-256 `17a42879a57dba9914cebd67b3855ad95a94ef64775a8c2f66886ef5f03c808a`, MVID `5efdffb9-c4ac-4a3e-91f7-089a12991064` |
+| Retained layout | ZIP, `.sha256`, development receipt, `development-validation.json` (exported as `development-validation-r9.json`; SHA-256 `1cb1a21f…`, the receipt's `validation.summarySha256`), `selected-domain-tests.log` (exported as `development-selected-tests-r9.txt`; the receipt's `selectedTests.logSha256`) and the archived exact build; every file with its digest in `focused-r9.json` (`retainedLayout`) |
+| Admission at the retained location | After the fixture cleanup attempt, the real development reader (`Read-KmgBuildLocalManifest -DevelopmentPurpose umm-0311-admission -RequireCurrentMaterialInputs`) at the retained location, producer clone clean at the producing commit: **admitted**, returning producer `c67881f3fb`, ZIP `d8d14600…`, DLL `17a42879…`, MVID `5efdffb9…` (`focused-r9.json`, case `retained-candidate-admitted-at-the-receipt-bound-location-after-fixture-cleanup-attempt`) |
+| Focused checks | `focused-r9.json`: 17 of 18. Negative and destructive variants ran in a separate disposable clone of the same commit (the producer's build output copied in): README.md edited, a remapped icon edited (source `assets/game/icons/black-powder.png` changed for the build's copy into `assets/icons`, both restored), and an edited README shipped as `readme.md`, each packaged and decided after restoration, are refused by Build-Local's writer check and by the ordinary receipt reader naming the file (`assets/icons/black-powder.png (producer file assets/game/icons/black-powder.png)`, `readme.md (producer file README.md)`); a clean package (457 members compared with their producer files) is admitted and stays admitted after an unshipped review note; an archive put at the measured path after its digest was measured is refused whatever its content, and the matching archive passes; the staging probes ran on the retained candidate (read only). The one failed case is the removal of the disposable fixture area: denied on a Git pack index the fixture clone shares by hard link with the lab repository's object store; the remnant was left in place (see `focused-r9.json`, `fixture_area_note`). The whole admission suite was not rerun. |
+| Static loader audit | `api-audit-r9.json`, on the DLL extracted from the retained ZIP (SHA-256 `17a42879…`, MVID `5efdffb9…`): UMM 0.31.1, 0.32.4, the owner's 0.33.0 and 0.33.4 each **RESOLVED** (23 types, 67 members). Static evidence, not a native run. |
+
+Before the build, the corrected helper was exercised on the round-8 frozen ZIP and six variants (`zip-probes-r9.txt`),
+and the committed packaged-content region was dry-run in a disposable clone with older build output
+(`packaged-content-dry-run-r9.txt`; its reader cases stopped at the DLL source-stamp check, so it is not evidence for
+them). **Native rows for this candidate: NOT RUN.** No combined-stack check ran.
+
+## Earlier development candidate: round 8 (2026-11-26)
+
+The round-8 freeze below (producer `c0b54ba4ad`, ZIP `d86d9a7c…`, DLL `71dfdd72…`), its audit and its focused results keep
+their original identities; it is not the current candidate, and its retained copy lacked the layout its reader requires.
 
 | Item | Value |
 |---|---|

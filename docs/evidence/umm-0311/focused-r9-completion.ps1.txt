@@ -1,0 +1,46 @@
+param([Parameter(Mandatory = $true)][string]$Producer, [Parameter(Mandatory = $true)][string]$Commit, [Parameter(Mandatory = $true)][string]$FixtureArea,
+    [Parameter(Mandatory = $true)][string]$Summary)
+# Completes the round-9 driver run after its in-run removal of the disposable fixture area failed (PermissionDenied on a
+# read-only Git pack index in the fixture clone): removes ONLY that fixture area (read-only attributes cleared first),
+# then runs the real development reader at the retained canonical location with RequireCurrentMaterialInputs, records the
+# returned identities and the retained layout, and appends the result to the driver's summary. No build runs.
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+$purpose = 'umm-0311-admission'
+$worktrees = '<dev>\KingmakerGunslingerLab\worktrees\'
+if (-not ([IO.Path]::GetFullPath($FixtureArea)).StartsWith($worktrees + 'focused-r9-', [StringComparison]::OrdinalIgnoreCase)) { throw "Not the driver's disposable fixture area: $FixtureArea" }
+if (([IO.Path]::GetFullPath($FixtureArea)).StartsWith(([IO.Path]::GetFullPath($Producer)), [StringComparison]::OrdinalIgnoreCase)) { throw 'The fixture area must not contain the retained producer.' }
+function Get-Sha([string]$Path) { (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant() }
+$s = Get-Content -LiteralPath $Summary -Raw | ConvertFrom-Json
+$cases = [Collections.Generic.List[object]]::new(); foreach ($c in @($s.cases)) { $cases.Add($c) }
+# 6. Clean only the disposable fixture area.
+$removalError = $null
+if (Test-Path -LiteralPath $FixtureArea) {
+    Get-ChildItem -LiteralPath $FixtureArea -Recurse -Force -File | Where-Object { $_.Attributes -band [IO.FileAttributes]::ReadOnly } | ForEach-Object { $_.Attributes = $_.Attributes -band (-bnot [IO.FileAttributes]::ReadOnly) }
+    try { Remove-Item -LiteralPath $FixtureArea -Recurse -Force -ErrorAction Stop } catch { $removalError = $_.Exception.Message }
+}
+$removed = -not (Test-Path -LiteralPath $FixtureArea)
+# 7. Admission at the retained canonical location.
+$package = [string]$s.package
+Set-Location -LiteralPath $Producer
+$status = @(& git -C $Producer status --porcelain)
+$head = (& git -C $Producer rev-parse HEAD).Trim()
+$harness = Join-Path $Producer 'scripts\RuntimeHarness.Common.ps1'
+$command = ". '$($harness.Replace("'", "''"))'; `$r = Read-KmgBuildLocalManifest -PackagePath '$($package.Replace("'", "''"))' -RepositoryRoot '$($Producer.Replace("'", "''"))' -DevelopmentPurpose '$purpose' -RequireCurrentMaterialInputs; 'ADMITTED commit=' + `$r.commit + ' zip=' + `$r.packageSha256 + ' dll=' + `$r.dllSha256 + ' mvid=' + `$r.dllMvid + ' measuredDll=' + `$r.measuredDll.sha256 + ' measuredMvid=' + `$r.measuredDll.mvid"
+$previous = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+try { $out = (($null | & powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command $command 2>&1) | ForEach-Object { "$_" }) -join "`n"; $exit = $LASTEXITCODE } finally { $ErrorActionPreference = $previous }
+$m = [regex]::Match($out, 'ADMITTED commit=([0-9a-f]{40}) zip=([0-9a-f]{64}) dll=([0-9a-f]{64}) mvid=(\S+) measuredDll=([0-9a-f]{64}) measuredMvid=(\S+)')
+$passed = $removed -and $status.Count -eq 0 -and $head -ceq $Commit -and $exit -eq 0 -and $m.Success -and $m.Groups[1].Value -ceq $Commit -and $m.Groups[2].Value -ceq (Get-Sha $package) -and $m.Groups[3].Value -ceq $m.Groups[5].Value -and $m.Groups[4].Value -ceq $m.Groups[6].Value
+$detail = "fixture area removed $removed$(if ($removalError) { " (error: $removalError)" }); producer status entries $($status.Count); HEAD $head; exit $exit; " + [regex]::Match($out, 'ADMITTED .*').Value
+$cases.Add([pscustomobject][ordered]@{ name = 'retained-candidate-admitted-after-fixture-cleanup'; passed = $passed; detail = $detail })
+Write-Host ("{0} retained-candidate-admitted-after-fixture-cleanup :: {1}" -f $(if ($passed) { 'PASS' } else { 'FAIL' }), $detail)
+$layout = Split-Path -Parent $package
+$s | Add-Member -NotePropertyName fixture_area_removed -NotePropertyValue $removed -Force
+$s | Add-Member -NotePropertyName fixture_area_note -NotePropertyValue ("The driver's own removal failed (PermissionDenied on a read-only Git multi-pack-index in the fixture clone), so its post-cleanup steps did not run; this completion step removed the fixture area and ran them at $([DateTime]::UtcNow.ToString('o')).") -Force
+if ($m.Success) { $s | Add-Member -NotePropertyName retainedAdmission -NotePropertyValue ([ordered]@{ producer = $m.Groups[1].Value; packageSha256 = $m.Groups[2].Value; dllSha256 = $m.Groups[3].Value; dllMvid = $m.Groups[4].Value; packagePath = $package; repositoryRoot = $Producer }) -Force }
+$s | Add-Member -NotePropertyName retainedLayout -NotePropertyValue @(Get-ChildItem -LiteralPath $layout -Recurse -File | Sort-Object FullName | ForEach-Object { [ordered]@{ path = $_.FullName.Substring($layout.Length + 1); sha256 = Get-Sha $_.FullName; bytes = $_.Length } }) -Force
+$failed = @($cases | Where-Object { -not $_.passed })
+$s.passed = $cases.Count - $failed.Count; $s.total = $cases.Count; $s.cases = @($cases)
+$s | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $Summary -Encoding UTF8
+Write-Host ("RESULT {0}/{1} focused checks passed" -f $s.passed, $s.total)
+if ($failed.Count -gt 0) { exit 1 }

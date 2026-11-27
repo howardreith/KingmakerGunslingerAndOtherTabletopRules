@@ -1,0 +1,4 @@
+Kingmaker Gunslinger domain, firearm-state, and combat-rule tests
+KMG_TEST_FILTER=model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged; selected 1 of 3189 registered tests. This is a focused run and is not a gate.
+PASS model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged
+Completed 1 tests; failures=0. Registered 3189; elapsed 0.1s.
