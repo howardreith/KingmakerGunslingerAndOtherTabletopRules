@@ -1,0 +1,311 @@
+{
+  "B": "35763430acc9eefc306b861045526a444690bc77",
+  "H": "33c655a8d855c843a21e0f679ab1c527d2825c11",
+  "M": "35763430acc9eefc306b861045526a444690bc77",
+  "amendment_revision": null,
+  "amendment_sha256": "none",
+  "checkpoint_id": "final",
+  "checkpoint_type": "final",
+  "fatal": false,
+  "guidance_revision": null,
+  "guidance_sha256": "none",
+  "invocation": {
+    "completed": true,
+    "duration_s": 616.2,
+    "errors": [],
+    "exit_code": 0,
+    "failed": false,
+    "observed": {
+      "approval_policy": "never",
+      "cli_version": "0.170.0",
+      "network": "restricted",
+      "observed_effort": "max",
+      "observed_model": "gpt-6.2-astra",
+      "plan_type": "pro",
+      "rollout_found": true,
+      "sandbox": "read-only",
+      "source": "Codex session rollout (CLI-recorded thread settings; not model-authored)",
+      "subagent_suspected": false,
+      "turn_efforts": [
+        "max"
+      ],
+      "turn_models": [
+        "gpt-6.2-astra"
+      ],
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 2126336,
+        "input_tokens": 2314605,
+        "output_tokens": 24108,
+        "reasoning_output_tokens": 11440,
+        "total_tokens": 2338713
+      }
+    },
+    "requested": {
+      "effort": "max",
+      "model": "gpt-6.2-astra",
+      "sandbox": "read-only"
+    },
+    "thread_id": "01a20b9c-dd2b-7f41-9c8c-9938c29b429c",
+    "timed_out": false
+  },
+  "mission": {
+    "id": "kingmaker-umm-0311-mission-20261123",
+    "sha256": "f7d990f396c858ad663020133baba66e0cefb57f2b8be54a26d96186f86b24d5"
+  },
+  "ok": true,
+  "path": "C:\\Dev\\KingmakerGunslingerLab\\agent-review-state\\kmg-codex-umm-0311-pinned-build-20261124-20261123223003-1af6\\rounds\\r01\\envelope-1.json",
+  "pr": 220,
+  "project_sha256": "286ea7d8a605775ee05eea7ddb50630d9710b9ddb69d1711b9dadb9b084a879e",
+  "protocol": "agent-review.v1",
+  "publication": "r01-review",
+  "published": [
+    {
+      "comment_id": 7121352713,
+      "of": 1,
+      "part": 1,
+      "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/220#issuecomment-7121352713"
+    }
+  ],
+  "raw_result_if_rejected": null,
+  "reasons": [],
+  "repository": "howardreith/KingmakerGunslingerAndOtherTabletopRules",
+  "request_id": "kmg-codex-umm-0311-pinned-build-20261124-20261123223003-1af6-r01-e03aab",
+  "response_sha256": "8f6e5c33fefec9a6355bf1b962d2384306a333ef0ada9375f56e7a04b6922aeb",
+  "result": {
+    "candidate_commit": "33c655a8d855c843a21e0f679ab1c527d2825c11",
+    "checkpoint_id": "final",
+    "checkpoint_type": "final",
+    "decision": "changes_required",
+    "decision_rationale": "The MSBuild pin works in the recorded tests, and the controller\u2019s focused gate passed on the submitted commit. The standalone validator can still accept an incompatible DLL, candidate admission leaves receipt and source checks incomplete, and the required package and compatibility evidence is missing.\n\n## Continuation for Claude\n\nTrace one TRE development package from the clean source commit through compilation, ZIP validation, receipt verification and admission to the disposable loader harness. Check the actual packaged DLL and every archive entry. Exercise the mismatch and stale-candidate cases before staging. Make the regression test reproducible and select a focused gate that tests the loader contract.\n\nFreeze that package once for the compatibility assessment. Record the current official stable target, the measured owner installation, static results and each applicable native result or concrete blocker. Update the current build instructions using the verified commands. Keep the work within TRE, preserve historical release qualifications and use the existing guarded development routes. The next review needs the focused receipt, package identity, negative-test results and per-loader evidence.",
+    "evidence_assessment": {
+      "executed_verification": [
+        "The controller receipt records a passing focused gate on 33c655a8d855c843a21e0f679ab1c527d2825c11 in 5.5 seconds. The log shows both loader pins verified and one of 3,188 domain tests selected and passed. Its SHA-256 matches the receipt.",
+        "The committed MSBuild test output records 8/8 cases on 8dfe6d08b5. The wrapper-built DLL references UnityModManager 0.31.1.0 and 0Harmony12 1.2.0.1 on a host with UMM 0.33.0.0. The recorded negative cases include altered reference bytes and a resolved reference outside the verified folder.",
+        "The published-asset inspection records matching download digests, one DLL per ZIP, DLL hashes, MVIDs and baseline AssemblyRefs for v0.0.188 and v0.0.195.",
+        "Read-only Git and hash checks confirmed that H adds only evidence files after 8dfe6d08b5, all four exported evidence hashes match their index, and the feature diff passes git diff --check. Tagged manifests declare 0.32.4 at v0.0.187 and 0.31.1 at v0.0.188 through v0.0.195."
+      ],
+      "inspected": [
+        "The enrolled mission, repository instructions, validation policy, review workflow, full feature diff, developer report, transcript notice, gate receipt and log, and empty prior-findings ledger.",
+        "The production project, reference pins and helpers, MSBuild tests, exact-reference compiler, package builder and standalone validator, receipt readers, deployment preflight and disposable loader harness.",
+        "Current build documentation, historical release and loader observations, and all four committed evidence exports."
+      ],
+      "limitations": [
+        "The review used the read-only snapshot. Builds, network downloads, installation and native execution were not rerun.",
+        "The controller withheld the mixed foreground transcript. The 8/8 MSBuild and release-download results are retained developer-side outputs. The controller independently recorded the focused gate.",
+        "development-validation.json contains the source validator\u2019s ledger and manifest summary. It does not establish completion of the full wrapper or the reported 36/36 and 13/13 child checks."
+      ],
+      "required_gaps": [
+        "A standalone validation result for the candidate ZIP and real negative controls for loader metadata, extra archive binaries, mismatched DLL identity and stale source.",
+        "A clean development-package receipt tying the producing source, reference identities, packaged DLL hash and MVID, and ZIP hash together.",
+        "A current static compatibility assessment across the required loader targets, with focused native results or a specific unavailable prerequisite for each unrun row.",
+        "A relevant controller-gated test, a reproducible MSBuild regression check and accurate current build instructions."
+      ],
+      "source_inspection_only": [
+        "The new project targets check the selected loader directory before reference resolution and the resolved compiler paths before CoreCompile. The existing exact-reference compiler separately passes the pinned files to Roslyn.",
+        "The ZIP, receipt and staging failure paths in the findings follow from the inspected code. The reviewer did not construct or install test archives.",
+        "The repository contains a clean development-package route and a guarded harness with 0.31.1, 0.32.4 and owner-0.33.0 profiles. Their presence establishes available tooling. Current fixture availability requires a developer-side check."
+      ]
+    },
+    "findings": [
+      {
+        "acceptance_ids": [],
+        "actual": "Assert-KmgPackagedLoaderContract checks ManagerVersion and the single DLL\u2019s filename without reading its AssemblyRefs. Its positive fixture even uses a text file named KingmakerGunslinger.dll. The direct compile check also verifies the reference directory without comparing the Info.json it copies to the output.",
+        "blocking_rationale": "A ZIP declaring 0.31.1 can pass standalone validation while its mod DLL requires a newer loader. This misses the explicit manifest/compiler mismatch boundary in mission \u00a76.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "The declared floor must agree with the pin, and standalone validation must establish that the supplied DLL references UnityModManager 0.31.1.0 and 0Harmony12 1.2.0.1.",
+        "id": "R1-F1",
+        "location": {
+          "file": "scripts/validate-package.ps1",
+          "line": 429
+        },
+        "priority": "P1",
+        "requested_correction": "Check the source manifest at the direct build gate and inspect assembly metadata from the mod DLL extracted from the supplied ZIP. Reject missing, unreadable or mismatched loader references before staging.",
+        "requested_evidence": "Show a genuine baseline ZIP passing, an otherwise valid 0.31.1 ZIP containing a newer-compiled TRE DLL failing for its AssemblyRef, and a direct build rejecting a mismatched source manifest.",
+        "title": "Validate the loader floor against the actual mod DLL",
+        "trigger": "A valid package layout contains a mod DLL built against UMM 0.33.0.0 while Info.json still declares 0.31.1."
+      },
+      {
+        "acceptance_ids": [],
+        "actual": "The root check counts directories only. The subsequent file allowlist and binary count start inside the mod directory, leaving loose files at the ZIP root unexamined.",
+        "blocking_rationale": "The validator can report success for an archive containing a forbidden dependency, contrary to the shipping ZIP contract.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "Every file in the archive must belong to the single approved mod tree, which may contain only the product DLL as a binary.",
+        "id": "R1-F2",
+        "location": {
+          "file": "scripts/validate-package.ps1",
+          "line": 37
+        },
+        "priority": "P2",
+        "requested_correction": "Validate the complete archive entry set, including files beside the mod directory.",
+        "requested_evidence": "Run the standalone validator on a valid ZIP and on temporary variants containing an extra runtime DLL at the archive root and inside the mod tree. Record both refusals.",
+        "title": "The ZIP validator overlooks binaries beside the mod directory",
+        "trigger": "An otherwise valid archive contains a loose Harmony, UMM or game DLL alongside KingmakerGunslinger/."
+      },
+      {
+        "acceptance_ids": [],
+        "actual": "Build-Local hashes the shared artifacts/bin DLL after packaging. The development reader checks the ZIP digest and the format of dllSha256 and dllMvid, but never compares those fields to the DLL inside the ZIP. Deploy-Local checks the DLL hash after copying files into the target.",
+        "blocking_rationale": "A receipt carrying a different build\u2019s well-formed DLL identity can pass pre-install validation. The error can surface after the target has been changed.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "The receipt must bind the producing compiler output to the packaged DLL and verify that identity before installation.",
+        "id": "R1-F3",
+        "location": {
+          "file": "scripts/Build-Local.ps1",
+          "line": 464
+        },
+        "priority": "P1",
+        "requested_correction": "Compare the immutable compiler output with the DLL read from the finished ZIP. Verify its hash, MVID and available source stamp against the build receipt at admission.",
+        "requested_evidence": "Use a real candidate ZIP with its correct receipt, then with a valid-format DLL hash or MVID from a different build. Show rejection before staging while the ZIP digest still matches.",
+        "title": "Bind the build receipt to the DLL inside the finished ZIP",
+        "trigger": "The loose build output changes after ZIP staging, or a receipt contains a DLL identity from a different build."
+      },
+      {
+        "acceptance_ids": [],
+        "actual": "Direct Deploy-Local calls Read-KmgBuildLocalManifest without applying the current-source comparison used by the compatibility-profile caller. The loader harness\u2019s Assert-LcSessionInputs computes the supplied ZIP\u2019s hash and checks for harness files, then admits it without comparing an expected candidate receipt or running standalone package validation.",
+        "blocking_rationale": "A build-input change can leave an earlier same-version ZIP admissible as the current candidate. Recording its hash cannot establish which source it qualifies.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "Current-candidate staging must verify the source commit, build-input fingerprint, expected package identity and standalone validation before mutation.",
+        "id": "R1-F4",
+        "location": {
+          "file": "scripts/Deploy-Local.ps1",
+          "line": 26
+        },
+        "priority": "P1",
+        "requested_correction": "Apply the existing source-binding and package checks at direct candidate admission and at the loader harness preflight. Preserve explicitly identified historical release controls under their own artifact identities.",
+        "requested_evidence": "In an offline temporary repository, admit the matching candidate, change a material project or reference-helper input with the version held constant, and show the old candidate refused before staging. Also show the loader preflight refusing a mismatched supplied ZIP.",
+        "title": "Reject stale candidates at the staging entry points",
+        "trigger": "An earlier development ZIP is supplied after a reference helper or project input changes while Info.json.Version stays at 0.0.195."
+      },
+      {
+        "acceptance_ids": [],
+        "actual": "The feature-commit report identifies a loose MSBuild DLL. The two identified ZIPs belong to published releases. The controller log explicitly defers package assembly and strict validation. The release-validator refusal does not prevent use of Build-Local\u2019s development mode.",
+        "blocking_rationale": "Mission \u00a7\u00a75\u20136 require a real package check for this production build change. There is no verified candidate ZIP to carry into the compatibility comparison.",
+        "blocks_readiness": true,
+        "category": "evidence_gap",
+        "expected": "One clean development build must produce a validated, source-bound baseline package from the reviewed build inputs.",
+        "id": "R1-F5",
+        "location": {
+          "file": "docs/evidence/umm-0311/INDEX.md",
+          "line": 3
+        },
+        "priority": "P1",
+        "requested_correction": "Use Build-Local.ps1 with a development purpose and named test filter. Retain its receipt and freeze the resulting package for subsequent checks.",
+        "requested_evidence": "Supply the producing commit, command, duration, compiler-reference versions and hashes, ZIP hash, packaged DLL hash and MVID, AssemblyRefs and standalone validation result.",
+        "title": "The supplied package evidence belongs to earlier releases",
+        "trigger": "The final checkpoint uses the v0.0.188 and v0.0.195 downloads to support the changed build paths."
+      },
+      {
+        "acceptance_ids": [],
+        "actual": "The member-signature audit names historical DLL 7fa421d7 from b9400333. The new MSBuild report measures the owner\u2019s UMM file as 0.33.0.0. It supplies neither a current Harmony-stack measurement nor an official newest-stable selection or API results for the current candidate.",
+        "blocking_rationale": "The required newer-loader assessment is incomplete even at the static/API level.",
+        "blocks_readiness": true,
+        "category": "evidence_gap",
+        "expected": "Assess the same frozen candidate against real assemblies for 0.31.1, 0.32.4, the freshly measured owner installation and the newest stable higher release selected from the author\u2019s distribution information.",
+        "id": "R1-F6",
+        "location": {
+          "file": "docs/UMM-LOADER-COMPATIBILITY.md",
+          "line": 35
+        },
+        "priority": "P1",
+        "requested_correction": "Identify and deduplicate the required targets, record their provenance and relevant Harmony components, and check the frozen DLL\u2019s bound APIs against each target.",
+        "requested_evidence": "Provide the dated official stable-version source, measured component identities, candidate hash, reproducible audit command and per-version results or precise acquisition failures.",
+        "title": "The current candidate has no static assessment across the required loaders",
+        "trigger": "A reader needs to know which newer loaders the reviewed TRE build was assessed against."
+      },
+      {
+        "acceptance_ids": [],
+        "actual": "The report gives a blanket native NOT RUN because the release packaging route was unchanged. The historical matrix names another DLL. The repository already has a disposable loader harness and settings and feature fixtures for three profiles, with no current availability or guard refusal recorded.",
+        "blocking_rationale": "The missing observation is whether the required focused checks can run on this candidate. Mission \u00a78 permits an unavailable or unapproved row to remain explicitly blocked.",
+        "blocks_readiness": true,
+        "category": "evidence_gap",
+        "expected": "Exercise TRE loader/settings and one representative feature on each approved, available target. Give the concrete prerequisite for each unrun row.",
+        "id": "R1-F7",
+        "location": {
+          "file": "docs/UMM-LOADER-COMPATIBILITY.md",
+          "line": 135
+        },
+        "priority": "P2",
+        "requested_correction": "Assess each row using the existing guards. Run the small applicable scenarios sequentially on the frozen package and document any unavailable fixture, unapproved profile or other observed blocker.",
+        "requested_evidence": "For executed rows, provide session identity, candidate and in-process loader/Harmony hashes, structured outcomes and restoration. For unrun rows, provide the specific reason. State whether any combined-stack check ran.",
+        "title": "Native coverage needs a candidate result or a concrete blocker per row",
+        "trigger": "The final report disposes of all native checks together despite existing TRE loader profiles."
+      },
+      {
+        "acceptance_ids": [],
+        "actual": "The regression script uses moving origin/master as its pre-change control and always expects the installed loader to fail on UnityModManager.dll. Once master contains the fix, its control correctly builds against 0.31.1. An installation with genuine pinned bytes also correctly passes the content check. Either case produces a false test failure.",
+        "blocking_rationale": "The documented regression command cannot reliably reproduce the contract after merge or on a supported baseline installation.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "The historical control must identify a fixed pre-change revision, and acceptance of a reference directory must follow its measured contents.",
+        "id": "R1-F8",
+        "location": {
+          "file": "scripts/Test-PinnedLoaderMsBuild.ps1",
+          "line": 5
+        },
+        "priority": "P2",
+        "requested_correction": "Pin or explicitly select the historical control, verify both clone checkouts succeeded, and use a known nonmatching reference set for the refusal case. Treat an installed byte-identical set as valid.",
+        "requested_evidence": "Show that advancing the default branch cannot change the historical control and that exact-match and mismatched reference sets produce the expected outcomes without changing the owner\u2019s installation.",
+        "title": "Make the MSBuild regression test independent of a moving branch and local loader version",
+        "trigger": "The test runs after the feature reaches master or on a machine already using the pinned release."
+      },
+      {
+        "acceptance_ids": [],
+        "actual": "The controller selected model-d.ItemIdentityEconomicsEnchantmentsAndCraftingUnchanged, which hashes seven gameplay source files. The four added offline assertions inspect literal project XML, target names and script text. The separate eight-case MSBuild run provides useful behavior evidence, but the required gate\u2019s named selection does not exercise the changed contract.",
+        "blocking_rationale": "The repository workflow requires a filter related to the changed behavior, and mission \u00a76 calls for behavior checks using actual files and metadata.",
+        "blocks_readiness": true,
+        "category": "required_gap",
+        "expected": "The required focused gate must select a relevant, nonzero test and retain evidence of the loader or package behavior it exercises.",
+        "id": "R1-F9",
+        "location": {
+          "file": "scripts/Test-LoaderReferencePins.ps1",
+          "line": 35
+        },
+        "priority": "P2",
+        "requested_correction": "Select or add a named focused check that inspects the production DLL or exercises loader/package admission. Replace the new implementation-text assertions with behavior coverage where the integration check already exercises the contract.",
+        "requested_evidence": "Provide the controller\u2019s focused receipt on the corrected commit with the relevant test name, selection count and result. Retain child completion output for any additional pass counts claimed.",
+        "title": "Use a loader-related test for the required focused gate",
+        "trigger": "The production build and an unrelated source-hash test together produce a green focused receipt."
+      },
+      {
+        "acceptance_ids": [],
+        "actual": "The compatibility guide says the packaged DLL always came from the exact-reference compiler. The documented build.ps1 -Package route packages MSBuild output, as does the publisher when no reference bundle is supplied. scripts/README.md still says UMM and Harmony come from the installation. The new error recommends bare build.ps1, whose release validation stops this checkout before pin initialization.",
+        "blocking_rationale": "The current instructions misidentify an affected packaging route and do not give developers a working bootstrap command on this candidate.",
+        "blocks_readiness": true,
+        "category": "required_gap",
+        "expected": "Current documentation and diagnostics must distinguish verified published artifacts from the supported MSBuild packaging path and give a reproducible development command.",
+        "id": "R1-F10",
+        "location": {
+          "file": "docs/UMM-LOADER-COMPATIBILITY.md",
+          "line": 85
+        },
+        "priority": "P2",
+        "requested_correction": "Limit the historical assurance to the verified exact-reference release builds. Correct the scripts guide and give the compile-only bootstrap and clean development-package commands. Distinguish fetching an absent cache entry from handling an existing mismatched file.",
+        "requested_evidence": "Check the revised commands against build.ps1, Build-Local.ps1 and the applicable package routes. Preserve the historical release records.",
+        "title": "Correct the build-route description and pin recovery instructions",
+        "trigger": "A developer follows the current guide to bootstrap a direct build or determine which ZIPs the old installed-loader default could affect."
+      }
+    ],
+    "prior_finding_assessments": [],
+    "request_id": "kmg-codex-umm-0311-pinned-build-20261124-20261123223003-1af6-r01-e03aab",
+    "round": 1,
+    "schema_version": "agent-review.review.v1",
+    "summary": {
+      "delivered_behavior": "The production project now defaults to the pinned cache, verifies its bytes before reference resolution and checks the resolved compiler paths. The retained MSBuild output demonstrates a baseline DLL on the measured newer installation. Published v0.0.188 and v0.0.195 package identities are documented.",
+      "pending_later_phase_work": [],
+      "remaining_owner_review": [
+        "Owner acceptance and disposition of draft PR #220 after the blocking findings are resolved."
+      ],
+      "scope_reviewed": "TRE draft PR #220 from 35763430acc9eefc306b861045526a444690bc77 through 33c655a8d855c843a21e0f679ab1c527d2825c11, including the affected build, packaging, reuse and compatibility paths. The other six repositories belong to their own enrollments.",
+      "unresolved_questions": [
+        "The current official stable loader target and admissibility of each disposable native row remain to be established."
+      ]
+    }
+  },
+  "round": 1,
+  "validated_at": "2026-11-24T03:42:55Z",
+  "workflow_fingerprint": "6d613defe7bfe2f01a5818a2cd41b281965f438c45a0ca37ce15957e4dcffe19"
+}

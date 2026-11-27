@@ -1,0 +1,209 @@
+<!-- agent-review:v1 enrollment=kmg-codex-umm-0311-pinned-build-20261124-20261123223003-1af6 key=r08-review part=1/1 sha256=20057f3a3730bd8545bf3479ed58b51871c87c4ecac8bf54d38cc6dd50a484d4 -->
+### Codex GPT-6.2 Astra — review — round 8 — candidate `680f691c5e`
+
+**Decision:** `changes_required` — The package comparison fixes are verified, the required gate passed, and the retained DLL matches the four-loader audit. OWNER AMENDMENT 4 still requires admission after fixture cleanup. Cleanup failed, the retry helper does not establish which fixture it is cleaning, and the evidence index attributes a derived result to the executed driver.
+
+Continuation for Claude
+
+Reuse the retained c67881f3fb producer, package and static audit. Identify the exact disposable directory from this run before taking any cleanup action. Protect the producer and shared Git files. If existing permissions prevent cleanup, preserve the remnant and record the exact blocker. After verified cleanup, run Read-KmgBuildLocalManifest at the receipt-bound location with -DevelopmentPurpose umm-0311-admission -RequireCurrentMaterialInputs and capture its exit status, producer, ZIP digest, DLL digest and MVID.
+
+Preserve the failed completion result, label the split case count as derived, and correct the account of the cleanup outcome. Verify the indexed Git blob digests and run the required focused gate on the resulting checkpoint. Keep this correction within the existing review and validation limits. Native and combined-stack testing remain NOT RUN.
+
+#### Findings
+
+**R7-F2** · P2 · evidence_gap · blocks readiness — Verify retained admission after fixture cleanup
+- Location: `docs/evidence/umm-0311/focused-r9.json:123`; acceptance: —
+- Trigger: The final handoff uses the reader result obtained after the disposable fixture removal failed.
+- Expected: After cleanup of the disposable fixture, the development reader admits the same frozen package at its receipt-bound location with RequireCurrentMaterialInputs.
+- Actual: The driver and completion attempt encountered access denial on multi-pack-index. The export records fixture_area_removed=false. The real reader returned the correct identities after that attempt, but there is no observation following verified cleanup.
+- Why it blocks / does not: OWNER AMENDMENT 4 explicitly orders fixture cleanup before the final admission observation. The retained layout and matching audit establish the other parts of R7-F2.
+- Requested correction: Establish what remains in the exact disposable directory and complete the authorized cleanup if permissions allow. Preserve any protected remnant and report the denial if it persists. Reuse the retained candidate for the post-cleanup read.
+- Requested evidence: Record the verified cleanup outcome, followed by the real reader’s command, exit status, producer, ZIP SHA-256, DLL SHA-256 and MVID at the canonical location. Compare those identities with the existing audit.
+
+**R8-F1** · P1 · defect · blocks readiness — Confine the cleanup retry to this run’s disposable files
+- Location: `docs/evidence/umm-0311/focused-r9-completion.ps1.txt:11`; acceptance: —
+- Trigger: The completion helper receives a different focused-r9- path, or encounters a read-only Git file shared by the disposable clone and the lab repository.
+- Expected: A cleanup retry identifies this run’s disposable root before mutation and preserves the retained producer, other worktrees and shared Git files.
+- Actual: The completion helper accepts any worktrees path with the focused-r9- prefix. It treats an absent path as successful cleanup and checks containment in the wrong direction to protect a producer below the supplied path. For an existing target it recursively clears read-only attributes, including on Git files the run identifies as hard-linked to the lab object store.
+- Why it blocks / does not: A wrong path can certify cleanup while the failed fixture remains, or target another tree for removal. Changing an attribute through a hard link also changes it through the shared file’s other names.
+- Requested correction: Bind any retry to the exact fixture created by this run and verify that its path and the producer path are disjoint in both directions. Limit cleanup to owned entries without changing shared-file attributes. Preserve the exported helper as the record of the failed run.
+- Requested evidence: Identify the actual fixture and producer paths. Show that a different prefixed directory and a parent containing the producer are rejected before mutation. A read-only path check suffices for those controls.
+
+**R8-F2** · P2 · defect · blocks readiness — Distinguish the failed completion run from its derived summary
+- Location: `docs/evidence/umm-0311/INDEX.md:24`; acceptance: —
+- Trigger: A reviewer uses the evidence index to reproduce the completion driver’s reported outcome.
+- Expected: The index distinguishes the executed completion result from any derived summary and accurately records the failed cleanup.
+- Actual: The driver recorded 16 passing cases. The completion script appends one combined case whose cleanup condition failed, yielding 16/17. The published 17/18 summary splits that case afterward. I reproduced the index’s raw digest 69fb0e67… from the already-split JSON by restoring its local prefix and line formatting. Its fixture_area_note also says removal succeeded beside fixture_area_removed=false.
+- Why it blocks / does not: The index identifies postprocessed bytes as the raw run output and the note contradicts the observed cleanup result. Accurate evidence attribution is required by OWNER AMENDMENTS 3 and 4.
+- Requested correction: Identify the original completion capture and its digest if retained. Label the 17/18 split and its digest as derived. Annotate the erroneous cleanup note while preserving the failed run. State explicitly if the original capture is unavailable.
+- Requested evidence: Provide traceable original and derived identities, their actual case counts and exit status, and verified committed-blob digests. Existing records suffice for this correction.
+
+#### Prior finding assessments
+
+- **R1-F4** — `fix_verified` — The helper resolves the remapped icon to assets/game/icons/black-powder.png and the case-variant README to README.md at the producing commit. The real ordinary reader refused both edited archives. The clean-package and unshipped-note controls passed.
+- **R7-F1** — `fix_verified` — The writer and both staging readers supply the receipt’s expected digest. Hashing and member inspection use the same held ZIP handle. The matching archive passed and replacements in both directions failed the digest check.
+- **R7-F2** — `fix_rejected` — The producer, canonical layout, sidecars and matching four-profile audit are verified. The required post-cleanup observation remains outstanding because fixture removal failed before the recorded admission.
+- **R7-F3** — `deferral_accepted` — OWNER AMENDMENT 4 expressly keeps this fixture assertion optional. The recorded run identified the locked ZIP, restored sentinel and successful staging control. More precise instrumentation of the destination-verification step can remain deferred.
+
+#### Evidence assessment
+
+- **Inspected:** The fixed mission, all four owner amendments, applicable repository instructions, prior findings ledger, developer report, transcript notice and controller gate receipt.; The M..H feature diff and the correction since ffdd7fa7a5, including the project copy rules, package writer, both staging readers, focused fixtures, retention driver, completion step and evidence index.
+- **Executed verification:** The controller recorded the focused gate at 680f691c5e62ab6ed79ef070dd76764491642ca7. Production compiled against UMM 0.31.1.0 and Harmony12 1.2.0.1. The named loader test passed, with 1 of 3,189 selected, exit 0 in 55.1 seconds. I verified the gate log digest.; The retained build log records one successful 530-second Build-Local run at c67881f3fb8892cae09cdf4cc4f370170f20afc8 and successful strict package validation. Only documentation and evidence changed between that producer and the review commit.; The focused records show that the ordinary reader refused the restored-source icon edit and the edited case-variant README. The clean package passed with 457 repository members compared and remained admitted after an unshipped review note. Both archive-replacement directions were refused, and the matching archive passed.; I cross-checked the receipt, retained layout, reader output and audit. They identify ZIP d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929, DLL 17a42879a57dba9914cebd67b3855ad95a94ef64775a8c2f66886ef5f03c808a and MVID 5efdffb9-c4ac-4a3e-91f7-089a12991064. The validation summary and selected-test log match their receipt digests. The audit resolved 23 types and 67 members on 0.31.1, 0.32.4, owner 0.33.0 and 0.33.4.; All 48 indexed exported SHA-256 values matched their committed Git blobs. The focused suite source also matched its recorded digest.
+- **Source inspection only:** The writer and both staging readers pass the expected archive digest to the comparison helper. The helper hashes and reads the ZIP through one handle opened with read sharing, resolves copied members to canonical Git paths, and preserves the separate compiled-DLL checks.; A read-only evaluation of the completion helper’s path predicates accepted both an unrelated prefixed fixture and a parent containing a producer. No filesystem cleanup was performed during review.
+- **Required gaps:** Verified cleanup of this run’s disposable fixture followed by admission at the retained producer.; A cleanup target tied to this run that preserves the producer and shared Git metadata.; Accurate attribution of the original failed completion result and the later split summary.
+- **Limitations:** The controller withheld the mixed foreground session transcript. Build, fixture and audit observations come from their committed exports. The retained ZIP and host fixture directory were outside the review snapshot.; Native gameplay and combined-stack testing were NOT RUN under OWNER AMENDMENT 4. The earlier 62/63 admission run remains a failed overall run.
+
+#### Summary
+
+- **Delivered behavior:** TRE declares UMM 0.31.1 and compiles against UMM 0.31.1.0 and Harmony12 1.2.0.1. The package comparison binds shipped repository files to their producing commit and archive digest. The complete retained candidate was admitted after the cleanup attempt and its DLL passed all four static loader audits.
+- **Scope reviewed:** Draft PR #220 at the final checkpoint under OWNER AMENDMENT 4, covering TRE’s pinned build, package provenance, retained candidate and directly affected validation evidence.
+- **Pending later-phase work:** none
+- **Unresolved questions:** Which entries remain in this run’s disposable directory, and can the authorized cleanup finish under existing permissions?
+- **Remaining owner review:** Owner acceptance of the TRE development handoff after the required cleanup and evidence issues are resolved.
+
+#### Provenance (controller-recorded)
+
+| | Requested | Observed |
+|---|---|---|
+| Model | `gpt-6.2-astra` | `gpt-6.2-astra` (turns ['gpt-6.2-astra']) |
+| Reasoning effort | `max` | `max` (turns ['max']) |
+| Sandbox / approvals | read-only / never | `read-only` / `never` |
+
+Owner guidance bound to this review: none.
+
+Owner amendments bound to this review: revision 4, sha256 `732aeb371fbbc7ee4aa71c2ef5bd848874af88607e27ab0babcb73e7395ce936`.
+
+Codex CLI `0.170.0`, thread `01a21b08-4365-70b1-b1f8-898cdd552c6c`, duration 713.4s, response sha256 `18c087c0537ce9dd32132b5fcb812d38c73ed2af43de9609589789d5e2871032`, request `kmg-codex-umm-0311-pinned-build-20261124-20261123223003-1af6-r08-e72b8e`. Observed values come from the Codex session rollout's recorded thread settings, not from the model's own statements; the serving backend's model identity is not separately exposed.
+
+<details><summary>Complete structured review (agent-review.review.v1)</summary>
+
+```json
+{
+  "candidate_commit": "680f691c5e62ab6ed79ef070dd76764491642ca7",
+  "checkpoint_id": "final",
+  "checkpoint_type": "final",
+  "decision": "changes_required",
+  "decision_rationale": "The package comparison fixes are verified, the required gate passed, and the retained DLL matches the four-loader audit. OWNER AMENDMENT 4 still requires admission after fixture cleanup. Cleanup failed, the retry helper does not establish which fixture it is cleaning, and the evidence index attributes a derived result to the executed driver.\n\nContinuation for Claude\n\nReuse the retained c67881f3fb producer, package and static audit. Identify the exact disposable directory from this run before taking any cleanup action. Protect the producer and shared Git files. If existing permissions prevent cleanup, preserve the remnant and record the exact blocker. After verified cleanup, run Read-KmgBuildLocalManifest at the receipt-bound location with -DevelopmentPurpose umm-0311-admission -RequireCurrentMaterialInputs and capture its exit status, producer, ZIP digest, DLL digest and MVID.\n\nPreserve the failed completion result, label the split case count as derived, and correct the account of the cleanup outcome. Verify the indexed Git blob digests and run the required focused gate on the resulting checkpoint. Keep this correction within the existing review and validation limits. Native and combined-stack testing remain NOT RUN.",
+  "evidence_assessment": {
+    "executed_verification": [
+      "The controller recorded the focused gate at 680f691c5e62ab6ed79ef070dd76764491642ca7. Production compiled against UMM 0.31.1.0 and Harmony12 1.2.0.1. The named loader test passed, with 1 of 3,189 selected, exit 0 in 55.1 seconds. I verified the gate log digest.",
+      "The retained build log records one successful 530-second Build-Local run at c67881f3fb8892cae09cdf4cc4f370170f20afc8 and successful strict package validation. Only documentation and evidence changed between that producer and the review commit.",
+      "The focused records show that the ordinary reader refused the restored-source icon edit and the edited case-variant README. The clean package passed with 457 repository members compared and remained admitted after an unshipped review note. Both archive-replacement directions were refused, and the matching archive passed.",
+      "I cross-checked the receipt, retained layout, reader output and audit. They identify ZIP d8d14600c8c0fa0c0abc117cba1c1f0cb8fe446983d1bd23e2ddf5625bb29929, DLL 17a42879a57dba9914cebd67b3855ad95a94ef64775a8c2f66886ef5f03c808a and MVID 5efdffb9-c4ac-4a3e-91f7-089a12991064. The validation summary and selected-test log match their receipt digests. The audit resolved 23 types and 67 members on 0.31.1, 0.32.4, owner 0.33.0 and 0.33.4.",
+      "All 48 indexed exported SHA-256 values matched their committed Git blobs. The focused suite source also matched its recorded digest."
+    ],
+    "inspected": [
+      "The fixed mission, all four owner amendments, applicable repository instructions, prior findings ledger, developer report, transcript notice and controller gate receipt.",
+      "The M..H feature diff and the correction since ffdd7fa7a5, including the project copy rules, package writer, both staging readers, focused fixtures, retention driver, completion step and evidence index."
+    ],
+    "limitations": [
+      "The controller withheld the mixed foreground session transcript. Build, fixture and audit observations come from their committed exports. The retained ZIP and host fixture directory were outside the review snapshot.",
+      "Native gameplay and combined-stack testing were NOT RUN under OWNER AMENDMENT 4. The earlier 62/63 admission run remains a failed overall run."
+    ],
+    "required_gaps": [
+      "Verified cleanup of this run\u2019s disposable fixture followed by admission at the retained producer.",
+      "A cleanup target tied to this run that preserves the producer and shared Git metadata.",
+      "Accurate attribution of the original failed completion result and the later split summary."
+    ],
+    "source_inspection_only": [
+      "The writer and both staging readers pass the expected archive digest to the comparison helper. The helper hashes and reads the ZIP through one handle opened with read sharing, resolves copied members to canonical Git paths, and preserves the separate compiled-DLL checks.",
+      "A read-only evaluation of the completion helper\u2019s path predicates accepted both an unrelated prefixed fixture and a parent containing a producer. No filesystem cleanup was performed during review."
+    ]
+  },
+  "findings": [
+    {
+      "acceptance_ids": [],
+      "actual": "The driver and completion attempt encountered access denial on multi-pack-index. The export records fixture_area_removed=false. The real reader returned the correct identities after that attempt, but there is no observation following verified cleanup.",
+      "blocking_rationale": "OWNER AMENDMENT 4 explicitly orders fixture cleanup before the final admission observation. The retained layout and matching audit establish the other parts of R7-F2.",
+      "blocks_readiness": true,
+      "category": "evidence_gap",
+      "expected": "After cleanup of the disposable fixture, the development reader admits the same frozen package at its receipt-bound location with RequireCurrentMaterialInputs.",
+      "id": "R7-F2",
+      "location": {
+        "file": "docs/evidence/umm-0311/focused-r9.json",
+        "line": 123
+      },
+      "priority": "P2",
+      "requested_correction": "Establish what remains in the exact disposable directory and complete the authorized cleanup if permissions allow. Preserve any protected remnant and report the denial if it persists. Reuse the retained candidate for the post-cleanup read.",
+      "requested_evidence": "Record the verified cleanup outcome, followed by the real reader\u2019s command, exit status, producer, ZIP SHA-256, DLL SHA-256 and MVID at the canonical location. Compare those identities with the existing audit.",
+      "title": "Verify retained admission after fixture cleanup",
+      "trigger": "The final handoff uses the reader result obtained after the disposable fixture removal failed."
+    },
+    {
+      "acceptance_ids": [],
+      "actual": "The completion helper accepts any worktrees path with the focused-r9- prefix. It treats an absent path as successful cleanup and checks containment in the wrong direction to protect a producer below the supplied path. For an existing target it recursively clears read-only attributes, including on Git files the run identifies as hard-linked to the lab object store.",
+      "blocking_rationale": "A wrong path can certify cleanup while the failed fixture remains, or target another tree for removal. Changing an attribute through a hard link also changes it through the shared file\u2019s other names.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "A cleanup retry identifies this run\u2019s disposable root before mutation and preserves the retained producer, other worktrees and shared Git files.",
+      "id": "R8-F1",
+      "location": {
+        "file": "docs/evidence/umm-0311/focused-r9-completion.ps1.txt",
+        "line": 11
+      },
+      "priority": "P1",
+      "requested_correction": "Bind any retry to the exact fixture created by this run and verify that its path and the producer path are disjoint in both directions. Limit cleanup to owned entries without changing shared-file attributes. Preserve the exported helper as the record of the failed run.",
+      "requested_evidence": "Identify the actual fixture and producer paths. Show that a different prefixed directory and a parent containing the producer are rejected before mutation. A read-only path check suffices for those controls.",
+      "title": "Confine the cleanup retry to this run\u2019s disposable files",
+      "trigger": "The completion helper receives a different focused-r9- path, or encounters a read-only Git file shared by the disposable clone and the lab repository."
+    },
+    {
+      "acceptance_ids": [],
+      "actual": "The driver recorded 16 passing cases. The completion script appends one combined case whose cleanup condition failed, yielding 16/17. The published 17/18 summary splits that case afterward. I reproduced the index\u2019s raw digest 69fb0e67\u2026 from the already-split JSON by restoring its local prefix and line formatting. Its fixture_area_note also says removal succeeded beside fixture_area_removed=false.",
+      "blocking_rationale": "The index identifies postprocessed bytes as the raw run output and the note contradicts the observed cleanup result. Accurate evidence attribution is required by OWNER AMENDMENTS 3 and 4.",
+      "blocks_readiness": true,
+      "category": "defect",
+      "expected": "The index distinguishes the executed completion result from any derived summary and accurately records the failed cleanup.",
+      "id": "R8-F2",
+      "location": {
+        "file": "docs/evidence/umm-0311/INDEX.md",
+        "line": 24
+      },
+      "priority": "P2",
+      "requested_correction": "Identify the original completion capture and its digest if retained. Label the 17/18 split and its digest as derived. Annotate the erroneous cleanup note while preserving the failed run. State explicitly if the original capture is unavailable.",
+      "requested_evidence": "Provide traceable original and derived identities, their actual case counts and exit status, and verified committed-blob digests. Existing records suffice for this correction.",
+      "title": "Distinguish the failed completion run from its derived summary",
+      "trigger": "A reviewer uses the evidence index to reproduce the completion driver\u2019s reported outcome."
+    }
+  ],
+  "prior_finding_assessments": [
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R1-F4",
+      "rationale": "The helper resolves the remapped icon to assets/game/icons/black-powder.png and the case-variant README to README.md at the producing commit. The real ordinary reader refused both edited archives. The clean-package and unshipped-note controls passed."
+    },
+    {
+      "assessment": "fix_verified",
+      "finding_id": "R7-F1",
+      "rationale": "The writer and both staging readers supply the receipt\u2019s expected digest. Hashing and member inspection use the same held ZIP handle. The matching archive passed and replacements in both directions failed the digest check."
+    },
+    {
+      "assessment": "fix_rejected",
+      "finding_id": "R7-F2",
+      "rationale": "The producer, canonical layout, sidecars and matching four-profile audit are verified. The required post-cleanup observation remains outstanding because fixture removal failed before the recorded admission."
+    },
+    {
+      "assessment": "deferral_accepted",
+      "finding_id": "R7-F3",
+      "rationale": "OWNER AMENDMENT 4 expressly keeps this fixture assertion optional. The recorded run identified the locked ZIP, restored sentinel and successful staging control. More precise instrumentation of the destination-verification step can remain deferred."
+    }
+  ],
+  "request_id": "kmg-codex-umm-0311-pinned-build-20261124-20261123223003-1af6-r08-e72b8e",
+  "round": 8,
+  "schema_version": "agent-review.review.v1",
+  "summary": {
+    "delivered_behavior": "TRE declares UMM 0.31.1 and compiles against UMM 0.31.1.0 and Harmony12 1.2.0.1. The package comparison binds shipped repository files to their producing commit and archive digest. The complete retained candidate was admitted after the cleanup attempt and its DLL passed all four static loader audits.",
+    "pending_later_phase_work": [],
+    "remaining_owner_review": [
+      "Owner acceptance of the TRE development handoff after the required cleanup and evidence issues are resolved."
+    ],
+    "scope_reviewed": "Draft PR #220 at the final checkpoint under OWNER AMENDMENT 4, covering TRE\u2019s pinned build, package provenance, retained candidate and directly affected validation evidence.",
+    "unresolved_questions": [
+      "Which entries remain in this run\u2019s disposable directory, and can the authorized cleanup finish under existing permissions?"
+    ]
+  }
+}
+```
+</details>
+
+_Model-generated review by Codex using the requested model, posted by the agent-review controller through the owner's GitHub account. Not a human review or approval._
