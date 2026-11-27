@@ -222,17 +222,19 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         // Submit one native command and observe it: no direct ticking.
         private IEnumerable<int> R6RunPassive(UnitEntityData owner, AbilityData data, TargetWrapper target, JObject row, R6Clip clip,
-            Action<UnitUseAbility> issued = null)
+            Action<UnitUseAbility> submit = null)
         {
             row["blueprint"] = data.Blueprint.AssetGuid; row["blueprintName"] = data.Blueprint.name;
             row["actionType"] = data.Blueprint.ActionType.ToString();
             row["availableBefore"] = data.IsAvailable; row["canTarget"] = data.CanTarget(target);
             if (!data.IsAvailable || !data.CanTarget(target)) throw new InvalidOperationException("Native ability unavailable: " + data.Blueprint.name);
             var command = new UnitUseAbility(data, target);
-            if (issued != null) issued(command);
             int cuesSeen = SummonAbilityCastCueRuntime.Snapshot().Length;
             var cuePosts = new JArray(); row["cuePostsListener"] = cuePosts;
-            owner.Commands.Run(command);
+            // Owner amendment 4 §2B (C3 review R2-F7): a caller that owns its submission (the Sprint 7 Dust cell) performs the
+            // single native run itself; every other caller keeps the plain native run.
+            if (submit != null) submit(command);
+            else owner.Commands.Run(command);
             DateTime deadline = DateTime.UtcNow.AddSeconds(30);
             int actedAt = -1, shots = 0;
             while (DateTime.UtcNow < deadline)

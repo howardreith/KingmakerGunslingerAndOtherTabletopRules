@@ -1,0 +1,94 @@
+{
+ "purpose": "One-off extraction and cross-check of round-3 acceptance_ids (C3 amendment 3 section 4, audit A1-F9); not a mapping framework.",
+ "published_review": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/223#issuecomment-7194404698",
+ "published_request_id": "kmg-codex-s7-recovery-c3-effects-ownership-20261125235239-ba5d-r03-db7304",
+ "published_candidate_commit": "f0ca78cbab9b57583379a575208a15304aae7eb1",
+ "controller_result": "agent-review-state/<enrollment>/rounds/r03/result-1.json",
+ "controller_result_sha256": "7fe59f087752ff1f14712bcc4625c2f0d01268b37e08c60dcd54c16204079760",
+ "controller_request_id": "kmg-codex-s7-recovery-c3-effects-ownership-20261125235239-ba5d-r03-db7304",
+ "controller_candidate_commit": "f0ca78cbab9b57583379a575208a15304aae7eb1",
+ "acceptance_ids_identical": true,
+ "acceptance_ids": {
+  "R3-F1": [
+   "R7-F2",
+   "R7-F5",
+   "OWNER AMENDMENT 1 §3D"
+  ],
+  "R3-F2": [
+   "R7-F2",
+   "OWNER AMENDMENT 1 §3B"
+  ],
+  "R2-F7": [
+   "R4-F1",
+   "R7-F2",
+   "OWNER AMENDMENT 1 §3B"
+  ],
+  "R3-F3": [
+   "R7-F2",
+   "R7-F4",
+   "OWNER AMENDMENT 1 §§3B,5"
+  ],
+  "R3-F4": [
+   "R7-F2",
+   "R7-F5",
+   "OWNER AMENDMENT 1 §§3B,3D"
+  ],
+  "R1-F9": [
+   "C3 §5",
+   "OWNER AMENDMENT 1 §3C"
+  ],
+  "R2-F8": [
+   "R4-F1",
+   "OWNER AMENDMENT 1 §§3B,3D"
+  ],
+  "R1-F11": [
+   "R4-F1",
+   "R7-F2",
+   "R7-F4",
+   "OWNER AMENDMENT 1 §3E"
+  ],
+  "R1-F13": [
+   "C3 §8",
+   "OWNER AMENDMENT 1 §§3F,7"
+  ],
+  "R3-F5": [
+   "C3 §§6–8",
+   "OWNER AMENDMENT 1 §§6–7"
+  ]
+ },
+ "parent_rows": {
+  "R4-F1": [
+   "R2-F7",
+   "R2-F8",
+   "R1-F11"
+  ],
+  "R7-F2": [
+   "R3-F1",
+   "R3-F2",
+   "R2-F7",
+   "R3-F3",
+   "R3-F4",
+   "R1-F11"
+  ],
+  "R7-F3": [],
+  "R7-F4": [
+   "R3-F3",
+   "R1-F11"
+  ],
+  "R7-F5": [
+   "R3-F1",
+   "R3-F4"
+  ]
+ },
+ "mission_only": {
+  "R1-F9": [
+   "C3 §5"
+  ],
+  "R1-F13": [
+   "C3 §8"
+  ],
+  "R3-F5": [
+   "C3 §§6–8"
+  ]
+ }
+}

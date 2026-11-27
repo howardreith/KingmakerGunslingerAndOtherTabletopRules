@@ -30,11 +30,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string Sprint39S7ModelsInteriorPhase = "summon-s7-models-interior";
         internal const string Sprint39S7UiPhase = "summon-s7-ui";
         internal const string Sprint39S7EffectsPhase = "summon-s7-effects";
+        // Sprint 7 recovery C3 (R1-F12): the effects phase's mechanics-only selection (no frame capture, native-look comparison
+        // or listening samples), for the recovery's native qualification.
+        internal const string Sprint39S7EffectsMechanicsPhase = "summon-s7-effects-mechanics";
         internal static bool Sprint7Phase(string phase)
         { return phase == Sprint39S7GhaelePhase || phase == Sprint39S7GhaeleInteriorPhase || phase == Sprint39S7ModelsPhase ||
-            phase == Sprint39S7ModelsInteriorPhase || phase == Sprint39S7UiPhase || phase == Sprint39S7EffectsPhase; }
+            phase == Sprint39S7ModelsInteriorPhase || phase == Sprint39S7UiPhase || phase == Sprint39S7EffectsPhase || phase == Sprint39S7EffectsMechanicsPhase; }
         internal static bool Sprint7OutdoorPhase(string phase)
-        { return phase == Sprint39S7GhaelePhase || phase == Sprint39S7ModelsPhase || phase == Sprint39S7UiPhase || phase == Sprint39S7EffectsPhase; }
+        { return phase == Sprint39S7GhaelePhase || phase == Sprint39S7ModelsPhase || phase == Sprint39S7UiPhase || phase == Sprint39S7EffectsPhase ||
+            phase == Sprint39S7EffectsMechanicsPhase; }
         // Alphabetical summon menus: save-free census and real popup rows.
         internal const string Sprint39AlphabeticalMenusPhase = "summon-alphabetical-menus";
         // Cleric alignment: save-free census, real menus and native casts.
