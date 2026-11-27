@@ -2650,7 +2650,8 @@ namespace KingmakerGunslinger.DomainTests
         {
             // The earlier combined run (product 6abd692fa7; C1's same-run criterion) and recovery candidate 3's run (66b0ff3f14).
             // Recovery candidate 4's run (6cef765a8a; C3 amendment 3) is added beside them.
-            foreach (string file in new[] { "20261126T054228Z-callback-loss-row.json", "20261126T134425Z-callback-loss-row.json", "20261126T232851Z-callback-loss-row.json" })
+            // Recovery candidate 5's run (511db044b1; C3 amendment 4) is added beside them.
+            foreach (string file in new[] { "20261126T054228Z-callback-loss-row.json", "20261126T134425Z-callback-loss-row.json", "20261126T232851Z-callback-loss-row.json", "20261127T022022Z-callback-loss-row.json" })
                 RunVerdictsAgree(file);
         }
 
