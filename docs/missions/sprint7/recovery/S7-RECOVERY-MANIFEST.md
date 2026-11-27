@@ -783,6 +783,33 @@ no timestamps in that span. Unknown: which step or steps took that time, and why
 only a small part; peer activity is not established as the cause. Charged baseline kept at 319 min 19.8 s (outer time); no
 process-only duration different from the outer time was found, so nothing is reclaimed.
 
+Peer coordination for the amendment-5/6 validation commands (dated from this session's cross-session message record; corrected
+after review 6, R6-F1). Under the existing peer protocol other sessions on DATA may run Kingmaker copies; a game-copy session
+needs an agreed no-Kingmaker window, and C3 amendment 5 also asks that build and gate periods be coordinated.
+- Standing statement before the amendment-5 gates: at 02:26:52Z, on the release of the candidate-5 window, kingmakermountedcombat-0f
+  wrote that its session was still offline-only and that it would ask first if it ever needed the game. The two local
+  amendment-5 correction gates (FAIL 05:04:58Z–05:05:22Z, PASS 05:05:58Z–05:06:03Z) ran under that statement without a fresh
+  exchange.
+- Candidate-6 build: a roster check at 05:15:35Z listed two peers, dev-a6 (a shell session, not contacted) and
+  kingmakermountedcombat-0f. Request 05:15:44Z (Build-Local about 13 min, then the session and gates within about 30 min); reply
+  05:16:02Z "Free": no Kingmaker on DATA during the window, and over the next 30 minutes only short builds (about 30 s each),
+  offline harness and component runs, focused gates and one background model review. The build ran 05:23:01Z–08:58:46Z. The
+  arrangement covered roughly 05:16Z–05:46Z by its own terms; **for about 05:46Z–08:58:46Z no exchange took place and no peer
+  status was checked, so coordination for that interval cannot be verified**, and what other work ran on DATA then is unknown.
+  The window was released at 09:04:26Z.
+- Candidate-6 session and final gates (H `e5b1e4af85`): request to kingmakermountedcombat-0f 13:20:21Z; reply 13:20:38Z: DATA is
+  ours, no Kingmaker launch and no game or MSBuild work until released, with a CPU-only Python unit suite (stated as started
+  "about 13:30Z" in a message received at 13:20:38Z, so its actual start is uncertain; about 16 minutes) running meanwhile. The
+  session ran 13:30:19Z–13:36:36Z, the local gate 13:39:46Z–13:39:52Z and the controller gate batch 13:50:55Z–13:58:08Z; released
+  13:58:21Z. **No roster check was made at 13:20Z** (the last was at 05:15:35Z). A roster check at 14:51Z lists a third session,
+  kingmakerskipcinematic-1b, started about an hour earlier; it was not contacted for the 13:20Z–13:58Z window, so that window's
+  coordination is verified for kingmakermountedcombat-0f only. Asked afterwards (reply received about 14:53Z), kingmakerskipcinematic-1b stated that it did not run Kingmaker between 13:30Z and 13:37Z; its first game launch that day was its guarded run 20261127T140338Z at 14:03:38Z, after this window had been released, using its own disposable copy with the owner's install and saves unchanged. That is the peer's after-the-fact account, not a contemporaneous check.
+- Review-7 gates: roster check 14:51Z (dev-a6 idle, kingmakermountedcombat-0f idle, kingmakerskipcinematic-1b busy); requests
+  to kingmakermountedcombat-0f and kingmakerskipcinematic-1b about 14:51Z; kingmakermountedcombat-0f replied "free" (idle, no
+  Kingmaker, builds or gates during the window); kingmakerskipcinematic-1b replied "free" about 14:53Z (no Kingmaker or guarded run
+  active, new launches held until released; it listed its runs that afternoon as 14:03Z to 14:55Z, the last ending about 14:55Z),
+  and the gates were started after 14:55Z.
+
 **C3 native qualification of the amendment-5 bytes (recovery candidate 6 of 6, under C3 amendment 6).** Built once from records
 head `962bf27694` (compiled source identical to code commit `360ce86f54`; the records commit changes only `docs/`): package
 `6c71d928ea4293945af43a4b33f81238047176b07ed10fc88edee342649cd55a`, DLL
@@ -803,8 +830,14 @@ DATA, whose CPU-only Python suite was running meanwhile): PASS, 43/43 checks.
   settled at cleanup with nothing remaining, 0 live, the late sweep completed and the subscription released. This executes the
   classification on a real engine command; the engine contract that such a command cannot start later remains source-derived (the
   run shows no later execution from it, which is consistent with it but does not prove it). No unreadable observation occurred.
-- Pending commands and transferred residuals: `pendingCommands` empty in every Dust release (ordinary, pre-delivery, abandoned);
-  the five drivers (callback-abandoned, callback-setup-failed, trace-setup-failed, dust-pre-delivery-disposed, dust-abandoned) are
+- Pending commands and transferred residuals: `pendingCommands` is exported, and empty, for the ordinary Dust release
+  (`dust.ownedEffects`) and the pre-delivery driver's release (`dustPreDeliveryDisposed.dust.ownedEffects`). The abandoned driver's row
+  exports no `pendingCommands` field (corrected after review 6, R6-F2; the earlier wording listed it); its execution census
+  (`dustAbandoned.dust`) shows one owned execution, `KMG_Summoning_Special_DustMephit_Breath#-1747779200`, live at cleanup
+  (`ownedExecutionsLive` 1, `liveExecutionsAtCleanup` 1, `executionsSettledBeforeReuse` true), `ownedCommandsEnded` 1,
+  `ownedCommandsLeft` 0 and no owned-command failure, and its child residuals (`dustAbandoned.expected`) are exactly the two
+  expected entries, the injected Sickened removal failure and the one owned condition it left, with `unexpected`, `unsafe` and
+  `expectedMissing` empty and the injected leftover gone after repair (`leftoverGone` true, no repair failure). The five drivers (callback-abandoned, callback-setup-failed, trace-setup-failed, dust-pre-delivery-disposed, dust-abandoned) are
   all proven with empty `transferredResiduals`. So the native run did not reach the pending, null-to-unreadable, null-to-live or
   transient-failure-then-cancellation transitions, or failures after a handoff; those remain focused evidence (cases A–D, R5-F3).
 - Command ownership: every cell-owned Dust command goes through `SubmitCellCommand` in these bytes; the deliberately unowned
@@ -830,14 +863,16 @@ Candidate 5's `20261127T022022Z` PASS stays at its own scope (source `511db044b1
 it does not qualify these bytes.
 
 **C3 current state (2026-11-27, under C3 amendment 6; this block and the map below are the current records).** Controller ACTIVE
-in develop at final 5/7, amendments revision 6. Recovery candidate 6 built (PASS) from records head `962bf27694` (code
+in develop at final 6/7, amendments revision 6. Recovery candidate 6 built (PASS) from records head `962bf27694` (code
 `360ce86f54`): package `6c71d928ea4293945af43a4b33f81238047176b07ed10fc88edee342649cd55a`, DLL
 `6af754eb06f72a261916d2dcd6e5fea125b62b13dcc9eeae53ad000e94341411`, 25 selected tests; its build exceeded the amendment-5 allowance
 (the dated stop at `a78dba163b` is history), and amendment 6 authorized reusing it. Its mechanics session `20261127T133020Z`
 passed (43/43, seven required cells admitted and completed, physical restoration separately true; see the qualification paragraph
-above); the controller final gates and formal review 6 on this records head are next, with review 7 only for unchanged-runtime
-work. Formal
-reviews: five spent (reviewed H `7fff8b34f6`, `89d4efa347`, `f0ca78cbab`, `43dd44a2ba`, `ed02905b7f`). Recovery candidates:
+above); formal review 6 (H `e5b1e4af85`, all four controller gates PASS) verified R5-F1, R5-F2, R5-F3, R1-F13 and R5-F4
+and opened two records findings, R6-F1 (P2, peer coordination documented only for the game session) and R6-F2 (P3, cite the
+abandoned driver's census); both are corrected in records above, with no runtime, harness or package change, for the conditional
+review 7 (the controller left the enrollment ACTIVE at final 6/7). Formal reviews: six spent
+(reviewed H `7fff8b34f6`, `89d4efa347`, `f0ca78cbab`, `43dd44a2ba`, `ed02905b7f`, `e5b1e4af85`); review 7 is the last. Recovery candidates:
 six spent of six. Validation: see the ledger. Settlement correction: code
 `360ce86f54` (focused gate PASS, 25 tests). No C3 archive A and no handoff. Source, reviewed H, records head and archive A stay
 distinct identities. Candidate 5 and its PASS stay at their scope: build source `511db044b1`, package `15307748…638e`, DLL
@@ -851,13 +886,21 @@ the controller's `result-1.json`, request `…-r05-e19c0d`, H `ed02905b7f`;
 `docs/evidence/sprint7/recovery-c3/round5-acceptance-ids-crosscheck.json`). Review 5's verifications of C3/R4-F1, C3/R2-F7,
 C3/R4-F2 and C3/R4-F3 stand.
 
-| C3 finding (round 5) | Bindings (`acceptance_ids`) | Correction and evidence (current; formal verification is review 6's) |
+| C3 finding (round 5) | Bindings (`acceptance_ids`) | Correction and evidence (formal review 6 verified all five on H `e5b1e4af85`) |
 |---|---|---|
 | R5-F1 (P1 defect) | #219 R7-F2; C3 §5; amendment 4 §2A | Code `360ce86f54`: one observation per command per settlement evaluation (each consumer accounts for its own observations; no phase-wide snapshot), one decision over the complete set; focused (A), (B), (D); native: candidate 6 regression PASS (`20261127T133020Z`; settlement observations ended/cancelled only, no pending or transferred residual reached natively) |
 | R5-F2 (P2 defect) | #219 R7-F2; C3 §5; amendment 4 §§2A,2C | Code `360ce86f54`: a readable null replaces earlier uncertainty in the census, both command residuals and the reconciliation; focused (C), (D); native: candidate 6 regression PASS (`20261127T133020Z`; the cancellation branch ran once natively; the null-after-uncertainty transition is focused only) |
 | R5-F3 (P2 evidence gap) | C3 §5; amendment 4 §2C | Domain test at `360ce86f54`: the exact forwarded interruption failure in the phase after physical cleanup; rejects a generic-only phase |
 | R1-F13 (P2 records) | C3 §8; amendment 2 §4; amendment 3 §4; amendment 4 §3 | Stop-commit corrections kept (C3/R4-F1 binds #219 R7-F2; candidate 4 ran `6cef765a8a`); this current-state block and map; the round-4 map and pre-review-5 status prose marked history |
 | R5-F4 (P2 evidence gap) | C3 §6; amendment 3 §4; amendment 4 §§2B,4 | Stop-commit scoping kept: `SubmitCellCommand` coverage is for cell-owned Dust commands; the separate same-caster control submits directly (`unownedExecution`) |
+
+Round-6 findings (review 6, H `e5b1e4af85`; records only, corrected for the conditional review 7 with runtime, harness and package
+unchanged):
+
+| C3 finding (round 6) | Requested | Correction (records) |
+|---|---|---|
+| R6-F1 (P2 evidence gap, blocks readiness) | A dated account of the peer coordination for the candidate-6 build and final gates, identifying any interval that cannot be verified | Peer-coordination paragraph under C3 amendment 6: dated exchanges for every amendment-5/6 validation command; the build's coordination is unverifiable for about 05:46Z–08:58:46Z; the 13:20Z–13:58Z window is verified for kingmakermountedcombat-0f only (no roster check then; kingmakerskipcinematic-1b's after-the-fact account recorded) |
+| R6-F2 (P3 optional) | Cite the abandoned driver's exported census for its pending-command result | Candidate-6 qualification paragraph: the abandoned driver exports no `pendingCommands`; its execution census and child residuals cited instead |
 
 (History, dated 2026-11-27 before C3 amendment 5; superseded by the round-5 pending-finding map in the C3 current state below.)
 Pending-finding map after formal review 4 (one-off extraction of the accepted structured round-4 result, identical in the
@@ -1168,6 +1211,9 @@ the next ledger update (the next child's manifest, or the final handoff).
 | C3 r6 | Session `20261127T133020Z-owner-0.33.0-s7-c3-mechanics` (recovery candidate 6, reused; C2 harness `d77754ba…b4f1`) | PASS, 43/43 checks; seven required cells completed; physical restoration true; transaction succeeded, owner files and saves verified, registry restored | 6 min 16.4 s | 325 min 36.2 s | 34 min 23.8 s |
 | C3 r6 | Focused gate `sprint7-visual` (local, with the candidate-6 same-run agreement) | PASS, 25 tests | 5.7 s | 325 min 41.9 s | 34 min 18.1 s |
 | C3 r6 | Prospective estimate before the controller final gates on this head (recorded before them): batch about 6 min 52 s, leaving about 27 min 26 s; a conditional round-7 batch would leave about 20 min 34 s | estimate | — | 325 min 41.9 s | 34 min 18.1 s |
+| C3 r6 | Controller focused gates on H `e5b1e4af85` (`sprint7-visual` 106.4 s, `summon-playtest-r6` 118.4 s, `native-profile` 113.0 s, `loader-compat-probe` 93.6 s outer; receipts 58.7 + 58.0 + 55.2 + 46.0 = 217.9 s, worktree unchanged; the rest controller overhead outside the receipts) | PASS, 4/4 | 432.3 s (batch; estimated about 6 min 52 s) | 332 min 54.2 s | 27 min 5.8 s |
+| C3 r6 | Formal review 6 (model review, outside the clock) | changes_required: R5-F1, R5-F2, R5-F3, R1-F13, R5-F4 verified; R6-F1 (P2 records) and R6-F2 (P3 records) opened | — | 332 min 54.2 s | 27 min 5.8 s |
+| C3 r7 | Prospective estimate before the round-7 controller gates (records-only corrections; recorded before them): batch about 7 min 12 s (the round-6 batch), leaving about 19 min 54 s | estimate | — | 332 min 54.2 s | 27 min 5.8 s |
 
 Notes:
 - Through C1 (to 2026-11-26 00:24Z) no product package, harness build or game session had run in the recovery; C2 then
