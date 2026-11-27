@@ -2,6 +2,49 @@
 
 ## 0.0.197 publication authorization
 
+**Published (completed).** Stable
+[v0.0.197](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.197)
+is Latest and not a prerelease. The tag peels to the release commit `329ad1b073` (PR #228), which was `origin/master`
+when the publisher ran.
+
+- **Gate.** The publisher's complete suite passed 3,192/3,192 with 0 failures, and the release197 validator passed.
+- **Builds.** Two deterministic exact-reference builds against the pinned UMM 0.31.1 loader references:
+  - package SHA-256 `1600c4d3fe4e107319e06faea5e2c8643658b5cfd36b4cd0093d3d1fe6d6f52f`;
+  - DLL SHA-256 `dc6a3d1a48730f7b2b7b01f1fecb397dcd3ba8b39cfab7a357bd9fa8d2150670`.
+- **Reference bundle.** `artifacts/summon-overhaul-baseline/reference-input/KingmakerGunslinger-private-build-references`,
+  as for v0.0.196.
+- **Public download test.** A fresh download of the three assets matched `SHA256SUMS.txt`, and the manifest names
+  the release commit `329ad1b0738b0060f180df8931d41b3c7fb00430` with two deterministic builds. The package has one
+  `KingmakerGunslinger` root (458 files); its `Info.json` reads 0.0.197 with `ManagerVersion` 0.31.1 and `Id`
+  `KingmakerGunslinger`, beside the DLL hash above.
+- **Native check on the published bytes.** The publisher's primary package, byte-identical to the public asset
+  (`1600c4d3…`), was deployed to the live installation through the guarded runtime route (deployment DLL
+  `dc6a3d1a…`, loaded mod version 0.0.197). Because this release changes the persistence check, the whole ordinary
+  4-launch persistence chain ran on these bytes, one deployment, 887 s with restoration:
+
+  | Phase | Run | Result |
+  | --- | --- | --- |
+  | prepare | `20261126T2305445749229Z` | PASS 66/66 |
+  | module OFF fresh load | `20261126T2308503374323Z` | PASS 175/175 |
+  | module ON fresh load + native respec + cleanup | `20261126T2311411685251Z` | **PASS 255/255**, `restored-captures` reports `lifecycle=exact` |
+  | fresh-load absence | `20261126T2317595163579Z` | **PASS 8/8** |
+
+  - This also exercises the review follow-up `c28f4efd50` natively: the diagnostic reports `exact` after the
+    evaluator ran.
+  - Absence continuity: prepare saved at game tick 443,721,950,000; module ON loaded it and its cleanup saved at
+    443,722,340,000; `verify-absent` loaded 443,722,340,000.
+  - Afterwards the live mod was restored byte-exact from its pre-deploy backup, `Params.xml` and
+    `FeatureModules.json` went back to their intake bytes, and all 95 saves equal intake, including
+    `KMG_AUTOMATION_WORKING` with its original bytes and mtime.
+  - The Nereid qualification scope was not run natively.
+  - A no-Kingmaker window was agreed with the three active peer sessions and released afterwards.
+- **Timing.** The publisher run took 1,042 s.
+- **Installation.** The publisher performed no deployment. The post-publication check deployed temporarily and
+  restored the installation exactly.
+- **Merges.** PR #227 merged as `f75a9f4569`; release PR #228 as `329ad1b073`.
+
+Originally authorized as follows.
+
 On 2026-11-26, after reviewing PR #227 at `80ddc8a8cb` ("I approve the scoped persistence-test repair"), Howie
 wrote: "This is approved. Could you please merge and cut a new release?" The two nonblocking review items (a
 lifecycle diagnostic that could read `exact` without an evaluation, and a stale wider-validation sentence) were
@@ -35,8 +78,8 @@ v0.0.196 as the next stable patch, v0.0.197, from master `f75a9f4569`.
   - fresh load with the module ON plus native respec and cleanup 255/255, `lifecycle=exact`;
   - fresh-load absence 8/8 on the cleanup save that sequence wrote.
 
-  The review follow-up `c28f4efd50` was checked offline only. The release build is run in the game after
-  publication, and the result is added here.
+  The review follow-up `c28f4efd50` was checked offline before publication. The release build was run in the
+  game after publication (above).
 - **Not established.** The Nereid qualification scope was checked by domain tests only. The disclosures recorded for
   v0.0.196 still stand. The release notes list the player-facing ones.
 - **Publication path.** The ordinary exact-reference publisher runs from clean, pushed master with
