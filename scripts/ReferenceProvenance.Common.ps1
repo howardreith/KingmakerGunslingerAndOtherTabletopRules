@@ -348,50 +348,182 @@ function Invoke-KmgGitBytes {
     finally { $process.Dispose() }
 }
 
-# The receipt's producing commit must describe the repository files the package actually ships (R1-F4). Every ZIP entry
-# under the mod folder whose path is a file tracked at that commit must equal that commit's file as checked out:
-# git archive of the commit writes each file with the conversion a checkout of it performs (this repository's attributes
-# and line-ending configuration) and nothing else. The working tree is not read, so a source restored after packaging
-# cannot hide a packaged change. Entries the commit does not track (the compiled DLL, generated icons) are bound by the
-# receipt's other identity checks. Returns the number of entries compared.
+# The receipt's producing commit must describe every file the package ships (R1-F4). Each ZIP member under the mod folder
+# resolves to the file tracked at that commit that produced it: the file at the same path, or the source of the build's
+# copy rule for that packaged path (the project's Content/None items with a Link, so assets/game/icons/*.png ships as
+# assets/icons/*.png). Paths match without regard to letter case, as Windows packaging and extraction do, and resolve to
+# Git's own spelling; a member that matches more than one tracked file is refused as ambiguous. Each resolved member must
+# equal that commit's file as checked out: git archive of the commit writes each file with the conversion a checkout of it
+# performs (this repository's attributes and line-ending configuration) and nothing else. Only the compiled assembly is a
+# generated member (bound by the receipt's DLL identity); any other member that resolves to no tracked producer file is
+# refused, never treated as generated. The package digest the receipt records is measured on the same read handle the
+# members are then read from (R7-F1), opened without write or delete sharing, so the archive inspected is the archive the
+# receipt records. The working tree is not read. Returns the number of members compared.
+$script:KmgPackageGeneratedMembers = @('KingmakerGunslinger.dll')
+$script:KmgPackageProjectDirectory = 'src/KingmakerGunslinger'
+$script:KmgPackageProjectPath = 'src/KingmakerGunslinger/KingmakerGunslinger.csproj'
+
+function ConvertTo-KmgRepositoryRelativePath {
+    param([Parameter(Mandatory = $true)][string]$Path)
+    $parts = [Collections.Generic.List[string]]::new()
+    foreach ($segment in $Path.Replace('\', '/').Split('/')) {
+        if ($segment -eq '' -or $segment -eq '.') { continue }
+        if ($segment -eq '..') {
+            if ($parts.Count -eq 0) { throw "A package copy rule leaves the repository: $Path" }
+            $parts.RemoveAt($parts.Count - 1); continue
+        }
+        $parts.Add($segment)
+    }
+    return ($parts -join '/')
+}
+
+# The build's copy rules at one commit, read from that commit's project file: each Content or None item with a Link and a
+# CopyToOutputDirectory value is copied into the build output at its Link path, which package.ps1 ships at the same path
+# under the mod folder. Supported forms are a literal file, or a wildcard file name in one directory whose Link is
+# <directory>\%(Filename)%(Extension); any other form is refused rather than guessed.
+function Get-KmgPackageCopyRules {
+    param([Parameter(Mandatory = $true)][string]$RepositoryRoot, [Parameter(Mandatory = $true)][string]$Commit)
+    $bytes = Invoke-KmgGitBytes -RepositoryRoot $RepositoryRoot -Arguments @('show', ($Commit + ':' + $script:KmgPackageProjectPath))
+    [xml]$project = [Text.Encoding]::UTF8.GetString($bytes).TrimStart([char]0xFEFF)
+    $rules = [Collections.Generic.List[object]]::new()
+    foreach ($item in @($project.SelectNodes('//*[local-name()="Content" or local-name()="None"]'))) {
+        $link = $item.SelectSingleNode('*[local-name()="Link"]')
+        $copy = $item.SelectSingleNode('*[local-name()="CopyToOutputDirectory"]')
+        if ($null -eq $copy -or $copy.InnerText.Trim() -eq 'Never') { continue }
+        $include = [string]$item.GetAttribute('Include')
+        if ($null -eq $link -or $include -match '[;$@%]' -or $include.Contains('**')) {
+            throw "Unsupported package copy rule in $($script:KmgPackageProjectPath): $include"
+        }
+        $source = ConvertTo-KmgRepositoryRelativePath ($script:KmgPackageProjectDirectory + '/' + $include)
+        $target = ConvertTo-KmgRepositoryRelativePath $link.InnerText.Trim()
+        $slash = $source.LastIndexOf('/')
+        $sourceDirectory = if ($slash -ge 0) { $source.Substring(0, $slash) } else { '' }
+        $sourceName = $source.Substring($slash + 1)
+        if ($sourceDirectory -match '[*?]') { throw "Unsupported package copy rule in $($script:KmgPackageProjectPath): $include" }
+        if ($sourceName -match '[*?]') {
+            $m = [regex]::Match($target, '^(?:(.*)/)?%\(Filename\)%\(Extension\)$')
+            if (-not $m.Success -or $m.Groups[1].Value -match '[%*?]') { throw "Unsupported package copy rule in $($script:KmgPackageProjectPath): $include -> $($link.InnerText)" }
+            $rules.Add([pscustomobject]@{ Wildcard = $true; SourceDirectory = $sourceDirectory; TargetDirectory = $m.Groups[1].Value
+                    Matcher = [Management.Automation.WildcardPattern]::new($sourceName, [Management.Automation.WildcardOptions]::IgnoreCase) })
+        }
+        else {
+            if ($target -match '[%*?]') { throw "Unsupported package copy rule in $($script:KmgPackageProjectPath): $include -> $($link.InnerText)" }
+            $rules.Add([pscustomobject]@{ Wildcard = $false; Source = $source; Target = $target })
+        }
+    }
+    if ($rules.Count -eq 0) { throw "No package copy rules were found in $($script:KmgPackageProjectPath) at $($Commit.Substring(0, 10))." }
+    return , $rules
+}
+
+# The tracked files (Git's spelling) that can have produced one packaged member: its own path, and the source of each copy
+# rule whose packaged path it is, each matched without regard to letter case.
+function Resolve-KmgPackagedMemberSource {
+    param([Parameter(Mandatory = $true)][string]$Relative, [Parameter(Mandatory = $true)]$Rules, [Parameter(Mandatory = $true)]$TrackedByFold)
+    $paths = [Collections.Generic.List[string]]::new()
+    $paths.Add($Relative)
+    $slash = $Relative.LastIndexOf('/')
+    $directory = if ($slash -ge 0) { $Relative.Substring(0, $slash) } else { '' }
+    $name = $Relative.Substring($slash + 1)
+    foreach ($rule in $Rules) {
+        if ($rule.Wildcard) {
+            if ([string]::Equals($directory, $rule.TargetDirectory, [StringComparison]::OrdinalIgnoreCase) -and $rule.Matcher.IsMatch($name)) {
+                $paths.Add($(if ($rule.SourceDirectory) { $rule.SourceDirectory + '/' + $name } else { $name }))
+            }
+        }
+        elseif ([string]::Equals($Relative, $rule.Target, [StringComparison]::OrdinalIgnoreCase)) { $paths.Add($rule.Source) }
+    }
+    $sources = [Collections.Generic.List[string]]::new()
+    foreach ($path in $paths) {
+        if (-not $TrackedByFold.ContainsKey($path)) { continue }
+        foreach ($tracked in $TrackedByFold[$path]) { if (-not $sources.Contains($tracked)) { $sources.Add($tracked) } }
+    }
+    return , $sources
+}
+
 function Assert-KmgPackagedRepositoryFilesMatchCommit {
     param([Parameter(Mandatory = $true)][string]$PackagePath, [Parameter(Mandatory = $true)][string]$RepositoryRoot,
-        [Parameter(Mandatory = $true)][string]$Commit, [string]$ModFolder = 'KingmakerGunslinger')
+        [Parameter(Mandatory = $true)][string]$Commit, [Parameter(Mandatory = $true)][string]$ExpectedSha256,
+        [string]$ModFolder = 'KingmakerGunslinger')
     if ($Commit -cnotmatch '^[0-9a-f]{40}$') { throw 'The candidate receipt does not name a producing commit.' }
+    if ($ExpectedSha256 -cnotmatch '^[0-9a-f]{64}$') { throw 'The candidate receipt does not record the package SHA-256.' }
+    $short = $Commit.Substring(0, 10)
     $root = (Resolve-Path -LiteralPath $RepositoryRoot).Path
-    $tracked = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+    $trackedByFold = [Collections.Generic.Dictionary[string, Collections.Generic.List[string]]]::new([StringComparer]::OrdinalIgnoreCase)
     $listing = Invoke-KmgGitBytes -RepositoryRoot $root -Arguments @('ls-tree', '-r', '-z', '--name-only', $Commit)
-    foreach ($name in ([Text.Encoding]::UTF8.GetString($listing) -split "`0")) { if ($name) { [void]$tracked.Add($name) } }
+    foreach ($name in ([Text.Encoding]::UTF8.GetString($listing) -split "`0")) {
+        if (-not $name) { continue }
+        if (-not $trackedByFold.ContainsKey($name)) { $trackedByFold[$name] = [Collections.Generic.List[string]]::new() }
+        $trackedByFold[$name].Add($name)
+    }
+    $rules = Get-KmgPackageCopyRules -RepositoryRoot $root -Commit $Commit
     Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
+    $members = [Collections.Generic.List[object]]::new()
+    $unresolved = [Collections.Generic.List[string]]::new()
+    $ambiguous = [Collections.Generic.List[string]]::new()
     $sha = [Security.Cryptography.SHA256]::Create()
-    $packaged = [Collections.Generic.Dictionary[string, string]]::new([StringComparer]::Ordinal)
-    $package = [IO.Compression.ZipFile]::OpenRead((Resolve-Path -LiteralPath $PackagePath).Path)
     try {
-        foreach ($entry in $package.Entries) {
-            $name = $entry.FullName.Replace('\', '/')
-            if ($name.EndsWith('/') -or -not $name.StartsWith($ModFolder + '/', [StringComparison]::Ordinal)) { continue }
-            $relative = $name.Substring($ModFolder.Length + 1)
-            if (-not $tracked.Contains($relative)) { continue }
-            $stream = $entry.Open()
-            try { $packaged[$relative] = [BitConverter]::ToString($sha.ComputeHash($stream)) } finally { $stream.Dispose() }
+        $file = [IO.File]::Open((Resolve-Path -LiteralPath $PackagePath).Path, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
+        try {
+            $actual = [BitConverter]::ToString($sha.ComputeHash($file)).Replace('-', '').ToLowerInvariant()
+            if ($actual -cne $ExpectedSha256) {
+                throw "The package is not the archive its receipt records: $PackagePath has SHA-256 $actual, the receipt records $ExpectedSha256."
+            }
+            $file.Position = 0
+            $package = New-Object IO.Compression.ZipArchive($file, [IO.Compression.ZipArchiveMode]::Read, $true)
+            try {
+                foreach ($entry in $package.Entries) {
+                    $name = $entry.FullName.Replace('\', '/')
+                    if ($name.EndsWith('/')) { continue }
+                    if (-not $name.StartsWith($ModFolder + '/', [StringComparison]::OrdinalIgnoreCase)) { $unresolved.Add($name); continue }
+                    $relative = $name.Substring($ModFolder.Length + 1)
+                    if ($script:KmgPackageGeneratedMembers -ccontains $relative) { continue }
+                    $sources = Resolve-KmgPackagedMemberSource -Relative $relative -Rules $rules -TrackedByFold $trackedByFold
+                    if ($sources.Count -eq 0) { $unresolved.Add($relative); continue }
+                    if ($sources.Count -gt 1) { $ambiguous.Add("$relative ($($sources -join ' or '))"); continue }
+                    $stream = $entry.Open()
+                    try { $hash = [BitConverter]::ToString($sha.ComputeHash($stream)) } finally { $stream.Dispose() }
+                    $members.Add([pscustomobject]@{ Member = $relative; Source = $sources[0]; Sha256 = $hash })
+                }
+            }
+            finally { $package.Dispose() }
+        }
+        finally { $file.Dispose() }
+        if ($unresolved.Count -ne 0) {
+            throw "The package ships members that no file tracked at its producing commit $short produces and that are not generated outputs: $($unresolved -join ', ')."
+        }
+        if ($ambiguous.Count -ne 0) {
+            throw "The package ships members that match more than one file tracked at its producing commit ${short}: $($ambiguous -join ', ')."
+        }
+        if ($members.Count -eq 0) { throw "The package ships no file tracked at its producing commit $short, so that producer cannot be verified." }
+        # The producer files as checked out, in batches that keep each git command line short.
+        $sourcePaths = [Collections.Generic.List[string]]::new()
+        $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+        foreach ($member in $members) { if ($seen.Add($member.Source)) { $sourcePaths.Add($member.Source) } }
+        $checkout = [Collections.Generic.Dictionary[string, string]]::new([StringComparer]::Ordinal)
+        $batch = [Collections.Generic.List[string]]::new(); $length = 0
+        for ($i = 0; $i -le $sourcePaths.Count; $i++) {
+            if ($i -lt $sourcePaths.Count -and ($batch.Count -eq 0 -or $length + $sourcePaths[$i].Length -lt 12000)) {
+                $batch.Add(':(literal)' + $sourcePaths[$i]); $length += $sourcePaths[$i].Length + 16; continue
+            }
+            $archiveBytes = Invoke-KmgGitBytes -RepositoryRoot $root -Arguments (@('archive', '--format=zip', '-0', $Commit, '--') + @($batch))
+            $commitArchive = New-Object IO.Compression.ZipArchive((New-Object IO.MemoryStream(, $archiveBytes)), [IO.Compression.ZipArchiveMode]::Read)
+            try {
+                foreach ($entry in $commitArchive.Entries) {
+                    if ($entry.FullName.EndsWith('/')) { continue }
+                    $stream = $entry.Open()
+                    try { $checkout[$entry.FullName] = [BitConverter]::ToString($sha.ComputeHash($stream)) } finally { $stream.Dispose() }
+                }
+            }
+            finally { $commitArchive.Dispose() }
+            $batch.Clear(); $length = 0
+            if ($i -lt $sourcePaths.Count) { $i-- }
         }
     }
-    finally { $package.Dispose() }
-    if ($packaged.Count -eq 0) { $sha.Dispose(); throw "The package ships no file tracked at its producing commit $($Commit.Substring(0, 10)), so that producer cannot be verified." }
-    $checkout = [Collections.Generic.Dictionary[string, string]]::new([StringComparer]::Ordinal)
-    $archiveBytes = Invoke-KmgGitBytes -RepositoryRoot $root -Arguments (@('archive', '--format=zip', '-0', $Commit, '--') + @($packaged.Keys | ForEach-Object { ':(literal)' + $_ }))
-    $commitArchive = New-Object IO.Compression.ZipArchive((New-Object IO.MemoryStream(, $archiveBytes)), [IO.Compression.ZipArchiveMode]::Read)
-    try {
-        foreach ($entry in $commitArchive.Entries) {
-            if ($entry.FullName.EndsWith('/')) { continue }
-            $stream = $entry.Open()
-            try { $checkout[$entry.FullName] = [BitConverter]::ToString($sha.ComputeHash($stream)) } finally { $stream.Dispose() }
-        }
-    }
-    finally { $commitArchive.Dispose(); $sha.Dispose() }
-    $differing = @($packaged.Keys | Where-Object { -not $checkout.ContainsKey($_) -or $checkout[$_] -cne $packaged[$_] })
+    finally { $sha.Dispose() }
+    $differing = @($members | Where-Object { -not $checkout.ContainsKey($_.Source) -or $checkout[$_.Source] -cne $_.Sha256 } | ForEach-Object {
+            if ($_.Member -ceq $_.Source) { $_.Member } else { "$($_.Member) (producer file $($_.Source))" } })
     if ($differing.Count -ne 0) {
-        throw "The packaged content does not match its producing commit $($Commit.Substring(0, 10)): $($differing -join ', ') differ from that commit's files as checked out; the package was not produced from that commit's inputs."
+        throw "The packaged content does not match its producing commit ${short}: $($differing -join ', ') differ from that commit's files as checked out; the package was not produced from that commit's inputs."
     }
-    return $packaged.Count
+    return $members.Count
 }

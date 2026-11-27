@@ -400,7 +400,7 @@ function Read-KmgBuildLocalManifest {
         if ($RequireCurrentMaterialInputs) {
             Assert-KmgStampedByReceiptCommit -Receipt $receipt -Measured $measured
             Assert-KmgProducedFromCleanCommit -Receipt $receipt
-            $null = Assert-KmgPackagedRepositoryFilesMatchCommit -PackagePath $package -RepositoryRoot $RepositoryRoot -Commit ([string]$receipt.commit)
+            $null = Assert-KmgPackagedRepositoryFilesMatchCommit -PackagePath $package -RepositoryRoot $RepositoryRoot -Commit ([string]$receipt.commit) -ExpectedSha256 ([string]$receipt.packageSha256)
             Assert-KmgCandidateMaterialInputsCurrent -RepositoryRoot $RepositoryRoot -Commit ([string]$receipt.commit)
         }
         $receipt | Add-Member -NotePropertyName measuredDll -NotePropertyValue $measured -Force
@@ -436,7 +436,7 @@ function Read-KmgBuildLocalManifest {
     if ($RequireCurrentMaterialInputs) {
         Assert-KmgStampedByReceiptCommit -Receipt $manifest -Measured $measured
         Assert-KmgProducedFromCleanCommit -Receipt $manifest
-        $null = Assert-KmgPackagedRepositoryFilesMatchCommit -PackagePath $package -RepositoryRoot $RepositoryRoot -Commit ([string]$manifest.commit)
+        $null = Assert-KmgPackagedRepositoryFilesMatchCommit -PackagePath $package -RepositoryRoot $RepositoryRoot -Commit ([string]$manifest.commit) -ExpectedSha256 ([string]$manifest.packageSha256)
         Assert-KmgCandidateMaterialInputsCurrent -RepositoryRoot $RepositoryRoot -Commit ([string]$manifest.commit)
     }
     $manifest | Add-Member -NotePropertyName measuredDll -NotePropertyValue $measured -Force

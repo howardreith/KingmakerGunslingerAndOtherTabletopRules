@@ -502,10 +502,11 @@ if ([string]$packagedDllIdentity.sha256 -cne [string]$compilerDllIdentity.sha256
 # Every route (ordinary, reproducibility and development): no receipt unless the consumed source state is the one
 # fingerprinted when the build started.
 Assert-KmgConsumedSourceState -RepositoryRoot $root -SourceStateSha256 $sourceStateSha256
-# A receipt from a clean start claims that its commit's files are what the package ships: the ZIP's repository files are
-# compared with that commit, not with the working tree (which may have been restored after packaging).
+# A receipt from a clean start claims that its commit's files are what the package ships: every ZIP member is resolved to
+# its producer file (the project's copy rules included) and compared with that commit, not with the working tree (which may
+# have been restored after packaging), on the same read of the ZIP whose digest the receipt records.
 if ($sourceStateSha256 -ceq (Get-KmgCleanSourceStateFingerprint -Commit $git.Commit)) {
-    $null = Assert-KmgPackagedRepositoryFilesMatchCommit -PackagePath $packagePath -RepositoryRoot $root -Commit $git.Commit
+    $null = Assert-KmgPackagedRepositoryFilesMatchCommit -PackagePath $packagePath -RepositoryRoot $root -Commit $git.Commit -ExpectedSha256 $measuredPackageSha256
 }
 if ($development) {
     [xml]$developmentProps = Get-Content -LiteralPath (Join-Path $root 'Directory.Build.props') -Raw
