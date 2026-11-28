@@ -276,8 +276,10 @@ if ($assetAttributionScenario -and $Scenario.Count -ne 1) {
     throw 'Asset attribution must run as one fresh-process profile scenario.'
 }
 if ($moduleScenario) {
-    $keys = @($Parameters.Keys | Sort-Object)
-    if ($keys.Count -ne 13 -or $keys[0] -cne 'acadamaeGraduate' -or
+    # turnUndead is an optional independent Boolean (the Turn Undead feat offer).
+    $keys = @($Parameters.Keys | Where-Object { $_ -cne 'turnUndead' } | Sort-Object)
+    if (($Parameters.ContainsKey('turnUndead') -and $Parameters.turnUndead -isnot [bool]) -or
+        $keys.Count -ne 13 -or $keys[0] -cne 'acadamaeGraduate' -or
         $keys[1] -cne 'bodyguardFeats' -or
         $keys[2] -cne 'brownFurTransmuter' -or
         $keys[3] -cne 'easternWeapons' -or
@@ -301,7 +303,7 @@ if ($moduleScenario) {
         $Parameters.protectionFromAlignmentControlImmunity -isnot [bool] -or
         $Parameters.elementalRaces -isnot [bool] -or
         $Parameters.teleportationSpells -isnot [bool]) {
-        throw 'Feature-module profile observation requires exactly thirteen Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, elementalRaces, teleportationSpells, and magicCircleSpells.'
+        throw 'Feature-module profile observation requires exactly thirteen Boolean parameters: gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, elementalRaces, teleportationSpells, and magicCircleSpells; plus an optional Boolean turnUndead.'
     }
 } elseif ($sprint22ReviewScenario) {
     $keys = @($Parameters.Keys)
@@ -491,14 +493,16 @@ try {
             'teleportation-spells' = [bool]$Parameters.teleportationSpells
             'magic-circle-spells' = [bool]$Parameters.magicCircleSpells
             # Turn Undead (optional default-ON key, outside the module matrix):
-            # written explicitly, OFF only in the all-off profile.
-            'turn-undead' = [bool]($Parameters.gunslinger -or $Parameters.acadamaeGraduate -or
+            # written explicitly; the independent turnUndead value when given,
+            # otherwise OFF only in the all-off profile.
+            'turn-undead' = $(if ($Parameters.ContainsKey('turnUndead')) { [bool]$Parameters.turnUndead } else {
+                [bool]($Parameters.gunslinger -or $Parameters.acadamaeGraduate -or
                 $Parameters.shieldOther -or $Parameters.expandedSummoning -or
                 $Parameters.elvenBranchedSpears -or $Parameters.easternWeapons -or
                 $Parameters.brownFurTransmuter -or $Parameters.urbanBarbarian -or
                 $Parameters.bodyguardFeats -or $Parameters.protectionFromAlignmentControlImmunity -or
                 $Parameters.elementalRaces -or $Parameters.teleportationSpells -or
-                $Parameters.magicCircleSpells) }
+                $Parameters.magicCircleSpells) }) }
         $temporary = $settingsPath + '.kmg-profile.tmp'
         [IO.File]::WriteAllText($temporary,
             ($settings | ConvertTo-Json -Depth 4),
@@ -532,7 +536,11 @@ try {
             $arguments.CompatibilityProfileId = $ProfileId
         }
         if ($name -ceq 'observe-feature-module-settings') {
-            $arguments.Parameters = $Parameters
+            # The product's observation takes the thirteen modules; turnUndead
+            # only shapes the written settings file.
+            $moduleParameters = @{}
+            foreach ($key in $Parameters.Keys) { if ($key -cne 'turnUndead') { $moduleParameters[$key] = $Parameters[$key] } }
+            $arguments.Parameters = $moduleParameters
         }
         if ($name -ceq 'observe-expanded-summoning-module-boundary') {
             $arguments.Parameters = @{

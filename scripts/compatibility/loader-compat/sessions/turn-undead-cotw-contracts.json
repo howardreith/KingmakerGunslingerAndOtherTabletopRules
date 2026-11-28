@@ -1,6 +1,6 @@
 {
   "name": "turn-undead-cotw-contracts",
-  "description": "Turn Undead beside Call of the Wild alone (the lab snapshot's installed 1.14.4c): the product's completion line must report CotW present without a drift warning, and the harness contracts mode records the installed method IL hashes, the native and constructed Turn blueprint values, the CotW positive-harm channel entries with their Turn Undead support status, and each source's menu child placement under its own positive-harm wrapper with the direct action hidden. Setup is disclosed in tools/LoaderCompatHarness/TurnUndeadContractProbes.cs.",
+  "description": "Turn Undead beside Call of the Wild alone (the lab snapshot's installed 1.14.4c): the product's completion line must report CotW present without a drift warning, and the harness contracts mode records the installed method IL hashes, the native and constructed Turn blueprint values, the CotW positive-harm channel entries with their Turn Undead support status, and each source's menu child placement under its own positive-harm wrapper with the direct action hidden. Setup is disclosed in tools/LoaderCompatHarness/TurnUndeadContractProbes.cs. A second step drives the product adapter through its failure boundary with substitute engine types: after the live publication is rolled back, a drift engine (valid improved_channel, missing sacred_conduit) must leave menu, visibility and lists exactly as before; an optional-null holder and an already-populated second publication must behave; re-publication must equal the original; removed or swapped menu children must fail the independent placement checker.",
   "ownerMods": [
     "CallOfTheWild"
   ],
@@ -34,6 +34,12 @@
             "op": "kmgTurnUndead",
             "label": "contracts",
             "match": "contracts",
+            "timeoutSeconds": 120
+          },
+          {
+            "op": "kmgTurnUndead",
+            "label": "cotw-rollback",
+            "match": "cotw-rollback",
             "timeoutSeconds": 120
           }
         ]

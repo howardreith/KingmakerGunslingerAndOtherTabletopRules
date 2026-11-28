@@ -1,6 +1,6 @@
 {
   "name": "turn-undead-first",
-  "description": "Turn Undead intermediate checkpoint (planning/turn-undead/MISSION.md). Vanilla profile: the candidate alone, no other mod. In the loaded fixture save, a disposable cleric 5 / fighter 2 with Charisma 16 receives its real positive channel and the product's Turn Undead feat, then uses the granted cleric action through the game's ability command in real time against an ordinary skeleton and a zombie lord whose Will totals are lowered so they fail, a zombie lord whose Will is raised so it saves, a skeleton beyond 30 feet and a living hostile. The probe records the existing channel pool before and after, every saving throw and damage/heal rule on the tracked units, the product's persisted flight state, Frightened/panic and distances over two rounds, the intelligent round saves and a recovery after the zombie lord's Will is raised, and the mindless skeleton's unrefreshed one-minute expiry. Setup is disclosed in tools/LoaderCompatHarness/TurnUndeadProbes.cs. The same launch also runs the contracts extract (installed method IL hashes and blueprint values, every constructed Turn component checked against literal expectations), an undead channeler that must save against its own Turn beside a living control, and an abandoned first-turn probe whose release must restore the pause flag, every silenced brain and every spawned unit.",
+  "description": "Turn Undead intermediate checkpoint (planning/turn-undead/MISSION.md). Vanilla profile: the candidate alone, no other mod. In the loaded fixture save, a disposable cleric 5 / fighter 2 with Charisma 16 receives its real positive channel and the product's Turn Undead feat, then uses the granted cleric action through the game's ability command in real time against an ordinary skeleton and a zombie lord whose Will totals are lowered so they fail, a zombie lord whose Will is raised so it saves, a skeleton beyond 30 feet and a living hostile. The probe records the existing channel pool before and after, every saving throw and damage/heal rule on the tracked units, the product's persisted flight state, Frightened/panic and distances over two rounds, the intelligent round saves and a recovery after the zombie lord's Will is raised, and the mindless skeleton's unrefreshed one-minute expiry. Setup is disclosed in tools/LoaderCompatHarness/TurnUndeadProbes.cs. The same launch also runs the contracts extract (installed method IL hashes and blueprint values, every constructed Turn component checked against literal expectations), an undead channeler that must save against its own Turn beside a living control, and an abandoned first-turn probe whose release must restore the pause flag, every silenced brain and every spawned unit. A final step interrupts the abandon check itself after its nested probe has yielded once, cleanly and with an injected nested cleanup failure, and requires pause, brains, subscription and spawned-unit cleanup with an accurate verdict.",
   "ownerMods": [],
   "fixtureSaves": [
     "KMCS_AFTER_NORMAL_012_MODONLY.zks"
@@ -51,6 +51,12 @@
             "label": "abandon",
             "match": "abandon",
             "timeoutSeconds": 120
+          },
+          {
+            "op": "kmgTurnUndead",
+            "label": "abandon-interrupt",
+            "match": "abandon-interrupt",
+            "timeoutSeconds": 180
           }
         ]
       }

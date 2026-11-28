@@ -3,6 +3,10 @@ param(
     [string]$ExpectedVersion = '0.0.126',
     [ValidateSet('observe-feature-module-settings', 'disposable-teleportation-disabled')]
     [string]$Scenario = 'observe-feature-module-settings',
+    # Turn Undead feat offer, independent of the thirteen modules: default writes
+    # OFF only in the all-off state; on/off write that value in every state.
+    [ValidateSet('default', 'on', 'off')]
+    [string]$TurnUndead = 'default',
     [ValidateRange(5, 1800)][int]$TimeoutSeconds = 300,
     [string]$Combination = 'all',
     [bool]$ExitAfterCompletion = $true,
@@ -80,8 +84,11 @@ try {
         foreach ($module in $moduleCatalog) {
             $runtimeParameters[$module.RuntimeParameter] = [bool]$entry.Values[$module.RuntimeParameter]
         }
-        # Every catalog key plus the explicit Turn Undead key (OFF in the all-off state).
-        $configuration = New-KmgFeatureModuleSettingsDocument -RuntimeValues $runtimeParameters
+        # Every catalog key plus the explicit Turn Undead key; the runtime
+        # parameters forwarded to the product stay the thirteen modules.
+        $documentValues = @{} + $runtimeParameters
+        if ($TurnUndead -cne 'default') { $documentValues['turnUndead'] = ($TurnUndead -ceq 'on') }
+        $configuration = New-KmgFeatureModuleSettingsDocument -RuntimeValues $documentValues
         $json = $configuration | ConvertTo-Json -Depth 4
         $temporary = $settings + '.kmg-module-matrix.tmp'
         [IO.File]::WriteAllText($temporary, $json, (New-Object Text.UTF8Encoding($false)))

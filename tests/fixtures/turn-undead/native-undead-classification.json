@@ -1,6 +1,6 @@
 {
  "schemaVersion": 1,
- "source": "Community KingmakerDataminer 2.1.4 blueprint archive (sha256 6ddf3397...df60); discovery data re-checked against the installed 2.1.7b library by the Turn Undead native census.",
+ "source": "HISTORICAL DATA: Community KingmakerDataminer 2.1.4 blueprint archive (sha256 6ddf3397...df60). Not yet re-checked against the installed 2.1.7b library; the 2.1.7b undead census is pending (docs/TURN-UNDEAD-IMPLEMENTATION-RECORD.md). Rows record reviewed classification decisions for these historical identities.",
  "rule": "UndeadType reached through UndeadClass levels, a direct UndeadType fact, or an undead feature list.",
  "rows": [
   {

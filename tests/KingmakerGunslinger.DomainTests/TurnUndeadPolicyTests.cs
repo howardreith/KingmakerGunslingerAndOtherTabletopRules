@@ -240,22 +240,30 @@ namespace KingmakerGunslinger.DomainTests
                 FeatureModuleSettingsState reloaded = FeatureModuleSettingsStore.Load(path);
                 Assertions.True(!reloaded.ActiveTurnUndead && !reloaded.RestartRequired &&
                     reloaded.Active.Equals(existing.Active), "OFF round-trips without touching modules.");
-                // The all-off document the generated profiles write (scripts/FeatureModuleCatalog.ps1
-                // New-KmgFeatureModuleSettingsDocument and the compatibility runner): every module and
-                // Turn Undead explicitly OFF, so the feat is not offered.
-                File.WriteAllText(settings, "{\"schemaVersion\":12,\"gunslinger\":false,\"acadamae-graduate\":false," +
-                    "\"shield-other\":false,\"expanded-summoning\":false,\"elven-branched-spears\":false," +
-                    "\"eastern-weapons\":false,\"brown-fur-transmuter\":false,\"urban-barbarian\":false," +
-                    "\"bodyguard-feats\":false,\"protection-from-alignment-control-immunity\":false," +
-                    "\"elemental-races\":false,\"teleportation-spells\":false,\"magic-circle-spells\":false," +
-                    "\"turn-undead\":false}");
-                FeatureModuleSettingsState allOff = FeatureModuleSettingsStore.Load(path);
-                FeatureModuleConfiguration off = allOff.Active;
-                Assertions.True(!allOff.Recovered && !allOff.ActiveTurnUndead && !off.Gunslinger &&
-                    !off.AcadamaeGraduate && !off.ShieldOther && !off.ExpandedSummoning && !off.ElvenBranchedSpears &&
-                    !off.EasternWeapons && !off.BrownFurTransmuter && !off.UrbanBarbarian && !off.BodyguardFeats &&
-                    !off.ProtectionFromAlignmentControlImmunity && !off.ElementalRaces && !off.TeleportationSpells &&
-                    !off.MagicCircleSpells, "The generated all-off profile turns every module and Turn Undead off.");
+                // Generator-to-loader: the documents the generated profiles write
+                // (scripts/FeatureModuleCatalog.ps1 New-KmgFeatureModuleSettingsDocument and the
+                // compatibility runner; Test-FeatureModuleCompatibilityParameters.ps1 asserts the
+                // generator writes exactly these files) load as written.
+                string generated = Path.Combine(Environment.CurrentDirectory, "tests", "fixtures",
+                    "turn-undead", "generated-profiles");
+                foreach (var expected in new[]
+                {
+                    new { File = "all-off.json", Gunslinger = false, Turn = false },
+                    new { File = "turn-undead-alone.json", Gunslinger = false, Turn = true },
+                    new { File = "gunslinger-turn-undead-off.json", Gunslinger = true, Turn = false }
+                })
+                {
+                    File.Copy(Path.Combine(generated, expected.File), settings, true);
+                    FeatureModuleSettingsState profile = FeatureModuleSettingsStore.Load(path);
+                    FeatureModuleConfiguration modules = profile.Active;
+                    Assertions.True(!profile.Recovered && profile.ActiveTurnUndead == expected.Turn &&
+                        modules.Gunslinger == expected.Gunslinger && !modules.AcadamaeGraduate && !modules.ShieldOther &&
+                        !modules.ExpandedSummoning && !modules.ElvenBranchedSpears && !modules.EasternWeapons &&
+                        !modules.BrownFurTransmuter && !modules.UrbanBarbarian && !modules.BodyguardFeats &&
+                        !modules.ProtectionFromAlignmentControlImmunity && !modules.ElementalRaces &&
+                        !modules.TeleportationSpells && !modules.MagicCircleSpells,
+                        "The generated profile " + expected.File + " loads with exactly its written values.");
+                }
                 File.WriteAllText(settings, "{\"schemaVersion\":12,\"turn-undead\":\"no\"}");
                 FeatureModuleSettingsState malformed = FeatureModuleSettingsStore.Load(path, value => { });
                 Assertions.True(malformed.Recovered && malformed.ActiveTurnUndead,

@@ -52,6 +52,54 @@ $rejectedEmpty = $false
 try { [void](New-KmgFeatureModuleSettingsDocument -RuntimeValues @{}) } catch { $rejectedEmpty = $true }
 if (-not $rejectedEmpty) { throw 'The shared generator accepted missing module values.' }
 $checks++
+# Independent turnUndead: an explicit value overrides the all-off rule in both writers.
+foreach ($mask in @(0, 1, 4096, 8191)) {
+    foreach ($explicit in @($true, $false)) {
+        $Parameters = @{}
+        for ($index = 0; $index -lt $catalog.Count; $index++) {
+            $Parameters[$catalog[$index].RuntimeParameter] = [bool]($mask -band (1 -shl $index))
+        }
+        $Parameters['turnUndead'] = $explicit
+        & $validation
+        $settings = & $makeSettings
+        if ($settings.Count -ne 15 -or $settings['turn-undead'] -isnot [bool] -or $settings['turn-undead'] -ne $explicit) {
+            throw "Compatibility settings ignored the explicit turnUndead=$explicit (mask $mask)."
+        }
+        $generated = New-KmgFeatureModuleSettingsDocument -RuntimeValues $Parameters
+        if (($generated | ConvertTo-Json -Depth 4) -cne ($settings | ConvertTo-Json -Depth 4)) {
+            throw "Matrix and compatibility settings generators disagree on explicit turnUndead (mask $mask)."
+        }
+        $checks++
+    }
+}
+$Parameters = @{}
+foreach ($entry in $catalog) { $Parameters[$entry.RuntimeParameter] = $true }
+$Parameters['turnUndead'] = 'true'
+$rejectedTurn = $false
+try { & $validation } catch { $rejectedTurn = $true }
+if (-not $rejectedTurn) { throw 'A non-Boolean turnUndead was accepted.' }
+$rejectedTurn = $false
+try { [void](New-KmgFeatureModuleSettingsDocument -RuntimeValues $Parameters) } catch { $rejectedTurn = $true }
+if (-not $rejectedTurn) { throw 'The shared generator accepted a non-Boolean turnUndead.' }
+$checks++
+# Generator-to-loader fixtures: the C# loader test (turn-undead.settings-key) loads these same files.
+$fixtureRoot = Join-Path $PSScriptRoot '..\..\tests\fixtures\turn-undead\generated-profiles'
+foreach ($case in @(
+    @{ File = 'all-off.json'; On = @(); Turn = $null },
+    @{ File = 'turn-undead-alone.json'; On = @(); Turn = $true },
+    @{ File = 'gunslinger-turn-undead-off.json'; On = @('gunslinger'); Turn = $false })) {
+    $values = @{}
+    foreach ($module in $catalog) { $values[$module.RuntimeParameter] = [bool]($case.On -contains $module.RuntimeParameter) }
+    if ($null -ne $case.Turn) { $values['turnUndead'] = [bool]$case.Turn }
+    $generated = New-KmgFeatureModuleSettingsDocument -RuntimeValues $values
+    $fixture = Get-Content -LiteralPath (Join-Path $fixtureRoot $case.File) -Raw | ConvertFrom-Json
+    $fixtureKeys = @($fixture.PSObject.Properties | ForEach-Object { $_.Name })
+    if (($fixtureKeys -join ',') -cne (@($generated.Keys) -join ',')) { throw "Generated keys differ from $($case.File)." }
+    foreach ($key in $fixtureKeys) {
+        if ($fixture.$key -ne $generated[$key]) { throw "Generated $key differs from $($case.File)." }
+    }
+    $checks++
+}
 foreach ($module in $catalog) {
     foreach ($invalid in @('absent', 'string')) {
         $Parameters = @{}

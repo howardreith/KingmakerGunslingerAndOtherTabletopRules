@@ -183,7 +183,20 @@ namespace KmgLoaderCompatHarness
             };
             if (turn.Any(t => !spells.Contains(t))) problems.Add("native ChannelResistance4 lacks a Turn identity");
 
-            // Call of the Wild, when loaded: positive-harm channel entries and Turn wrapper membership.
+            // Full component dumps of every native blueprint the design relies on (donors, turning donor, undead
+            // immunities, the Empyreal override, channel resistance) and of the constructed flight effect.
+            result["nativeFacts"] = new JObject
+            {
+                ["harmDonors"] = new JArray(ExpectedSources.Select(e => (object)DumpFact(Blueprint<BlueprintAbility>(e.NativeHarm))).ToArray()),
+                ["sourceFeatures"] = new JArray(ExpectedSources.Select(e => (object)DumpFact(Blueprint<BlueprintFeature>(e.Feature))).ToArray()),
+                ["frightenedUndeadDonor"] = DumpFact(nativeFear),
+                ["wizardTurnUndead"] = DumpFact(ResourcesLibrary.TryGetBlueprint<BlueprintAbility>("71b8898b1d26d654b9a3eeac87e3e2f8")),
+                ["undeadType"] = DumpFact(Blueprint<BlueprintUnitFact>(UndeadType)),
+                ["channelResistance4"] = DumpFact(resistance),
+                ["turnFlight"] = DumpFact(fleeing)
+            };
+
+            // Call of the Wild, when loaded: channel entries, Turn wrapper membership and the modifier holders.
             result["callOfTheWild"] = DescribeCotw();
             yield break;
         }
@@ -252,46 +265,59 @@ namespace KmgLoaderCompatHarness
         private JToken DescribeCotw()
         {
             Assembly cotw = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == "CallOfTheWild");
-            if (cotw == null) return "absent";
+            if (cotw == null)
+            {
+                var vanillaMenu = new JArray();
+                foreach (string issue in MenuPlacementProblems(vanillaMenu)) problems.Add("vanilla menu placement: " + issue);
+                return new JObject { ["status"] = "absent", ["turnMenu"] = vanillaMenu };
+            }
             Type engineType = cotw.GetType("CallOfTheWild.ChannelEnergyEngine", false);
             var entries = new JArray();
             IEnumerable list = engineType == null ? null : engineType.GetField("channel_entires", Any)?.GetValue(null) as IEnumerable;
             var supported = new HashSet<string>(ExpectedSources.Select(e => e.Feature));
+            var turnGuids = new HashSet<string>(ExpectedSources.SelectMany(e => new[] { Direct(e.Kind), (BlueprintAbility)Member(SourceOf(e.Kind), "MenuChild") }).Select(a => a.AssetGuid));
+            var byType = new JObject();
+            int allEntries = 0, turnEntries = 0;
+            foreach (object entry in list ?? new object[0])
+            {
+                object anyType = entry.GetType().GetField("channel_type", Any)?.GetValue(entry);
+                var anyAbility = entry.GetType().GetField("ability", Any)?.GetValue(entry) as BlueprintAbility;
+                allEntries++;
+                string typeName = anyType == null ? "null" : anyType.ToString();
+                byType[typeName] = ((int?)byType[typeName] ?? 0) + 1;
+                if (anyAbility != null && (turnGuids.Contains(anyAbility.AssetGuid) || (anyAbility.Parent != null && turnGuids.Contains(anyAbility.Parent.AssetGuid)))) turnEntries++;
+            }
+            if (turnEntries != 0) problems.Add(turnEntries + " CotW channel entries (of any form) are Turn identities");
             foreach (object entry in list ?? new object[0])
             {
                 object type = entry.GetType().GetField("channel_type", Any)?.GetValue(entry);
-                if (type == null || Convert.ToInt32(type) != 9) continue; // PositiveHarm only (no smite/quick/cone/line forms)
+                if (type == null || Convert.ToInt32(type) != 9) continue; // plain PositiveHarm entries
                 var ability = entry.GetType().GetField("ability", Any)?.GetValue(entry) as BlueprintAbility;
                 var parent = entry.GetType().GetField("parent_feature", Any)?.GetValue(entry) as BlueprintFeature;
                 var wrapper = entry.GetType().GetField("base_ability", Any)?.GetValue(entry) as BlueprintAbility;
+                AbilityResourceLogic entryResource = ability == null ? null : ability.GetComponents<AbilityResourceLogic>().FirstOrDefault();
                 entries.Add(new JObject
                 {
                     ["ability"] = ability == null ? null : ability.AssetGuid + ":" + ability.name,
+                    ["resource"] = entryResource == null ? null : (entryResource.RequiredResource == null ? "null" : entryResource.RequiredResource.AssetGuid + ":" + entryResource.RequiredResource.name) + " x" + entryResource.Amount,
                     ["parentFeature"] = parent == null ? null : parent.AssetGuid + ":" + parent.name,
                     ["wrapper"] = wrapper == null ? null : wrapper.AssetGuid + ":" + wrapper.name,
                     ["turnUndeadSupport"] = parent != null && supported.Contains(parent.AssetGuid) ? "supported" : "unsupported (not a Turn Undead source)"
                 });
             }
             var menu = new JArray();
-            foreach (SourceExpectation expected in ExpectedSources)
-            {
-                object source = SourceOf(expected.Kind);
-                var child = (BlueprintAbility)Member(source, "MenuChild");
-                var direct = (BlueprintAbility)Member(source, "Direct");
-                AbilityVariants variants = child.Parent == null ? null : child.Parent.GetComponent<AbilityVariants>();
-                menu.Add(new JObject
-                {
-                    ["kind"] = expected.Kind, ["childParent"] = child.Parent == null ? null : child.Parent.AssetGuid + ":" + child.Parent.name,
-                    ["childInWrapper"] = variants != null && variants.Variants.Count(v => v == child) == 1,
-                    ["wrapperVariants"] = variants == null ? 0 : variants.Variants.Length, ["directHidden"] = direct.Hidden
-                });
-                if (child.Parent != null && (variants == null || variants.Variants.Count(v => v == child) != 1 || !direct.Hidden))
-                    problems.Add(expected.Kind + ": CotW menu child placement is inconsistent");
-            }
+            List<string> placement = MenuPlacementProblems(menu);
+            foreach (string issue in placement) problems.Add("CotW menu placement: " + issue);
+            var holders = new JObject();
+            foreach (string field in new[] { "improved_channel", "sacred_conduit", "consecrate_buff" })
+                holders[field] = DumpFact(engineType == null ? null : engineType.GetField(field, Any)?.GetValue(null) as BlueprintScriptableObject);
+            var resistances = new JArray(((engineType == null ? null : engineType.GetField("channel_resistances", Any)?.GetValue(null)) as IEnumerable<BlueprintUnitFact> ?? new BlueprintUnitFact[0])
+                .Select(f => (object)DumpFact(f)).ToArray());
             return new JObject
             {
                 ["assemblyVersion"] = cotw.GetName().Version.ToString(), ["sha256"] = Sha256File(cotw.Location),
-                ["positiveHarmEntries"] = entries, ["turnMenu"] = menu
+                ["channelEntries"] = allEntries, ["channelEntriesByType"] = byType, ["channelEntriesThatAreTurn"] = turnEntries,
+                ["positiveHarmEntries"] = entries, ["turnMenu"] = menu, ["dcHolders"] = holders, ["channelResistances"] = resistances
             };
         }
 
@@ -342,7 +368,8 @@ namespace KmgLoaderCompatHarness
         {
             Game.Instance.IsPaused = false;
             bool prior = Game.Instance.IsPaused;
-            var nested = new TurnUndeadProbe("first-turn");
+            var nested = new TurnUndeadProbe("first-turn") { injectCleanupFailure = injectNestedCleanupFailureForTest };
+            abandonNested = nested;
             string verdict = null;
             int polls = 0;
             while (verdict == null && !(nested.silenced.Count > 0 && Game.Instance.IsPaused) && polls++ < 600)
@@ -353,6 +380,7 @@ namespace KmgLoaderCompatHarness
             bool suspended = verdict == null && nested.silenced.Count > 0 && Game.Instance.IsPaused;
             UnitEntityData[] silencedUnits = nested.silenced.ToArray();
             UnitEntityData[] spawned = nested.created.ToArray();
+            abandonNested = null;
             CleanupReport report = nested.Release("abandoned by the abandon check");
             // UnitEntityData.Destroy completes on a later frame; wait for it before judging.
             int frames = 0;

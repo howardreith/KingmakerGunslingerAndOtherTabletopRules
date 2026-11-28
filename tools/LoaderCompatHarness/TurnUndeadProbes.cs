@@ -96,15 +96,27 @@ namespace KmgLoaderCompatHarness
             if (interruptedCommands > 0)
                 result["cleanupScope"] = interruptedCommands + " pre-existing unit command(s) were interrupted and are not " +
                     "restorable; contained to the disposable loader-compat launch";
-            return ProbeCleanup.RunAll(new[]
+            var releases = new List<KeyValuePair<string, Action>>
             {
+                // A nested probe (abandon modes) is released first, on every exit, and its cleanup failures fail ours.
+                new KeyValuePair<string, Action>("nested probe", () =>
+                {
+                    TurnUndeadProbe nested = abandonNested;
+                    abandonNested = null;
+                    if (nested == null) return;
+                    CleanupReport inner = nested.Release(testFailure);
+                    if (!inner.Restored) throw new InvalidOperationException("nested cleanup failed: " + string.Join("; ", inner.Failures.ToArray()));
+                }),
                 new KeyValuePair<string, Action>("pause flag", () => { if (pausedBefore.HasValue) Game.Instance.IsPaused = pausedBefore.Value; pausedBefore = null; }),
                 new KeyValuePair<string, Action>("rule trace", () => { if (subscription != null) subscription.Dispose(); subscription = null; }),
                 new KeyValuePair<string, Action>("area brains", () => { foreach (UnitEntityData u in silenced.Where(u => u != null && !u.Destroyed)) u.IsBrainActive = true; silenced.Clear(); }),
                 new KeyValuePair<string, Action>("awake registrations", () => { foreach (UnitEntityData u in awakeAdded) Game.Instance.State.AwakeUnits.Remove(u); awakeAdded.Clear(); }),
                 new KeyValuePair<string, Action>("disposable units", () => { foreach (UnitEntityData u in created.Where(u => u != null && !u.Destroyed).ToArray()) u.Destroy(); created.Clear(); }),
                 new KeyValuePair<string, Action>("unit blueprint clones", () => { foreach (BlueprintUnit c in clones) UnityEngine.Object.DestroyImmediate(c); clones.Clear(); })
-            });
+            };
+            if (injectCleanupFailure)
+                releases.Add(new KeyValuePair<string, Action>("injected test failure", () => { throw new InvalidOperationException("injected by abandon-interrupt"); }));
+            return ProbeCleanup.RunAll(releases);
         }
 
         private IEnumerable<object> Run()
@@ -129,7 +141,9 @@ namespace KmgLoaderCompatHarness
             IEnumerable<object> body = mode == "first-turn" ? FirstTurn() :
                 mode == "undead-caster" ? UndeadCaster() :
                 mode == "contracts" ? Contracts() :
-                mode == "abandon" ? Abandon() : null;
+                mode == "abandon" ? Abandon() :
+                mode == "abandon-interrupt" ? AbandonInterrupt() :
+                mode == "cotw-rollback" ? CotwRollback() : null;
             if (body == null) { problems.Add("unknown mode " + mode); yield break; }
             foreach (object step in body) yield return step;
         }

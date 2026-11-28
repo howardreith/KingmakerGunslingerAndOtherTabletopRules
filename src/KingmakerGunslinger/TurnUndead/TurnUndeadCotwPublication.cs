@@ -67,7 +67,20 @@ namespace KingmakerGunslinger.TurnUndead
             if (engine == null)
                 throw new InvalidOperationException("Call of the Wild " + (cotw.Info.Version ?? "?") +
                     " has no " + EngineTypeName + "; contract drift.");
-            result.Availability = "present " + (cotw.Info.Version ?? "?");
+            return PublishWithEngine(set, engine, cotw.Info.Version ?? "?");
+        }
+
+        /// <summary>
+        /// The integration against one channel-engine type's static members. On any
+        /// failure every change already made (menu children, direct visibility, lists)
+        /// is restored before the exception leaves. Also the seam the harness uses to
+        /// exercise the failure boundary with a substitute engine type.
+        /// </summary>
+        internal static TurnUndeadCotwPublication PublishWithEngine(TurnUndeadBlueprintSet set, Type engine, string version)
+        {
+            if (set == null) throw new ArgumentNullException("set");
+            if (engine == null) throw new ArgumentNullException("engine");
+            var result = new TurnUndeadCotwPublication { Availability = "present " + version };
             try
             {
                 foreach (TurnUndeadSourceBlueprints source in set.Sources) result.PlaceMenuChild(source);
