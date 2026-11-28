@@ -26,7 +26,7 @@ namespace KingmakerGunslinger.TurnUndead
     /// <summary>
     /// One verified native positive-channel source. Every value here was read
     /// from the installed game's blueprints and printed channel rules (see
-    /// planning/turn-undead/IMPLEMENTATION-RECORD.md, source contract table):
+    /// docs/TURN-UNDEAD-IMPLEMENTATION-RECORD.md, source contract table):
     /// the qualifying feature, the pool it already spends, the number of uses
     /// one channel costs, the class whose level sets the DC, the statistic the
     /// source's printed DC names, and the native heal/harm actions whose
@@ -133,17 +133,6 @@ namespace KingmakerGunslinger.TurnUndead
 
         internal static TurnUndeadSourceContract Require(TurnUndeadSourceKind kind)
         { return Sources.Single(value => value.Kind == kind); }
-
-        /// <summary>
-        /// Sources whose actual qualifying feature the owner has, in catalog
-        /// order. Class levels, alignment permission facts, items, a
-        /// negative-energy channel or a generic channel marker never qualify.
-        /// </summary>
-        internal static TurnUndeadSourceContract[] Owned(Func<string, bool> hasFeatureGuid)
-        {
-            if (hasFeatureGuid == null) throw new ArgumentNullException("hasFeatureGuid");
-            return Sources.Where(value => hasFeatureGuid(value.SourceFeatureGuid)).ToArray();
-        }
 
         internal static IEnumerable<string> AllSymbols()
         {

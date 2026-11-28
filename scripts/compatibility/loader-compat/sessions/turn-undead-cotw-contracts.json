@@ -1,0 +1,43 @@
+{
+  "name": "turn-undead-cotw-contracts",
+  "description": "Turn Undead beside Call of the Wild alone (the lab snapshot's installed 1.14.4c): the product's completion line must report CotW present without a drift warning, and the harness contracts mode records the installed method IL hashes, the native and constructed Turn blueprint values, the CotW positive-harm channel entries with their Turn Undead support status, and each source's menu child placement under its own positive-harm wrapper with the direct action hidden. Setup is disclosed in tools/LoaderCompatHarness/TurnUndeadContractProbes.cs.",
+  "ownerMods": [
+    "CallOfTheWild"
+  ],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "cotw-contracts",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]",
+          "[turn-undead][initialize.complete]",
+          ";cotw=present "
+        ],
+        "absent": [
+          "[initialize.root-cause]",
+          "[initialize.failed]",
+          "[turn-undead][initialize.failed]",
+          "[turn-undead][publication.failed]",
+          "[turn-undead][cotw.unavailable]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgTurnUndead",
+            "label": "contracts",
+            "match": "contracts",
+            "timeoutSeconds": 120
+          }
+        ]
+      }
+    }
+  ]
+}

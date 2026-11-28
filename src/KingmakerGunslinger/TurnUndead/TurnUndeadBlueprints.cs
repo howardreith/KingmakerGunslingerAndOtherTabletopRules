@@ -255,9 +255,10 @@ namespace KingmakerGunslinger.TurnUndead
                 Operation = Operation.And,
                 Conditions = new Condition[]
                 {
+                    // Every undead within the native 30-foot burst, the channeler
+                    // included when it is itself undead (the native targeting
+                    // includes the caster); no other selection exception exists.
                     new ContextConditionHasFact { Fact = undeadType, Not = false },
-                    // An undead channeler cannot flee from itself.
-                    new ContextConditionIsCaster { Not = true },
                 }
             });
             components.Add(targets);

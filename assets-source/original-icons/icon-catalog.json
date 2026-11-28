@@ -12958,7 +12958,7 @@
       "concept": "turn-undead-feat",
       "disposition": "original-required",
       "reason": "Owner-supplied original feat emblem.",
-      "technicalEvidence": "planning/turn-undead/IMPLEMENTATION-RECORD.md"
+      "technicalEvidence": "docs/TURN-UNDEAD-IMPLEMENTATION-RECORD.md"
     },
     {
       "symbol": "KMG.Feats.TurnUndead.Cleric.Ability",
@@ -12972,7 +12972,7 @@
       "concept": "turn-undead-action",
       "disposition": "original-required",
       "reason": "Owner-supplied original execution painting; source named in text.",
-      "technicalEvidence": "planning/turn-undead/IMPLEMENTATION-RECORD.md"
+      "technicalEvidence": "docs/TURN-UNDEAD-IMPLEMENTATION-RECORD.md"
     },
     {
       "symbol": "KMG.Feats.TurnUndead.Cleric.MenuChild",
@@ -12986,7 +12986,7 @@
       "concept": "turn-undead-action",
       "disposition": "intentional-family-share",
       "reason": "Same execution concept under a loaded positive-harm channel wrapper; source named in text.",
-      "technicalEvidence": "planning/turn-undead/IMPLEMENTATION-RECORD.md"
+      "technicalEvidence": "docs/TURN-UNDEAD-IMPLEMENTATION-RECORD.md"
     },
     {
       "symbol": "KMG.Feats.TurnUndead.Paladin.Ability",
@@ -13000,7 +13000,7 @@
       "concept": "turn-undead-action",
       "disposition": "intentional-family-share",
       "reason": "Owner-supplied original execution painting; source named in text.",
-      "technicalEvidence": "planning/turn-undead/IMPLEMENTATION-RECORD.md"
+      "technicalEvidence": "docs/TURN-UNDEAD-IMPLEMENTATION-RECORD.md"
     },
     {
       "symbol": "KMG.Feats.TurnUndead.Paladin.MenuChild",
@@ -13014,7 +13014,7 @@
       "concept": "turn-undead-action",
       "disposition": "intentional-family-share",
       "reason": "Same execution concept under a loaded positive-harm channel wrapper; source named in text.",
-      "technicalEvidence": "planning/turn-undead/IMPLEMENTATION-RECORD.md"
+      "technicalEvidence": "docs/TURN-UNDEAD-IMPLEMENTATION-RECORD.md"
     },
     {
       "symbol": "KMG.Feats.TurnUndead.Hospitaler.Ability",
@@ -13028,7 +13028,7 @@
       "concept": "turn-undead-action",
       "disposition": "intentional-family-share",
       "reason": "Owner-supplied original execution painting; source named in text.",
-      "technicalEvidence": "planning/turn-undead/IMPLEMENTATION-RECORD.md"
+      "technicalEvidence": "docs/TURN-UNDEAD-IMPLEMENTATION-RECORD.md"
     },
     {
       "symbol": "KMG.Feats.TurnUndead.Hospitaler.MenuChild",
@@ -13042,7 +13042,7 @@
       "concept": "turn-undead-action",
       "disposition": "intentional-family-share",
       "reason": "Same execution concept under a loaded positive-harm channel wrapper; source named in text.",
-      "technicalEvidence": "planning/turn-undead/IMPLEMENTATION-RECORD.md"
+      "technicalEvidence": "docs/TURN-UNDEAD-IMPLEMENTATION-RECORD.md"
     },
     {
       "symbol": "KMG.Feats.TurnUndead.Empyreal.Ability",
@@ -13056,7 +13056,7 @@
       "concept": "turn-undead-action",
       "disposition": "intentional-family-share",
       "reason": "Owner-supplied original execution painting; source named in text.",
-      "technicalEvidence": "planning/turn-undead/IMPLEMENTATION-RECORD.md"
+      "technicalEvidence": "docs/TURN-UNDEAD-IMPLEMENTATION-RECORD.md"
     },
     {
       "symbol": "KMG.Feats.TurnUndead.Empyreal.MenuChild",
@@ -13070,7 +13070,7 @@
       "concept": "turn-undead-action",
       "disposition": "intentional-family-share",
       "reason": "Same execution concept under a loaded positive-harm channel wrapper; source named in text.",
-      "technicalEvidence": "planning/turn-undead/IMPLEMENTATION-RECORD.md"
+      "technicalEvidence": "docs/TURN-UNDEAD-IMPLEMENTATION-RECORD.md"
     }
   ],
   "uiEntries": [

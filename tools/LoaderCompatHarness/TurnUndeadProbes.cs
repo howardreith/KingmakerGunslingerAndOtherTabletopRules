@@ -46,7 +46,7 @@ namespace KmgLoaderCompatHarness
     /// with the same build and no feat is the negative control: no Turn action granted and the blueprint refused by its
     /// caster checks while the channel pool is available.
     /// </summary>
-    internal sealed class TurnUndeadProbe : IOwnedProbe
+    internal sealed partial class TurnUndeadProbe : IOwnedProbe
     {
         private const BindingFlags Any = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         private const string ClericClass = "67819271767a9dd4fbfd4ae700befea0";
@@ -65,6 +65,8 @@ namespace KmgLoaderCompatHarness
         private readonly List<UnitEntityData> awakeAdded = new List<UnitEntityData>();
         private readonly List<BlueprintUnit> clones = new List<BlueprintUnit>();
         private readonly List<UnitEntityData> silenced = new List<UnitEntityData>();
+        private int interruptedCommands;
+        private bool? pausedBefore;
         private readonly Trace trace = new Trace();
         private IDisposable subscription;
         private string verdict;
@@ -91,8 +93,12 @@ namespace KmgLoaderCompatHarness
 
         public CleanupReport Release(string testFailure)
         {
+            if (interruptedCommands > 0)
+                result["cleanupScope"] = interruptedCommands + " pre-existing unit command(s) were interrupted and are not " +
+                    "restorable; contained to the disposable loader-compat launch";
             return ProbeCleanup.RunAll(new[]
             {
+                new KeyValuePair<string, Action>("pause flag", () => { if (pausedBefore.HasValue) Game.Instance.IsPaused = pausedBefore.Value; pausedBefore = null; }),
                 new KeyValuePair<string, Action>("rule trace", () => { if (subscription != null) subscription.Dispose(); subscription = null; }),
                 new KeyValuePair<string, Action>("area brains", () => { foreach (UnitEntityData u in silenced.Where(u => u != null && !u.Destroyed)) u.IsBrainActive = true; silenced.Clear(); }),
                 new KeyValuePair<string, Action>("awake registrations", () => { foreach (UnitEntityData u in awakeAdded) Game.Instance.State.AwakeUnits.Remove(u); awakeAdded.Clear(); }),
@@ -118,14 +124,14 @@ namespace KmgLoaderCompatHarness
             forward = Quaternion.Euler(0, main.Orientation, 0) * Vector3.forward;
             right = Quaternion.Euler(0, main.Orientation + 90f, 0) * Vector3.forward;
             subscription = EventBus.Subscribe(trace);
-            bool paused = Game.Instance.IsPaused;
-            try
-            {
-                IEnumerable<object> body = mode == "first-turn" ? FirstTurn() : null;
-                if (body == null) { problems.Add("unknown mode " + mode); yield break; }
-                foreach (object step in body) yield return step;
-            }
-            finally { Game.Instance.IsPaused = paused; }
+            // The pause flag is restored by Release on every exit, including an abandoned probe.
+            pausedBefore = Game.Instance.IsPaused;
+            IEnumerable<object> body = mode == "first-turn" ? FirstTurn() :
+                mode == "undead-caster" ? UndeadCaster() :
+                mode == "contracts" ? Contracts() :
+                mode == "abandon" ? Abandon() : null;
+            if (body == null) { problems.Add("unknown mode " + mode); yield break; }
+            foreach (object step in body) yield return step;
         }
 
         // ---------------------------------------------------------------- product identities
@@ -157,6 +163,22 @@ namespace KmgLoaderCompatHarness
         }
 
         // ---------------------------------------------------------------- fixture
+
+        private void SilenceArea()
+        {
+            // Fixture: every pre-existing unit (area NPCs and the fixture party) is silenced for the observation and
+            // restored on release, so nothing fights the spawned undead (run 20261128T095145Z: an area unit damaged the
+            // fleeing skeleton, ending its effect early; run 20261128T095946Z: the party character auto-attacked).
+            foreach (UnitEntityData unit in Game.Instance.State.Units.ToArray())
+            {
+                if (unit == null || unit.Destroyed || !unit.IsBrainActive) continue;
+                unit.IsBrainActive = false;
+                silenced.Add(unit);
+                if (!unit.Commands.Empty) { unit.Commands.InterruptAll(true); interruptedCommands++; }
+            }
+            result["silencedAreaUnits"] = silenced.Count;
+            result["interruptedCommands"] = interruptedCommands;
+        }
 
         private Vector3 Spot(float forwardMeters, float rightMeters) =>
             ObstacleAnalyzer.TraceAlongNavmesh(origin, origin + forward * forwardMeters + right * rightMeters);
@@ -325,17 +347,7 @@ namespace KmgLoaderCompatHarness
             };
             Game.Instance.IsPaused = true;
             BlueprintAbilityResource pool = Blueprint<BlueprintAbilityResource>(ChannelResource);
-            // Fixture: every pre-existing unit (area NPCs and the fixture party) is silenced for the observation and
-            // restored on release, so nothing fights the spawned undead (run 20261128T095145Z: an area unit damaged the
-            // fleeing skeleton, ending its effect early; run 20261128T095946Z: the party character auto-attacked).
-            foreach (UnitEntityData unit in Game.Instance.State.Units.ToArray())
-            {
-                if (unit == null || unit.Destroyed || !unit.IsBrainActive) continue;
-                unit.IsBrainActive = false;
-                unit.Commands.InterruptAll(true);
-                silenced.Add(unit);
-            }
-            result["silencedAreaUnits"] = silenced.Count;
+            SilenceArea();
 
             // ---- cleric 5 / fighter 2, Charisma 16
             UnitEntityData cleric = SpawnFriendly("Cleric", origin);
@@ -439,6 +451,7 @@ namespace KmgLoaderCompatHarness
             float farDistance = Vector3.Distance(far.Position, cleric.Position);
             cast["farSkeletonDistanceAtCast"] = Math.Round(farDistance, 2);
             if (farDistance <= 9.6f) problems.Add("fixture: the beyond-30-feet skeleton stood " + Math.Round(farDistance, 2) + " m away at the cast");
+            if (((JArray)cast["clericSaves"]).Count != 0) problems.Add("the living channeler received a Turn save");
             if ((int)cast["poolAfter"] != (int)cast["poolBefore"] - 1) problems.Add("the channel pool went from " + cast["poolBefore"] + " to " + cast["poolAfter"] + ", not exactly one use");
             ExpectInitialSave("skeleton", skeleton, seqBefore, expectedDc, false);
             ExpectInitialSave("zombie lord", lord, seqBefore, expectedDc, false);

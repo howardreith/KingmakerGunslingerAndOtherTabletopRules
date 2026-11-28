@@ -76,15 +76,12 @@ if ($ReuseInstalledArtifact -and
 $failure = $null
 try {
     foreach ($entry in $combinations) {
-        $configuration = [ordered]@{
-            schemaVersion = 12
-        }
         $runtimeParameters = @{}
         foreach ($module in $moduleCatalog) {
-            $enabled = [bool]$entry.Values[$module.RuntimeParameter]
-            $configuration[$module.JsonKey] = $enabled
-            $runtimeParameters[$module.RuntimeParameter] = $enabled
+            $runtimeParameters[$module.RuntimeParameter] = [bool]$entry.Values[$module.RuntimeParameter]
         }
+        # Every catalog key plus the explicit Turn Undead key (OFF in the all-off state).
+        $configuration = New-KmgFeatureModuleSettingsDocument -RuntimeValues $runtimeParameters
         $json = $configuration | ConvertTo-Json -Depth 4
         $temporary = $settings + '.kmg-module-matrix.tmp'
         [IO.File]::WriteAllText($temporary, $json, (New-Object Text.UTF8Encoding($false)))

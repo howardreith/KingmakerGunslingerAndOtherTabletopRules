@@ -489,7 +489,16 @@ try {
                 [bool]$Parameters.protectionFromAlignmentControlImmunity
             'elemental-races' = [bool]$Parameters.elementalRaces
             'teleportation-spells' = [bool]$Parameters.teleportationSpells
-            'magic-circle-spells' = [bool]$Parameters.magicCircleSpells }
+            'magic-circle-spells' = [bool]$Parameters.magicCircleSpells
+            # Turn Undead (optional default-ON key, outside the module matrix):
+            # written explicitly, OFF only in the all-off profile.
+            'turn-undead' = [bool]($Parameters.gunslinger -or $Parameters.acadamaeGraduate -or
+                $Parameters.shieldOther -or $Parameters.expandedSummoning -or
+                $Parameters.elvenBranchedSpears -or $Parameters.easternWeapons -or
+                $Parameters.brownFurTransmuter -or $Parameters.urbanBarbarian -or
+                $Parameters.bodyguardFeats -or $Parameters.protectionFromAlignmentControlImmunity -or
+                $Parameters.elementalRaces -or $Parameters.teleportationSpells -or
+                $Parameters.magicCircleSpells) }
         $temporary = $settingsPath + '.kmg-profile.tmp'
         [IO.File]::WriteAllText($temporary,
             ($settings | ConvertTo-Json -Depth 4),

@@ -27,13 +27,11 @@ namespace KingmakerGunslinger.TurnUndead
     /// </summary>
     internal static class TurnUndeadModule
     {
-        private const int MaximumPendingUpdates = 600;
         private static readonly object Gate = new object();
         private static ModContext _context;
         private static bool _installed;
         private static bool _attached;
         private static bool _completed;
-        private static int _pendingUpdates;
         private static TurnUndeadBlueprintSet _blueprints;
         private static BodyguardFeatPublicationTransaction<BlueprintFeature> _publication;
         private static TurnUndeadResistancePublication _resistance;
@@ -75,16 +73,15 @@ namespace KingmakerGunslinger.TurnUndead
                 context = _context;
             }
             if (context == null) return;
-            if (!BlueprintBootstrap.IsInitialized)
+            switch (TurnUndeadLifecyclePolicy.Decide(BlueprintBootstrap.IsInitialized, BlueprintBootstrap.IsFailed))
             {
-                if (BlueprintBootstrap.IsFailed ||
-                    ++_pendingUpdates > MaximumPendingUpdates)
-                {
-                    Finish(context, "blocked: core blueprint initialization is unavailable");
+                case TurnUndeadStartupDecision.Wait:
+                    return;
+                case TurnUndeadStartupDecision.Blocked:
+                    Finish(context, "blocked: core blueprint initialization failed");
                     TurnUndeadDiagnostics.Warning("initialize.blocked",
-                        "Core blueprints did not initialize; Turn Undead was not registered.");
-                }
-                return;
+                        "Core blueprints failed to initialize; Turn Undead was not registered.");
+                    return;
             }
             try
             {
@@ -94,7 +91,7 @@ namespace KingmakerGunslinger.TurnUndead
             {
                 Finish(context, "failed: " + exception.GetType().Name);
                 TurnUndeadDiagnostics.Failure("initialize.failed",
-                    "Turn Undead registration or publication failed and was rolled back; other modules continue.",
+                    "Turn Undead could not start; its changes were rolled back and other modules continue.",
                     exception);
             }
         }
@@ -113,6 +110,15 @@ namespace KingmakerGunslinger.TurnUndead
             }
         }
 
+        /// <summary>
+        /// Phase 1 registers the save-referenced identities (feat, actions,
+        /// flight effect) and their icons; a failure there rolls back the whole
+        /// registration. Phase 2 publishes into foreign surfaces (native channel
+        /// resistance, optional Call of the Wild, the general feat offer); a
+        /// failure there rolls back only phase-2 changes, so saved identities
+        /// stay resolvable. A Call of the Wild contract drift is a reported
+        /// degraded state inside phase 2, not a phase failure.
+        /// </summary>
         private static void Initialize(ModContext context, LibraryScriptableObject library)
         {
             string modDirectory = Path.GetDirectoryName(context.Assembly.Location);
@@ -121,59 +127,72 @@ namespace KingmakerGunslinger.TurnUndead
             TurnUndeadBlueprintSet set = null;
             TurnUndeadResistancePublication resistance = null;
             TurnUndeadCotwPublication cotw = null;
+            string cotwFailure = null;
             BodyguardFeatPublicationTransaction<BlueprintFeature> publication = null;
-            try
-            {
-                set = TurnUndeadBlueprints.Register(library, registry);
-                OwnedIconAssignments.ApplyTurnUndead(library, manifest);
-                resistance = TurnUndeadResistancePublication.Publish(library,
-                    set.AllAbilities.ToArray());
-                string cotwFailure = null;
-                try
+            bool offer = context.FeatureModules.ActiveTurnUndead;
+
+            TurnUndeadInstallOutcome outcome = TurnUndeadLifecyclePolicy.Install(
+                () =>
                 {
-                    cotw = TurnUndeadCotwPublication.Publish(set, context.ModEntry);
-                }
-                catch (Exception exception)
+                    set = TurnUndeadBlueprints.Register(library, registry);
+                    OwnedIconAssignments.ApplyTurnUndead(library, manifest);
+                },
+                () => { set = null; registry.RollbackAll(); },
+                () =>
                 {
-                    // Publish rolled back its own changes; the directly granted
-                    // actions stay visible and every other Turn Undead change stands.
+                    resistance = TurnUndeadResistancePublication.Publish(library, set.AllAbilities.ToArray());
+                    try
+                    {
+                        cotw = TurnUndeadCotwPublication.Publish(set, context.ModEntry);
+                    }
+                    catch (Exception exception)
+                    {
+                        // Publish restored its own changes: no submenu child, no CotW DC or
+                        // resistance lists. Baseline Turn Undead with reduced CotW compatibility.
+                        cotw = null;
+                        cotwFailure = exception.GetType().Name + ": " + exception.Message;
+                        TurnUndeadDiagnostics.Warning("cotw.unavailable",
+                            "Call of the Wild integration was not applied (reduced compatibility: no channel " +
+                            "submenu entry, no CotW DC bonuses or channel resistances); the direct actions remain. " +
+                            cotwFailure);
+                    }
+                    if (offer) publication = PublishFeat(library, set.Feat);
+                },
+                () =>
+                {
+                    if (publication != null) publication.Rollback();
+                    if (cotw != null) cotw.Rollback();
+                    if (resistance != null) resistance.Rollback();
+                    publication = null;
                     cotw = null;
-                    cotwFailure = exception.GetType().Name + ": " + exception.Message;
-                    TurnUndeadDiagnostics.Warning("cotw.unavailable",
-                        "Call of the Wild integration was not applied; direct actions remain. " + cotwFailure);
-                }
-                bool publish = context.FeatureModules.ActiveTurnUndead;
-                if (publish) publication = PublishFeat(library, set.Feat);
-                lock (Gate)
-                {
-                    _blueprints = set;
-                    _resistance = resistance;
-                    _cotw = cotw;
-                    _publication = publication;
-                }
-                Finish(context, publish ? "published" : "registered; module off (not offered)");
-                TurnUndeadDiagnostics.Info("initialize.complete",
-                    "registered=" + registry.RegisteredCount + ";featPublished=" + publish +
-                    ";resistance=" + string.Join(",", resistance.Evidence.ToArray()) +
-                    (cotw == null ? ";cotw=failed" : ";cotw=" + cotw.Availability + ";menuChildren=" +
-                        cotw.MenuChildren + (cotw.Evidence.Count == 0 ? string.Empty :
-                            ";" + string.Join(",", cotw.Evidence.ToArray()))));
-            }
-            catch
+                    resistance = null;
+                });
+
+            if (!outcome.Registered)
+                throw new InvalidOperationException("Turn Undead registration failed and was rolled back.",
+                    outcome.RegistrationFailure);
+            lock (Gate)
             {
-                if (publication != null) publication.Rollback();
-                if (cotw != null) cotw.Rollback();
-                if (resistance != null) resistance.Rollback();
-                registry.RollbackAll();
-                lock (Gate)
-                {
-                    _blueprints = null;
-                    _resistance = null;
-                    _cotw = null;
-                    _publication = null;
-                }
-                throw;
+                _blueprints = set;
+                _resistance = resistance;
+                _cotw = cotw;
+                _publication = publication;
             }
+            if (!outcome.Published)
+            {
+                Finish(context, "registered; publication failed: " + outcome.PublicationFailure.GetType().Name);
+                TurnUndeadDiagnostics.Failure("publication.failed",
+                    "Turn Undead identities are registered (saves stay loadable) but its publication failed and " +
+                    "was rolled back; the feat is not offered.", outcome.PublicationFailure);
+                return;
+            }
+            Finish(context, offer ? "published" : "registered; module off (not offered)");
+            TurnUndeadDiagnostics.Info("initialize.complete",
+                "registered=" + registry.RegisteredCount + ";featPublished=" + offer +
+                ";resistance=" + string.Join(",", resistance.Evidence.ToArray()) +
+                (cotw == null ? ";cotw=failed" : ";cotw=" + cotw.Availability + ";menuChildren=" +
+                    cotw.MenuChildren + (cotw.Evidence.Count == 0 ? string.Empty :
+                        ";" + string.Join(",", cotw.Evidence.ToArray()))));
         }
 
         private static BodyguardFeatPublicationTransaction<BlueprintFeature> PublishFeat(

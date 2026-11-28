@@ -31,7 +31,15 @@ foreach ($mask in 0..8191) {
     }
     & $validation
     $settings = & $makeSettings
-    if ($settings.Count -ne 14 -or $settings.schemaVersion -ne 12) { throw 'Wrong compatibility settings schema/count.' }
+    if ($settings.Count -ne 15 -or $settings.schemaVersion -ne 12) { throw 'Wrong compatibility settings schema/count.' }
+    if ($settings['turn-undead'] -isnot [bool] -or $settings['turn-undead'] -ne ($mask -ne 0)) {
+        throw "Compatibility settings Turn Undead must be OFF only in the all-off profile (mask $mask)."
+    }
+    # The module matrix's shared generator must write the identical document.
+    $generated = New-KmgFeatureModuleSettingsDocument -RuntimeValues $Parameters
+    if (($generated | ConvertTo-Json -Depth 4) -cne ($settings | ConvertTo-Json -Depth 4)) {
+        throw "Matrix and compatibility settings generators disagree (mask $mask)."
+    }
     foreach ($module in $catalog) {
         if ($settings[$module.JsonKey] -isnot [bool] -or
             $settings[$module.JsonKey] -ne $Parameters[$module.RuntimeParameter]) {
@@ -40,6 +48,10 @@ foreach ($mask in 0..8191) {
     }
     $checks++
 }
+$rejectedEmpty = $false
+try { [void](New-KmgFeatureModuleSettingsDocument -RuntimeValues @{}) } catch { $rejectedEmpty = $true }
+if (-not $rejectedEmpty) { throw 'The shared generator accepted missing module values.' }
+$checks++
 foreach ($module in $catalog) {
     foreach ($invalid in @('absent', 'string')) {
         $Parameters = @{}

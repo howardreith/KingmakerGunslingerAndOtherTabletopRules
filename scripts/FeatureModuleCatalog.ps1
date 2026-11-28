@@ -96,6 +96,34 @@ function Get-KmgFeatureModuleCatalog {
     )
 }
 
+# Turn Undead's feat offer is an optional default-ON settings key outside the
+# thirteen-module matrix. A file without the key (every earlier release) keeps
+# it ON. A generated profile writes it explicitly: OFF in the all-off profile
+# (every catalog module OFF), ON otherwise.
+function Get-KmgTurnUndeadGeneratedValue {
+    param([Parameter(Mandatory = $true)][AllowEmptyCollection()][bool[]]$ModuleValues)
+    return [bool](@($ModuleValues | Where-Object { $_ }).Count -gt 0)
+}
+
+# The complete FeatureModules.json document a generated profile writes, from
+# runtime-parameter values keyed by each catalog entry's RuntimeParameter.
+function New-KmgFeatureModuleSettingsDocument {
+    param([Parameter(Mandatory = $true)][System.Collections.IDictionary]$RuntimeValues)
+    $document = [ordered]@{ schemaVersion = 12 }
+    $values = [Collections.Generic.List[bool]]::new()
+    foreach ($module in @(Get-KmgFeatureModuleCatalog)) {
+        if (-not $RuntimeValues.Contains($module.RuntimeParameter) -or
+            $RuntimeValues[$module.RuntimeParameter] -isnot [bool]) {
+            throw "Generated module settings need a boolean for $($module.RuntimeParameter)."
+        }
+        $enabled = [bool]$RuntimeValues[$module.RuntimeParameter]
+        $document[$module.JsonKey] = $enabled
+        $values.Add($enabled)
+    }
+    $document['turn-undead'] = Get-KmgTurnUndeadGeneratedValue -ModuleValues $values.ToArray()
+    return $document
+}
+
 function Get-KmgFeatureModuleConfigurations {
     param([switch]$Boundary)
 

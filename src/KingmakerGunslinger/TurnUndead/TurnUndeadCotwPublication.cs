@@ -64,7 +64,9 @@ namespace KingmakerGunslinger.TurnUndead
                 return result;
             }
             Type engine = cotw.Assembly.GetType(EngineTypeName, false, false);
-            if (engine == null) { result.Availability = "no-channel-engine"; return result; }
+            if (engine == null)
+                throw new InvalidOperationException("Call of the Wild " + (cotw.Info.Version ?? "?") +
+                    " has no " + EngineTypeName + "; contract drift.");
             result.Availability = "present " + (cotw.Info.Version ?? "?");
             try
             {
@@ -128,31 +130,46 @@ namespace KingmakerGunslinger.TurnUndead
         private void AppendDcBonus(Type engine, string fieldName, TurnUndeadBlueprintSet set)
         {
             FieldInfo field = engine.GetField(fieldName, Statics);
-            BlueprintUnitFact holder = field == null ? null : field.GetValue(null) as BlueprintUnitFact;
-            if (holder == null) { _evidence.Add(fieldName + "=absent"); return; }
-            int changed = 0;
-            foreach (BlueprintComponent component in holder.ComponentsArray ?? new BlueprintComponent[0])
+            bool typeMatches = field != null && typeof(BlueprintUnitFact).IsAssignableFrom(field.FieldType);
+            BlueprintUnitFact holder = typeMatches ? field.GetValue(null) as BlueprintUnitFact : null;
+            BlueprintComponent[] bonuses = holder == null ? new BlueprintComponent[0] :
+                (holder.ComponentsArray ?? new BlueprintComponent[0]).Where(component =>
+                    component != null && component.GetType().Name == "IncreaseSpecifiedSpellsDC").ToArray();
+            switch (TurnUndeadCotwSeamPolicy.Classify(field != null, typeMatches, holder != null, bonuses.Length))
             {
-                if (component == null || component.GetType().Name != "IncreaseSpecifiedSpellsDC") continue;
-                changed += AppendAbilities(component, "spells", set);
+                case TurnUndeadSeamState.Drift:
+                    throw new InvalidOperationException("Call of the Wild DC seam " + fieldName + " drifted (" +
+                        (field == null ? "field missing" : !typeMatches ? "field type " + field.FieldType.Name :
+                            "no IncreaseSpecifiedSpellsDC on " + holder.name) + "): its DC bonus would not apply to Turn Undead.");
+                case TurnUndeadSeamState.OptionalAbsent:
+                    _evidence.Add(fieldName + "=absent");
+                    return;
             }
+            int changed = 0;
+            foreach (BlueprintComponent component in bonuses) changed += AppendAbilities(component, "spells", set);
             _evidence.Add(fieldName + "=" + holder.AssetGuid + ":+" + changed);
         }
 
         private void AppendResistances(Type engine, TurnUndeadBlueprintSet set)
         {
             FieldInfo field = engine.GetField("channel_resistances", Statics);
-            IEnumerable facts = field == null ? null : field.GetValue(null) as IEnumerable;
+            bool typeMatches = field != null && typeof(IEnumerable<BlueprintUnitFact>).IsAssignableFrom(field.FieldType);
+            IEnumerable<BlueprintUnitFact> facts = typeMatches ? field.GetValue(null) as IEnumerable<BlueprintUnitFact> : null;
+            if (TurnUndeadCotwSeamPolicy.Classify(field != null, typeMatches, facts != null, 1) == TurnUndeadSeamState.Drift)
+                throw new InvalidOperationException("Call of the Wild seam channel_resistances drifted (" +
+                    (field == null ? "field missing" : "field type " + field.FieldType.Name) +
+                    "): CotW channel resistance would not apply to Turn Undead.");
             if (facts == null) { _evidence.Add("channel_resistances=absent"); return; }
-            foreach (BlueprintUnitFact fact in facts.OfType<BlueprintUnitFact>())
+            foreach (BlueprintUnitFact fact in facts.Where(value => value != null))
             {
+                BlueprintComponent[] lists = (fact.ComponentsArray ?? new BlueprintComponent[0]).Where(component =>
+                    component is SavingThrowBonusAgainstSpecificSpells ||
+                    component != null && component.GetType().Name == "ContextSavingThrowBonusAgainstSpecificSpells").ToArray();
+                if (TurnUndeadCotwSeamPolicy.Classify(true, true, true, lists.Length) == TurnUndeadSeamState.Drift)
+                    throw new InvalidOperationException("Call of the Wild channel resistance " + fact.name + " (" +
+                        fact.AssetGuid + ") has no ability-specific save-bonus list: its resistance would not apply to Turn Undead.");
                 int changed = 0;
-                foreach (BlueprintComponent component in fact.ComponentsArray ?? new BlueprintComponent[0])
-                {
-                    if (component is SavingThrowBonusAgainstSpecificSpells ||
-                        component != null && component.GetType().Name == "ContextSavingThrowBonusAgainstSpecificSpells")
-                        changed += AppendAbilities(component, "Spells", set);
-                }
+                foreach (BlueprintComponent component in lists) changed += AppendAbilities(component, "Spells", set);
                 _evidence.Add("resistance=" + fact.AssetGuid + ":+" + changed);
             }
         }
@@ -161,7 +178,8 @@ namespace KingmakerGunslinger.TurnUndead
         {
             FieldInfo field = component.GetType().GetField(fieldName, Instances);
             if (field == null || field.FieldType != typeof(BlueprintAbility[]))
-                throw new MissingFieldException(component.GetType().FullName, fieldName);
+                throw new InvalidOperationException("Call of the Wild component " + component.GetType().FullName +
+                    " lacks its BlueprintAbility[] " + fieldName + " list (contract drift).");
             var before = (BlueprintAbility[])field.GetValue(component);
             BlueprintAbility[] after = TurnUndeadListPolicy.AppendMissing(before, set.AllAbilities.ToArray());
             if (after == null) return 0;
