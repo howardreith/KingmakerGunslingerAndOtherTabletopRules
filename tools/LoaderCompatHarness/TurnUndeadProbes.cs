@@ -42,7 +42,9 @@ namespace KmgLoaderCompatHarness
     /// Disclosed setup (fixture, not product logic): Will totals set directly on the spawned undead; the cleric's
     /// positive channel added as the cleric channel selection's choice when the level-up controller leaves it
     /// unselected; the feat added as a fact (normal level-up acquisition is a separate final-checkpoint observation);
-    /// brains off on every spawned unit so AI does not issue other commands; tracked units kept alive.
+    /// brains off on every spawned unit so AI does not issue other commands; tracked units kept alive. A second cleric
+    /// with the same build and no feat is the negative control: no Turn action granted and the blueprint refused by its
+    /// caster checks while the channel pool is available.
     /// </summary>
     internal sealed class TurnUndeadProbe : IOwnedProbe
     {
@@ -105,6 +107,8 @@ namespace KmgLoaderCompatHarness
             if (set == null) { problems.Add("Turn Undead is not registered: " + result["moduleStatus"]); yield break; }
             result["featPublished"] = (bool)module.GetProperty("FeatPublished", Any).GetValue(null, null);
             result["resistanceEvidence"] = new JArray(((IEnumerable<string>)module.GetProperty("ResistanceEvidence", Any).GetValue(null, null)).Cast<object>().ToArray());
+            object cotw = module.GetProperty("CotwPublication", Any).GetValue(null, null);
+            result["cotw"] = cotw == null ? "failed" : (string)Member(cotw, "Availability");
             result["area"] = Game.Instance.CurrentlyLoadedArea == null ? null : Game.Instance.CurrentlyLoadedArea.name;
             UnitEntityData main = Game.Instance.Player.MainCharacter.Value;
             origin = ObstacleAnalyzer.TraceAlongNavmesh(main.Position, main.Position + Quaternion.Euler(0, main.Orientation, 0) * Vector3.forward * 8f);
@@ -330,6 +334,30 @@ namespace KmgLoaderCompatHarness
             if (setup["grantedActions"].Count() != 1 || (string)setup["grantedActions"][0] != "Cleric")
                 problems.Add("the feat granted " + setup["grantedActions"] + " instead of exactly the cleric action");
             if (poolBeforeFeat < 1) { problems.Add("the cleric has no channel use to spend"); yield break; }
+
+            // ---- negative control: the same cleric build without the feat
+            UnitEntityData control = SpawnFriendly("ControlCleric", Spot(-1f, -3f));
+            control.Descriptor.Stats.Charisma.BaseValue = 16;
+            Level(control, Blueprint<BlueprintCharacterClass>(ClericClass), 5);
+            if (!control.Descriptor.HasFact(channel)) control.Descriptor.AddFact(channel);
+            Level(control, Blueprint<BlueprintCharacterClass>(FighterClass), 2);
+            yield return null;
+            var controlData = new AbilityData(clericTurn, control.Descriptor);
+            JObject negative = new JObject
+            {
+                ["hasFeat"] = control.Descriptor.HasFact(Feat), ["hasPositiveChannel"] = control.Descriptor.HasFact(channel),
+                ["channelPool"] = control.Descriptor.Resources.GetResourceAmount(pool),
+                ["grantedActions"] = new JArray(new[] { "Cleric", "Paladin", "Hospitaler", "Empyreal" }
+                    .Where(k => control.Descriptor.Abilities.GetAbility(Direct(k)) != null).Cast<object>().ToArray()),
+                ["blueprintCastableWithoutFeat"] = controlData.IsAvailableForCast,
+                ["featHolderCastable"] = new AbilityData(clericTurn, cleric.Descriptor).IsAvailableForCast
+            };
+            result["negativeControl"] = negative;
+            if ((bool)negative["hasFeat"] || negative["grantedActions"].Count() != 0)
+                problems.Add("a cleric without the feat holds Turn Undead: " + negative.ToString(Newtonsoft.Json.Formatting.None));
+            if ((int)negative["channelPool"] < 1) problems.Add("the control cleric has no channel use, so the negative check is not meaningful");
+            if ((bool)negative["blueprintCastableWithoutFeat"]) problems.Add("the Turn action is castable by a cleric without the feat");
+            if (!(bool)negative["featHolderCastable"]) problems.Add("the feat holder's Turn action fails its own caster checks");
 
             // ---- targets
             UnitEntityData skeleton = SpawnNative(Skeleton, "skeleton", Spot(4f, 0f));

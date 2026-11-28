@@ -103,12 +103,25 @@ derives the icon set from the catalog's runtime exports).
 | Panic | Native Frightened condition through `UnitFearController` | engine read | flees from visible enemies; held items not dropped |
 | Repeat saves | Owned round save, intelligent only, at the native buff tick; DC fixed at application | engine read; tests | native timing |
 | Immunity | No descriptors on the owned buff/ability (native turning exception) | engine read | separate Frightened condition immunity still blocks |
-| Resistance / bonuses | Native ChannelResistance4 list extended; CotW resistances, Improved Channel, Sacred Conduit, Consecrate extended when CotW is present | engine/CotW read | Glory domain (+2 only "to halve the damage") and damage-only items do not apply |
+| Resistance / bonuses | Native ChannelResistance4 list extended; CotW resistances, Improved Channel (+2), Sacred Conduit (+1), Consecrate (+3) extended when CotW is present | engine/CotW read | Glory domain (+2 only "to halve the damage") and damage-only items do not apply. Xavorn's Cross: the native `XavornsCrossFeature` (`35f473c4`) is `IncreaseSpellDC` +2 on `ChannelNegativeEnergy` only, and the installed CotW 1.14.4c does not modify it (no `Xavorn` symbol in the DLL), so it never applies to a positive-only Turn. Consecrate's separate -1 save penalty to undead in its area is a target-side modifier; a CotW-present observation must report the caster DC and the target save total separately |
 | Selective Channeling | Neither native nor CotW implements a targeting rule; Turn affects every undead in range, allies included | blueprint/CotW read | |
 | Caster | The channeler is excluded (cannot flee from itself) | adaptation | |
 | Overlap | Native `FrightenedUndead` stacking kept by the clone | engine | a new failed save replaces the effect |
 | Menu | CotW: source child under that source's harm wrapper, direct action hidden; vanilla: direct action. A CotW contract drift (ambiguous wrapper, missing field) rolls back only the CotW changes and logs `[turn-undead][cotw.unavailable]`; the direct actions stay | CotW read (`IncreaseSpecifiedSpellsDC.spells`, `ContextSavingThrowBonusAgainstSpecificSpells.Spells` are public fields in the installed 1.14.4c DLL) | PENDING native |
 | Module | Optional default-ON `turn-undead` key; not part of the guarded 13-module runtime matrix | settings tests | owner may prefer a full matrix module |
+
+## Call of the Wild seams (review targets)
+
+| Seam | Installed behavior | How Turn meets it | Evidence |
+| --- | --- | --- | --- |
+| DC bonus matching | `IncreaseSpecifiedSpellsDC` matches the executed ability or its parent | the Turn identities themselves are appended (the menu child's parent is a CotW wrapper not in the list) | CotW read; native PENDING |
+| Resistance matching | `ContextSavingThrowBonusAgainstSpecificSpells` matches `Reason.Context.SourceAbility` exactly and reads the caster from that context for bypass features | initial save `Reason` = the Turn ability context; repeat save `Reason` = the flight buff, whose context `SourceAbility` is the Turn ability and whose caster is the channeler | engine/CotW read; native initial and repeat resistance PENDING |
+| Timing | CotW builds its channel engine and later its new spells (Consecrate) inside its `LoadDictionary` postfix | the adapter runs on the first UMM update after core bootstrap, i.e. after the whole synchronous `LoadDictionary` postfix chain has returned, so every CotW field is final; a field still null is recorded as `=absent`, not treated as incompatibility | code read; native CotW-present log PENDING |
+| Fallback | a contract drift throws inside the adapter | the adapter restores every recorded change (variants, parent links, direct visibility, every list) and the module logs `[turn-undead][cotw.unavailable]` with `cotw=failed` in the completion line. That state is baseline Turn Undead with reduced CotW compatibility (no submenu, no CotW DC/resistance), never reported as full compatibility | code read |
+
+## Validation time
+
+Development candidate builds on DATA, measured: `Build-Local -DevelopmentPurpose turn-undead-first -DevelopmentTestFilter turn-undead` at `6da197e9` ran 20:27-00:31 (4 h 04 min) and stopped at packaging (fixed in `d37f4af63`); the rebuild at `d37f4af63` ran 00:46-04:14 (3 h 28 min) and produced package `4fd152379c5ad7993dfd4522047d2122d956174a7bbe5a1db19290eadc2a2b48`, DLL `c53594af8d385fb355a8f7574e25243788599027ef01acd920cbc1cfbf3b95bc`. Almost all of the time is the repository-validation wrapper's per-file git object reads: the shared object store held 4,517 packs (~18k files in `objects/pack`; listing it took ~45 s, so each object-reading git command took ~58 s with no CPU and no lazy fetch). This is far outside the 15/30-minute validation budget; the owner authorized a repack after the rebuild. Native observation launches only after a candidate exists and its runtime transaction is admitted; the budget applies to each validation phase, and the build duration is reported here rather than repeated unchanged.
 
 ## Acceptance evidence index
 
