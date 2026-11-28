@@ -1,0 +1,5908 @@
+{
+ "checks": [
+  {
+   "actorBlueprintExact": true,
+   "actorNameExact": true,
+   "actorPresent": true,
+   "anchorCommandsEmpty": true,
+   "casterBrainDisabled": true,
+   "casterCommandsEmpty": true,
+   "originalDistinct": true,
+   "ownedPartyExact": true,
+   "passed": true,
+   "predicate": "summon-s7-effects-mechanics-group-quiet-anchor",
+   "presetExact": true,
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "saveGuardOwned": true,
+   "scenesOwned": true
+  },
+  {
+   "alwaysEnemy": false,
+   "attackFaction": "Player",
+   "casterIsEnemy": true,
+   "intakeNonPlayerRelations": [],
+   "passed": true,
+   "predicate": "sprint32-turn-hostile-faction",
+   "privateFaction": "KMG_Runtime_Sprint32Turn_HostileFaction",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "target": "01b62890-cff3-427c-bb6c-11c6811437a9",
+   "targetIsEnemy": true
+  },
+  {
+   "controller": "Mouse",
+   "exactReview": true,
+   "frame": 3880,
+   "gameSeconds": 43200.679,
+   "immediateBoundary": true,
+   "inputModeAdmitted": true,
+   "mode": "Default",
+   "narrativeAbsent": true,
+   "nativeModeAdmitted": true,
+   "noSelectedAbility": true,
+   "ownedFixture": true,
+   "passed": true,
+   "predicate": "cleanup2-native-default-admission-summon-s7-effects-mechanics",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "saveFree": true,
+   "utc": "2026-11-28T14:41:51.9385885Z"
+  },
+  {
+   "activeModeCounts": [
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "closed": false,
+   "controllerReferences": [
+    {
+     "actualInstance": 1038386944,
+     "expectedInstance": 1038386944,
+     "name": "ClickEventsController",
+     "same": true
+    },
+    {
+     "actualInstance": -785640960,
+     "expectedInstance": -785640960,
+     "name": "SelectedAbilityHandler",
+     "same": true
+    },
+    {
+     "actualInstance": -1699536128,
+     "expectedInstance": -1699536128,
+     "name": "PlaceRestMarkerHandler",
+     "same": true
+    },
+    {
+     "actualInstance": 1655899648,
+     "expectedInstance": 1655899648,
+     "name": "InteractionHighlightController",
+     "same": true
+    },
+    {
+     "actualInstance": 968113792,
+     "expectedInstance": 968113792,
+     "name": "CombatEngagementController",
+     "same": true
+    },
+    {
+     "actualInstance": 1601601280,
+     "expectedInstance": 1601601280,
+     "name": "HandsEquipmentController",
+     "same": true
+    },
+    {
+     "actualInstance": 2049294080,
+     "expectedInstance": 2049294080,
+     "name": "CameraController",
+     "same": true
+    }
+   ],
+   "current": true,
+   "existingNativeDefaultBorrowed": true,
+   "expectedActiveModeCounts": [
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "frame": 3880,
+   "gameSeconds": 43200.679,
+   "manualClockSuspended": true,
+   "manualPulsesBefore": 0,
+   "manualPulsesCurrent": 0,
+   "mode": "Default",
+   "nativeFactoryModeOwned": false,
+   "originalStackCount": 1,
+   "ownershipPredicates": {
+    "exactActiveModeCounts": true,
+    "exactControllerReferences": true,
+    "exactModeStackReferences": true,
+    "factoryDefaultPointerExact": true,
+    "gameModeTicking": false,
+    "immediateBoundary": true,
+    "modeIsNativeDefault": true,
+    "notClosed": true,
+    "pendingBeforeTickActions": 0,
+    "selectedAbility": null,
+    "selectedAbilityAbsent": true,
+    "switchingModes": false
+   },
+   "passed": true,
+   "pointerController": "Kingmaker.Controllers.Clicks.PointerController",
+   "predicate": "cleanup2-native-default-enter-summon-s7-effects-mechanics",
+   "purpose": "summon-s7-effects-mechanics",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "selectedAbilityHandler": "Kingmaker.Controllers.Clicks.Handlers.ClickWithSelectedAbilityHandler",
+   "stackCount": 1,
+   "tickGateBefore": {
+    "allowedAbilityExecutionTicks": 0,
+    "allowedActionTicks": 0,
+    "allowedCooldownTicks": 0,
+    "blockedAmbientActionTicks": 0,
+    "blockedAmbientCooldownTicks": 0,
+    "blockedDuplicateAbilityExecutionTicks": 0,
+    "brainTicks": 0,
+    "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+    "maximumActionTicksPerUnitPerUnityFrame": 0,
+    "nativeDefaultActions": 0,
+    "nativeDefaultCooldowns": 0,
+    "nativeDefaultExecutions": 0,
+    "nativeDefaultLeaseActive": false,
+    "refusedStaleNativeTicks": 0,
+    "scope": "exact request fixture/turn-clock actor set"
+   },
+   "tickGateCurrent": {
+    "allowedAbilityExecutionTicks": 0,
+    "allowedActionTicks": 0,
+    "allowedCooldownTicks": 0,
+    "blockedAmbientActionTicks": 0,
+    "blockedAmbientCooldownTicks": 0,
+    "blockedDuplicateAbilityExecutionTicks": 0,
+    "brainTicks": 0,
+    "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+    "maximumActionTicksPerUnitPerUnityFrame": 0,
+    "nativeDefaultActions": 0,
+    "nativeDefaultCooldowns": 0,
+    "nativeDefaultExecutions": 0,
+    "nativeDefaultLeaseActive": true,
+    "refusedStaleNativeTicks": 0,
+    "scope": "exact request fixture/turn-clock actor set"
+   },
+   "utc": "2026-11-28T14:41:51.9526277Z"
+  },
+  {
+   "pairs": [
+    {
+     "cues": [
+      {
+       "endUtc": "2026-11-28T14:42:04.7853066Z",
+       "event": "Sweetener_Low_06_Quake",
+       "frame": 4201,
+       "playingId": 164,
+       "seconds": 2.2442013999999997,
+       "stopReason": null,
+       "stopRequestedUtc": null,
+       "stopResult": null,
+       "utc": "2026-11-28T14:42:02.5411052Z"
+      }
+     ],
+     "hit": {
+      "emitterPosition": [
+       21.74734,
+       -5.54817,
+       26.96371
+      ],
+      "frame": 4201,
+      "hit": true,
+      "initiator": "93e50ab3-8b10-40f5-860f-7441dbfd0424",
+      "listenerDistanceAtEvent": 37.45,
+      "roll": -1047779328,
+      "target": "01b62890-cff3-427c-bb6c-11c6811437a9",
+      "utc": "2026-11-28T14:42:02.3851129Z",
+      "weapon": "KMG_Summoning_Natural_Tail3d6",
+      "weaponGuid": "15394605e1664a51bce4b50f38a7603a"
+     },
+     "listenerDistanceAfterSequence": 37.45,
+     "listenerDistanceAtEvent": 37.45
+    },
+    {
+     "cues": [
+      {
+       "endUtc": "2026-11-28T14:42:10.6848261Z",
+       "event": "Sweetener_Low_06_Quake",
+       "frame": 4412,
+       "playingId": 236,
+       "seconds": 2.0965374,
+       "stopReason": null,
+       "stopRequestedUtc": null,
+       "stopResult": null,
+       "utc": "2026-11-28T14:42:08.5882887Z"
+      }
+     ],
+     "hit": {
+      "emitterPosition": [
+       21.74734,
+       -5.54817,
+       26.96371
+      ],
+      "frame": 4412,
+      "hit": true,
+      "initiator": "93e50ab3-8b10-40f5-860f-7441dbfd0424",
+      "listenerDistanceAtEvent": 37.45,
+      "roll": -1910272000,
+      "target": "01b62890-cff3-427c-bb6c-11c6811437a9",
+      "utc": "2026-11-28T14:42:08.4875040Z",
+      "weapon": "KMG_Summoning_Natural_Tail3d6",
+      "weaponGuid": "15394605e1664a51bce4b50f38a7603a"
+     },
+     "listenerDistanceAfterSequence": 37.45,
+     "listenerDistanceAtEvent": 37.45
+    }
+   ],
+   "passed": true,
+   "predicate": "s7-anky-one-cue-per-impact",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "foreignWeapon": {
+    "calls": 1,
+    "error": null,
+    "hit": true,
+    "newCues": 0,
+    "rollTarget": "01b62890-cff3-427c-bb6c-11c6811437a9",
+    "targetInGame": true,
+    "weapon": "20375b5a0c9243d45966bd72c690ab74",
+    "weaponName": "WeaponEmptyHand",
+    "wrapperTarget": "01b62890-cff3-427c-bb6c-11c6811437a9"
+   },
+   "mismatchedWrapper": {
+    "calls": 1,
+    "error": null,
+    "hit": true,
+    "newCues": 0,
+    "rollTarget": "01b62890-cff3-427c-bb6c-11c6811437a9",
+    "targetInGame": true,
+    "weapon": "15394605e1664a51bce4b50f38a7603a",
+    "weaponName": "KMG_Summoning_Natural_Tail3d6",
+    "wrapperTarget": "b3f0638c-ffb9-4dda-a8ce-0bcba443c2b6"
+   },
+   "passed": true,
+   "predicate": "s7-anky-production-controls",
+   "removedTarget": {
+    "calls": 1,
+    "error": null,
+    "hit": true,
+    "newCues": 0,
+    "rollTarget": "acbfaf67-2738-44db-81cf-6f161705649e",
+    "targetInGame": false,
+    "weapon": "15394605e1664a51bce4b50f38a7603a",
+    "weaponName": "KMG_Summoning_Natural_Tail3d6",
+    "wrapperTarget": "acbfaf67-2738-44db-81cf-6f161705649e"
+   },
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "sameRollValidWrapper": {
+    "calls": 1,
+    "error": null,
+    "hit": true,
+    "newCues": 1,
+    "rollTarget": "01b62890-cff3-427c-bb6c-11c6811437a9",
+    "targetInGame": true,
+    "weapon": "15394605e1664a51bce4b50f38a7603a",
+    "weaponName": "KMG_Summoning_Natural_Tail3d6",
+    "wrapperTarget": "01b62890-cff3-427c-bb6c-11c6811437a9"
+   },
+   "valid": {
+    "calls": 1,
+    "error": null,
+    "hit": true,
+    "newCues": 1,
+    "rollTarget": "01b62890-cff3-427c-bb6c-11c6811437a9",
+    "targetInGame": true,
+    "weapon": "15394605e1664a51bce4b50f38a7603a",
+    "weaponName": "KMG_Summoning_Natural_Tail3d6",
+    "wrapperTarget": "01b62890-cff3-427c-bb6c-11c6811437a9"
+   }
+  },
+  {
+   "foreignOwnerCalls": 1,
+   "foreignOwnerNewCues": 0,
+   "foreignWeapon": "the Ankylosaurus has only its tail attack natively; see craftedControls",
+   "invalidTarget": "see craftedControls",
+   "laterCues": 1,
+   "laterHits": 1,
+   "passed": true,
+   "predicate": "s7-anky-replay-dedup",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "sameRollCalls": 1,
+   "sameRollNewCues": 0
+  },
+  {
+   "attacks": [
+    {
+     "emitterPosition": [
+      21.74734,
+      -5.54817,
+      26.96371
+     ],
+     "frame": 4975,
+     "hit": false,
+     "initiator": "93e50ab3-8b10-40f5-860f-7441dbfd0424",
+     "listenerDistanceAtEvent": 37.45,
+     "roll": 940824576,
+     "target": "01b62890-cff3-427c-bb6c-11c6811437a9",
+     "utc": "2026-11-28T14:42:22.7908733Z",
+     "weapon": "KMG_Summoning_Natural_Tail3d6",
+     "weaponGuid": "15394605e1664a51bce4b50f38a7603a"
+    }
+   ],
+   "cues": 0,
+   "passed": true,
+   "predicate": "s7-anky-miss-no-cue",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "attacks": 0,
+   "cues": 0,
+   "passed": true,
+   "predicate": "s7-anky-cancel-no-cue",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "beforeRetirement": {
+    "frame": 5235,
+    "moment": "before-retirement",
+    "retiringEnded": false,
+    "retiringPlayback": "playing",
+    "retiringPlayingId": 486,
+    "survivorEnded": false,
+    "survivorPlayback": "playing",
+    "survivorPlayingId": 484,
+    "survivorStopAttempts": 0,
+    "survivorTracked": true,
+    "utc": "2026-11-28T14:42:29.1977128Z"
+   },
+   "overlappingAtRetirement": true,
+   "passed": true,
+   "predicate": "s7-anky-concurrent-retirement",
+   "retired": {
+    "endUtc": "2026-11-28T14:42:29.2521202Z",
+    "event": "Sweetener_Low_06_Quake",
+    "frame": 5234,
+    "playingId": 486,
+    "seconds": 0.071071,
+    "stopReason": "view-destroyed",
+    "stopRequestedUtc": "2026-11-28T14:42:29.2092190Z",
+    "stopResult": "stop-requested",
+    "utc": "2026-11-28T14:42:29.1810492Z"
+   },
+   "retiredUtc": "2026-11-28T14:42:29.1987136Z",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "settled": {
+    "frame": 5305,
+    "moment": "settled",
+    "retiringEnded": true,
+    "retiringPlayback": "inactive",
+    "retiringPlayingId": 486,
+    "survivorEnded": true,
+    "survivorPlayback": "inactive",
+    "survivorPlayingId": 484,
+    "survivorStopAttempts": 0,
+    "survivorTracked": false,
+    "utc": "2026-11-28T14:42:30.8834675Z"
+   },
+   "survivor": {
+    "endUtc": "2026-11-28T14:42:30.8179323Z",
+    "event": "Sweetener_Low_06_Quake",
+    "frame": 5234,
+    "playingId": 484,
+    "seconds": 1.7358481,
+    "stopReason": null,
+    "stopRequestedUtc": null,
+    "stopResult": null,
+    "utc": "2026-11-28T14:42:29.0820842Z"
+   },
+   "traceVerdict": null
+  },
+  {
+   "afterOtherRetired": {
+    "note": "read in the retirement frame, before the product's stop runs; the verdict reads the settled values at the window end",
+    "other": {
+     "endUtc": null,
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 5371,
+     "playingId": 518,
+     "seconds": null,
+     "stopReason": null,
+     "stopRequestedUtc": null,
+     "stopResult": null,
+     "utc": "2026-11-28T14:42:32.9578264Z"
+    },
+    "otherStopAttempts": 0,
+    "survivorStopAttempts": 0
+   },
+   "before": {
+    "frame": 5371,
+    "other": {
+     "endUtc": null,
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 5371,
+     "playingId": 518,
+     "seconds": null,
+     "stopReason": null,
+     "stopRequestedUtc": null,
+     "stopResult": null,
+     "utc": "2026-11-28T14:42:32.9578264Z"
+    },
+    "otherPlayback": "playing",
+    "survivor": {
+     "endUtc": null,
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 5371,
+     "playingId": 517,
+     "seconds": null,
+     "stopReason": null,
+     "stopRequestedUtc": null,
+     "stopResult": null,
+     "utc": "2026-11-28T14:42:32.9568290Z"
+    },
+    "survivorPlayback": "playing"
+   },
+   "componentBeforeDisposal": true,
+   "cuesBeforeSelection": {
+    "otherSource": [
+     {
+      "endUtc": null,
+      "event": "Sweetener_Low_06_Quake",
+      "frame": 5371,
+      "playingId": 518,
+      "seconds": null,
+      "stopReason": null,
+      "stopRequestedUtc": null,
+      "stopResult": null,
+      "utc": "2026-11-28T14:42:32.9578264Z"
+     }
+    ],
+    "survivorSource": [
+     {
+      "endUtc": null,
+      "event": "Sweetener_Low_06_Quake",
+      "frame": 5371,
+      "playingId": 517,
+      "seconds": null,
+      "stopReason": null,
+      "stopRequestedUtc": null,
+      "stopResult": null,
+      "utc": "2026-11-28T14:42:32.9568290Z"
+     }
+    ]
+   },
+   "declaredDisposalSeconds": 6.0,
+   "declaredOverlapSeconds": 16.0,
+   "declaredWindowSeconds": 12.0,
+   "disposition": "Established under the synthetic loss: the survivor's playback ended normally (confirmed inactive by the native query, including at the window end and after its own source's disposal), the other source was unaffected, and the only residual was the survivor's tracking on its own source's playback component, which went away when that component was destroyed with the source. Owner amendment 2 section 4 accepts this as a documented development limitation; no product change.",
+   "evaluator": "Sprint7ObserverPolicy.CallbackLossRound7",
+   "hookAttempted": true,
+   "hookSetup": null,
+   "hookSetupFailure": null,
+   "independentCleanup": {
+    "commandsInterrupted": 0,
+    "otherRetirementRequested": true,
+    "sourcesRetiredHere": 0,
+    "survivorRetirementRequested": true
+   },
+   "interventionDisposeFailures": [],
+   "interventionHooksAfter": 0,
+   "otherRetiredUtc": "2026-11-28T14:42:32.9588274Z",
+   "otherRetirementSettled": {
+    "other": {
+     "endUtc": "2026-11-28T14:42:32.9883723Z",
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 5371,
+     "playingId": 518,
+     "seconds": 0.030545899999999997,
+     "stopAttempts": 1,
+     "stopReason": "view-destroyed",
+     "stopRequestedUtc": "2026-11-28T14:42:32.9628265Z",
+     "stopResult": "stop-requested",
+     "utc": "2026-11-28T14:42:32.9578264Z"
+    },
+    "survivorStopAttemptsThroughWindow": 0
+   },
+   "overlapSchedule": [
+    {
+     "bothPlaying": true,
+     "delivery": 0,
+     "frame": 5371,
+     "keeperCalls": 1,
+     "keeperPlayingId": 517,
+     "otherCalls": 1,
+     "otherPlayingId": 518,
+     "sameFrame": true
+    }
+   ],
+   "overlapSetup": "constructed: declared same-frame delivery of fresh resolved tail hits (attack roll result set to Hit) to each source's own AnkylosaurusTailControl; cues are the production handler's real postings",
+   "passed": true,
+   "predicate": "s7-anky-callback-loss-characterized",
+   "releaseFailures": [],
+   "retirementFailures": [],
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "survivorAfterDisposal": {
+    "cue": {
+     "endUtc": null,
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 5371,
+     "playingId": 517,
+     "seconds": null,
+     "stopReason": "view-destroyed",
+     "stopRequestedUtc": "2026-11-28T14:42:44.9914129Z",
+     "stopResult": "stop-requested",
+     "utc": "2026-11-28T14:42:32.9568290Z"
+    },
+    "note": "a stop request issued by the source's own retirement for an already inactive playing ID is a request, not completion; EndUtc stays unset",
+    "playback": "inactive",
+    "playbackComponentDestroyed": true,
+    "stopAttempts": 1,
+    "unrelatedRecordsChanged": 0,
+    "viewDestroyed": true
+   },
+   "survivorAtWindowEnd": {
+    "callbacksPassedThrough": 1,
+    "callbacksWithheld": [
+     "2026-11-28T14:42:35.1536629Z"
+    ],
+    "cue": {
+     "endUtc": null,
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 5371,
+     "playingId": 517,
+     "seconds": null,
+     "stopReason": null,
+     "stopRequestedUtc": null,
+     "stopResult": null,
+     "utc": "2026-11-28T14:42:32.9568290Z"
+    },
+    "playback": "inactive",
+    "tracked": true
+   },
+   "survivorFirstInactiveUtc": "2026-11-28T14:42:35.5514103Z",
+   "synthetic": "the product's end-of-event callback for one exact survivor record is withheld from the product by the observer; native playback is untouched and read separately",
+   "verdict": null,
+   "window": [
+    {
+     "callbacksWithheld": 0,
+     "frame": 5371,
+     "otherPlayback": "playing",
+     "survivorEndUtc": null,
+     "survivorPlayback": "playing",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:32.9598272Z"
+    },
+    {
+     "callbacksWithheld": 0,
+     "frame": 5392,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "playing",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:33.4838152Z"
+    },
+    {
+     "callbacksWithheld": 0,
+     "frame": 5411,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "playing",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:33.9856205Z"
+    },
+    {
+     "callbacksWithheld": 0,
+     "frame": 5429,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "playing",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:34.4871105Z"
+    },
+    {
+     "callbacksWithheld": 0,
+     "frame": 5447,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "playing",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:35.0183928Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5467,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:35.5514103Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5484,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:36.0518174Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5500,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:36.5526690Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5519,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:37.0528644Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5536,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:37.5574697Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5557,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:38.0861002Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5577,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:38.6171587Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5596,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:39.1184327Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5616,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:39.6200180Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5634,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:40.1533851Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5653,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:40.6864226Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5670,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:41.1865900Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5686,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:41.6869698Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5705,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:42.1922175Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5724,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:42.7192111Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5745,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:43.2227304Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5765,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:43.7527058Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5784,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:44.2538135Z"
+    },
+    {
+     "callbacksWithheld": 1,
+     "frame": 5803,
+     "otherPlayback": "inactive",
+     "survivorEndUtc": null,
+     "survivorPlayback": "inactive",
+     "survivorTracked": true,
+     "utc": "2026-11-28T14:42:44.7610052Z"
+    }
+   ]
+  },
+  {
+   "error": null,
+   "passed": true,
+   "predicate": "r6-s7-ankylosaurus-completed",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "cells": {},
+   "child": {
+    "admitted": [
+     "s7-callback-abandoned-inner"
+    ],
+    "completed": [],
+    "failures": [
+     "callback-withhold: cue callback hook: InvalidOperationException: injected failure of the cue callback unpatch (kmg.s7.callback-withhold)",
+     "callback-withhold: cue callback hooks remaining: 1"
+    ],
+    "pending": [],
+    "recoveries": [],
+    "refused": "s7-callback-abandoned-next",
+    "restored": false,
+    "unreadable": [],
+    "unreported": []
+   },
+   "childAfterDisposal": {
+    "admitted": [
+     "s7-callback-abandoned-inner"
+    ],
+    "completed": [],
+    "failures": [
+     "callback-withhold: cue callback hook: InvalidOperationException: injected failure of the cue callback unpatch (kmg.s7.callback-withhold)",
+     "callback-withhold: cue callback hooks remaining: 1"
+    ],
+    "pending": [],
+    "recoveries": [],
+    "refused": null,
+    "restored": false,
+    "unreadable": [],
+    "unreported": []
+   },
+   "childAfterResume": {
+    "admitted": [
+     "s7-callback-abandoned-inner"
+    ],
+    "completed": [],
+    "failures": [
+     "callback-withhold: cue callback hook: InvalidOperationException: injected failure of the cue callback unpatch (kmg.s7.callback-withhold)",
+     "callback-withhold: cue callback hooks remaining: 1"
+    ],
+    "pending": [],
+    "recoveries": [],
+    "refused": "s7-callback-abandoned-next",
+    "restored": false,
+    "unreadable": [],
+    "unreported": []
+   },
+   "expected": [
+    "callback-withhold: cue callback hook: InvalidOperationException: injected failure of the cue callback unpatch (kmg.s7.callback-withhold)",
+    "callback-withhold: cue callback hooks remaining: 1"
+   ],
+   "expectedMissing": [],
+   "hooksAfterRepair": 0,
+   "hooksAtAbandon": 1,
+   "inner": {
+    "independentCleanup": {
+     "commandsInterrupted": 0,
+     "otherRetirementRequested": true,
+     "sourcesRetiredHere": 2,
+     "survivorRetirementRequested": true
+    },
+    "interventionDisposeFailures": [
+     "cue callback hook: InvalidOperationException: injected failure of the cue callback unpatch (kmg.s7.callback-withhold)"
+    ],
+    "interventionHooksAfter": 1,
+    "releaseFailures": [],
+    "retirementFailures": []
+   },
+   "isolationRestored": true,
+   "mode": "abandon-when-ready, next cell expected refused",
+   "nextCellStarted": false,
+   "passed": true,
+   "predicate": "s7-anky-callback-abandoned-unwound",
+   "probe": {
+    "hooksAcquired": 1,
+    "sources": [
+     "00a3a43f-ac02-4dfa-b447-7448180732f5",
+     "1aeafad0-1700-4af4-ba45-67dad350e1c7"
+    ]
+   },
+   "readyBeforeAbandon": true,
+   "repairFailures": [],
+   "repairedWhen": "after the guard",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "sourcesGone": true,
+   "transferredResiduals": [],
+   "unexpected": [],
+   "unsafe": []
+  },
+  {
+   "error": null,
+   "passed": true,
+   "predicate": "r6-s7-callback-abandoned-completed",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "cells": {
+    "s7-callback-setup-failed-inner": "InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)"
+   },
+   "child": {
+    "admitted": [
+     "s7-callback-setup-failed-inner"
+    ],
+    "completed": [],
+    "failures": [
+     "callback-withhold: cue callback setup failed: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)",
+     "callback-withhold: cue callback hooks remaining: 1",
+     "s7-callback-setup-failed-inner: cell exception: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)"
+    ],
+    "pending": [],
+    "recoveries": [],
+    "refused": "s7-callback-setup-failed-next",
+    "restored": false,
+    "unreadable": [],
+    "unreported": []
+   },
+   "childAfterDisposal": {
+    "admitted": [
+     "s7-callback-setup-failed-inner"
+    ],
+    "completed": [],
+    "failures": [
+     "callback-withhold: cue callback setup failed: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)",
+     "callback-withhold: cue callback hooks remaining: 1",
+     "s7-callback-setup-failed-inner: cell exception: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)"
+    ],
+    "pending": [],
+    "recoveries": [],
+    "refused": "s7-callback-setup-failed-next",
+    "restored": false,
+    "unreadable": [],
+    "unreported": []
+   },
+   "childAfterResume": {
+    "admitted": [
+     "s7-callback-setup-failed-inner"
+    ],
+    "completed": [],
+    "failures": [
+     "callback-withhold: cue callback setup failed: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)",
+     "callback-withhold: cue callback hooks remaining: 1",
+     "s7-callback-setup-failed-inner: cell exception: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)"
+    ],
+    "pending": [],
+    "recoveries": [],
+    "refused": "s7-callback-setup-failed-next",
+    "restored": false,
+    "unreadable": [],
+    "unreported": []
+   },
+   "expected": [
+    "callback-withhold: cue callback setup failed: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)",
+    "s7-callback-setup-failed-inner: cell exception: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)",
+    "callback-withhold: cue callback hooks remaining: 1"
+   ],
+   "expectedMissing": [],
+   "hooksAfterRepair": 0,
+   "inner": {
+    "hookAttempted": true,
+    "hookSetup": {
+     "hooksAfterRollback": 1,
+     "hooksBeforeRollback": 1,
+     "original": "InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)",
+     "rollbackFailures": [
+      "cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)"
+     ]
+    },
+    "hookSetupFailure": "cue callback setup failed: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)",
+    "independentCleanup": {
+     "commandsInterrupted": 0,
+     "otherRetirementRequested": true,
+     "sourcesRetiredHere": 2,
+     "survivorRetirementRequested": true
+    },
+    "interventionHooksAfter": 1,
+    "releaseFailures": []
+   },
+   "isolationRestored": true,
+   "mode": "run-to-completion, next cell expected refused",
+   "nextCellStarted": false,
+   "passed": true,
+   "predicate": "s7-anky-callback-setup-failed-isolated",
+   "readyBeforeAbandon": true,
+   "repairFailures": [],
+   "repairedWhen": "after the guard",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "transferredResiduals": [],
+   "unexpected": [],
+   "unsafe": []
+  },
+  {
+   "error": null,
+   "passed": true,
+   "predicate": "r6-s7-callback-setup-failed-completed",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "cells": {
+    "s7-trace-setup-failed-inner": "InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)"
+   },
+   "child": {
+    "admitted": [
+     "s7-trace-setup-failed-inner"
+    ],
+    "completed": [],
+    "failures": [
+     "trace-setup: projectile trace setup failed: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)",
+     "trace-setup: projectile trace hooks remaining: 2",
+     "s7-trace-setup-failed-inner: cell exception: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)"
+    ],
+    "pending": [],
+    "recoveries": [],
+    "refused": "s7-trace-setup-failed-next",
+    "restored": false,
+    "unreadable": [],
+    "unreported": []
+   },
+   "childAfterDisposal": {
+    "admitted": [
+     "s7-trace-setup-failed-inner"
+    ],
+    "completed": [],
+    "failures": [
+     "trace-setup: projectile trace setup failed: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)",
+     "trace-setup: projectile trace hooks remaining: 2",
+     "s7-trace-setup-failed-inner: cell exception: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)"
+    ],
+    "pending": [],
+    "recoveries": [],
+    "refused": "s7-trace-setup-failed-next",
+    "restored": false,
+    "unreadable": [],
+    "unreported": []
+   },
+   "childAfterResume": {
+    "admitted": [
+     "s7-trace-setup-failed-inner"
+    ],
+    "completed": [],
+    "failures": [
+     "trace-setup: projectile trace setup failed: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)",
+     "trace-setup: projectile trace hooks remaining: 2",
+     "s7-trace-setup-failed-inner: cell exception: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)"
+    ],
+    "pending": [],
+    "recoveries": [],
+    "refused": "s7-trace-setup-failed-next",
+    "restored": false,
+    "unreadable": [],
+    "unreported": []
+   },
+   "expected": [
+    "trace-setup: projectile trace setup failed: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)",
+    "s7-trace-setup-failed-inner: cell exception: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)",
+    "trace-setup: projectile trace hooks remaining: 2"
+   ],
+   "expectedMissing": [],
+   "hooksAfterRepair": 0,
+   "inner": {
+    "acquired": false,
+    "attempted": true,
+    "hooksAfter": 2,
+    "id": "KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5",
+    "setupFailure": "projectile trace setup failed: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)"
+   },
+   "isolationRestored": true,
+   "mode": "run-to-completion, next cell expected refused",
+   "nextCellStarted": false,
+   "passed": true,
+   "predicate": "s7-dust-trace-setup-failed-isolated",
+   "probe": {
+    "traceId": "KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5"
+   },
+   "readyBeforeAbandon": true,
+   "repairFailures": [],
+   "repairedWhen": "after the guard",
+   "rollback": {
+    "failures": [
+     "CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)"
+    ],
+    "hooksAfterRollback": 2,
+    "hooksBeforeRollback": 2,
+    "id": "KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5"
+   },
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "transferredResiduals": [],
+   "unexpected": [],
+   "unsafe": []
+  },
+  {
+   "error": null,
+   "passed": true,
+   "predicate": "r6-s7-trace-setup-failed-completed",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "casts": [
+    {
+     "actedAtShot": 31,
+     "actionType": "Standard",
+     "availableAfter": true,
+     "availableBefore": true,
+     "blueprint": "9bf56be04a0c452fa628136a7a454b22",
+     "blueprintName": "KMG_Summoning_Special_DustMephit_Breath",
+     "canTarget": true,
+     "cancelled": false,
+     "creations": [
+      {
+       "callSiteInstalled": true,
+       "effects": [
+        {
+         "after": {
+          "dustClones": 9,
+          "hash": "c6029aa2d599ce69d08e588c8d78120089ef802c7bc8c4ccec827bc03a2b64f5",
+          "particleSystems": 9,
+          "renderers": 9
+         },
+         "before": {
+          "dustClones": 0,
+          "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+          "particleSystems": 9,
+          "renderers": 9
+         },
+         "instance": -251286,
+         "isCastFx": true,
+         "launcher": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+         "lifetime": 11.0,
+         "orientationDegrees": 0.0,
+         "prefab": "ColdCone15Feet00_Aoe",
+         "recolouredMaterials": 11,
+         "recolouredParticleColours": 16,
+         "tintBeforeProduct": false,
+         "tinted": true
+        }
+       ],
+       "executingAbility": "9bf56be04a0c452fa628136a7a454b22",
+       "frame": 6076,
+       "launchPoint": [
+        24.74882,
+        -4.67793,
+        25.28964
+       ],
+       "launcher": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+       "launcherBlueprint": "30f6615badf14d21b41d6468d5c93ac3",
+       "previousLaunchPoint": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "previousLaunchPointCleared": true,
+       "projectile": "5af8b717a209fd444a1e4d077ed776f0",
+       "utc": "2026-11-28T14:42:52.7588382Z"
+      }
+     ],
+     "cuePostsListener": [],
+     "damage": [
+      {
+       "halfBecauseSave": false,
+       "parts": [
+        {
+         "bonus": 0,
+         "dice": "1dD4",
+         "form": "Slashing",
+         "type": "Physical"
+        }
+       ],
+       "target": "enemy-inside",
+       "total": 4
+      }
+     ],
+     "desiredReflexD20": 1,
+     "executionEnded": true,
+     "executions": 1,
+     "finished": true,
+     "framing": "not captured (mechanics-only selection)",
+     "index": 0,
+     "liveAfter": 0,
+     "otherDamage": 0,
+     "resourceAfter": null,
+     "resourceBefore": null,
+     "restored": [
+      {
+       "active": false,
+       "exists": true,
+       "matchesBefore": true,
+       "signature": {
+        "dustClones": 0,
+        "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+        "particleSystems": 9,
+        "renderers": 9
+       },
+       "tintPresent": false
+      }
+     ],
+     "result": "Success",
+     "saves": [
+      {
+       "d20": 1,
+       "dc": 13,
+       "frame": 6082,
+       "passed": false,
+       "roll": 1,
+       "stat": "SaveReflex",
+       "unit": "enemy-inside"
+      },
+      {
+       "d20": 7,
+       "dc": 13,
+       "frame": 6085,
+       "passed": false,
+       "roll": 12,
+       "stat": "SaveReflex",
+       "unit": "ally-inside"
+      },
+      {
+       "d20": 14,
+       "dc": 13,
+       "frame": 6086,
+       "passed": true,
+       "roll": 21,
+       "stat": "SaveReflex",
+       "unit": "93e50ab3-8b10-40f5-860f-7441dbfd0424"
+      }
+     ],
+     "selected": [
+      "enemy-inside",
+      "ally-inside",
+      "KMG_Summoning_Unit_Ankylosaurus"
+     ],
+     "sickened": [
+      {
+       "secondsLeft": 17.24,
+       "unit": "enemy-inside"
+      }
+     ],
+     "tintsApplied": 1,
+     "unitPosition": [
+      24.74734,
+      -6.1134,
+      24.36371
+     ]
+    },
+    {
+     "actedAtShot": 32,
+     "actionType": "Standard",
+     "availableAfter": true,
+     "availableBefore": true,
+     "blueprint": "9bf56be04a0c452fa628136a7a454b22",
+     "blueprintName": "KMG_Summoning_Special_DustMephit_Breath",
+     "canTarget": true,
+     "cancelled": false,
+     "creations": [
+      {
+       "callSiteInstalled": true,
+       "effects": [
+        {
+         "after": {
+          "dustClones": 9,
+          "hash": "5640121d08072ba7470c76afcab8d0d18a12615c5f4f1631e76d5a124bc47b45",
+          "particleSystems": 9,
+          "renderers": 9
+         },
+         "before": {
+          "dustClones": 0,
+          "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+          "particleSystems": 9,
+          "renderers": 9
+         },
+         "instance": -251286,
+         "isCastFx": true,
+         "launcher": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+         "lifetime": 11.0,
+         "orientationDegrees": 0.0,
+         "prefab": "ColdCone15Feet00_Aoe",
+         "recolouredMaterials": 11,
+         "recolouredParticleColours": 16,
+         "tintBeforeProduct": false,
+         "tinted": true
+        }
+       ],
+       "executingAbility": "9bf56be04a0c452fa628136a7a454b22",
+       "frame": 6527,
+       "launchPoint": [
+        24.74881,
+        -4.67786,
+        25.28924
+       ],
+       "launcher": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+       "launcherBlueprint": "30f6615badf14d21b41d6468d5c93ac3",
+       "previousLaunchPoint": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "previousLaunchPointCleared": true,
+       "projectile": "5af8b717a209fd444a1e4d077ed776f0",
+       "utc": "2026-11-28T14:43:05.8919168Z"
+      }
+     ],
+     "cuePostsListener": [],
+     "damage": [
+      {
+       "halfBecauseSave": true,
+       "parts": [
+        {
+         "bonus": 0,
+         "dice": "1dD4",
+         "form": "Slashing",
+         "type": "Physical"
+        }
+       ],
+       "target": "enemy-inside",
+       "total": 1
+      }
+     ],
+     "desiredReflexD20": 20,
+     "executionEnded": true,
+     "executions": 1,
+     "finished": true,
+     "framing": "not captured (mechanics-only selection)",
+     "index": 1,
+     "liveAfter": 0,
+     "otherDamage": 0,
+     "resourceAfter": null,
+     "resourceBefore": null,
+     "restored": [
+      {
+       "active": false,
+       "exists": true,
+       "matchesBefore": true,
+       "signature": {
+        "dustClones": 0,
+        "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+        "particleSystems": 9,
+        "renderers": 9
+       },
+       "tintPresent": false
+      }
+     ],
+     "result": "Success",
+     "saves": [
+      {
+       "d20": 20,
+       "dc": 13,
+       "frame": 6533,
+       "passed": true,
+       "roll": 20,
+       "stat": "SaveReflex",
+       "unit": "enemy-inside"
+      },
+      {
+       "d20": 4,
+       "dc": 13,
+       "frame": 6536,
+       "passed": false,
+       "roll": 9,
+       "stat": "SaveReflex",
+       "unit": "ally-inside"
+      },
+      {
+       "d20": 18,
+       "dc": 13,
+       "frame": 6537,
+       "passed": true,
+       "roll": 25,
+       "stat": "SaveReflex",
+       "unit": "93e50ab3-8b10-40f5-860f-7441dbfd0424"
+      }
+     ],
+     "selected": [
+      "enemy-inside",
+      "ally-inside",
+      "KMG_Summoning_Unit_Ankylosaurus"
+     ],
+     "sickened": [],
+     "tintsApplied": 1,
+     "unitPosition": [
+      24.74734,
+      -6.1134,
+      24.36371
+     ]
+    },
+    {
+     "actedAtShot": 39,
+     "actionType": "Standard",
+     "availableAfter": true,
+     "availableBefore": true,
+     "blueprint": "9bf56be04a0c452fa628136a7a454b22",
+     "blueprintName": "KMG_Summoning_Special_DustMephit_Breath",
+     "canTarget": true,
+     "cancelled": false,
+     "creations": [
+      {
+       "callSiteInstalled": true,
+       "effects": [
+        {
+         "after": {
+          "dustClones": 9,
+          "hash": "53f60dc5979db8ad21c6e5a34cc4dcf7a714cfb68daea7f6efec1a2c1942c177",
+          "particleSystems": 9,
+          "renderers": 9
+         },
+         "before": {
+          "dustClones": 0,
+          "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+          "particleSystems": 9,
+          "renderers": 9
+         },
+         "instance": -251286,
+         "isCastFx": true,
+         "launcher": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+         "lifetime": 11.0,
+         "orientationDegrees": 0.0,
+         "prefab": "ColdCone15Feet00_Aoe",
+         "recolouredMaterials": 11,
+         "recolouredParticleColours": 16,
+         "tintBeforeProduct": false,
+         "tinted": true
+        }
+       ],
+       "executingAbility": "9bf56be04a0c452fa628136a7a454b22",
+       "frame": 7004,
+       "launchPoint": [
+        24.74878,
+        -4.67769,
+        25.28793
+       ],
+       "launcher": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+       "launcherBlueprint": "30f6615badf14d21b41d6468d5c93ac3",
+       "previousLaunchPoint": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "previousLaunchPointCleared": true,
+       "projectile": "5af8b717a209fd444a1e4d077ed776f0",
+       "utc": "2026-11-28T14:43:19.1217007Z"
+      }
+     ],
+     "cuePostsListener": [],
+     "damage": [
+      {
+       "halfBecauseSave": false,
+       "parts": [
+        {
+         "bonus": 0,
+         "dice": "1dD4",
+         "form": "Slashing",
+         "type": "Physical"
+        }
+       ],
+       "target": "enemy-inside",
+       "total": 4
+      }
+     ],
+     "desiredReflexD20": 1,
+     "executionEnded": true,
+     "executions": 1,
+     "finished": true,
+     "framing": "not captured (mechanics-only selection)",
+     "index": 2,
+     "liveAfter": 0,
+     "otherDamage": 0,
+     "resourceAfter": null,
+     "resourceBefore": null,
+     "restored": [
+      {
+       "active": false,
+       "exists": true,
+       "matchesBefore": true,
+       "signature": {
+        "dustClones": 0,
+        "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+        "particleSystems": 9,
+        "renderers": 9
+       },
+       "tintPresent": false
+      }
+     ],
+     "result": "Success",
+     "saves": [
+      {
+       "d20": 1,
+       "dc": 13,
+       "frame": 7011,
+       "passed": false,
+       "roll": 1,
+       "stat": "SaveReflex",
+       "unit": "enemy-inside"
+      },
+      {
+       "d20": 3,
+       "dc": 13,
+       "frame": 7016,
+       "passed": false,
+       "roll": 8,
+       "stat": "SaveReflex",
+       "unit": "ally-inside"
+      },
+      {
+       "d20": 13,
+       "dc": 13,
+       "frame": 7017,
+       "passed": true,
+       "roll": 20,
+       "stat": "SaveReflex",
+       "unit": "93e50ab3-8b10-40f5-860f-7441dbfd0424"
+      }
+     ],
+     "selected": [
+      "enemy-inside",
+      "ally-inside",
+      "KMG_Summoning_Unit_Ankylosaurus"
+     ],
+     "sickened": [
+      {
+       "secondsLeft": 17.2,
+       "unit": "enemy-inside"
+      }
+     ],
+     "tintsApplied": 1,
+     "unitPosition": [
+      24.74734,
+      -6.1134,
+      24.36371
+     ]
+    }
+   ],
+   "framingMeasured": false,
+   "passed": true,
+   "predicate": "s7-dust-casts",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "launchPoints": [
+    [
+     24.74882,
+     -4.67793,
+     25.28964
+    ],
+    [
+     24.74881,
+     -4.67786,
+     25.28924
+    ],
+    [
+     24.74878,
+     -4.67769,
+     25.28793
+    ]
+   ],
+   "passed": true,
+   "predicate": "s7-dust-repeat-launch-point",
+   "previousLaunchPointAtEntry": [
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "casts": [
+    {
+     "damage": [
+      {
+       "halfBecauseSave": false,
+       "parts": [
+        {
+         "bonus": 0,
+         "dice": "1dD4",
+         "form": "Slashing",
+         "type": "Physical"
+        }
+       ],
+       "target": "enemy-inside",
+       "total": 4
+      }
+     ],
+     "desiredReflexD20": 1,
+     "otherDamage": 0,
+     "saves": [
+      {
+       "d20": 1,
+       "dc": 13,
+       "frame": 6082,
+       "passed": false,
+       "roll": 1,
+       "stat": "SaveReflex",
+       "unit": "enemy-inside"
+      },
+      {
+       "d20": 7,
+       "dc": 13,
+       "frame": 6085,
+       "passed": false,
+       "roll": 12,
+       "stat": "SaveReflex",
+       "unit": "ally-inside"
+      },
+      {
+       "d20": 14,
+       "dc": 13,
+       "frame": 6086,
+       "passed": true,
+       "roll": 21,
+       "stat": "SaveReflex",
+       "unit": "93e50ab3-8b10-40f5-860f-7441dbfd0424"
+      }
+     ],
+     "selected": [
+      "enemy-inside",
+      "ally-inside",
+      "KMG_Summoning_Unit_Ankylosaurus"
+     ],
+     "sickened": [
+      {
+       "secondsLeft": 17.24,
+       "unit": "enemy-inside"
+      }
+     ]
+    },
+    {
+     "damage": [
+      {
+       "halfBecauseSave": true,
+       "parts": [
+        {
+         "bonus": 0,
+         "dice": "1dD4",
+         "form": "Slashing",
+         "type": "Physical"
+        }
+       ],
+       "target": "enemy-inside",
+       "total": 1
+      }
+     ],
+     "desiredReflexD20": 20,
+     "otherDamage": 0,
+     "saves": [
+      {
+       "d20": 20,
+       "dc": 13,
+       "frame": 6533,
+       "passed": true,
+       "roll": 20,
+       "stat": "SaveReflex",
+       "unit": "enemy-inside"
+      },
+      {
+       "d20": 4,
+       "dc": 13,
+       "frame": 6536,
+       "passed": false,
+       "roll": 9,
+       "stat": "SaveReflex",
+       "unit": "ally-inside"
+      },
+      {
+       "d20": 18,
+       "dc": 13,
+       "frame": 6537,
+       "passed": true,
+       "roll": 25,
+       "stat": "SaveReflex",
+       "unit": "93e50ab3-8b10-40f5-860f-7441dbfd0424"
+      }
+     ],
+     "selected": [
+      "enemy-inside",
+      "ally-inside",
+      "KMG_Summoning_Unit_Ankylosaurus"
+     ],
+     "sickened": []
+    },
+    {
+     "damage": [
+      {
+       "halfBecauseSave": false,
+       "parts": [
+        {
+         "bonus": 0,
+         "dice": "1dD4",
+         "form": "Slashing",
+         "type": "Physical"
+        }
+       ],
+       "target": "enemy-inside",
+       "total": 4
+      }
+     ],
+     "desiredReflexD20": 1,
+     "otherDamage": 0,
+     "saves": [
+      {
+       "d20": 1,
+       "dc": 13,
+       "frame": 7011,
+       "passed": false,
+       "roll": 1,
+       "stat": "SaveReflex",
+       "unit": "enemy-inside"
+      },
+      {
+       "d20": 3,
+       "dc": 13,
+       "frame": 7016,
+       "passed": false,
+       "roll": 8,
+       "stat": "SaveReflex",
+       "unit": "ally-inside"
+      },
+      {
+       "d20": 13,
+       "dc": 13,
+       "frame": 7017,
+       "passed": true,
+       "roll": 20,
+       "stat": "SaveReflex",
+       "unit": "93e50ab3-8b10-40f5-860f-7441dbfd0424"
+      }
+     ],
+     "selected": [
+      "enemy-inside",
+      "ally-inside",
+      "KMG_Summoning_Unit_Ankylosaurus"
+     ],
+     "sickened": [
+      {
+       "secondsLeft": 17.2,
+       "unit": "enemy-inside"
+      }
+     ]
+    }
+   ],
+   "layout": {
+    "allyInside": {
+     "enemy": false,
+     "inCone": true
+    },
+    "casterBehind": {
+     "enemy": false,
+     "inCone": false
+    },
+    "enemyInside": {
+     "enemy": true,
+     "inCone": true
+    },
+    "enemyOutside": {
+     "enemy": true,
+     "inCone": false
+    }
+   },
+   "passed": true,
+   "predicate": "s7-dust-mechanics",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "blueprint": {
+    "actionType": "Standard",
+    "range": "Projectile",
+    "resource": null
+   },
+   "casts": [
+    {
+     "actionType": "Standard",
+     "availableAfter": true,
+     "resourceAfter": null,
+     "resourceBefore": null
+    },
+    {
+     "actionType": "Standard",
+     "availableAfter": true,
+     "resourceAfter": null,
+     "resourceBefore": null
+    },
+    {
+     "actionType": "Standard",
+     "availableAfter": true,
+     "resourceAfter": null,
+     "resourceBefore": null
+    }
+   ],
+   "passed": true,
+   "predicate": "s7-dust-action",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "actedAtShot": 34,
+   "actionType": "Standard",
+   "availableBefore": true,
+   "blueprint": "fe4016ec0ea04b0da8bc2a08c984818c",
+   "blueprintName": "KMG_Summoning_Special_IceMephit_Breath",
+   "canTarget": true,
+   "cancelled": false,
+   "creations": [
+    {
+     "callSiteInstalled": true,
+     "effects": [
+      {
+       "after": {
+        "dustClones": 0,
+        "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+        "particleSystems": 9,
+        "renderers": 9
+       },
+       "before": {
+        "dustClones": 0,
+        "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+        "particleSystems": 9,
+        "renderers": 9
+       },
+       "instance": -251286,
+       "isCastFx": true,
+       "launcher": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+       "lifetime": 11.0,
+       "orientationDegrees": 0.0,
+       "prefab": "ColdCone15Feet00_Aoe",
+       "recolouredMaterials": 0,
+       "recolouredParticleColours": 0,
+       "tintBeforeProduct": false,
+       "tinted": false
+      }
+     ],
+     "executingAbility": "fe4016ec0ea04b0da8bc2a08c984818c",
+     "frame": 7482,
+     "launchPoint": [
+      24.74897,
+      -4.67805,
+      25.27781
+     ],
+     "launcher": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+     "launcherBlueprint": "30f6615badf14d21b41d6468d5c93ac3",
+     "previousLaunchPoint": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "previousLaunchPointCleared": true,
+     "projectile": "5af8b717a209fd444a1e4d077ed776f0",
+     "utc": "2026-11-28T14:43:32.0889265Z"
+    }
+   ],
+   "cuePostsListener": [],
+   "executionEnded": true,
+   "finished": true,
+   "passed": true,
+   "predicate": "s7-dust-foreign-ability",
+   "result": "Success",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "dustInstances": [
+    -251286
+   ],
+   "dustOriginalSignatures": [
+    "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0"
+   ],
+   "laterConsumers": [
+    {
+     "after": {
+      "dustClones": 0,
+      "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+      "particleSystems": 9,
+      "renderers": 9
+     },
+     "before": {
+      "dustClones": 0,
+      "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+      "particleSystems": 9,
+      "renderers": 9
+     },
+     "instance": -251286,
+     "isCastFx": true,
+     "launcher": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+     "lifetime": 11.0,
+     "orientationDegrees": 0.0,
+     "prefab": "ColdCone15Feet00_Aoe",
+     "recolouredMaterials": 0,
+     "recolouredParticleColours": 0,
+     "tintBeforeProduct": false,
+     "tinted": false
+    },
+    {
+     "after": {
+      "dustClones": 0,
+      "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+      "particleSystems": 9,
+      "renderers": 9
+     },
+     "before": {
+      "dustClones": 0,
+      "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+      "particleSystems": 9,
+      "renderers": 9
+     },
+     "instance": -251286,
+     "isCastFx": true,
+     "launcher": "2e6cf794-6026-4dc8-9adf-942cb6134de5",
+     "lifetime": 11.0,
+     "orientationDegrees": 0.0,
+     "prefab": "ColdCone15Feet00_Aoe",
+     "recolouredMaterials": 0,
+     "recolouredParticleColours": 0,
+     "tintBeforeProduct": false,
+     "tinted": false
+    }
+   ],
+   "passed": true,
+   "predicate": "s7-dust-pool-reuse",
+   "reusedDustInstance": 2,
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "applied": 0,
+   "passed": true,
+   "predicate": "s7-dust-cancel",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "donorTimeline": [
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8295,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8310,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8325,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8340,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8355,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8370,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8385,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8400,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8415,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8430,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8445,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8460,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8475,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8490,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8505,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8520,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8535,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8550,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": true,
+     "event": "sample",
+     "frame": 8565,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": false,
+     "event": "dust-instance-restored",
+     "frame": 8578,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": false,
+     "event": "sample",
+     "frame": 8581,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": false,
+     "event": "sample",
+     "frame": 8596,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": false,
+     "event": "sample",
+     "frame": 8611,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": false,
+     "event": "sample",
+     "frame": 8626,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": false,
+     "event": "sample",
+     "frame": 8641,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": false,
+     "event": "sample",
+     "frame": 8656,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": false,
+     "event": "sample",
+     "frame": 8671,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    },
+    {
+     "dustLive": false,
+     "event": "sample",
+     "frame": 8686,
+     "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+     "particleSystems": 9,
+     "renderers": 9
+    }
+   ],
+   "dust": [
+    {
+     "after": {
+      "dustClones": 9,
+      "hash": "bf34ff1867d68a75b4ee13c3c867381bada9c0942e916f3e545a90ae6f1ac1bd",
+      "particleSystems": 9,
+      "renderers": 9
+     },
+     "before": {
+      "dustClones": 0,
+      "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+      "particleSystems": 9,
+      "renderers": 9
+     },
+     "instance": -253112,
+     "isCastFx": true,
+     "launcher": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+     "lifetime": 11.0,
+     "orientationDegrees": 0.0,
+     "prefab": "ColdCone15Feet00_Aoe",
+     "recolouredMaterials": 11,
+     "recolouredParticleColours": 16,
+     "tintBeforeProduct": false,
+     "tinted": true
+    }
+   ],
+   "dustRestored": [
+    {
+     "active": false,
+     "exists": true,
+     "matchesBefore": true,
+     "signature": {
+      "dustClones": 0,
+      "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+      "particleSystems": 9,
+      "renderers": 9
+     },
+     "tintPresent": false
+    }
+   ],
+   "ice": [
+    {
+     "after": {
+      "dustClones": 0,
+      "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+      "particleSystems": 9,
+      "renderers": 9
+     },
+     "before": {
+      "dustClones": 0,
+      "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+      "particleSystems": 9,
+      "renderers": 9
+     },
+     "instance": -253290,
+     "isCastFx": true,
+     "launcher": "2e6cf794-6026-4dc8-9adf-942cb6134de5",
+     "lifetime": 11.0,
+     "orientationDegrees": 0.0,
+     "prefab": "ColdCone15Feet00_Aoe",
+     "recolouredMaterials": 0,
+     "recolouredParticleColours": 0,
+     "tintBeforeProduct": false,
+     "tinted": false
+    }
+   ],
+   "overlapFrames": 283,
+   "passed": true,
+   "predicate": "s7-dust-donor-untouched",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "chosenNative": true,
+   "otherRestoredOnRelease": true,
+   "otherStillTinted": true,
+   "passed": true,
+   "predicate": "s7-dust-own-instance-restore",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "effects": [
+    {
+     "after": {
+      "dustClones": 9,
+      "hash": "0bf7a5465cbe7882b5cdcc0eb17a3be4e246d6fa345dc641eabb720bb7d36b3a",
+      "particleSystems": 9,
+      "renderers": 9
+     },
+     "before": {
+      "dustClones": 0,
+      "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+      "particleSystems": 9,
+      "renderers": 9
+     },
+     "instance": -253290,
+     "isCastFx": true,
+     "launcher": "1fe988b6-da87-408d-8f26-dc35cb35723d",
+     "lifetime": 11.0,
+     "orientationDegrees": 0.0,
+     "prefab": "ColdCone15Feet00_Aoe",
+     "recolouredMaterials": 11,
+     "recolouredParticleColours": 16,
+     "tintBeforeProduct": false,
+     "tinted": true
+    }
+   ],
+   "launched": true,
+   "live": 0,
+   "passed": true,
+   "predicate": "s7-dust-source-loss",
+   "restored": [
+    {
+     "active": false,
+     "exists": true,
+     "matchesBefore": true,
+     "signature": {
+      "dustClones": 0,
+      "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+      "particleSystems": 9,
+      "renderers": 9
+     },
+     "tintPresent": false
+    }
+   ],
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "appliedBeforeEnclosingSpawn": 7,
+   "cast": {
+    "actedAtShot": 44,
+    "actionType": "Standard",
+    "availableBefore": true,
+    "blueprint": "9bf56be04a0c452fa628136a7a454b22",
+    "blueprintName": "KMG_Summoning_Special_DustMephit_Breath",
+    "canTarget": true,
+    "cancelled": false,
+    "cuePostsListener": [],
+    "executionEnded": true,
+    "finished": true,
+    "result": "Success"
+   },
+   "creations": [
+    {
+     "callSiteInstalled": true,
+     "effects": [
+      {
+       "after": {
+        "dustClones": 9,
+        "hash": "fdb2d2546eaf05200030ce7236f54e8f17976643d87565cf318c05985d6e1db9",
+        "particleSystems": 9,
+        "renderers": 9
+       },
+       "before": {
+        "dustClones": 0,
+        "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+        "particleSystems": 9,
+        "renderers": 9
+       },
+       "instance": -253112,
+       "isCastFx": true,
+       "launcher": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+       "lifetime": 11.0,
+       "orientationDegrees": 0.0,
+       "prefab": "ColdCone15Feet00_Aoe",
+       "recolouredMaterials": 11,
+       "recolouredParticleColours": 16,
+       "tintBeforeProduct": false,
+       "tinted": true
+      }
+     ],
+     "executingAbility": "9bf56be04a0c452fa628136a7a454b22",
+     "frame": 9767,
+     "launchPoint": [
+      24.74883,
+      -4.67796,
+      25.2898
+     ],
+     "launcher": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+     "launcherBlueprint": "30f6615badf14d21b41d6468d5c93ac3",
+     "previousLaunchPoint": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "previousLaunchPointCleared": true,
+     "projectile": "5af8b717a209fd444a1e4d077ed776f0",
+     "utc": "2026-11-28T14:44:34.9631152Z"
+    }
+   ],
+   "diagnostics": {
+    "caster": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+    "casterAlive": true,
+    "casterIsEnemyOfHostile": true,
+    "hostileDamage": [
+     {
+      "initiator": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+      "total": 4
+     }
+    ],
+    "hostileIsEnemyOfCaster": true,
+    "hostileSaves": [
+     {
+      "contextAbility": "KMG_Summoning_Special_DustMephit_Breath",
+      "contextCaster": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+      "d20": 1,
+      "dc": 13,
+      "frame": 9772,
+      "passed": false,
+      "roll": -1,
+      "stat": "SaveReflex",
+      "unit": "01b62890-cff3-427c-bb6c-11c6811437a9"
+     }
+    ],
+    "sickened": [
+     {
+      "contextAbility": null,
+      "contextCaster": "b1da6729-efaa-4375-9fed-926e8bbd6495",
+      "foreignControl": true,
+      "secondsLeft": 1694.17,
+      "unit": "caster-behind"
+     },
+     {
+      "contextAbility": "KMG_Summoning_Special_IceMephit_Breath",
+      "contextCaster": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+      "foreignControl": false,
+      "secondsLeft": 17.26,
+      "unit": "enemy-inside"
+     }
+    ]
+   },
+   "enclosingExecutingAbility": "9bf56be04a0c452fa628136a7a454b22",
+   "foreignPoint": [
+    24.74883,
+    -4.67796,
+    25.2898
+   ],
+   "foreignPrefab": "ColdCone15Feet00_Aoe",
+   "foreignSignature": {
+    "dustClones": 0,
+    "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+    "particleSystems": 9,
+    "renderers": 9
+   },
+   "foreignSpawned": true,
+   "foreignTinted": false,
+   "foreignTintsApplied": 0,
+   "frame": 9767,
+   "innerInterrupted": "NullReferenceException",
+   "innerLaunchPoint": [
+    24.74883,
+    -4.67796,
+    25.2898
+   ],
+   "innerTintsApplied": 0,
+   "passed": true,
+   "predicate": "s7-dust-nested-interruption",
+   "restored": [
+    {
+     "active": false,
+     "exists": true,
+     "matchesBefore": true,
+     "signature": {
+      "dustClones": 0,
+      "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+      "particleSystems": 9,
+      "renderers": 9
+     },
+     "tintPresent": false
+    }
+   ],
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "tintsApplied": 1
+  },
+  {
+   "acquiredBeforeExit": 1,
+   "appliedBeforeExit": true,
+   "commandFailures": [],
+   "commandFinishedAtExit": false,
+   "commandsLeft": 0,
+   "diagnostics": {
+    "caster": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+    "casterAlive": true,
+    "casterIsEnemyOfHostile": true,
+    "hostileDamage": [
+     {
+      "initiator": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+      "total": 4
+     }
+    ],
+    "hostileIsEnemyOfCaster": true,
+    "hostileSaves": [
+     {
+      "contextAbility": "KMG_Summoning_Special_DustMephit_Breath",
+      "contextCaster": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+      "d20": 1,
+      "dc": 13,
+      "frame": 10240,
+      "passed": false,
+      "roll": 1,
+      "stat": "SaveReflex",
+      "unit": "01b62890-cff3-427c-bb6c-11c6811437a9"
+     }
+    ],
+    "sickened": [
+     {
+      "contextAbility": null,
+      "contextCaster": "b1da6729-efaa-4375-9fed-926e8bbd6495",
+      "foreignControl": true,
+      "secondsLeft": 1681.91,
+      "unit": "caster-behind"
+     },
+     {
+      "contextAbility": "KMG_Summoning_Special_DustMephit_Breath",
+      "contextCaster": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+      "foreignControl": false,
+      "secondsLeft": 18.0,
+      "unit": "enemy-inside"
+     }
+    ]
+   },
+   "execution": "KMG_Summoning_Special_DustMephit_Breath#-172517248",
+   "executionLiveAtExit": true,
+   "foreignKept": true,
+   "ownedExecutionsLiveAfterWait": 0,
+   "passed": true,
+   "predicate": "s7-dust-early-exit-released",
+   "preexistingCellOwned": 0,
+   "releaseFailures": [],
+   "remainingAfterExit": 0,
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "commandFieldAfterRelease": "same process",
+   "deliveredBeforeRelease": false,
+   "endedAfterWait": true,
+   "endedRightAfterRelease": false,
+   "liveExecutionsAfterWait": 0,
+   "passed": true,
+   "predicate": "s7-dust-pre-delivery-release-retained",
+   "processRetained": true,
+   "processStarted": true,
+   "releaseFailures": [],
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "after": 0,
+   "before": 4,
+   "countFailures": [],
+   "failures": [],
+   "passed": true,
+   "predicate": "s7-dust-trace-released",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "acquired": 6,
+   "foreignKeptAtCleanup": true,
+   "ledgerHeldUntilSettlement": false,
+   "liveBeforeCleanup": 1,
+   "note": "Sickened lasts 3 rounds; an instance that expired before cleanup is gone natively and is not counted as live.",
+   "ownedCommandFailures": [],
+   "ownedCommandsLeft": 0,
+   "ownedExecutions": 14,
+   "ownedExecutionsLive": 0,
+   "passed": true,
+   "predicate": "s7-dust-cell-conditions-released",
+   "releaseFailures": [],
+   "remainingAfterCleanup": 0,
+   "removedAtCleanup": 1,
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "unownedExecutionKept": true
+  },
+  {
+   "afterResets": true,
+   "atCleanup": true,
+   "atSettlement": true,
+   "passed": true,
+   "predicate": "s7-dust-foreign-sickened-kept",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "error": null,
+   "passed": true,
+   "predicate": "r6-s7-dust-completed",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "afterSettlement": {
+    "acquiredFromExecution": 1,
+    "delivered": true,
+    "ended": true,
+    "execution": "KMG_Summoning_Special_DustMephit_Breath#-1371907456",
+    "frame": 12340,
+    "presentFromExecution": 0
+   },
+   "cells": {
+    "s7-dust-pre-delivery-next": "completed"
+   },
+   "child": {
+    "admitted": [
+     "s7-dust-pre-delivery-inner",
+     "s7-dust-pre-delivery-next"
+    ],
+    "completed": [
+     "s7-dust-pre-delivery-next"
+    ],
+    "failures": [],
+    "pending": [],
+    "recoveries": [
+     "s7-dust: owned execution KMG_Summoning_Special_DustMephit_Breath#-1371907456 observed settled",
+     "s7-dust: owned conditions reconciled after settlement observed settled"
+    ],
+    "refused": null,
+    "restored": true,
+    "unreadable": [],
+    "unreported": []
+   },
+   "childAfterDisposal": {
+    "admitted": [
+     "s7-dust-pre-delivery-inner"
+    ],
+    "completed": [],
+    "failures": [],
+    "pending": [
+     "s7-dust: owned execution KMG_Summoning_Special_DustMephit_Breath#-1371907456",
+     "s7-dust: owned conditions reconciled after settlement"
+    ],
+    "recoveries": [],
+    "refused": null,
+    "restored": false,
+    "unreadable": [],
+    "unreported": []
+   },
+   "childAfterResume": {
+    "admitted": [
+     "s7-dust-pre-delivery-inner",
+     "s7-dust-pre-delivery-next"
+    ],
+    "completed": [
+     "s7-dust-pre-delivery-next"
+    ],
+    "failures": [],
+    "pending": [],
+    "recoveries": [
+     "s7-dust: owned execution KMG_Summoning_Special_DustMephit_Breath#-1371907456 observed settled",
+     "s7-dust: owned conditions reconciled after settlement observed settled"
+    ],
+    "refused": null,
+    "restored": true,
+    "unreadable": [],
+    "unreported": []
+   },
+   "dust": {
+    "cleanupFailures": [],
+    "conditionsSubscribedAfterSettlement": false,
+    "deferredChecks": {
+     "s7-dust-cell-conditions-released": false,
+     "s7-dust-foreign-sickened-kept": false,
+     "s7-dust-trace-released": true
+    },
+    "foreignKeptAtSettlement": true,
+    "foreignPresentAtCleanup": true,
+    "lateRemovedAtSettlement": 1,
+    "ownedCommandFailures": [],
+    "ownedCommandsLeft": 0,
+    "ownedEffects": {
+     "commandFailures": [],
+     "conditionFailures": [],
+     "lateReleaseFailures": [],
+     "lateSweepCompleted": true,
+     "ledgerHeldUntilSettlement": true,
+     "ownedExecutions": [
+      {
+       "endedAtCleanup": false,
+       "execution": "KMG_Summoning_Special_DustMephit_Breath#-1371907456"
+      }
+     ],
+     "ownedExecutionsLive": 1,
+     "pendingCommands": [],
+     "remainingAfterSettlement": [],
+     "remainingAtCleanup": [],
+     "removedAtCleanup": 0,
+     "settledAtCleanup": false,
+     "settlementObservations": [
+      "owned command 52fe86d8-ae89-4f2d-9b37-2af48e40ee2d#-1409077760: execution ended"
+     ],
+     "subscriptionReleased": true
+    }
+   },
+   "expected": [],
+   "expectedMissing": [],
+   "isolationRestored": true,
+   "mode": "abandon-when-ready, next cell expected admitted",
+   "nextCellStarted": true,
+   "passed": true,
+   "predicate": "s7-dust-pre-delivery-disposal-accounted",
+   "probe": {
+    "atDisposal": {
+     "acquiredFromExecution": 0,
+     "delivered": false,
+     "ended": false,
+     "execution": "KMG_Summoning_Special_DustMephit_Breath#-1371907456",
+     "frame": 11950,
+     "presentFromExecution": 0
+    },
+    "deliveredBeforeDisposal": false,
+    "execution": "KMG_Summoning_Special_DustMephit_Breath#-1371907456",
+    "foreignControl": "Sickened#-1676735872 on b1da6729-efaa-4375-9fed-926e8bbd6495",
+    "mode": "pre-delivery",
+    "processStarted": true,
+    "ready": true,
+    "readyFrame": 11950
+   },
+   "readyBeforeAbandon": true,
+   "repairFailures": [],
+   "repairedWhen": "after the guard",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "transferredResiduals": [],
+   "unexpected": [],
+   "unsafe": []
+  },
+  {
+   "error": null,
+   "passed": true,
+   "predicate": "r6-s7-dust-pre-delivery-disposed-completed",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "cells": {},
+   "child": {
+    "admitted": [
+     "s7-dust-abandoned-inner"
+    ],
+    "completed": [],
+    "failures": [
+     "s7-dust: release failure: early-exit cast: removal of Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9: InvalidOperationException: injected failure of an owned Sickened removal",
+     "s7-dust: owned conditions remaining: 1 (Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9)"
+    ],
+    "pending": [],
+    "recoveries": [
+     "s7-dust: owned execution KMG_Summoning_Special_DustMephit_Breath#-449460224 observed settled",
+     "s7-dust: owned conditions reconciled after settlement observed settled"
+    ],
+    "refused": "s7-dust-abandoned-next",
+    "restored": false,
+    "unreadable": [],
+    "unreported": []
+   },
+   "childAfterDisposal": {
+    "admitted": [
+     "s7-dust-abandoned-inner"
+    ],
+    "completed": [],
+    "failures": [
+     "s7-dust: release failure: early-exit cast: removal of Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9: InvalidOperationException: injected failure of an owned Sickened removal",
+     "s7-dust: owned conditions remaining: 1 (Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9)"
+    ],
+    "pending": [
+     "s7-dust: owned execution KMG_Summoning_Special_DustMephit_Breath#-449460224",
+     "s7-dust: owned conditions reconciled after settlement"
+    ],
+    "recoveries": [],
+    "refused": null,
+    "restored": false,
+    "unreadable": [],
+    "unreported": []
+   },
+   "childAfterResume": {
+    "admitted": [
+     "s7-dust-abandoned-inner"
+    ],
+    "completed": [],
+    "failures": [
+     "s7-dust: release failure: early-exit cast: removal of Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9: InvalidOperationException: injected failure of an owned Sickened removal",
+     "s7-dust: owned conditions remaining: 1 (Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9)"
+    ],
+    "pending": [],
+    "recoveries": [
+     "s7-dust: owned execution KMG_Summoning_Special_DustMephit_Breath#-449460224 observed settled",
+     "s7-dust: owned conditions reconciled after settlement observed settled"
+    ],
+    "refused": "s7-dust-abandoned-next",
+    "restored": false,
+    "unreadable": [],
+    "unreported": []
+   },
+   "dust": {
+    "cleanupFailures": [],
+    "conditions": {
+     "acquired": 1,
+     "foreignKeptAtCleanup": true,
+     "ledgerHeldUntilSettlement": true,
+     "liveBeforeCleanup": 1,
+     "note": "Sickened lasts 3 rounds; an instance that expired before cleanup is gone natively and is not counted as live.",
+     "ownedCommandFailures": [],
+     "ownedCommandsLeft": 0,
+     "ownedExecutions": 1,
+     "ownedExecutionsLive": 1,
+     "releaseFailures": [
+      "early-exit cast: removal of Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9: InvalidOperationException: injected failure of an owned Sickened removal"
+     ],
+     "remainingAfterCleanup": 1,
+     "removedAtCleanup": 0,
+     "unownedExecutionKept": false
+    },
+    "conditionsSubscribedAfterCleanup": true,
+    "deferredChecks": {
+     "s7-dust-cell-conditions-released": false,
+     "s7-dust-foreign-sickened-kept": false,
+     "s7-dust-trace-released": true
+    },
+    "disposeFailures": [],
+    "earlyExit": {
+     "acquiredBeforeExit": 1,
+     "appliedBeforeExit": true,
+     "commandFailures": [],
+     "commandFinishedAtExit": false,
+     "execution": "KMG_Summoning_Special_DustMephit_Breath#-449460224",
+     "executionLiveAtExit": true,
+     "preexistingCellOwned": 0,
+     "releaseFailures": [
+      "removal of Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9: InvalidOperationException: injected failure of an owned Sickened removal"
+     ]
+    },
+    "ownedCommandFailures": [],
+    "ownedCommandsEnded": 1,
+    "ownedCommandsLeft": 0,
+    "ownedExecutions": [
+     {
+      "endedAtCleanup": false,
+      "execution": "KMG_Summoning_Special_DustMephit_Breath#-449460224"
+     }
+    ],
+    "ownedExecutionsLive": 1,
+    "ownedHooksAfterDispose": 0,
+    "traceReleased": true
+   },
+   "executionsSettledBeforeReuse": true,
+   "expected": [
+    "s7-dust: release failure: early-exit cast: removal of Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9: InvalidOperationException: injected failure of an owned Sickened removal",
+    "s7-dust: owned conditions remaining: 1 (Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9)"
+   ],
+   "expectedMissing": [],
+   "injectedLeftoverIdentities": [
+    "Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9"
+   ],
+   "injectedLeftovers": 1,
+   "isolationRestored": true,
+   "leftoverGone": true,
+   "liveExecutionsAtCleanup": 1,
+   "mode": "abandon-when-ready, next cell expected refused",
+   "nextCellStarted": false,
+   "passed": true,
+   "predicate": "s7-dust-abandoned-unwound",
+   "probe": {
+    "applied": true,
+    "caster": "b8424a4e-67dc-4ee1-bf3a-b4c3299a7d00",
+    "hooksInstalled": 4,
+    "ownedLiveAtAbandon": 1
+   },
+   "readyBeforeAbandon": true,
+   "repairFailures": [],
+   "repairedWhen": "after the guard",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "transferredResiduals": [],
+   "unexpected": [],
+   "unsafe": []
+  },
+  {
+   "error": null,
+   "passed": true,
+   "predicate": "r6-s7-dust-abandoned-completed",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "admitted": [
+    "s7-ankylosaurus",
+    "s7-callback-abandoned",
+    "s7-callback-setup-failed",
+    "s7-trace-setup-failed",
+    "s7-dust",
+    "s7-dust-pre-delivery-disposed",
+    "s7-dust-abandoned"
+   ],
+   "completed": [
+    "s7-ankylosaurus",
+    "s7-callback-abandoned",
+    "s7-callback-setup-failed",
+    "s7-trace-setup-failed",
+    "s7-dust",
+    "s7-dust-pre-delivery-disposed",
+    "s7-dust-abandoned"
+   ],
+   "passed": true,
+   "predicate": "s7-effects-required-cells-completed",
+   "refused": null,
+   "required": [
+    "s7-ankylosaurus",
+    "s7-callback-abandoned",
+    "s7-callback-setup-failed",
+    "s7-trace-setup-failed",
+    "s7-dust",
+    "s7-dust-pre-delivery-disposed",
+    "s7-dust-abandoned"
+   ],
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "errors": [],
+   "isolation": {
+    "admitted": [
+     "s7-ankylosaurus",
+     "s7-callback-abandoned",
+     "s7-callback-setup-failed",
+     "s7-trace-setup-failed",
+     "s7-dust",
+     "s7-dust-pre-delivery-disposed",
+     "s7-dust-abandoned"
+    ],
+    "completed": [
+     "s7-ankylosaurus",
+     "s7-callback-abandoned",
+     "s7-callback-setup-failed",
+     "s7-trace-setup-failed",
+     "s7-dust",
+     "s7-dust-pre-delivery-disposed",
+     "s7-dust-abandoned"
+    ],
+    "failures": [],
+    "pending": [],
+    "recoveries": [
+     "s7-dust: owned conditions reconciled after settlement observed settled"
+    ],
+    "refused": null,
+    "restored": true,
+    "unreadable": [],
+    "unreported": []
+   },
+   "liveRecolours": 0,
+   "passed": true,
+   "predicate": "s7-effects-owned-state-restored",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  },
+  {
+   "activeModeCounts": [
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "closed": true,
+   "controllerReferences": [
+    {
+     "actualInstance": 1038386944,
+     "expectedInstance": 1038386944,
+     "name": "ClickEventsController",
+     "same": true
+    },
+    {
+     "actualInstance": -785640960,
+     "expectedInstance": -785640960,
+     "name": "SelectedAbilityHandler",
+     "same": true
+    },
+    {
+     "actualInstance": -1699536128,
+     "expectedInstance": -1699536128,
+     "name": "PlaceRestMarkerHandler",
+     "same": true
+    },
+    {
+     "actualInstance": 1655899648,
+     "expectedInstance": 1655899648,
+     "name": "InteractionHighlightController",
+     "same": true
+    },
+    {
+     "actualInstance": 968113792,
+     "expectedInstance": 968113792,
+     "name": "CombatEngagementController",
+     "same": true
+    },
+    {
+     "actualInstance": 1601601280,
+     "expectedInstance": 1601601280,
+     "name": "HandsEquipmentController",
+     "same": true
+    },
+    {
+     "actualInstance": 2049294080,
+     "expectedInstance": 2049294080,
+     "name": "CameraController",
+     "same": true
+    }
+   ],
+   "current": false,
+   "existingNativeDefaultBorrowed": true,
+   "expectedActiveModeCounts": [
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "frame": 13056,
+   "gameSeconds": 43456.363,
+   "manualClockSuspended": false,
+   "manualPulsesBefore": 0,
+   "manualPulsesCurrent": 0,
+   "mode": "Default",
+   "nativeFactoryModeOwned": false,
+   "originalStackCount": 1,
+   "ownershipPredicates": {
+    "exactActiveModeCounts": true,
+    "exactControllerReferences": true,
+    "exactModeStackReferences": true,
+    "factoryDefaultPointerExact": true,
+    "gameModeTicking": false,
+    "immediateBoundary": true,
+    "modeIsNativeDefault": true,
+    "notClosed": false,
+    "pendingBeforeTickActions": 0,
+    "selectedAbility": null,
+    "selectedAbilityAbsent": true,
+    "switchingModes": false
+   },
+   "passed": true,
+   "pointerController": "Kingmaker.Controllers.Clicks.PointerController",
+   "predicate": "cleanup2-native-default-restored-summon-s7-effects-mechanics",
+   "purpose": "summon-s7-effects-mechanics",
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "selectedAbilityHandler": "Kingmaker.Controllers.Clicks.Handlers.ClickWithSelectedAbilityHandler",
+   "stackCount": 1,
+   "tickGateBefore": {
+    "allowedAbilityExecutionTicks": 0,
+    "allowedActionTicks": 0,
+    "allowedCooldownTicks": 0,
+    "blockedAmbientActionTicks": 0,
+    "blockedAmbientCooldownTicks": 0,
+    "blockedDuplicateAbilityExecutionTicks": 0,
+    "brainTicks": 0,
+    "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+    "maximumActionTicksPerUnitPerUnityFrame": 0,
+    "nativeDefaultActions": 0,
+    "nativeDefaultCooldowns": 0,
+    "nativeDefaultExecutions": 0,
+    "nativeDefaultLeaseActive": false,
+    "refusedStaleNativeTicks": 0,
+    "scope": "exact request fixture/turn-clock actor set"
+   },
+   "tickGateCurrent": {
+    "allowedAbilityExecutionTicks": 0,
+    "allowedActionTicks": 0,
+    "allowedCooldownTicks": 0,
+    "blockedAmbientActionTicks": 0,
+    "blockedAmbientCooldownTicks": 0,
+    "blockedDuplicateAbilityExecutionTicks": 0,
+    "brainTicks": 0,
+    "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+    "maximumActionTicksPerUnitPerUnityFrame": 0,
+    "nativeDefaultActions": 58036,
+    "nativeDefaultCooldowns": 58034,
+    "nativeDefaultExecutions": 338,
+    "nativeDefaultLeaseActive": false,
+    "refusedStaleNativeTicks": 0,
+    "scope": "exact request fixture/turn-clock actor set"
+   },
+   "utc": "2026-11-28T14:46:11.1989692Z"
+  },
+  {
+   "cleanup": {
+    "areaChanges": [],
+    "casterAbsent": true,
+    "extraUnits": "",
+    "missingUnits": "",
+    "partyAfter": 1,
+    "partyBefore": 1,
+    "partyExact": true,
+    "retirementAttemptedElsewhere": [
+     "b3f0638c-ffb9-4dda-a8ce-0bcba443c2b6:destroyed=True",
+     "deefb205-aa62-454c-a8e2-2316a547f1d8:destroyed=True",
+     "034707da-0883-4c4f-a729-7cc6284792b8:destroyed=True",
+     "00a3a43f-ac02-4dfa-b447-7448180732f5:destroyed=True",
+     "1aeafad0-1700-4af4-ba45-67dad350e1c7:destroyed=True",
+     "c417f57c-b284-4440-8bfe-4fcf59e28ab6:destroyed=True",
+     "58cf66bd-63f2-48f6-856c-2e66ca10b792:destroyed=True",
+     "1fe988b6-da87-408d-8f26-dc35cb35723d:destroyed=True",
+     "5efe7447-328e-4c19-bc05-79400d4ea0eb:destroyed=True",
+     "e40f7093-2025-44d2-9c10-641825c24e9c:destroyed=True",
+     "67b045c3-4936-4fa5-9bf3-3a81dbb2f8ea:destroyed=True",
+     "ddbfb276-132a-4099-9bf0-3d6a0f499921:destroyed=True",
+     "28f588f8-4a2e-4578-91df-f9902d44157a:destroyed=True",
+     "52fe86d8-ae89-4f2d-9b37-2af48e40ee2d:destroyed=True",
+     "472117a8-2806-4c27-aa7d-105b2936f738:destroyed=True",
+     "4f4396cb-256b-4551-a9f6-42d0c224dc89:destroyed=True",
+     "b8424a4e-67dc-4ee1-bf3a-b4c3299a7d00:destroyed=True",
+     "b7967e2e-a669-4b6d-bb75-a0bf02125939:destroyed=True",
+     "aa77be01-7def-42ba-b094-83d2533e88db:destroyed=True"
+    ],
+    "unitsAfter": 1,
+    "unitsBefore": 1,
+    "unitsExact": true
+   },
+   "clockRestored": true,
+   "passed": true,
+   "predicate": "fixture-restored",
+   "referencesRestored": true,
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics"
+  }
+ ],
+ "harness": {
+  "conditions": {},
+  "exitRequested": false,
+  "failure": null,
+  "finishedUtc": "2026-11-28T14:41:44.0283217Z",
+  "isolation": "saves=<lab>/Saved Games; areas=<lab>/Areas",
+  "isolationRestored": true,
+  "loggerExceptionHooks": 4,
+  "requestPath": "<lab>/harness-request.json",
+  "runId": "20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+  "startedUtc": "2026-11-28T14:40:47.8987488Z",
+  "status": "passed",
+  "steps": []
+ },
+ "harnessEvents": [
+  {
+   "detail": {
+    "ummWindowOpen": true
+   },
+   "event": "mainMenu",
+   "t": 60.21724,
+   "utc": "2026-11-28T14:41:43.7962563Z"
+  }
+ ],
+ "launch": "01-mechanics",
+ "launchSummary": {
+  "conditions": {},
+  "gameArguments": [
+   "locale=enGB"
+  ],
+  "harness": "passed",
+  "identity": {
+   "activeMods": [
+    "KingmakerGunslinger 0.0.197",
+    "KmgLoaderCompatHarness 0.1.0"
+   ],
+   "harmony12Sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+   "harmony2": [
+    "2.3.6.0 df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80"
+   ],
+   "productSha256": "eb5f8f4c0302a5248ee523a313cdee2bd12c4ef873a4d82d88cf266346c41ca4",
+   "umm": "0.33.0.0",
+   "ummReported": "0.33.0.0",
+   "ummSha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
+  },
+  "label": "01-mechanics",
+  "pid": 46572,
+  "problems": [],
+  "product": {
+   "failed": [],
+   "scenario": "disposable-expanded-summoning-sprint32-native-review",
+   "status": "PASS"
+  },
+  "seconds": 335,
+  "verdict": "PASS"
+ },
+ "loaderIdentity": {
+  "capturedUtc": "2026-11-28T14:41:43.5711547Z",
+  "harmony12": {
+   "fullName": "0Harmony12, Version=1.2.0.1, Culture=neutral, PublicKeyToken=null",
+   "informationalVersion": "1.2.0.1",
+   "location": "<lab>/0Harmony12.dll",
+   "mvid": "918c071f-383e-46dc-a374-6879300cbe15",
+   "sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+   "version": "1.2.0.1"
+  },
+  "harmony2": [
+   {
+    "fullName": "0Harmony, Version=2.3.6.0, Culture=neutral, PublicKeyToken=null",
+    "informationalVersion": "2.3.6.0+f41da7608c5c3e9c7bf16551462b14c0b5392db3",
+    "location": "<lab>/0Harmony.dll",
+    "mvid": "4dbb7cd6-acb5-43ef-8d7e-6fc104af5bdc",
+    "sha256": "df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80",
+    "version": "2.3.6.0"
+   }
+  ],
+  "modEntries": [
+   {
+    "active": true,
+    "assembly": {
+     "fullName": "KingmakerGunslinger, Version=0.0.197.0, Culture=neutral, PublicKeyToken=null",
+     "gitCommit": "66a0b9c724e7a16e425b5e21ac962cd441eaced6",
+     "informationalVersion": "0.0.197-elemental-persistence-coverage",
+     "location": "<lab>/KingmakerGunslinger.dll.40718.cache",
+     "mvid": "fda26bf8-c9c7-4dcd-9ffb-7e5f8c77be8e",
+     "sha256": "eb5f8f4c0302a5248ee523a313cdee2bd12c4ef873a4d82d88cf266346c41ca4",
+     "version": "0.0.197.0"
+    },
+    "enabled": true,
+    "errorOnLoading": false,
+    "hasAssembly": true,
+    "id": "KingmakerGunslinger",
+    "loaded": true,
+    "managerVersion": "0.31.1",
+    "path": "<lab>/KingmakerGunslinger",
+    "version": "0.0.197"
+   },
+   {
+    "active": true,
+    "assembly": {
+     "fullName": "KmgLoaderCompatHarness, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+     "location": "<lab>/KmgLoaderCompatHarness.dll.44083.cache",
+     "mvid": "37571d33-a504-40f2-888a-8dfc6766b629",
+     "sha256": "d77754bad4377734e87c9a70aaf0c980a306db82dbee25e335b9e9ba47ebb4f1",
+     "version": "0.0.0.0"
+    },
+    "enabled": true,
+    "errorOnLoading": false,
+    "hasAssembly": true,
+    "id": "KmgLoaderCompatHarness",
+    "loaded": true,
+    "managerVersion": "0.27.0",
+    "path": "<lab>/KmgLoaderCompatHarness",
+    "version": "0.1.0"
+   }
+  ],
+  "unityModManager": {
+   "fullName": "UnityModManager, Version=0.33.0.0, Culture=neutral, PublicKeyToken=null",
+   "informationalVersion": "0.33.0+470d310a367393cd1d0b6b78021304346c5e13ae",
+   "location": "<lab>/UnityModManager.dll",
+   "mvid": "54059519-2754-445a-b5ee-fdb9326336e2",
+   "sha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691",
+   "version": "0.33.0.0"
+  },
+  "unityModManagerAssemblies": [
+   {
+    "fullName": "UnityModManager, Version=0.33.0.0, Culture=neutral, PublicKeyToken=null",
+    "informationalVersion": "0.33.0+470d310a367393cd1d0b6b78021304346c5e13ae",
+    "location": "<lab>/UnityModManager.dll",
+    "mvid": "54059519-2754-445a-b5ee-fdb9326336e2",
+    "sha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691",
+    "version": "0.33.0.0"
+   }
+  ],
+  "unityModManagerReportedVersion": "0.33.0.0"
+ },
+ "records": {
+  "summon-s7-effects-mechanics.json": {
+   "ankylosaurus": {
+    "attacks": [
+     {
+      "emitterPosition": [
+       21.74734,
+       -5.54817,
+       26.96371
+      ],
+      "frame": 4201,
+      "hit": true,
+      "initiator": "93e50ab3-8b10-40f5-860f-7441dbfd0424",
+      "listenerDistanceAtEvent": 37.45,
+      "roll": -1047779328,
+      "target": "01b62890-cff3-427c-bb6c-11c6811437a9",
+      "utc": "2026-11-28T14:42:02.3851129Z",
+      "weapon": "KMG_Summoning_Natural_Tail3d6",
+      "weaponGuid": "15394605e1664a51bce4b50f38a7603a"
+     },
+     {
+      "emitterPosition": [
+       21.74734,
+       -5.54817,
+       26.96371
+      ],
+      "frame": 4412,
+      "hit": true,
+      "initiator": "93e50ab3-8b10-40f5-860f-7441dbfd0424",
+      "listenerDistanceAtEvent": 37.45,
+      "roll": -1910272000,
+      "target": "01b62890-cff3-427c-bb6c-11c6811437a9",
+      "utc": "2026-11-28T14:42:08.4875040Z",
+      "weapon": "KMG_Summoning_Natural_Tail3d6",
+      "weaponGuid": "15394605e1664a51bce4b50f38a7603a"
+     }
+    ],
+    "callbackLoss": {
+     "afterOtherRetired": {
+      "note": "read in the retirement frame, before the product's stop runs; the verdict reads the settled values at the window end",
+      "other": {
+       "endUtc": null,
+       "event": "Sweetener_Low_06_Quake",
+       "frame": 5371,
+       "playingId": 518,
+       "seconds": null,
+       "stopReason": null,
+       "stopRequestedUtc": null,
+       "stopResult": null,
+       "utc": "2026-11-28T14:42:32.9578264Z"
+      },
+      "otherStopAttempts": 0,
+      "survivorStopAttempts": 0
+     },
+     "before": {
+      "frame": 5371,
+      "other": {
+       "endUtc": null,
+       "event": "Sweetener_Low_06_Quake",
+       "frame": 5371,
+       "playingId": 518,
+       "seconds": null,
+       "stopReason": null,
+       "stopRequestedUtc": null,
+       "stopResult": null,
+       "utc": "2026-11-28T14:42:32.9578264Z"
+      },
+      "otherPlayback": "playing",
+      "survivor": {
+       "endUtc": null,
+       "event": "Sweetener_Low_06_Quake",
+       "frame": 5371,
+       "playingId": 517,
+       "seconds": null,
+       "stopReason": null,
+       "stopRequestedUtc": null,
+       "stopResult": null,
+       "utc": "2026-11-28T14:42:32.9568290Z"
+      },
+      "survivorPlayback": "playing"
+     },
+     "componentBeforeDisposal": true,
+     "cuesBeforeSelection": {
+      "otherSource": [
+       {
+        "endUtc": null,
+        "event": "Sweetener_Low_06_Quake",
+        "frame": 5371,
+        "playingId": 518,
+        "seconds": null,
+        "stopReason": null,
+        "stopRequestedUtc": null,
+        "stopResult": null,
+        "utc": "2026-11-28T14:42:32.9578264Z"
+       }
+      ],
+      "survivorSource": [
+       {
+        "endUtc": null,
+        "event": "Sweetener_Low_06_Quake",
+        "frame": 5371,
+        "playingId": 517,
+        "seconds": null,
+        "stopReason": null,
+        "stopRequestedUtc": null,
+        "stopResult": null,
+        "utc": "2026-11-28T14:42:32.9568290Z"
+       }
+      ]
+     },
+     "declaredDisposalSeconds": 6.0,
+     "declaredOverlapSeconds": 16.0,
+     "declaredWindowSeconds": 12.0,
+     "disposition": "Established under the synthetic loss: the survivor's playback ended normally (confirmed inactive by the native query, including at the window end and after its own source's disposal), the other source was unaffected, and the only residual was the survivor's tracking on its own source's playback component, which went away when that component was destroyed with the source. Owner amendment 2 section 4 accepts this as a documented development limitation; no product change.",
+     "evaluator": "Sprint7ObserverPolicy.CallbackLossRound7",
+     "hookAttempted": true,
+     "hookSetup": null,
+     "hookSetupFailure": null,
+     "independentCleanup": {
+      "commandsInterrupted": 0,
+      "otherRetirementRequested": true,
+      "sourcesRetiredHere": 0,
+      "survivorRetirementRequested": true
+     },
+     "interventionDisposeFailures": [],
+     "interventionHooksAfter": 0,
+     "otherRetiredUtc": "2026-11-28T14:42:32.9588274Z",
+     "otherRetirementSettled": {
+      "other": {
+       "endUtc": "2026-11-28T14:42:32.9883723Z",
+       "event": "Sweetener_Low_06_Quake",
+       "frame": 5371,
+       "playingId": 518,
+       "seconds": 0.030545899999999997,
+       "stopAttempts": 1,
+       "stopReason": "view-destroyed",
+       "stopRequestedUtc": "2026-11-28T14:42:32.9628265Z",
+       "stopResult": "stop-requested",
+       "utc": "2026-11-28T14:42:32.9578264Z"
+      },
+      "survivorStopAttemptsThroughWindow": 0
+     },
+     "overlapSchedule": [
+      {
+       "bothPlaying": true,
+       "delivery": 0,
+       "frame": 5371,
+       "keeperCalls": 1,
+       "keeperPlayingId": 517,
+       "otherCalls": 1,
+       "otherPlayingId": 518,
+       "sameFrame": true
+      }
+     ],
+     "overlapSetup": "constructed: declared same-frame delivery of fresh resolved tail hits (attack roll result set to Hit) to each source's own AnkylosaurusTailControl; cues are the production handler's real postings",
+     "releaseFailures": [],
+     "retirementFailures": [],
+     "survivorAfterDisposal": {
+      "cue": {
+       "endUtc": null,
+       "event": "Sweetener_Low_06_Quake",
+       "frame": 5371,
+       "playingId": 517,
+       "seconds": null,
+       "stopReason": "view-destroyed",
+       "stopRequestedUtc": "2026-11-28T14:42:44.9914129Z",
+       "stopResult": "stop-requested",
+       "utc": "2026-11-28T14:42:32.9568290Z"
+      },
+      "note": "a stop request issued by the source's own retirement for an already inactive playing ID is a request, not completion; EndUtc stays unset",
+      "playback": "inactive",
+      "playbackComponentDestroyed": true,
+      "stopAttempts": 1,
+      "unrelatedRecordsChanged": 0,
+      "viewDestroyed": true
+     },
+     "survivorAtWindowEnd": {
+      "callbacksPassedThrough": 1,
+      "callbacksWithheld": [
+       "2026-11-28T14:42:35.1536629Z"
+      ],
+      "cue": {
+       "endUtc": null,
+       "event": "Sweetener_Low_06_Quake",
+       "frame": 5371,
+       "playingId": 517,
+       "seconds": null,
+       "stopReason": null,
+       "stopRequestedUtc": null,
+       "stopResult": null,
+       "utc": "2026-11-28T14:42:32.9568290Z"
+      },
+      "playback": "inactive",
+      "tracked": true
+     },
+     "survivorFirstInactiveUtc": "2026-11-28T14:42:35.5514103Z",
+     "synthetic": "the product's end-of-event callback for one exact survivor record is withheld from the product by the observer; native playback is untouched and read separately",
+     "verdict": null,
+     "window": [
+      {
+       "callbacksWithheld": 0,
+       "frame": 5371,
+       "otherPlayback": "playing",
+       "survivorEndUtc": null,
+       "survivorPlayback": "playing",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:32.9598272Z"
+      },
+      {
+       "callbacksWithheld": 0,
+       "frame": 5392,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "playing",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:33.4838152Z"
+      },
+      {
+       "callbacksWithheld": 0,
+       "frame": 5411,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "playing",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:33.9856205Z"
+      },
+      {
+       "callbacksWithheld": 0,
+       "frame": 5429,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "playing",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:34.4871105Z"
+      },
+      {
+       "callbacksWithheld": 0,
+       "frame": 5447,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "playing",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:35.0183928Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5467,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:35.5514103Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5484,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:36.0518174Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5500,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:36.5526690Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5519,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:37.0528644Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5536,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:37.5574697Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5557,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:38.0861002Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5577,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:38.6171587Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5596,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:39.1184327Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5616,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:39.6200180Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5634,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:40.1533851Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5653,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:40.6864226Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5670,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:41.1865900Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5686,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:41.6869698Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5705,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:42.1922175Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5724,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:42.7192111Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5745,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:43.2227304Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5765,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:43.7527058Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5784,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:44.2538135Z"
+      },
+      {
+       "callbacksWithheld": 1,
+       "frame": 5803,
+       "otherPlayback": "inactive",
+       "survivorEndUtc": null,
+       "survivorPlayback": "inactive",
+       "survivorTracked": true,
+       "utc": "2026-11-28T14:42:44.7610052Z"
+      }
+     ]
+    },
+    "craftedControls": {
+     "foreignWeapon": {
+      "calls": 1,
+      "error": null,
+      "hit": true,
+      "newCues": 0,
+      "rollTarget": "01b62890-cff3-427c-bb6c-11c6811437a9",
+      "targetInGame": true,
+      "weapon": "20375b5a0c9243d45966bd72c690ab74",
+      "weaponName": "WeaponEmptyHand",
+      "wrapperTarget": "01b62890-cff3-427c-bb6c-11c6811437a9"
+     },
+     "mismatchedWrapper": {
+      "calls": 1,
+      "error": null,
+      "hit": true,
+      "newCues": 0,
+      "rollTarget": "01b62890-cff3-427c-bb6c-11c6811437a9",
+      "targetInGame": true,
+      "weapon": "15394605e1664a51bce4b50f38a7603a",
+      "weaponName": "KMG_Summoning_Natural_Tail3d6",
+      "wrapperTarget": "b3f0638c-ffb9-4dda-a8ce-0bcba443c2b6"
+     },
+     "removedTarget": {
+      "calls": 1,
+      "error": null,
+      "hit": true,
+      "newCues": 0,
+      "rollTarget": "acbfaf67-2738-44db-81cf-6f161705649e",
+      "targetInGame": false,
+      "weapon": "15394605e1664a51bce4b50f38a7603a",
+      "weaponName": "KMG_Summoning_Natural_Tail3d6",
+      "wrapperTarget": "acbfaf67-2738-44db-81cf-6f161705649e"
+     },
+     "sameRollValidWrapper": {
+      "calls": 1,
+      "error": null,
+      "hit": true,
+      "newCues": 1,
+      "rollTarget": "01b62890-cff3-427c-bb6c-11c6811437a9",
+      "targetInGame": true,
+      "weapon": "15394605e1664a51bce4b50f38a7603a",
+      "weaponName": "KMG_Summoning_Natural_Tail3d6",
+      "wrapperTarget": "01b62890-cff3-427c-bb6c-11c6811437a9"
+     },
+     "valid": {
+      "calls": 1,
+      "error": null,
+      "hit": true,
+      "newCues": 1,
+      "rollTarget": "01b62890-cff3-427c-bb6c-11c6811437a9",
+      "targetInGame": true,
+      "weapon": "15394605e1664a51bce4b50f38a7603a",
+      "weaponName": "KMG_Summoning_Natural_Tail3d6",
+      "wrapperTarget": "01b62890-cff3-427c-bb6c-11c6811437a9"
+     }
+    },
+    "cuesAfterRetirement": {
+     "first": [
+      {
+       "endUtc": "2026-11-28T14:42:04.7853066Z",
+       "event": "Sweetener_Low_06_Quake",
+       "frame": 4201,
+       "playingId": 164,
+       "seconds": 2.2442013999999997,
+       "stopReason": null,
+       "stopRequestedUtc": null,
+       "stopResult": null,
+       "utc": "2026-11-28T14:42:02.5411052Z"
+      },
+      {
+       "endUtc": "2026-11-28T14:42:10.6848261Z",
+       "event": "Sweetener_Low_06_Quake",
+       "frame": 4412,
+       "playingId": 236,
+       "seconds": 2.0965374,
+       "stopReason": null,
+       "stopRequestedUtc": null,
+       "stopResult": null,
+       "utc": "2026-11-28T14:42:08.5882887Z"
+      },
+      {
+       "endUtc": "2026-11-28T14:42:18.9524432Z",
+       "event": "Sweetener_Low_06_Quake",
+       "frame": 4724,
+       "playingId": 321,
+       "seconds": 2.1267301,
+       "stopReason": null,
+       "stopRequestedUtc": null,
+       "stopResult": null,
+       "utc": "2026-11-28T14:42:16.8257131Z"
+      },
+      {
+       "endUtc": "2026-11-28T14:42:22.8894011Z",
+       "event": "Sweetener_Low_06_Quake",
+       "frame": 4890,
+       "playingId": 363,
+       "seconds": 2.2368889,
+       "stopReason": null,
+       "stopRequestedUtc": null,
+       "stopResult": null,
+       "utc": "2026-11-28T14:42:20.6525122Z"
+      },
+      {
+       "endUtc": "2026-11-28T14:42:22.8894011Z",
+       "event": "Sweetener_Low_06_Quake",
+       "frame": 4890,
+       "playingId": 364,
+       "seconds": 2.2311549999999998,
+       "stopReason": null,
+       "stopRequestedUtc": null,
+       "stopResult": null,
+       "utc": "2026-11-28T14:42:20.6582461Z"
+      },
+      {
+       "endUtc": "2026-11-28T14:42:30.8179323Z",
+       "event": "Sweetener_Low_06_Quake",
+       "frame": 5234,
+       "playingId": 484,
+       "seconds": 1.7358481,
+       "stopReason": null,
+       "stopRequestedUtc": null,
+       "stopResult": null,
+       "utc": "2026-11-28T14:42:29.0820842Z"
+      }
+     ],
+     "frame": 5305,
+     "second": [
+      {
+       "endUtc": "2026-11-28T14:42:16.3167677Z",
+       "event": "Sweetener_Low_06_Quake",
+       "frame": 4639,
+       "playingId": 301,
+       "seconds": 1.5593455999999999,
+       "stopReason": null,
+       "stopRequestedUtc": null,
+       "stopResult": null,
+       "utc": "2026-11-28T14:42:14.7574221Z"
+      },
+      {
+       "endUtc": "2026-11-28T14:42:29.2521202Z",
+       "event": "Sweetener_Low_06_Quake",
+       "frame": 5234,
+       "playingId": 486,
+       "seconds": 0.071071,
+       "stopReason": "view-destroyed",
+       "stopRequestedUtc": "2026-11-28T14:42:29.2092190Z",
+       "stopResult": "stop-requested",
+       "utc": "2026-11-28T14:42:29.1810492Z"
+      }
+     ]
+    },
+    "hitCuePairs": [
+     {
+      "cues": [
+       {
+        "endUtc": "2026-11-28T14:42:04.7853066Z",
+        "event": "Sweetener_Low_06_Quake",
+        "frame": 4201,
+        "playingId": 164,
+        "seconds": 2.2442013999999997,
+        "stopReason": null,
+        "stopRequestedUtc": null,
+        "stopResult": null,
+        "utc": "2026-11-28T14:42:02.5411052Z"
+       }
+      ],
+      "hit": {
+       "emitterPosition": [
+        21.74734,
+        -5.54817,
+        26.96371
+       ],
+       "frame": 4201,
+       "hit": true,
+       "initiator": "93e50ab3-8b10-40f5-860f-7441dbfd0424",
+       "listenerDistanceAtEvent": 37.45,
+       "roll": -1047779328,
+       "target": "01b62890-cff3-427c-bb6c-11c6811437a9",
+       "utc": "2026-11-28T14:42:02.3851129Z",
+       "weapon": "KMG_Summoning_Natural_Tail3d6",
+       "weaponGuid": "15394605e1664a51bce4b50f38a7603a"
+      },
+      "listenerDistanceAfterSequence": 37.45,
+      "listenerDistanceAtEvent": 37.45
+     },
+     {
+      "cues": [
+       {
+        "endUtc": "2026-11-28T14:42:10.6848261Z",
+        "event": "Sweetener_Low_06_Quake",
+        "frame": 4412,
+        "playingId": 236,
+        "seconds": 2.0965374,
+        "stopReason": null,
+        "stopRequestedUtc": null,
+        "stopResult": null,
+        "utc": "2026-11-28T14:42:08.5882887Z"
+       }
+      ],
+      "hit": {
+       "emitterPosition": [
+        21.74734,
+        -5.54817,
+        26.96371
+       ],
+       "frame": 4412,
+       "hit": true,
+       "initiator": "93e50ab3-8b10-40f5-860f-7441dbfd0424",
+       "listenerDistanceAtEvent": 37.45,
+       "roll": -1910272000,
+       "target": "01b62890-cff3-427c-bb6c-11c6811437a9",
+       "utc": "2026-11-28T14:42:08.4875040Z",
+       "weapon": "KMG_Summoning_Natural_Tail3d6",
+       "weaponGuid": "15394605e1664a51bce4b50f38a7603a"
+      },
+      "listenerDistanceAfterSequence": 37.45,
+      "listenerDistanceAtEvent": 37.45
+     }
+    ],
+    "overlappingAtRetirement": true,
+    "replay": {
+     "foreignOwnerCalls": 1,
+     "foreignOwnerNewCues": 0,
+     "foreignWeapon": "the Ankylosaurus has only its tail attack natively; see craftedControls",
+     "invalidTarget": "see craftedControls",
+     "laterCues": 1,
+     "laterHits": 1,
+     "sameRollCalls": 1,
+     "sameRollNewCues": 0
+    },
+    "retired": {
+     "endUtc": "2026-11-28T14:42:29.2521202Z",
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 5234,
+     "playingId": 486,
+     "seconds": 0.071071,
+     "stopReason": "view-destroyed",
+     "stopRequestedUtc": "2026-11-28T14:42:29.2092190Z",
+     "stopResult": "stop-requested",
+     "utc": "2026-11-28T14:42:29.1810492Z"
+    },
+    "retiredUtc": "2026-11-28T14:42:29.1987136Z",
+    "retirementTrace": [
+     {
+      "frame": 5235,
+      "moment": "before-retirement",
+      "retiringEnded": false,
+      "retiringPlayback": "playing",
+      "retiringPlayingId": 486,
+      "survivorEnded": false,
+      "survivorPlayback": "playing",
+      "survivorPlayingId": 484,
+      "survivorStopAttempts": 0,
+      "survivorTracked": true,
+      "utc": "2026-11-28T14:42:29.1977128Z"
+     },
+     {
+      "frame": 5235,
+      "moment": "after-retirement",
+      "retiringEnded": false,
+      "retiringPlayback": "playing",
+      "retiringPlayingId": 486,
+      "survivorEnded": false,
+      "survivorPlayback": "playing",
+      "survivorPlayingId": 484,
+      "survivorStopAttempts": 0,
+      "survivorTracked": true,
+      "utc": "2026-11-28T14:42:29.2047125Z"
+     },
+     {
+      "frame": 5303,
+      "moment": "end-of-wait",
+      "retiringEnded": true,
+      "retiringPlayback": "inactive",
+      "retiringPlayingId": 486,
+      "survivorEnded": true,
+      "survivorPlayback": "inactive",
+      "survivorPlayingId": 484,
+      "survivorStopAttempts": 0,
+      "survivorTracked": false,
+      "utc": "2026-11-28T14:42:30.8219287Z"
+     },
+     {
+      "frame": 5305,
+      "moment": "settled",
+      "retiringEnded": true,
+      "retiringPlayback": "inactive",
+      "retiringPlayingId": 486,
+      "survivorEnded": true,
+      "survivorPlayback": "inactive",
+      "survivorPlayingId": 484,
+      "survivorStopAttempts": 0,
+      "survivorTracked": false,
+      "utc": "2026-11-28T14:42:30.8834675Z"
+     }
+    ],
+    "retirementTraceVerdict": null,
+    "survivor": {
+     "endUtc": "2026-11-28T14:42:30.8179323Z",
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 5234,
+     "playingId": 484,
+     "seconds": 1.7358481,
+     "stopReason": null,
+     "stopRequestedUtc": null,
+     "stopResult": null,
+     "utc": "2026-11-28T14:42:29.0820842Z"
+    }
+   },
+   "callbackAbandoned": {
+    "cells": {},
+    "child": {
+     "admitted": [
+      "s7-callback-abandoned-inner"
+     ],
+     "completed": [],
+     "failures": [
+      "callback-withhold: cue callback hook: InvalidOperationException: injected failure of the cue callback unpatch (kmg.s7.callback-withhold)",
+      "callback-withhold: cue callback hooks remaining: 1"
+     ],
+     "pending": [],
+     "recoveries": [],
+     "refused": "s7-callback-abandoned-next",
+     "restored": false,
+     "unreadable": [],
+     "unreported": []
+    },
+    "childAfterDisposal": {
+     "admitted": [
+      "s7-callback-abandoned-inner"
+     ],
+     "completed": [],
+     "failures": [
+      "callback-withhold: cue callback hook: InvalidOperationException: injected failure of the cue callback unpatch (kmg.s7.callback-withhold)",
+      "callback-withhold: cue callback hooks remaining: 1"
+     ],
+     "pending": [],
+     "recoveries": [],
+     "refused": null,
+     "restored": false,
+     "unreadable": [],
+     "unreported": []
+    },
+    "childAfterResume": {
+     "admitted": [
+      "s7-callback-abandoned-inner"
+     ],
+     "completed": [],
+     "failures": [
+      "callback-withhold: cue callback hook: InvalidOperationException: injected failure of the cue callback unpatch (kmg.s7.callback-withhold)",
+      "callback-withhold: cue callback hooks remaining: 1"
+     ],
+     "pending": [],
+     "recoveries": [],
+     "refused": "s7-callback-abandoned-next",
+     "restored": false,
+     "unreadable": [],
+     "unreported": []
+    },
+    "expected": [
+     "callback-withhold: cue callback hook: InvalidOperationException: injected failure of the cue callback unpatch (kmg.s7.callback-withhold)",
+     "callback-withhold: cue callback hooks remaining: 1"
+    ],
+    "expectedMissing": [],
+    "hooksAfterRepair": 0,
+    "hooksAtAbandon": 1,
+    "inner": {
+     "independentCleanup": {
+      "commandsInterrupted": 0,
+      "otherRetirementRequested": true,
+      "sourcesRetiredHere": 2,
+      "survivorRetirementRequested": true
+     },
+     "interventionDisposeFailures": [
+      "cue callback hook: InvalidOperationException: injected failure of the cue callback unpatch (kmg.s7.callback-withhold)"
+     ],
+     "interventionHooksAfter": 1,
+     "releaseFailures": [],
+     "retirementFailures": []
+    },
+    "isolationRestored": true,
+    "mode": "abandon-when-ready, next cell expected refused",
+    "nextCellStarted": false,
+    "probe": {
+     "hooksAcquired": 1,
+     "sources": [
+      "00a3a43f-ac02-4dfa-b447-7448180732f5",
+      "1aeafad0-1700-4af4-ba45-67dad350e1c7"
+     ]
+    },
+    "readyBeforeAbandon": true,
+    "repairFailures": [],
+    "repairedWhen": "after the guard",
+    "sourcesGone": true,
+    "transferredResiduals": [],
+    "unexpected": [],
+    "unsafe": []
+   },
+   "callbackSetupFailed": {
+    "cells": {
+     "s7-callback-setup-failed-inner": "InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)"
+    },
+    "child": {
+     "admitted": [
+      "s7-callback-setup-failed-inner"
+     ],
+     "completed": [],
+     "failures": [
+      "callback-withhold: cue callback setup failed: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)",
+      "callback-withhold: cue callback hooks remaining: 1",
+      "s7-callback-setup-failed-inner: cell exception: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)"
+     ],
+     "pending": [],
+     "recoveries": [],
+     "refused": "s7-callback-setup-failed-next",
+     "restored": false,
+     "unreadable": [],
+     "unreported": []
+    },
+    "childAfterDisposal": {
+     "admitted": [
+      "s7-callback-setup-failed-inner"
+     ],
+     "completed": [],
+     "failures": [
+      "callback-withhold: cue callback setup failed: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)",
+      "callback-withhold: cue callback hooks remaining: 1",
+      "s7-callback-setup-failed-inner: cell exception: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)"
+     ],
+     "pending": [],
+     "recoveries": [],
+     "refused": "s7-callback-setup-failed-next",
+     "restored": false,
+     "unreadable": [],
+     "unreported": []
+    },
+    "childAfterResume": {
+     "admitted": [
+      "s7-callback-setup-failed-inner"
+     ],
+     "completed": [],
+     "failures": [
+      "callback-withhold: cue callback setup failed: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)",
+      "callback-withhold: cue callback hooks remaining: 1",
+      "s7-callback-setup-failed-inner: cell exception: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)"
+     ],
+     "pending": [],
+     "recoveries": [],
+     "refused": "s7-callback-setup-failed-next",
+     "restored": false,
+     "unreadable": [],
+     "unreported": []
+    },
+    "expected": [
+     "callback-withhold: cue callback setup failed: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)",
+     "s7-callback-setup-failed-inner: cell exception: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)",
+     "callback-withhold: cue callback hooks remaining: 1"
+    ],
+    "expectedMissing": [],
+    "hooksAfterRepair": 0,
+    "inner": {
+     "hookAttempted": true,
+     "hookSetup": {
+      "hooksAfterRollback": 1,
+      "hooksBeforeRollback": 1,
+      "original": "InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)",
+      "rollbackFailures": [
+       "cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)"
+      ]
+     },
+     "hookSetupFailure": "cue callback setup failed: InvalidOperationException: S7CallbackWithhold setup failed (rollback INCOMPLETE: 1 owned item(s) remain; cue callback hook: InvalidOperationException: injected failure of the cue callback rollback unpatch (kmg.s7.callback-withhold)): InvalidOperationException: injected failure after the cue callback hook was installed (kmg.s7.callback-withhold)",
+     "independentCleanup": {
+      "commandsInterrupted": 0,
+      "otherRetirementRequested": true,
+      "sourcesRetiredHere": 2,
+      "survivorRetirementRequested": true
+     },
+     "interventionHooksAfter": 1,
+     "releaseFailures": []
+    },
+    "isolationRestored": true,
+    "mode": "run-to-completion, next cell expected refused",
+    "nextCellStarted": false,
+    "readyBeforeAbandon": true,
+    "repairFailures": [],
+    "repairedWhen": "after the guard",
+    "transferredResiduals": [],
+    "unexpected": [],
+    "unsafe": []
+   },
+   "commandCleanupPerformed": [
+    "queue maintenance on ddbfb276-132a-4099-9bf0-3d6a0f499921",
+    "combat exit on ddbfb276-132a-4099-9bf0-3d6a0f499921",
+    "queue maintenance on 28f588f8-4a2e-4578-91df-f9902d44157a",
+    "combat exit on 28f588f8-4a2e-4578-91df-f9902d44157a",
+    "queue maintenance on 52fe86d8-ae89-4f2d-9b37-2af48e40ee2d",
+    "combat exit on 52fe86d8-ae89-4f2d-9b37-2af48e40ee2d",
+    "queue maintenance on b8424a4e-67dc-4ee1-bf3a-b4c3299a7d00",
+    "combat exit on b8424a4e-67dc-4ee1-bf3a-b4c3299a7d00",
+    "queue maintenance on 472117a8-2806-4c27-aa7d-105b2936f738",
+    "combat exit on 472117a8-2806-4c27-aa7d-105b2936f738",
+    "queue maintenance on 4f4396cb-256b-4551-a9f6-42d0c224dc89",
+    "combat exit on 4f4396cb-256b-4551-a9f6-42d0c224dc89",
+    "queue maintenance on b7967e2e-a669-4b6d-bb75-a0bf02125939",
+    "combat exit on b7967e2e-a669-4b6d-bb75-a0bf02125939",
+    "queue maintenance on aa77be01-7def-42ba-b094-83d2533e88db",
+    "combat exit on aa77be01-7def-42ba-b094-83d2533e88db",
+    "combat exit on 01b62890-cff3-427c-bb6c-11c6811437a9",
+    "combat exit on b1da6729-efaa-4375-9fed-926e8bbd6495"
+   ],
+   "commandCleanupWithheld": [],
+   "cuesAtEnd": [
+    {
+     "ability": "AnkylosaurusTailImpact",
+     "caster": "93e50ab3-8b10-40f5-860f-7441dbfd0424",
+     "endFrame": 4277,
+     "endUtc": "2026-11-28T14:42:04.7853066Z",
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 4201,
+     "playingId": 164,
+     "stopAttempts": 0,
+     "stopReason": null,
+     "stopRequestedUtc": null,
+     "stopResult": null,
+     "utc": "2026-11-28T14:42:02.5411052Z"
+    },
+    {
+     "ability": "AnkylosaurusTailImpact",
+     "caster": "93e50ab3-8b10-40f5-860f-7441dbfd0424",
+     "endFrame": 4480,
+     "endUtc": "2026-11-28T14:42:10.6848261Z",
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 4412,
+     "playingId": 236,
+     "stopAttempts": 0,
+     "stopReason": null,
+     "stopRequestedUtc": null,
+     "stopResult": null,
+     "utc": "2026-11-28T14:42:08.5882887Z"
+    },
+    {
+     "ability": "AnkylosaurusTailImpact",
+     "caster": "b3f0638c-ffb9-4dda-a8ce-0bcba443c2b6",
+     "endFrame": 4706,
+     "endUtc": "2026-11-28T14:42:16.3167677Z",
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 4639,
+     "playingId": 301,
+     "stopAttempts": 0,
+     "stopReason": null,
+     "stopRequestedUtc": null,
+     "stopResult": null,
+     "utc": "2026-11-28T14:42:14.7574221Z"
+    },
+    {
+     "ability": "AnkylosaurusTailImpact",
+     "caster": "93e50ab3-8b10-40f5-860f-7441dbfd0424",
+     "endFrame": 4817,
+     "endUtc": "2026-11-28T14:42:18.9524432Z",
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 4724,
+     "playingId": 321,
+     "stopAttempts": 0,
+     "stopReason": null,
+     "stopRequestedUtc": null,
+     "stopResult": null,
+     "utc": "2026-11-28T14:42:16.8257131Z"
+    },
+    {
+     "ability": "AnkylosaurusTailImpact",
+     "caster": "93e50ab3-8b10-40f5-860f-7441dbfd0424",
+     "endFrame": 4975,
+     "endUtc": "2026-11-28T14:42:22.8894011Z",
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 4890,
+     "playingId": 363,
+     "stopAttempts": 0,
+     "stopReason": null,
+     "stopRequestedUtc": null,
+     "stopResult": null,
+     "utc": "2026-11-28T14:42:20.6525122Z"
+    },
+    {
+     "ability": "AnkylosaurusTailImpact",
+     "caster": "93e50ab3-8b10-40f5-860f-7441dbfd0424",
+     "endFrame": 4975,
+     "endUtc": "2026-11-28T14:42:22.8894011Z",
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 4890,
+     "playingId": 364,
+     "stopAttempts": 0,
+     "stopReason": null,
+     "stopRequestedUtc": null,
+     "stopResult": null,
+     "utc": "2026-11-28T14:42:20.6582461Z"
+    },
+    {
+     "ability": "AnkylosaurusTailImpact",
+     "caster": "93e50ab3-8b10-40f5-860f-7441dbfd0424",
+     "endFrame": 5302,
+     "endUtc": "2026-11-28T14:42:30.8179323Z",
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 5234,
+     "playingId": 484,
+     "stopAttempts": 0,
+     "stopReason": null,
+     "stopRequestedUtc": null,
+     "stopResult": null,
+     "utc": "2026-11-28T14:42:29.0820842Z"
+    },
+    {
+     "ability": "AnkylosaurusTailImpact",
+     "caster": "b3f0638c-ffb9-4dda-a8ce-0bcba443c2b6",
+     "endFrame": 5238,
+     "endUtc": "2026-11-28T14:42:29.2521202Z",
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 5234,
+     "playingId": 486,
+     "stopAttempts": 1,
+     "stopReason": "view-destroyed",
+     "stopRequestedUtc": "2026-11-28T14:42:29.2092190Z",
+     "stopResult": "stop-requested",
+     "utc": "2026-11-28T14:42:29.1810492Z"
+    },
+    {
+     "ability": "AnkylosaurusTailImpact",
+     "caster": "034707da-0883-4c4f-a729-7cc6284792b8",
+     "endFrame": -1,
+     "endUtc": null,
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 5371,
+     "playingId": 517,
+     "stopAttempts": 1,
+     "stopReason": "view-destroyed",
+     "stopRequestedUtc": "2026-11-28T14:42:44.9914129Z",
+     "stopResult": "stop-requested",
+     "utc": "2026-11-28T14:42:32.9568290Z"
+    },
+    {
+     "ability": "AnkylosaurusTailImpact",
+     "caster": "deefb205-aa62-454c-a8e2-2316a547f1d8",
+     "endFrame": 5372,
+     "endUtc": "2026-11-28T14:42:32.9883723Z",
+     "event": "Sweetener_Low_06_Quake",
+     "frame": 5371,
+     "playingId": 518,
+     "stopAttempts": 1,
+     "stopReason": "view-destroyed",
+     "stopRequestedUtc": "2026-11-28T14:42:32.9628265Z",
+     "stopResult": "stop-requested",
+     "utc": "2026-11-28T14:42:32.9578264Z"
+    }
+   ],
+   "cuesAtEndUtc": "2026-11-28T14:46:11.1949703Z",
+   "dust": {
+    "breathBlueprint": {
+     "actionType": "Standard",
+     "range": "Projectile",
+     "resource": null
+    },
+    "cancelFailures": [],
+    "casts": [
+     {
+      "actedAtShot": 31,
+      "actionType": "Standard",
+      "availableAfter": true,
+      "availableBefore": true,
+      "blueprint": "9bf56be04a0c452fa628136a7a454b22",
+      "blueprintName": "KMG_Summoning_Special_DustMephit_Breath",
+      "canTarget": true,
+      "cancelled": false,
+      "creations": [
+       {
+        "callSiteInstalled": true,
+        "effects": [
+         {
+          "after": {
+           "dustClones": 9,
+           "hash": "c6029aa2d599ce69d08e588c8d78120089ef802c7bc8c4ccec827bc03a2b64f5",
+           "particleSystems": 9,
+           "renderers": 9
+          },
+          "before": {
+           "dustClones": 0,
+           "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+           "particleSystems": 9,
+           "renderers": 9
+          },
+          "instance": -251286,
+          "isCastFx": true,
+          "launcher": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+          "lifetime": 11.0,
+          "orientationDegrees": 0.0,
+          "prefab": "ColdCone15Feet00_Aoe",
+          "recolouredMaterials": 11,
+          "recolouredParticleColours": 16,
+          "tintBeforeProduct": false,
+          "tinted": true
+         }
+        ],
+        "executingAbility": "9bf56be04a0c452fa628136a7a454b22",
+        "frame": 6076,
+        "launchPoint": [
+         24.74882,
+         -4.67793,
+         25.28964
+        ],
+        "launcher": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+        "launcherBlueprint": "30f6615badf14d21b41d6468d5c93ac3",
+        "previousLaunchPoint": [
+         0.0,
+         0.0,
+         0.0
+        ],
+        "previousLaunchPointCleared": true,
+        "projectile": "5af8b717a209fd444a1e4d077ed776f0",
+        "utc": "2026-11-28T14:42:52.7588382Z"
+       }
+      ],
+      "cuePostsListener": [],
+      "damage": [
+       {
+        "halfBecauseSave": false,
+        "parts": [
+         {
+          "bonus": 0,
+          "dice": "1dD4",
+          "form": "Slashing",
+          "type": "Physical"
+         }
+        ],
+        "target": "enemy-inside",
+        "total": 4
+       }
+      ],
+      "desiredReflexD20": 1,
+      "executionEnded": true,
+      "executions": 1,
+      "finished": true,
+      "framing": "not captured (mechanics-only selection)",
+      "index": 0,
+      "liveAfter": 0,
+      "otherDamage": 0,
+      "resourceAfter": null,
+      "resourceBefore": null,
+      "restored": [
+       {
+        "active": false,
+        "exists": true,
+        "matchesBefore": true,
+        "signature": {
+         "dustClones": 0,
+         "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+         "particleSystems": 9,
+         "renderers": 9
+        },
+        "tintPresent": false
+       }
+      ],
+      "result": "Success",
+      "saves": [
+       {
+        "d20": 1,
+        "dc": 13,
+        "frame": 6082,
+        "passed": false,
+        "roll": 1,
+        "stat": "SaveReflex",
+        "unit": "enemy-inside"
+       },
+       {
+        "d20": 7,
+        "dc": 13,
+        "frame": 6085,
+        "passed": false,
+        "roll": 12,
+        "stat": "SaveReflex",
+        "unit": "ally-inside"
+       },
+       {
+        "d20": 14,
+        "dc": 13,
+        "frame": 6086,
+        "passed": true,
+        "roll": 21,
+        "stat": "SaveReflex",
+        "unit": "93e50ab3-8b10-40f5-860f-7441dbfd0424"
+       }
+      ],
+      "selected": [
+       "enemy-inside",
+       "ally-inside",
+       "KMG_Summoning_Unit_Ankylosaurus"
+      ],
+      "sickened": [
+       {
+        "secondsLeft": 17.24,
+        "unit": "enemy-inside"
+       }
+      ],
+      "tintsApplied": 1,
+      "unitPosition": [
+       24.74734,
+       -6.1134,
+       24.36371
+      ]
+     },
+     {
+      "actedAtShot": 32,
+      "actionType": "Standard",
+      "availableAfter": true,
+      "availableBefore": true,
+      "blueprint": "9bf56be04a0c452fa628136a7a454b22",
+      "blueprintName": "KMG_Summoning_Special_DustMephit_Breath",
+      "canTarget": true,
+      "cancelled": false,
+      "creations": [
+       {
+        "callSiteInstalled": true,
+        "effects": [
+         {
+          "after": {
+           "dustClones": 9,
+           "hash": "5640121d08072ba7470c76afcab8d0d18a12615c5f4f1631e76d5a124bc47b45",
+           "particleSystems": 9,
+           "renderers": 9
+          },
+          "before": {
+           "dustClones": 0,
+           "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+           "particleSystems": 9,
+           "renderers": 9
+          },
+          "instance": -251286,
+          "isCastFx": true,
+          "launcher": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+          "lifetime": 11.0,
+          "orientationDegrees": 0.0,
+          "prefab": "ColdCone15Feet00_Aoe",
+          "recolouredMaterials": 11,
+          "recolouredParticleColours": 16,
+          "tintBeforeProduct": false,
+          "tinted": true
+         }
+        ],
+        "executingAbility": "9bf56be04a0c452fa628136a7a454b22",
+        "frame": 6527,
+        "launchPoint": [
+         24.74881,
+         -4.67786,
+         25.28924
+        ],
+        "launcher": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+        "launcherBlueprint": "30f6615badf14d21b41d6468d5c93ac3",
+        "previousLaunchPoint": [
+         0.0,
+         0.0,
+         0.0
+        ],
+        "previousLaunchPointCleared": true,
+        "projectile": "5af8b717a209fd444a1e4d077ed776f0",
+        "utc": "2026-11-28T14:43:05.8919168Z"
+       }
+      ],
+      "cuePostsListener": [],
+      "damage": [
+       {
+        "halfBecauseSave": true,
+        "parts": [
+         {
+          "bonus": 0,
+          "dice": "1dD4",
+          "form": "Slashing",
+          "type": "Physical"
+         }
+        ],
+        "target": "enemy-inside",
+        "total": 1
+       }
+      ],
+      "desiredReflexD20": 20,
+      "executionEnded": true,
+      "executions": 1,
+      "finished": true,
+      "framing": "not captured (mechanics-only selection)",
+      "index": 1,
+      "liveAfter": 0,
+      "otherDamage": 0,
+      "resourceAfter": null,
+      "resourceBefore": null,
+      "restored": [
+       {
+        "active": false,
+        "exists": true,
+        "matchesBefore": true,
+        "signature": {
+         "dustClones": 0,
+         "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+         "particleSystems": 9,
+         "renderers": 9
+        },
+        "tintPresent": false
+       }
+      ],
+      "result": "Success",
+      "saves": [
+       {
+        "d20": 20,
+        "dc": 13,
+        "frame": 6533,
+        "passed": true,
+        "roll": 20,
+        "stat": "SaveReflex",
+        "unit": "enemy-inside"
+       },
+       {
+        "d20": 4,
+        "dc": 13,
+        "frame": 6536,
+        "passed": false,
+        "roll": 9,
+        "stat": "SaveReflex",
+        "unit": "ally-inside"
+       },
+       {
+        "d20": 18,
+        "dc": 13,
+        "frame": 6537,
+        "passed": true,
+        "roll": 25,
+        "stat": "SaveReflex",
+        "unit": "93e50ab3-8b10-40f5-860f-7441dbfd0424"
+       }
+      ],
+      "selected": [
+       "enemy-inside",
+       "ally-inside",
+       "KMG_Summoning_Unit_Ankylosaurus"
+      ],
+      "sickened": [],
+      "tintsApplied": 1,
+      "unitPosition": [
+       24.74734,
+       -6.1134,
+       24.36371
+      ]
+     },
+     {
+      "actedAtShot": 39,
+      "actionType": "Standard",
+      "availableAfter": true,
+      "availableBefore": true,
+      "blueprint": "9bf56be04a0c452fa628136a7a454b22",
+      "blueprintName": "KMG_Summoning_Special_DustMephit_Breath",
+      "canTarget": true,
+      "cancelled": false,
+      "creations": [
+       {
+        "callSiteInstalled": true,
+        "effects": [
+         {
+          "after": {
+           "dustClones": 9,
+           "hash": "53f60dc5979db8ad21c6e5a34cc4dcf7a714cfb68daea7f6efec1a2c1942c177",
+           "particleSystems": 9,
+           "renderers": 9
+          },
+          "before": {
+           "dustClones": 0,
+           "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+           "particleSystems": 9,
+           "renderers": 9
+          },
+          "instance": -251286,
+          "isCastFx": true,
+          "launcher": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+          "lifetime": 11.0,
+          "orientationDegrees": 0.0,
+          "prefab": "ColdCone15Feet00_Aoe",
+          "recolouredMaterials": 11,
+          "recolouredParticleColours": 16,
+          "tintBeforeProduct": false,
+          "tinted": true
+         }
+        ],
+        "executingAbility": "9bf56be04a0c452fa628136a7a454b22",
+        "frame": 7004,
+        "launchPoint": [
+         24.74878,
+         -4.67769,
+         25.28793
+        ],
+        "launcher": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+        "launcherBlueprint": "30f6615badf14d21b41d6468d5c93ac3",
+        "previousLaunchPoint": [
+         0.0,
+         0.0,
+         0.0
+        ],
+        "previousLaunchPointCleared": true,
+        "projectile": "5af8b717a209fd444a1e4d077ed776f0",
+        "utc": "2026-11-28T14:43:19.1217007Z"
+       }
+      ],
+      "cuePostsListener": [],
+      "damage": [
+       {
+        "halfBecauseSave": false,
+        "parts": [
+         {
+          "bonus": 0,
+          "dice": "1dD4",
+          "form": "Slashing",
+          "type": "Physical"
+         }
+        ],
+        "target": "enemy-inside",
+        "total": 4
+       }
+      ],
+      "desiredReflexD20": 1,
+      "executionEnded": true,
+      "executions": 1,
+      "finished": true,
+      "framing": "not captured (mechanics-only selection)",
+      "index": 2,
+      "liveAfter": 0,
+      "otherDamage": 0,
+      "resourceAfter": null,
+      "resourceBefore": null,
+      "restored": [
+       {
+        "active": false,
+        "exists": true,
+        "matchesBefore": true,
+        "signature": {
+         "dustClones": 0,
+         "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+         "particleSystems": 9,
+         "renderers": 9
+        },
+        "tintPresent": false
+       }
+      ],
+      "result": "Success",
+      "saves": [
+       {
+        "d20": 1,
+        "dc": 13,
+        "frame": 7011,
+        "passed": false,
+        "roll": 1,
+        "stat": "SaveReflex",
+        "unit": "enemy-inside"
+       },
+       {
+        "d20": 3,
+        "dc": 13,
+        "frame": 7016,
+        "passed": false,
+        "roll": 8,
+        "stat": "SaveReflex",
+        "unit": "ally-inside"
+       },
+       {
+        "d20": 13,
+        "dc": 13,
+        "frame": 7017,
+        "passed": true,
+        "roll": 20,
+        "stat": "SaveReflex",
+        "unit": "93e50ab3-8b10-40f5-860f-7441dbfd0424"
+       }
+      ],
+      "selected": [
+       "enemy-inside",
+       "ally-inside",
+       "KMG_Summoning_Unit_Ankylosaurus"
+      ],
+      "sickened": [
+       {
+        "secondsLeft": 17.2,
+        "unit": "enemy-inside"
+       }
+      ],
+      "tintsApplied": 1,
+      "unitPosition": [
+       24.74734,
+       -6.1134,
+       24.36371
+      ]
+     }
+    ],
+    "cleanupFailures": [],
+    "conditions": {
+     "acquired": 6,
+     "foreignKeptAtCleanup": true,
+     "ledgerHeldUntilSettlement": false,
+     "liveBeforeCleanup": 1,
+     "note": "Sickened lasts 3 rounds; an instance that expired before cleanup is gone natively and is not counted as live.",
+     "ownedCommandFailures": [],
+     "ownedCommandsLeft": 0,
+     "ownedExecutions": 14,
+     "ownedExecutionsLive": 0,
+     "releaseFailures": [],
+     "remainingAfterCleanup": 0,
+     "removedAtCleanup": 1,
+     "unownedExecutionKept": true
+    },
+    "conditionsAcquired": true,
+    "conditionsSubscribedAfterCleanup": false,
+    "conditionsSubscribedAfterSettlement": false,
+    "controls": {
+     "caster-behind control Sickened#-1891445632 on b1da6729-efaa-4375-9fed-926e8bbd6495": "present",
+     "same-caster unowned control Sickened#-355838848 on 5efe7447-328e-4c19-bc05-79400d4ea0eb": "present"
+    },
+    "controlsAfterOwnedRelease": [],
+    "countFailures": [],
+    "disposeFailures": [],
+    "earlyExit": {
+     "acquiredBeforeExit": 1,
+     "appliedBeforeExit": true,
+     "commandFailures": [],
+     "commandFinishedAtExit": false,
+     "commandsLeft": 0,
+     "diagnostics": {
+      "caster": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+      "casterAlive": true,
+      "casterIsEnemyOfHostile": true,
+      "hostileDamage": [
+       {
+        "initiator": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+        "total": 4
+       }
+      ],
+      "hostileIsEnemyOfCaster": true,
+      "hostileSaves": [
+       {
+        "contextAbility": "KMG_Summoning_Special_DustMephit_Breath",
+        "contextCaster": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+        "d20": 1,
+        "dc": 13,
+        "frame": 10240,
+        "passed": false,
+        "roll": 1,
+        "stat": "SaveReflex",
+        "unit": "01b62890-cff3-427c-bb6c-11c6811437a9"
+       }
+      ],
+      "sickened": [
+       {
+        "contextAbility": null,
+        "contextCaster": "b1da6729-efaa-4375-9fed-926e8bbd6495",
+        "foreignControl": true,
+        "secondsLeft": 1681.91,
+        "unit": "caster-behind"
+       },
+       {
+        "contextAbility": "KMG_Summoning_Special_DustMephit_Breath",
+        "contextCaster": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+        "foreignControl": false,
+        "secondsLeft": 18.0,
+        "unit": "enemy-inside"
+       }
+      ]
+     },
+     "execution": "KMG_Summoning_Special_DustMephit_Breath#-172517248",
+     "executionLiveAtExit": true,
+     "foreignKept": true,
+     "ownedExecutionsLiveAfterWait": 0,
+     "preexistingCellOwned": 0,
+     "releaseFailures": [],
+     "remainingAfterExit": 0
+    },
+    "finalCast": {
+     "finished": true,
+     "ownedLive": 1
+    },
+    "foreignKeptAtSettlement": true,
+    "foreignPresentAtCleanup": true,
+    "foreignSickenedAfterResets": true,
+    "lateRemovedAtSettlement": 0,
+    "laterCastsUnit": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+    "layout": {
+     "allyInside": {
+      "enemy": false,
+      "inCone": true
+     },
+     "casterBehind": {
+      "enemy": false,
+      "inCone": false
+     },
+     "enemyInside": {
+      "enemy": true,
+      "inCone": true
+     },
+     "enemyOutside": {
+      "enemy": true,
+      "inCone": false
+     }
+    },
+    "nestedInterruption": {
+     "appliedBeforeEnclosingSpawn": 7,
+     "cast": {
+      "actedAtShot": 44,
+      "actionType": "Standard",
+      "availableBefore": true,
+      "blueprint": "9bf56be04a0c452fa628136a7a454b22",
+      "blueprintName": "KMG_Summoning_Special_DustMephit_Breath",
+      "canTarget": true,
+      "cancelled": false,
+      "cuePostsListener": [],
+      "executionEnded": true,
+      "finished": true,
+      "result": "Success"
+     },
+     "creations": [
+      {
+       "callSiteInstalled": true,
+       "effects": [
+        {
+         "after": {
+          "dustClones": 9,
+          "hash": "fdb2d2546eaf05200030ce7236f54e8f17976643d87565cf318c05985d6e1db9",
+          "particleSystems": 9,
+          "renderers": 9
+         },
+         "before": {
+          "dustClones": 0,
+          "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+          "particleSystems": 9,
+          "renderers": 9
+         },
+         "instance": -253112,
+         "isCastFx": true,
+         "launcher": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+         "lifetime": 11.0,
+         "orientationDegrees": 0.0,
+         "prefab": "ColdCone15Feet00_Aoe",
+         "recolouredMaterials": 11,
+         "recolouredParticleColours": 16,
+         "tintBeforeProduct": false,
+         "tinted": true
+        }
+       ],
+       "executingAbility": "9bf56be04a0c452fa628136a7a454b22",
+       "frame": 9767,
+       "launchPoint": [
+        24.74883,
+        -4.67796,
+        25.2898
+       ],
+       "launcher": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+       "launcherBlueprint": "30f6615badf14d21b41d6468d5c93ac3",
+       "previousLaunchPoint": [
+        0.0,
+        0.0,
+        0.0
+       ],
+       "previousLaunchPointCleared": true,
+       "projectile": "5af8b717a209fd444a1e4d077ed776f0",
+       "utc": "2026-11-28T14:44:34.9631152Z"
+      }
+     ],
+     "diagnostics": {
+      "caster": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+      "casterAlive": true,
+      "casterIsEnemyOfHostile": true,
+      "hostileDamage": [
+       {
+        "initiator": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+        "total": 4
+       }
+      ],
+      "hostileIsEnemyOfCaster": true,
+      "hostileSaves": [
+       {
+        "contextAbility": "KMG_Summoning_Special_DustMephit_Breath",
+        "contextCaster": "ddbfb276-132a-4099-9bf0-3d6a0f499921",
+        "d20": 1,
+        "dc": 13,
+        "frame": 9772,
+        "passed": false,
+        "roll": -1,
+        "stat": "SaveReflex",
+        "unit": "01b62890-cff3-427c-bb6c-11c6811437a9"
+       }
+      ],
+      "sickened": [
+       {
+        "contextAbility": null,
+        "contextCaster": "b1da6729-efaa-4375-9fed-926e8bbd6495",
+        "foreignControl": true,
+        "secondsLeft": 1694.17,
+        "unit": "caster-behind"
+       },
+       {
+        "contextAbility": "KMG_Summoning_Special_IceMephit_Breath",
+        "contextCaster": "74ea0f9a-37a6-475b-941d-f4488cb13b90",
+        "foreignControl": false,
+        "secondsLeft": 17.26,
+        "unit": "enemy-inside"
+       }
+      ]
+     },
+     "enclosingExecutingAbility": "9bf56be04a0c452fa628136a7a454b22",
+     "foreignPoint": [
+      24.74883,
+      -4.67796,
+      25.2898
+     ],
+     "foreignPrefab": "ColdCone15Feet00_Aoe",
+     "foreignSignature": {
+      "dustClones": 0,
+      "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+      "particleSystems": 9,
+      "renderers": 9
+     },
+     "foreignSpawned": true,
+     "foreignTinted": false,
+     "foreignTintsApplied": 0,
+     "frame": 9767,
+     "innerInterrupted": "NullReferenceException",
+     "innerLaunchPoint": [
+      24.74883,
+      -4.67796,
+      25.2898
+     ],
+     "innerTintsApplied": 0,
+     "restored": [
+      {
+       "active": false,
+       "exists": true,
+       "matchesBefore": true,
+       "signature": {
+        "dustClones": 0,
+        "hash": "fee8e469c5360827a69c67e5be69ae99ae43265c49c84cbc5a3d6ab902e1eda0",
+        "particleSystems": 9,
+        "renderers": 9
+       },
+       "tintPresent": false
+      }
+     ],
+     "tintsApplied": 1
+    },
+    "ownedCommandFailures": [],
+    "ownedCommandsEnded": 1,
+    "ownedCommandsLeft": 0,
+    "ownedEffects": {
+     "commandFailures": [],
+     "conditionFailures": [],
+     "lateReleaseFailures": [],
+     "lateSweepCompleted": true,
+     "ledgerHeldUntilSettlement": false,
+     "ownedExecutions": [
+      {
+       "endedAtCleanup": true,
+       "execution": "KMG_Summoning_Special_DustMephit_Breath#395465216"
+      },
+      {
+       "endedAtCleanup": true,
+       "execution": "KMG_Summoning_Special_DustMephit_Breath#1360216704"
+      },
+      {
+       "endedAtCleanup": true,
+       "execution": "KMG_Summoning_Special_DustMephit_Breath#1755203456"
+      },
+      {
+       "endedAtCleanup": true,
+       "execution": "KMG_Summoning_Special_IceMephit_Breath#-283717248"
+      },
+      {
+       "endedAtCleanup": true,
+       "execution": "KMG_Summoning_Special_IceMephit_Breath#1576125184"
+      },
+      {
+       "endedAtCleanup": true,
+       "execution": "KMG_Summoning_Special_DustMephit_Breath#-801620480"
+      },
+      {
+       "endedAtCleanup": true,
+       "execution": "KMG_Summoning_Special_IceMephit_Breath#1332991616"
+      },
+      {
+       "endedAtCleanup": true,
+       "execution": "KMG_Summoning_Special_DustMephit_Breath#1816590336"
+      },
+      {
+       "endedAtCleanup": true,
+       "execution": "KMG_Summoning_Special_DustMephit_Breath#1158785792"
+      },
+      {
+       "endedAtCleanup": true,
+       "execution": "KMG_Summoning_Special_DustMephit_Breath#-1360809984"
+      },
+      {
+       "endedAtCleanup": true,
+       "execution": "KMG_Summoning_Special_DustMephit_Breath#-1657487872"
+      },
+      {
+       "endedAtCleanup": true,
+       "execution": "KMG_Summoning_Special_DustMephit_Breath#-172517248"
+      },
+      {
+       "endedAtCleanup": true,
+       "execution": "KMG_Summoning_Special_DustMephit_Breath#832104704"
+      },
+      {
+       "endedAtCleanup": true,
+       "execution": "KMG_Summoning_Special_DustMephit_Breath#933069184"
+      }
+     ],
+     "ownedExecutionsLive": 0,
+     "pendingCommands": [],
+     "remainingAfterSettlement": [],
+     "remainingAtCleanup": [],
+     "removedAtCleanup": 1,
+     "settledAtCleanup": true,
+     "settlementObservations": [
+      "owned command 74ea0f9a-37a6-475b-941d-f4488cb13b90#-1575961344: execution ended",
+      "owned command 74ea0f9a-37a6-475b-941d-f4488cb13b90#-1721168128: execution ended",
+      "owned command 74ea0f9a-37a6-475b-941d-f4488cb13b90#-1140340992: execution ended",
+      "owned command 74ea0f9a-37a6-475b-941d-f4488cb13b90#-1285547776: execution ended",
+      "owned command 2e6cf794-6026-4dc8-9adf-942cb6134de5#-1430754560: execution ended",
+      "owned command 74ea0f9a-37a6-475b-941d-f4488cb13b90#-1866374912: cancelled before execution",
+      "owned command 74ea0f9a-37a6-475b-941d-f4488cb13b90#208505344: execution ended",
+      "owned command 2e6cf794-6026-4dc8-9adf-942cb6134de5#63298560: execution ended",
+      "owned command 74ea0f9a-37a6-475b-941d-f4488cb13b90#-81908224: execution ended",
+      "owned command 1fe988b6-da87-408d-8f26-dc35cb35723d#1992972032: execution ended",
+      "owned command 1fe988b6-da87-408d-8f26-dc35cb35723d#293668096: execution ended",
+      "owned command ddbfb276-132a-4099-9bf0-3d6a0f499921#-2064748544: execution ended",
+      "owned command ddbfb276-132a-4099-9bf0-3d6a0f499921#-135075072: execution ended",
+      "owned command 28f588f8-4a2e-4578-91df-f9902d44157a#2085011968: execution ended",
+      "owned command ddbfb276-132a-4099-9bf0-3d6a0f499921#1649391616: execution ended"
+     ],
+     "subscriptionReleased": true
+    },
+    "ownedExecutions": [
+     {
+      "endedAtCleanup": true,
+      "execution": "KMG_Summoning_Special_DustMephit_Breath#395465216"
+     },
+     {
+      "endedAtCleanup": true,
+      "execution": "KMG_Summoning_Special_DustMephit_Breath#1360216704"
+     },
+     {
+      "endedAtCleanup": true,
+      "execution": "KMG_Summoning_Special_DustMephit_Breath#1755203456"
+     },
+     {
+      "endedAtCleanup": true,
+      "execution": "KMG_Summoning_Special_IceMephit_Breath#-283717248"
+     },
+     {
+      "endedAtCleanup": true,
+      "execution": "KMG_Summoning_Special_IceMephit_Breath#1576125184"
+     },
+     {
+      "endedAtCleanup": true,
+      "execution": "KMG_Summoning_Special_DustMephit_Breath#-801620480"
+     },
+     {
+      "endedAtCleanup": true,
+      "execution": "KMG_Summoning_Special_IceMephit_Breath#1332991616"
+     },
+     {
+      "endedAtCleanup": true,
+      "execution": "KMG_Summoning_Special_DustMephit_Breath#1816590336"
+     },
+     {
+      "endedAtCleanup": true,
+      "execution": "KMG_Summoning_Special_DustMephit_Breath#1158785792"
+     },
+     {
+      "endedAtCleanup": true,
+      "execution": "KMG_Summoning_Special_DustMephit_Breath#-1360809984"
+     },
+     {
+      "endedAtCleanup": true,
+      "execution": "KMG_Summoning_Special_DustMephit_Breath#-1657487872"
+     },
+     {
+      "endedAtCleanup": true,
+      "execution": "KMG_Summoning_Special_DustMephit_Breath#-172517248"
+     },
+     {
+      "endedAtCleanup": true,
+      "execution": "KMG_Summoning_Special_DustMephit_Breath#832104704"
+     },
+     {
+      "endedAtCleanup": true,
+      "execution": "KMG_Summoning_Special_DustMephit_Breath#933069184"
+     }
+    ],
+    "ownedExecutionsLive": 0,
+    "ownedHooksAfterDispose": 0,
+    "ownedHooksBeforeDispose": 4,
+    "preDeliveryRelease": {
+     "commandFieldAfterRelease": "same process",
+     "deliveredBeforeRelease": false,
+     "endedAfterWait": true,
+     "endedRightAfterRelease": false,
+     "liveExecutionsAfterWait": 0,
+     "processRetained": true,
+     "processStarted": true,
+     "releaseFailures": []
+    },
+    "traceAcquired": true,
+    "traceReleased": true,
+    "unownedExecution": {
+     "canTarget": true,
+     "ownedByLedger": false,
+     "sickenedApplied": true
+    },
+    "unownedExecutionKept": true,
+    "unownedKeptAtSettlement": true
+   },
+   "dustAbandoned": {
+    "cells": {},
+    "child": {
+     "admitted": [
+      "s7-dust-abandoned-inner"
+     ],
+     "completed": [],
+     "failures": [
+      "s7-dust: release failure: early-exit cast: removal of Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9: InvalidOperationException: injected failure of an owned Sickened removal",
+      "s7-dust: owned conditions remaining: 1 (Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9)"
+     ],
+     "pending": [],
+     "recoveries": [
+      "s7-dust: owned execution KMG_Summoning_Special_DustMephit_Breath#-449460224 observed settled",
+      "s7-dust: owned conditions reconciled after settlement observed settled"
+     ],
+     "refused": "s7-dust-abandoned-next",
+     "restored": false,
+     "unreadable": [],
+     "unreported": []
+    },
+    "childAfterDisposal": {
+     "admitted": [
+      "s7-dust-abandoned-inner"
+     ],
+     "completed": [],
+     "failures": [
+      "s7-dust: release failure: early-exit cast: removal of Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9: InvalidOperationException: injected failure of an owned Sickened removal",
+      "s7-dust: owned conditions remaining: 1 (Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9)"
+     ],
+     "pending": [
+      "s7-dust: owned execution KMG_Summoning_Special_DustMephit_Breath#-449460224",
+      "s7-dust: owned conditions reconciled after settlement"
+     ],
+     "recoveries": [],
+     "refused": null,
+     "restored": false,
+     "unreadable": [],
+     "unreported": []
+    },
+    "childAfterResume": {
+     "admitted": [
+      "s7-dust-abandoned-inner"
+     ],
+     "completed": [],
+     "failures": [
+      "s7-dust: release failure: early-exit cast: removal of Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9: InvalidOperationException: injected failure of an owned Sickened removal",
+      "s7-dust: owned conditions remaining: 1 (Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9)"
+     ],
+     "pending": [],
+     "recoveries": [
+      "s7-dust: owned execution KMG_Summoning_Special_DustMephit_Breath#-449460224 observed settled",
+      "s7-dust: owned conditions reconciled after settlement observed settled"
+     ],
+     "refused": "s7-dust-abandoned-next",
+     "restored": false,
+     "unreadable": [],
+     "unreported": []
+    },
+    "dust": {
+     "cleanupFailures": [],
+     "conditions": {
+      "acquired": 1,
+      "foreignKeptAtCleanup": true,
+      "ledgerHeldUntilSettlement": true,
+      "liveBeforeCleanup": 1,
+      "note": "Sickened lasts 3 rounds; an instance that expired before cleanup is gone natively and is not counted as live.",
+      "ownedCommandFailures": [],
+      "ownedCommandsLeft": 0,
+      "ownedExecutions": 1,
+      "ownedExecutionsLive": 1,
+      "releaseFailures": [
+       "early-exit cast: removal of Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9: InvalidOperationException: injected failure of an owned Sickened removal"
+      ],
+      "remainingAfterCleanup": 1,
+      "removedAtCleanup": 0,
+      "unownedExecutionKept": false
+     },
+     "conditionsSubscribedAfterCleanup": true,
+     "deferredChecks": {
+      "s7-dust-cell-conditions-released": false,
+      "s7-dust-foreign-sickened-kept": false,
+      "s7-dust-trace-released": true
+     },
+     "disposeFailures": [],
+     "earlyExit": {
+      "acquiredBeforeExit": 1,
+      "appliedBeforeExit": true,
+      "commandFailures": [],
+      "commandFinishedAtExit": false,
+      "execution": "KMG_Summoning_Special_DustMephit_Breath#-449460224",
+      "executionLiveAtExit": true,
+      "preexistingCellOwned": 0,
+      "releaseFailures": [
+       "removal of Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9: InvalidOperationException: injected failure of an owned Sickened removal"
+      ]
+     },
+     "ownedCommandFailures": [],
+     "ownedCommandsEnded": 1,
+     "ownedCommandsLeft": 0,
+     "ownedExecutions": [
+      {
+       "endedAtCleanup": false,
+       "execution": "KMG_Summoning_Special_DustMephit_Breath#-449460224"
+      }
+     ],
+     "ownedExecutionsLive": 1,
+     "ownedHooksAfterDispose": 0,
+     "traceReleased": true
+    },
+    "executionsSettledBeforeReuse": true,
+    "expected": [
+     "s7-dust: release failure: early-exit cast: removal of Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9: InvalidOperationException: injected failure of an owned Sickened removal",
+     "s7-dust: owned conditions remaining: 1 (Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9)"
+    ],
+    "expectedMissing": [],
+    "injectedLeftoverIdentities": [
+     "Sickened#-1099260288 on 01b62890-cff3-427c-bb6c-11c6811437a9"
+    ],
+    "injectedLeftovers": 1,
+    "isolationRestored": true,
+    "leftoverGone": true,
+    "liveExecutionsAtCleanup": 1,
+    "mode": "abandon-when-ready, next cell expected refused",
+    "nextCellStarted": false,
+    "probe": {
+     "applied": true,
+     "caster": "b8424a4e-67dc-4ee1-bf3a-b4c3299a7d00",
+     "hooksInstalled": 4,
+     "ownedLiveAtAbandon": 1
+    },
+    "readyBeforeAbandon": true,
+    "repairFailures": [],
+    "repairedWhen": "after the guard",
+    "transferredResiduals": [],
+    "unexpected": [],
+    "unsafe": []
+   },
+   "dustPreDeliveryDisposed": {
+    "afterSettlement": {
+     "acquiredFromExecution": 1,
+     "delivered": true,
+     "ended": true,
+     "execution": "KMG_Summoning_Special_DustMephit_Breath#-1371907456",
+     "frame": 12340,
+     "presentFromExecution": 0
+    },
+    "cells": {
+     "s7-dust-pre-delivery-next": "completed"
+    },
+    "child": {
+     "admitted": [
+      "s7-dust-pre-delivery-inner",
+      "s7-dust-pre-delivery-next"
+     ],
+     "completed": [
+      "s7-dust-pre-delivery-next"
+     ],
+     "failures": [],
+     "pending": [],
+     "recoveries": [
+      "s7-dust: owned execution KMG_Summoning_Special_DustMephit_Breath#-1371907456 observed settled",
+      "s7-dust: owned conditions reconciled after settlement observed settled"
+     ],
+     "refused": null,
+     "restored": true,
+     "unreadable": [],
+     "unreported": []
+    },
+    "childAfterDisposal": {
+     "admitted": [
+      "s7-dust-pre-delivery-inner"
+     ],
+     "completed": [],
+     "failures": [],
+     "pending": [
+      "s7-dust: owned execution KMG_Summoning_Special_DustMephit_Breath#-1371907456",
+      "s7-dust: owned conditions reconciled after settlement"
+     ],
+     "recoveries": [],
+     "refused": null,
+     "restored": false,
+     "unreadable": [],
+     "unreported": []
+    },
+    "childAfterResume": {
+     "admitted": [
+      "s7-dust-pre-delivery-inner",
+      "s7-dust-pre-delivery-next"
+     ],
+     "completed": [
+      "s7-dust-pre-delivery-next"
+     ],
+     "failures": [],
+     "pending": [],
+     "recoveries": [
+      "s7-dust: owned execution KMG_Summoning_Special_DustMephit_Breath#-1371907456 observed settled",
+      "s7-dust: owned conditions reconciled after settlement observed settled"
+     ],
+     "refused": null,
+     "restored": true,
+     "unreadable": [],
+     "unreported": []
+    },
+    "dust": {
+     "cleanupFailures": [],
+     "conditionsSubscribedAfterSettlement": false,
+     "deferredChecks": {
+      "s7-dust-cell-conditions-released": false,
+      "s7-dust-foreign-sickened-kept": false,
+      "s7-dust-trace-released": true
+     },
+     "foreignKeptAtSettlement": true,
+     "foreignPresentAtCleanup": true,
+     "lateRemovedAtSettlement": 1,
+     "ownedCommandFailures": [],
+     "ownedCommandsLeft": 0,
+     "ownedEffects": {
+      "commandFailures": [],
+      "conditionFailures": [],
+      "lateReleaseFailures": [],
+      "lateSweepCompleted": true,
+      "ledgerHeldUntilSettlement": true,
+      "ownedExecutions": [
+       {
+        "endedAtCleanup": false,
+        "execution": "KMG_Summoning_Special_DustMephit_Breath#-1371907456"
+       }
+      ],
+      "ownedExecutionsLive": 1,
+      "pendingCommands": [],
+      "remainingAfterSettlement": [],
+      "remainingAtCleanup": [],
+      "removedAtCleanup": 0,
+      "settledAtCleanup": false,
+      "settlementObservations": [
+       "owned command 52fe86d8-ae89-4f2d-9b37-2af48e40ee2d#-1409077760: execution ended"
+      ],
+      "subscriptionReleased": true
+     }
+    },
+    "expected": [],
+    "expectedMissing": [],
+    "isolationRestored": true,
+    "mode": "abandon-when-ready, next cell expected admitted",
+    "nextCellStarted": true,
+    "probe": {
+     "atDisposal": {
+      "acquiredFromExecution": 0,
+      "delivered": false,
+      "ended": false,
+      "execution": "KMG_Summoning_Special_DustMephit_Breath#-1371907456",
+      "frame": 11950,
+      "presentFromExecution": 0
+     },
+     "deliveredBeforeDisposal": false,
+     "execution": "KMG_Summoning_Special_DustMephit_Breath#-1371907456",
+     "foreignControl": "Sickened#-1676735872 on b1da6729-efaa-4375-9fed-926e8bbd6495",
+     "mode": "pre-delivery",
+     "processStarted": true,
+     "ready": true,
+     "readyFrame": 11950
+    },
+    "readyBeforeAbandon": true,
+    "repairFailures": [],
+    "repairedWhen": "after the guard",
+    "transferredResiduals": [],
+    "unexpected": [],
+    "unsafe": []
+   },
+   "isolation": {
+    "admitted": [
+     "s7-ankylosaurus",
+     "s7-callback-abandoned",
+     "s7-callback-setup-failed",
+     "s7-trace-setup-failed",
+     "s7-dust",
+     "s7-dust-pre-delivery-disposed",
+     "s7-dust-abandoned"
+    ],
+    "completed": [
+     "s7-ankylosaurus",
+     "s7-callback-abandoned",
+     "s7-callback-setup-failed",
+     "s7-trace-setup-failed",
+     "s7-dust",
+     "s7-dust-pre-delivery-disposed",
+     "s7-dust-abandoned"
+    ],
+    "failures": [],
+    "pending": [],
+    "recoveries": [
+     "s7-dust: owned conditions reconciled after settlement observed settled"
+    ],
+    "refused": null,
+    "restored": true,
+    "unreadable": [],
+    "unreported": []
+   },
+   "limits": "Commanded attacks and casts with brains inactive in real time. Cue records are native playing IDs and end-of-event callbacks; audibility and suitability need listening. Samples are observer-posted for comparison only.",
+   "phase": "summon-s7-effects-mechanics",
+   "physicalRestoration": true,
+   "requiredCells": [
+    "s7-ankylosaurus",
+    "s7-callback-abandoned",
+    "s7-callback-setup-failed",
+    "s7-trace-setup-failed",
+    "s7-dust",
+    "s7-dust-pre-delivery-disposed",
+    "s7-dust-abandoned"
+   ],
+   "requiredCellsCompleted": true,
+   "restoreErrors": [],
+   "retirements": {
+    "failures": [],
+    "requested": 19,
+    "retiredAtTeardown": 8
+   },
+   "runId": "lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+   "selection": "mechanics-only: the ownership, command/process/hook, cue, recolour-restoration and foreign-effect cells; no frame captures, no native-look comparison, no listening samples",
+   "timeline": [
+    {
+     "frame": 3890,
+     "mark": "baseline-start",
+     "utc": "2026-11-28T14:41:52.4627769Z"
+    },
+    {
+     "frame": 3987,
+     "mark": "baseline-end",
+     "utc": "2026-11-28T14:41:55.4844699Z"
+    },
+    {
+     "frame": 4050,
+     "mark": "anky-hits-start",
+     "utc": "2026-11-28T14:41:57.7187302Z"
+    },
+    {
+     "frame": 4616,
+     "mark": "anky-hits-end",
+     "utc": "2026-11-28T14:42:13.9841967Z"
+    },
+    {
+     "frame": 4890,
+     "mark": "anky-miss-start",
+     "utc": "2026-11-28T14:42:20.7047539Z"
+    },
+    {
+     "frame": 5119,
+     "mark": "anky-miss-end",
+     "utc": "2026-11-28T14:42:26.2841441Z"
+    },
+    {
+     "frame": 5119,
+     "mark": "anky-cancel-start",
+     "utc": "2026-11-28T14:42:26.2981673Z"
+    },
+    {
+     "frame": 5208,
+     "mark": "anky-cancel-end",
+     "utc": "2026-11-28T14:42:28.3496027Z"
+    },
+    {
+     "frame": 5208,
+     "mark": "anky-concurrent-start",
+     "utc": "2026-11-28T14:42:28.3632605Z"
+    },
+    {
+     "frame": 5235,
+     "mark": "anky-retire",
+     "utc": "2026-11-28T14:42:29.1987136Z"
+    },
+    {
+     "frame": 5305,
+     "mark": "anky-concurrent-end",
+     "utc": "2026-11-28T14:42:30.8834675Z"
+    },
+    {
+     "frame": 5305,
+     "mark": "anky-loss-start",
+     "utc": "2026-11-28T14:42:30.8970492Z"
+    },
+    {
+     "frame": 5371,
+     "mark": "anky-loss-retire-other",
+     "utc": "2026-11-28T14:42:32.9588274Z"
+    },
+    {
+     "frame": 5810,
+     "mark": "anky-loss-retire-survivor",
+     "utc": "2026-11-28T14:42:44.9884123Z"
+    },
+    {
+     "frame": 5811,
+     "mark": "anky-loss-end",
+     "utc": "2026-11-28T14:42:45.0259320Z"
+    },
+    {
+     "frame": 5811,
+     "mark": "callback-abandon-start",
+     "utc": "2026-11-28T14:42:45.0673571Z"
+    },
+    {
+     "frame": 5811,
+     "mark": "anky-loss-start",
+     "utc": "2026-11-28T14:42:45.0693551Z"
+    },
+    {
+     "frame": 5890,
+     "mark": "callback-abandon-end",
+     "utc": "2026-11-28T14:42:47.3280061Z"
+    },
+    {
+     "frame": 5890,
+     "mark": "callback-setup-failed-start",
+     "utc": "2026-11-28T14:42:47.3606873Z"
+    },
+    {
+     "frame": 5890,
+     "mark": "anky-loss-start",
+     "utc": "2026-11-28T14:42:47.3616854Z"
+    },
+    {
+     "frame": 5968,
+     "mark": "callback-setup-failed-end",
+     "utc": "2026-11-28T14:42:49.4254350Z"
+    },
+    {
+     "frame": 5968,
+     "mark": "trace-setup-failed-start",
+     "utc": "2026-11-28T14:42:49.4480053Z"
+    },
+    {
+     "frame": 5968,
+     "mark": "trace-setup-failed-end",
+     "utc": "2026-11-28T14:42:49.4725247Z"
+    },
+    {
+     "frame": 6046,
+     "mark": "dust-cast-0-start",
+     "utc": "2026-11-28T14:42:51.8204214Z"
+    },
+    {
+     "frame": 6107,
+     "mark": "dust-cast-0-released",
+     "utc": "2026-11-28T14:42:53.7273384Z"
+    },
+    {
+     "frame": 6492,
+     "mark": "dust-cast-0-end",
+     "utc": "2026-11-28T14:43:04.8585505Z"
+    },
+    {
+     "frame": 6496,
+     "mark": "dust-cast-1-start",
+     "utc": "2026-11-28T14:43:04.9878851Z"
+    },
+    {
+     "frame": 6564,
+     "mark": "dust-cast-1-released",
+     "utc": "2026-11-28T14:43:06.8531745Z"
+    },
+    {
+     "frame": 6962,
+     "mark": "dust-cast-1-end",
+     "utc": "2026-11-28T14:43:18.0974723Z"
+    },
+    {
+     "frame": 6966,
+     "mark": "dust-cast-2-start",
+     "utc": "2026-11-28T14:43:18.1956764Z"
+    },
+    {
+     "frame": 7040,
+     "mark": "dust-cast-2-released",
+     "utc": "2026-11-28T14:43:20.0962135Z"
+    },
+    {
+     "frame": 7449,
+     "mark": "dust-cast-2-end",
+     "utc": "2026-11-28T14:43:31.1907360Z"
+    },
+    {
+     "frame": 7449,
+     "mark": "dust-foreign-ability-start",
+     "utc": "2026-11-28T14:43:31.2320328Z"
+    },
+    {
+     "frame": 7554,
+     "mark": "dust-foreign-ability-end",
+     "utc": "2026-11-28T14:43:34.1225700Z"
+    },
+    {
+     "frame": 7884,
+     "mark": "dust-reuse-start",
+     "utc": "2026-11-28T14:43:43.1584535Z"
+    },
+    {
+     "frame": 7986,
+     "mark": "dust-reuse-end",
+     "utc": "2026-11-28T14:43:46.0898552Z"
+    },
+    {
+     "frame": 8029,
+     "mark": "dust-cancel-start",
+     "utc": "2026-11-28T14:43:47.1227444Z"
+    },
+    {
+     "frame": 8142,
+     "mark": "dust-cancel-end",
+     "utc": "2026-11-28T14:43:50.1901429Z"
+    },
+    {
+     "frame": 8146,
+     "mark": "dust-concurrent-start",
+     "utc": "2026-11-28T14:43:50.2915599Z"
+    },
+    {
+     "frame": 8727,
+     "mark": "dust-concurrent-end",
+     "utc": "2026-11-28T14:44:06.7896567Z"
+    },
+    {
+     "frame": 8731,
+     "mark": "dust-own-restore-start",
+     "utc": "2026-11-28T14:44:06.8640003Z"
+    },
+    {
+     "frame": 9217,
+     "mark": "dust-own-restore-end",
+     "utc": "2026-11-28T14:44:19.8317109Z"
+    },
+    {
+     "frame": 9217,
+     "mark": "dust-loss-start",
+     "utc": "2026-11-28T14:44:19.8485048Z"
+    },
+    {
+     "frame": 9256,
+     "mark": "dust-loss-despawn",
+     "utc": "2026-11-28T14:44:20.8713261Z"
+    },
+    {
+     "frame": 9694,
+     "mark": "dust-loss-end",
+     "utc": "2026-11-28T14:44:32.9598029Z"
+    },
+    {
+     "frame": 9724,
+     "mark": "dust-nested-start",
+     "utc": "2026-11-28T14:44:33.8261751Z"
+    },
+    {
+     "frame": 10201,
+     "mark": "dust-nested-end",
+     "utc": "2026-11-28T14:44:47.0270039Z"
+    },
+    {
+     "frame": 10201,
+     "mark": "dust-early-exit-start",
+     "utc": "2026-11-28T14:44:47.0425466Z"
+    },
+    {
+     "frame": 10241,
+     "mark": "dust-early-exit-end",
+     "utc": "2026-11-28T14:44:48.1635098Z"
+    },
+    {
+     "frame": 10669,
+     "mark": "dust-pre-delivery-start",
+     "utc": "2026-11-28T14:45:00.6277844Z"
+    },
+    {
+     "frame": 11183,
+     "mark": "dust-pre-delivery-end",
+     "utc": "2026-11-28T14:45:14.0609839Z"
+    },
+    {
+     "frame": 11741,
+     "mark": "dust-final-cast-start",
+     "utc": "2026-11-28T14:45:28.0973378Z"
+    },
+    {
+     "frame": 11812,
+     "mark": "dust-final-cast-end",
+     "utc": "2026-11-28T14:45:29.9978180Z"
+    },
+    {
+     "frame": 11812,
+     "mark": "dust-pre-delivery-disposal-start",
+     "utc": "2026-11-28T14:45:30.2447519Z"
+    },
+    {
+     "frame": 12340,
+     "mark": "dust-pre-delivery-disposal-end",
+     "utc": "2026-11-28T14:45:46.9003338Z"
+    },
+    {
+     "frame": 12340,
+     "mark": "dust-abandon-start",
+     "utc": "2026-11-28T14:45:46.9258058Z"
+    },
+    {
+     "frame": 13056,
+     "mark": "dust-abandon-end",
+     "utc": "2026-11-28T14:46:10.9350130Z"
+    }
+   ],
+   "traceSetupFailed": {
+    "cells": {
+     "s7-trace-setup-failed-inner": "InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)"
+    },
+    "child": {
+     "admitted": [
+      "s7-trace-setup-failed-inner"
+     ],
+     "completed": [],
+     "failures": [
+      "trace-setup: projectile trace setup failed: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)",
+      "trace-setup: projectile trace hooks remaining: 2",
+      "s7-trace-setup-failed-inner: cell exception: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)"
+     ],
+     "pending": [],
+     "recoveries": [],
+     "refused": "s7-trace-setup-failed-next",
+     "restored": false,
+     "unreadable": [],
+     "unreported": []
+    },
+    "childAfterDisposal": {
+     "admitted": [
+      "s7-trace-setup-failed-inner"
+     ],
+     "completed": [],
+     "failures": [
+      "trace-setup: projectile trace setup failed: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)",
+      "trace-setup: projectile trace hooks remaining: 2",
+      "s7-trace-setup-failed-inner: cell exception: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)"
+     ],
+     "pending": [],
+     "recoveries": [],
+     "refused": "s7-trace-setup-failed-next",
+     "restored": false,
+     "unreadable": [],
+     "unreported": []
+    },
+    "childAfterResume": {
+     "admitted": [
+      "s7-trace-setup-failed-inner"
+     ],
+     "completed": [],
+     "failures": [
+      "trace-setup: projectile trace setup failed: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)",
+      "trace-setup: projectile trace hooks remaining: 2",
+      "s7-trace-setup-failed-inner: cell exception: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)"
+     ],
+     "pending": [],
+     "recoveries": [],
+     "refused": "s7-trace-setup-failed-next",
+     "restored": false,
+     "unreadable": [],
+     "unreported": []
+    },
+    "expected": [
+     "trace-setup: projectile trace setup failed: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)",
+     "s7-trace-setup-failed-inner: cell exception: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)",
+     "trace-setup: projectile trace hooks remaining: 2"
+    ],
+    "expectedMissing": [],
+    "hooksAfterRepair": 0,
+    "inner": {
+     "acquired": false,
+     "attempted": true,
+     "hooksAfter": 2,
+     "id": "KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5",
+     "setupFailure": "projectile trace setup failed: InvalidOperationException: S7ProjectileTrace setup failed (rollback INCOMPLETE: 2 owned item(s) remain; CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)): InvalidOperationException: injected failure after the first patch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)"
+    },
+    "isolationRestored": true,
+    "mode": "run-to-completion, next cell expected refused",
+    "nextCellStarted": false,
+    "probe": {
+     "traceId": "KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5"
+    },
+    "readyBeforeAbandon": true,
+    "repairFailures": [],
+    "repairedWhen": "after the guard",
+    "rollback": {
+     "failures": [
+      "CreateView hooks: InvalidOperationException: injected failure of the CreateView rollback unpatch (KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5)"
+     ],
+     "hooksAfterRollback": 2,
+     "hooksBeforeRollback": 2,
+     "id": "KMG.S7.Projectile.662eaf2336b04a3aaa865db9ecf2c6f5"
+    },
+    "transferredResiduals": [],
+    "unexpected": [],
+    "unsafe": []
+   }
+  }
+ },
+ "runtimeLoadedBuildIdentity": {
+  "gitCommit": "66a0b9c724e7a16e425b5e21ac962cd441eaced6",
+  "informationalVersion": "0.0.197-elemental-persistence-coverage",
+  "loadedModulePath": "<lab>/KingmakerGunslinger.dll.40718.cache",
+  "loadedModuleSha256": "eb5f8f4c0302a5248ee523a313cdee2bd12c4ef873a4d82d88cf266346c41ca4",
+  "moduleVersionId": "fda26bf8-c9c7-4dcd-9ffb-7e5f8c77be8e",
+  "processId": 46572,
+  "recordedAtUtc": "2026-11-28T14:40:44.5639488Z",
+  "runtimeIdentity": "KingmakerGunslinger, Version=0.0.197.0, Culture=neutral, PublicKeyToken=null",
+  "schemaVersion": 1,
+  "semanticVersion": "0.0.197"
+ },
+ "session": "20261128T144025Z-owner-0.33.0-s7-c3-mechanics",
+ "sources": {
+  "harness-result.json": "f20c16894cc2a6005c4e6906e4938ae600336185e127fb2cf96a09483d97b2c0",
+  "launch-summary.json": "3a35b150c4cc18a3bb592299daa28a007fee5dbcbc4be0975b5b10c5f880c77a",
+  "loader-identity.json": "f31bc3b914a23e971b9ddb56998cc3cecba9480f48311bc16fc2d0e3191d6284",
+  "runtime-loaded-build-identity.json": "3f1cd517d17135312d1bbdfd930418e9e3c6c7ac0f098130537754a2ebe3573b",
+  "sprint32-review.json": "8f604252bd59702436eb4088a6f06a13d5328c94ee12e3937860a154da35f9db",
+  "summon-s7-effects-mechanics.json": "d64e8ce779b7118c4b2e72a587a90d15c1523657d6c007291113983c3bed60c4"
+ },
+ "summary": [
+  "Kingmaker Gunslinger runtime test",
+  "Run ID: lc-20261128T144025Z-owner-0.33.0-s7-c3-mechanics-01-mechanics",
+  "Scenario: disposable-expanded-summoning-sprint32-native-review",
+  "Status: PASS",
+  "Loaded mod: 0.0.197",
+  "Runtime: KingmakerGunslinger, Version=0.0.197.0, Culture=neutral, PublicKeyToken=null",
+  "Started UTC: 2026-11-28T14:40:47.5177393Z",
+  "Ended UTC: 2026-11-28T14:46:14.9418199Z",
+  "Duration ms: 327424"
+ ]
+}

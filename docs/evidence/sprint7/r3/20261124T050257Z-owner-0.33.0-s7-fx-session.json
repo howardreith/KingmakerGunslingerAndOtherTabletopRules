@@ -1,0 +1,34 @@
+{
+ "candidateVersion": "0.0.195",
+ "candidateZipSha256": "8039a627fa835ee3c5768756210cb93d92f32be3b0ee4ba3b35947ec1bde55f0",
+ "git": "6f2f16ca88647ba194dc558cbbcd8edbf49e3f93",
+ "hostConflict": null,
+ "loaderProfile": "owner-0.33.0",
+ "ownerInstallUnchanged": true,
+ "ownerIntegrity": "verified",
+ "ownerSavesUnchanged": true,
+ "registryRestored": true,
+ "registryVerification": {
+  "backupSha256": "25f28ffdbfeb6fc122a78f8bab2c6d039b4428b7908ca9fd5d4520606db77514",
+  "path": "<lab>/registry-readback-d6beed259e1a45b7b05631761ec1ca94.reg",
+  "sha256": "25f28ffdbfeb6fc122a78f8bab2c6d039b4428b7908ca9fd5d4520606db77514",
+  "status": "verified"
+ },
+ "runtimeLease": "runtime-20261124T050258Z-5efe84095c144e4b9657dd8ccd4ef1ff",
+ "scenarioPassed": false,
+ "session": "s7-fx",
+ "sessionId": "20261124T050257Z-owner-0.33.0-s7-fx",
+ "stagedMods": {
+  "KingmakerGunslinger": {
+   "dllSha256": "d7088878c3deda8f9d3d37f5cf2bb97be79c48b4bea66c4aa66f0cd9e72d5976",
+   "managerVersion": "0.31.1",
+   "zipSha256": "8039a627fa835ee3c5768756210cb93d92f32be3b0ee4ba3b35947ec1bde55f0"
+  },
+  "KmgLoaderCompatHarness": {
+   "dllSha256": "3d86bd3a6b61209f5bbc900c67a48877afaabf3dbbc10310aecafd79612988e8"
+  }
+ },
+ "status": "FAIL",
+ "transactionId": "b086106cbeb04a64bef5df2455e98c2b",
+ "transactionSucceeded": true
+}

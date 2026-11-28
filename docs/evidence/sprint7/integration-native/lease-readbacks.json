@@ -1,0 +1,66 @@
+{
+ "leaseReadbacks": [
+  {
+   "session": "20261128T144025Z-owner-0.33.0-s7-c3-mechanics",
+   "report": {
+    "command": "Invoke-LoaderCompatSession.ps1 -Report 20261128T144025Z-owner-0.33.0-s7-c3-mechanics (read-only)",
+    "outputFile": "integration-report-20261128T144025Z-owner-0.33.0-s7-c3-mechanics.txt",
+    "outputSha256": "15a9da2119fc7f933b02df7873c7fbf9a5068a6055b6525aeaf0de8bf53445e9",
+    "outputCreatedUtc": "2026-11-28T14:51:46.057Z",
+    "outputLastWriteUtc": "2026-11-28T14:51:46.406Z",
+    "note": "Readback taken after the session's own transaction had completed; it is distinct from the transaction completion recorded in the session summary."
+   },
+   "sessionSummarySha256": "d9c5c43378844fa9c88bc51f4f4f19aedebc327bb438866c04679f95f1de56fb",
+   "transactionId": "e974e7fe44a54d149b0890808a99da3f",
+   "transactionSucceeded": true,
+   "ownership": "completed",
+   "runtimeLease": "runtime-20261128T144034Z-f8a48233baee456493332ffa05609c4b",
+   "runtimeLeaseNow": {
+    "status": "Completed",
+    "recoveryRequired": false,
+    "sharedLockHeldBy": "<free>",
+    "registryRestore": "applied",
+    "reason": "Loader-compat session completed: game settings restored and read back equal to the verified backup, owner files verified against the intake, host re-checked, then ownership released.",
+    "integrity": {
+     "status": "verified",
+     "ownerSavesUnchanged": true,
+     "ownerInstallUnchanged": true,
+     "ownerSaveChanges": [],
+     "ownerInstallChanges": [],
+     "ownerSaveFiles": 95
+    }
+   }
+  },
+  {
+   "session": "20261128T144642Z-owner-0.33.0-s7-ghaele-lifecycle",
+   "report": {
+    "command": "Invoke-LoaderCompatSession.ps1 -Report 20261128T144642Z-owner-0.33.0-s7-ghaele-lifecycle (read-only)",
+    "outputFile": "integration-report-20261128T144642Z-owner-0.33.0-s7-ghaele-lifecycle.txt",
+    "outputSha256": "36499ec22cfbe5c50b2f4763e72e6a84fb62c54861b0afab388c394cb70ba7ff",
+    "outputCreatedUtc": "2026-11-28T14:51:46.436Z",
+    "outputLastWriteUtc": "2026-11-28T14:51:46.776Z",
+    "note": "Readback taken after the session's own transaction had completed; it is distinct from the transaction completion recorded in the session summary."
+   },
+   "sessionSummarySha256": "12d233bd2a790b4d8d8b1a337da010d458a1d343d099877ac4a2d2ebcc68ecf8",
+   "transactionId": "a9e2e856d24e47d4958c3b893cfac96d",
+   "transactionSucceeded": true,
+   "ownership": "completed",
+   "runtimeLease": "runtime-20261128T144651Z-66384ddafdc54aec9bbc81cefbed1f0f",
+   "runtimeLeaseNow": {
+    "status": "Completed",
+    "recoveryRequired": false,
+    "sharedLockHeldBy": "<free>",
+    "registryRestore": "applied",
+    "reason": "Loader-compat session completed: game settings restored and read back equal to the verified backup, owner files verified against the intake, host re-checked, then ownership released.",
+    "integrity": {
+     "status": "verified",
+     "ownerSavesUnchanged": true,
+     "ownerInstallUnchanged": true,
+     "ownerSaveChanges": [],
+     "ownerInstallChanges": [],
+     "ownerSaveFiles": 95
+    }
+   }
+  }
+ ]
+}

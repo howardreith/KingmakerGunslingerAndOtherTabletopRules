@@ -1,0 +1,250 @@
+{
+ "checks": [
+  {
+   "observed": {
+    "beforeVertices": 5424,
+    "corpulence": "Huge",
+    "currentVertices": 10770,
+    "motionAfter": {
+     "moveFinished": true,
+     "movePeakVelocity": 4.063944,
+     "moveTravel": 2.969177
+    },
+    "motionBefore": {
+     "moveFinished": true,
+     "movePeakVelocity": 4.063998,
+     "moveTravel": 2.96091032
+    },
+    "primaryHand": "KMG_Summoning_Demon_Glabrezu_Bite",
+    "rootScale": [
+     2.2,
+     2.2,
+     2.2
+    ],
+    "stills": {
+     "after": {
+      "detail-arm-roots": true,
+      "detail-head": true,
+      "front": true,
+      "party": "png=r7-glabrezu-dim-after-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=33;screenLit=true;rendererEnabled=false;faderVisible=true;mesh=_ammunition04;dissolve=0.059/listed=true;intact=false;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+      "rear": true
+     },
+     "before": {
+      "detail-arm-roots": true,
+      "detail-head": true,
+      "front": true,
+      "party": "png=r7-glabrezu-dim-before-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=32.7;screenLit=true;rendererEnabled=false;faderVisible=true;mesh=_ammunition04;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+      "rear": true
+     }
+    },
+    "unit": "KMG_Summoning_Unit_Glabrezu"
+   },
+   "passed": true,
+   "predicate": "r7-glabrezu-dim"
+  },
+  {
+   "observed": {
+    "error": null
+   },
+   "passed": true,
+   "predicate": "r6-r7-glabrezu-completed"
+  },
+  {
+   "observed": {
+    "beforeVertices": 5919,
+    "corpulence": "Huge",
+    "currentVertices": 12402,
+    "motionAfter": {
+     "moveFinished": true,
+     "movePeakVelocity": 4.063944,
+     "moveTravel": 2.969177
+    },
+    "motionBefore": {
+     "moveFinished": true,
+     "movePeakVelocity": 4.063998,
+     "moveTravel": 2.96091032
+    },
+    "primaryHand": "KMG_Summoning_Demon_Nalfeshnee_Bite",
+    "rootScale": [
+     2.1,
+     2.1,
+     2.1
+    ],
+    "stills": {
+     "after": {
+      "detail-head": true,
+      "detail-wing-roots": true,
+      "front": true,
+      "party": "png=r7-nalfeshnee-dim-after-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=32.5;screenLit=true;rendererEnabled=false;faderVisible=true;mesh=_ammunition04;dissolve=0.059/listed=true;intact=false;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+      "rear": true
+     },
+     "before": {
+      "detail-head": true,
+      "detail-wing-roots": true,
+      "front": true,
+      "party": "png=r7-nalfeshnee-dim-before-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=32.9;screenLit=true;rendererEnabled=false;faderVisible=true;mesh=_ammunition04;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+      "rear": true
+     }
+    },
+    "unit": "KMG_Summoning_Unit_Nalfeshnee"
+   },
+   "passed": true,
+   "predicate": "r7-nalfeshnee-dim"
+  },
+  {
+   "observed": {
+    "error": null
+   },
+   "passed": true,
+   "predicate": "r6-r7-nalfeshnee-completed"
+  },
+  {
+   "observed": {
+    "beforeVertices": 4546,
+    "corpulence": "Large",
+    "currentVertices": 13741,
+    "motionAfter": {
+     "moveFinished": true,
+     "movePeakVelocity": 5.581348,
+     "moveTravel": 2.961841
+    },
+    "motionBefore": {
+     "moveFinished": true,
+     "movePeakVelocity": 6.08841658,
+     "moveTravel": 2.95475721
+    },
+    "primaryHand": "KMG_Summoning_Infernal_IceDevil_Spear",
+    "rootScale": [
+     1.0,
+     1.0,
+     1.0
+    ],
+    "stills": {
+     "after": {
+      "detail-head": true,
+      "detail-shoulder-thorax": true,
+      "front": true,
+      "party": "png=r7-ice-devil-dim-after-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=34;screenLit=true;rendererEnabled=false;faderVisible=true;mesh=_ammunition04;dissolve=0.059/listed=true;intact=false;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+      "rear": true
+     },
+     "before": {
+      "detail-head": true,
+      "detail-shoulder-thorax": true,
+      "front": true,
+      "party": "png=r7-ice-devil-dim-before-party.png;bytes=3687468;viewport=0.5,0.5;inFrame=true;screenFade=0;luma=33.9;screenLit=true;rendererEnabled=false;faderVisible=true;mesh=_ammunition04;dissolve=0/listed=true;intact=true;material=PF/StandardDynamic[_TintColor,_MainTex,_DissolveColor,_Dissolve,_Metallic];visual=visual:attached",
+      "rear": true
+     }
+    },
+    "unit": "KMG_Summoning_Unit_IceDevil"
+   },
+   "passed": true,
+   "predicate": "r7-ice-devil-dim"
+  },
+  {
+   "observed": {
+    "error": null
+   },
+   "passed": true,
+   "predicate": "r6-r7-ice-devil-completed"
+  },
+  {
+   "observed": {
+    "errors": []
+   },
+   "passed": true,
+   "predicate": "r7-owned-state-restored"
+  },
+  {
+   "observed": {
+    "cleanup": {
+     "areaChanges": [],
+     "casterAbsent": true,
+     "extraUnits": "",
+     "missingUnits": "",
+     "partyAfter": 1,
+     "partyBefore": 1,
+     "partyExact": true,
+     "unitsAfter": 23,
+     "unitsBefore": 23,
+     "unitsExact": true
+    },
+    "clockRestored": true,
+    "referencesRestored": true
+   },
+   "passed": true,
+   "predicate": "fixture-restored"
+  }
+ ],
+ "harness": {
+  "conditions": {},
+  "exitRequested": false,
+  "failure": null,
+  "finishedUtc": "2026-11-23T23:39:57.6710946Z",
+  "isolation": "saves=<lab>/Saved Games; areas=<lab>/Areas",
+  "isolationRestored": true,
+  "loggerExceptionHooks": 4,
+  "requestPath": "<lab>/harness-request.json",
+  "runId": "20261123T233302Z-owner-0.33.0-s7-baseline-04-r7d",
+  "startedUtc": "2026-11-23T23:39:02.9884934Z",
+  "status": "passed",
+  "steps": []
+ },
+ "harnessEvents": [
+  {
+   "detail": {
+    "ummWindowOpen": true
+   },
+   "event": "mainMenu",
+   "t": 57.7289124,
+   "utc": "2026-11-23T23:39:57.4284073Z"
+  }
+ ],
+ "launch": "04-r7d",
+ "launchSummary": {
+  "conditions": {},
+  "gameArguments": [
+   "locale=enGB"
+  ],
+  "harness": "passed",
+  "identity": {
+   "activeMods": [
+    "KingmakerGunslinger 0.0.195",
+    "KmgLoaderCompatHarness 0.1.0"
+   ],
+   "harmony12Sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+   "harmony2": [
+    "2.3.6.0 df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80"
+   ],
+   "productSha256": "3ef052ea441af368381b1cea7d2ee7acaa813000986de8644430ff63ee1d6a6b",
+   "umm": "0.33.0.0",
+   "ummReported": "0.33.0.0",
+   "ummSha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
+  },
+  "label": "04-r7d",
+  "pid": 23336,
+  "problems": [],
+  "product": {
+   "failed": [],
+   "scenario": "disposable-expanded-summoning-sprint32-native-review",
+   "status": "PASS"
+  },
+  "seconds": 108,
+  "verdict": "PASS"
+ },
+ "session": "20261123T233302Z-owner-0.33.0-s7-baseline",
+ "sources": {
+  "harness-result.json": "33e6e454c9ab4f3d26f84793a62bed72ff6035fe156bc86908c428726a885498",
+  "sprint32-review.json": "7ab373b80bcaa5c9e20b485e16068fa15b9a08b8f46dd5f9b65d1ad41eb9986e"
+ },
+ "summary": [
+  "Kingmaker Gunslinger runtime test",
+  "Run ID: lc-20261123T233302Z-owner-0.33.0-s7-baseline-04-r7d",
+  "Scenario: disposable-expanded-summoning-sprint32-native-review",
+  "Status: PASS",
+  "Loaded mod: 0.0.195",
+  "Runtime: KingmakerGunslinger, Version=0.0.195.0, Culture=neutral, PublicKeyToken=null",
+  "Started UTC: 2026-11-23T23:39:02.8629558Z",
+  "Ended UTC: 2026-11-23T23:40:44.0034827Z",
+  "Duration ms: 101140"
+ ]
+}

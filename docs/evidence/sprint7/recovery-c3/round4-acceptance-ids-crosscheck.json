@@ -1,0 +1,92 @@
+{
+ "purpose": "One-off extraction and cross-check of the round-4 acceptance_ids (C3 amendment 4 section 3: the current pending-finding map is derived from the accepted structured round-4 result); not a mapping framework.",
+ "published_review": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/223#issuecomment-7206081232",
+ "published_request_id": "kmg-codex-s7-recovery-c3-effects-ownership-20261125235239-ba5d-r04-69cc0c",
+ "published_candidate_commit": "43dd44a2bafad0455ab74b6393515c9bae4fd27a",
+ "controller_result": "agent-review-state/<enrollment>/rounds/r04/result-1.json",
+ "controller_result_sha256": "458f7e1e432ae591f25916b9bc689baec40a1c9059553df3c3d3bf37b869a847",
+ "controller_request_id": "kmg-codex-s7-recovery-c3-effects-ownership-20261125235239-ba5d-r04-69cc0c",
+ "controller_candidate_commit": "43dd44a2bafad0455ab74b6393515c9bae4fd27a",
+ "acceptance_ids_identical": true,
+ "pending_controller_ids": [
+  "R4-F1",
+  "R2-F7",
+  "R4-F2",
+  "R1-F13",
+  "R4-F3"
+ ],
+ "findings": {
+  "R4-F1": {
+   "acceptance_ids": [
+    "R7-F2",
+    "C3 §5",
+    "OWNER AMENDMENT 1 §3B",
+    "OWNER AMENDMENT 3 §3E"
+   ],
+   "parent_or_prior_findings": [
+    "R7-F2"
+   ],
+   "mission_sections": [
+    "C3 §5",
+    "OWNER AMENDMENT 1 §3B",
+    "OWNER AMENDMENT 3 §3E"
+   ]
+  },
+  "R2-F7": {
+   "acceptance_ids": [
+    "R4-F1",
+    "R7-F2",
+    "OWNER AMENDMENT 2 §§3C,3F",
+    "OWNER AMENDMENT 3 §3E"
+   ],
+   "parent_or_prior_findings": [
+    "R4-F1",
+    "R7-F2"
+   ],
+   "mission_sections": [
+    "OWNER AMENDMENT 2 §§3C,3F",
+    "OWNER AMENDMENT 3 §3E"
+   ]
+  },
+  "R4-F2": {
+   "acceptance_ids": [
+    "C3 §6",
+    "OWNER AMENDMENT 3 §§3F,4"
+   ],
+   "parent_or_prior_findings": [],
+   "mission_sections": [
+    "C3 §6",
+    "OWNER AMENDMENT 3 §§3F,4"
+   ]
+  },
+  "R1-F13": {
+   "acceptance_ids": [
+    "C3 §8",
+    "OWNER AMENDMENT 1 §§3F,7",
+    "OWNER AMENDMENT 2 §4",
+    "OWNER AMENDMENT 3 §4"
+   ],
+   "parent_or_prior_findings": [],
+   "mission_sections": [
+    "C3 §8",
+    "OWNER AMENDMENT 1 §§3F,7",
+    "OWNER AMENDMENT 2 §4",
+    "OWNER AMENDMENT 3 §4"
+   ]
+  },
+  "R4-F3": {
+   "acceptance_ids": [
+    "C3 §7",
+    "OWNER AMENDMENT 1 §6",
+    "OWNER AMENDMENT 3 §6"
+   ],
+   "parent_or_prior_findings": [],
+   "mission_sections": [
+    "C3 §7",
+    "OWNER AMENDMENT 1 §6",
+    "OWNER AMENDMENT 3 §6"
+   ]
+  }
+ },
+ "note": "C3 review IDs (R4-F1 etc.) are distinct from the parent #219 findings of the same name; parent IDs here are the acceptance bindings (#219 R4-F1, R7-F2). Audit labels A1-F*/A2-F* are evidence identifiers, not controller IDs."
+}

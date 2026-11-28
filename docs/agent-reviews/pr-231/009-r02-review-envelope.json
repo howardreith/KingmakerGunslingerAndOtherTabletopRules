@@ -1,0 +1,251 @@
+{
+  "B": "52755b617c79328a972ae5b74bc05784422e332d",
+  "H": "9011aaddb210d8e2e25750622f127aa8a3a42843",
+  "M": "52755b617c79328a972ae5b74bc05784422e332d",
+  "amendment_revision": 1,
+  "amendment_sha256": "f1de1c83e9acfa398274f61f2af78f0df5ce089821912e9ded16e5a28102d458",
+  "checkpoint_id": "final",
+  "checkpoint_type": "final",
+  "fatal": false,
+  "guidance_revision": null,
+  "guidance_sha256": "none",
+  "invocation": {
+    "completed": true,
+    "duration_s": 704.3,
+    "errors": [],
+    "exit_code": 0,
+    "failed": false,
+    "observed": {
+      "approval_policy": "never",
+      "cli_version": "0.170.0",
+      "network": "restricted",
+      "observed_effort": "max",
+      "observed_model": "gpt-6.2-astra",
+      "plan_type": "pro",
+      "rollout_found": true,
+      "sandbox": "read-only",
+      "source": "Codex session rollout (CLI-recorded thread settings; not model-authored)",
+      "subagent_suspected": false,
+      "turn_efforts": [
+        "max"
+      ],
+      "turn_models": [
+        "gpt-6.2-astra"
+      ],
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 1649152,
+        "input_tokens": 1791070,
+        "output_tokens": 28111,
+        "reasoning_output_tokens": 13225,
+        "total_tokens": 1819181
+      }
+    },
+    "requested": {
+      "effort": "max",
+      "model": "gpt-6.2-astra",
+      "sandbox": "read-only"
+    },
+    "thread_id": "01a222a7-7b16-78d3-ab69-715422bca4fe",
+    "timed_out": false
+  },
+  "mission": {
+    "id": "s7-master-integration-mission",
+    "sha256": "5c514fdf4a197140ecd41a09fa31be62440e888059fdfc1e30315e27e466deed"
+  },
+  "ok": true,
+  "path": "C:\\Dev\\KingmakerGunslingerLab\\agent-review-state\\kmg-codex-s7-master-integration-20261128082100-2218\\rounds\\r02\\envelope-1.json",
+  "pr": 231,
+  "project_sha256": "286ea7d8a605775ee05eea7ddb50630d9710b9ddb69d1711b9dadb9b084a879e",
+  "protocol": "agent-review.v1",
+  "publication": "r02-review",
+  "published": [
+    {
+      "comment_id": 7241215422,
+      "of": 1,
+      "part": 1,
+      "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/231#issuecomment-7241215422"
+    }
+  ],
+  "raw_result_if_rejected": null,
+  "reasons": [],
+  "repository": "howardreith/KingmakerGunslingerAndOtherTabletopRules",
+  "request_id": "kmg-codex-s7-master-integration-20261128082100-2218-r02-dab49e",
+  "response_sha256": "1f3be43a951065ade6f2a47c66502c78e481593873dc87da4d63df9fcea700ca",
+  "result": {
+    "candidate_commit": "9011aaddb210d8e2e25750622f127aa8a3a42843",
+    "checkpoint_id": "final",
+    "checkpoint_type": "final",
+    "decision": "changes_required",
+    "decision_rationale": "Both selected native sessions passed on the same admitted package, and both focused gates passed on the submitted head. The qualification record double-counts a real Ghaele, skips temporary state observed during mechanics cleanup, and presents a measured subtotal as the full expenditure. The compiler-reference and post-session lock claims also need reviewable evidence.\n\n### Continuation for Claude\n\nMake one correction under non-shipped docs/. Use the existing launch extracts to reconcile the Ghaele count and the mechanics cleanup sequence. Add sanitized fields from the producing receipt and the two lease reports. Recover the omitted command durations from existing timestamps where possible and identify any remaining uncertainty in the total. Reuse the qualified package, harness and native sessions. After committing the records, run the two required controller filters on the clean submission and include their outer timings in the developer report.",
+    "evidence_assessment": {
+      "executed_verification": [
+        "I reproduced the complete 264,449-line feature diff and matched the changed-file list. Replaying both parents\u2019 hunks reproduced all four shared files byte for byte. The three existing PR #231 archive files have the same Git tree identity at the accepted archive and the submission.",
+        "I verified both controller receipt hashes and both log hashes. On 9011aaddb210, production compilation passed against pinned UMM 0.31.1.0 and Harmony12 1.2.0.1. sprint7-visual passed 25/25 and loader.production-dll-references-pinned-loader passed 1/1 out of 3,218 registered cases. The receipts record 4.5 s and 3.1 s respectively.",
+        "Both session extracts record development admission. Their staged DLL hashes match the in-process product hashes, MVIDs and embedded producing commit. The loaded harness hashes also agree. The mechanics and Ghaele launches used distinct process IDs, 46572 and 43344.",
+        "Session 20261128T144025Z-owner-0.33.0-s7-c3-mechanics passed all 43 predicates. The declared, admitted and completed lists contain the same seven cells. Physical restoration was true, restoreErrors was empty, and the four injected-failure controls refused their next cell and completed their repairs.",
+        "Session 20261128T144642Z-owner-0.33.0-s7-ghaele-lifecycle recorded all three harness steps Done. The terminal step passed with isolation restored, empty cleanup failures and empty unsettled-unit lists. The real-spawn and injected-result cases preserved their foreign controls.",
+        "Both transaction summaries record completed ownership, successful transactions and verified installation and save integrity. Each registry readback matches its backup at SHA-256 5ffd592266de96ee065718826ba5667ec0da59412daa69e50c03486839fc6b38."
+      ],
+      "inspected": [
+        "The mission, OWNER AMENDMENT 1, both prior findings and dispositions, the developer report, the transcript notice, the controller evidence, and the repository validation, building and review instructions.",
+        "The integration and qualification records, producing and documentation commits, package-document list, session definitions, four sanitized native extracts, historical C2 and C3 comparison runs, and the affected admission, restoration and Ghaele harness paths."
+      ],
+      "limitations": [
+        "The controller withheld the mixed foreground transcript. The private build receipt, package, dry-admission log and post-session report output are outside the snapshot. The native assessment uses the submitted structured extracts. Outer command times and peer clearances are developer-reported.",
+        "Native coverage is confined to the two selected paths on owner UMM 0.33.0. Callback loss was synthetic, its overlap was constructed, and the post-disposal Ghaele notification was injected. The general cancellation guarantee remains source-derived. Earlier presentation and audio evidence retains its original candidate identity, and the October Ghaele incident remains unattributed."
+      ],
+      "required_gaps": [
+        "Reconcile the Ghaele count and the temporary mechanics residuals in the owner-facing account.",
+        "Supply the measured build-reference identities and the evidence for the two reported post-session lease observations.",
+        "Account for the outer time of the planning inspection and two report reads, or label the measured subtotal and outstanding uncertainty."
+      ],
+      "source_inspection_only": [
+        "Producing commit 66a0b9c724 changes the planning status page. Every subsequent changed file is non-shipped documentation or evidence. The clean-source fingerprint recomputes to 4ff837e1c02013df8753957929fc58a08b8767add99b8ba7c8ebb0e52305d3b6.",
+        "The accepted harness source and build script match d631d283aa. The checked-in harness Info.json matches the recorded digest. The development admission path enforces strict extraction, package and DLL identity, source stamp, clean producer state and material-input currency.",
+        "The transaction finalizer writes the lease outcome and releases the session\u2019s claims before returning completed ownership. The read-only reporter separately samples the lease journal and the shared lock at report time."
+      ]
+    },
+    "findings": [
+      {
+        "acceptance_ids": [
+          "OWNER AMENDMENT 1 \u00a76",
+          "OWNER AMENDMENT 1 \u00a78",
+          "OWNER AMENDMENT 1 \u00a79"
+        ],
+        "actual": "The record says an early summon and one late summon were destroyed in abandonedAfterSpawn. Its ownedSummon and sole witness.owned entry are the same unit, cefd2555-a0a7-4d12-b366-2f926f956110. The cleanup request for that unit increments lateSummonsDestroyed to one. The separate injected case used unit 5eb0fce8-358a-4abb-afb1-2910d9940599. The field-by-field C2 comparison also overlooks the five order entries recorded at frame 4673 here and 4771 in C2.",
+        "blocking_rationale": "The handoff attributes a second real summon to a native control that observed one. This overstates the lifecycle behavior qualified by the session.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "Count the real spawn once, distinguish the injected post-disposal result, and describe the C2 comparison at the level the records support.",
+        "id": "R2-F1",
+        "location": {
+          "file": "docs/missions/sprint7/integration/S7-INTEGRATION-QUALIFICATION-RECORD.md",
+          "line": 130
+        },
+        "priority": "P2",
+        "requested_correction": "State that the real cast produced one owned Ghaele before registration and that disposal destroyed it. Keep the injected reconciliation as its own observation. Describe the matching C2 outcomes and acknowledge the run-specific frame values.",
+        "requested_evidence": "Use the existing abandonedAfterSpawn and abandonedPendingLateResult rows from both lifecycle extracts. GhaeleLifetimeProbes.cs and OwnedCastRelease.Hold establish which object the counter measures.",
+        "title": "Count the real-spawn Ghaele once",
+        "trigger": "The owner reads the qualification record to determine how many real summons the abandonment control reconciled."
+      },
+      {
+        "acceptance_ids": [
+          "OWNER AMENDMENT 1 \u00a76",
+          "OWNER AMENDMENT 1 \u00a78",
+          "OWNER AMENDMENT 1 \u00a79"
+        ],
+        "actual": "The handoff reports zero live executions after describing Dust disposal and empty transferred-residual lists. At disposal, both dustPreDeliveryDisposed and dustAbandoned recorded one live owned execution and pending condition reconciliation. Their pending lists cleared on resume. In the synthetic callback case, playing ID 517 was inactive but still tracked at the observation-window end. Its playback component was destroyed on its own source\u2019s disposal.",
+        "blocking_rationale": "These intermediate observations establish what the guard waited for and which cue state persisted. The final restoration result alone omits a required part of the mechanics account.",
+        "blocks_readiness": true,
+        "category": "required_gap",
+        "expected": "Identify the residuals present at disposal or at the end of the observation window, then state how each settled.",
+        "id": "R2-F2",
+        "location": {
+          "file": "docs/missions/sprint7/integration/S7-INTEGRATION-QUALIFICATION-RECORD.md",
+          "line": 116
+        },
+        "priority": "P2",
+        "requested_correction": "Scope the zero-live-execution statement to the ordinary Dust cleanup. Summarize the two child disposal and resume observations, the abandoned child\u2019s expected refusal and repair, and the callback tracking that persisted until source disposal.",
+        "requested_evidence": "Cite childAfterDisposal.pending and childAfterResume.recoveries for both Dust controls, plus survivorAtWindowEnd and survivorAfterDisposal for playing ID 517 in the existing mechanics extract.",
+        "title": "Distinguish temporary mechanics residuals from final restoration",
+        "trigger": "The owner uses the command, hook and callback summary to judge what remained immediately after cleanup."
+      },
+      {
+        "acceptance_ids": [
+          "OWNER AMENDMENT 1 \u00a74",
+          "OWNER AMENDMENT 1 \u00a78"
+        ],
+        "actual": "The record gives the two loader pins and describes 16 files as game references from the bundle and installation. ReferenceProvenance.Common.ps1 defines 14 installed-game references plus two pinned-loader references, 16 total. The report identifies the private receipt by digest, but the supplied evidence omits its measured reference rows.",
+        "blocking_rationale": "Reference identities are an explicit package deliverable. The current account misstates the reference groups and leaves the producing build\u2019s installed-game digests unverifiable in this review.",
+        "blocks_readiness": true,
+        "category": "evidence_gap",
+        "expected": "Identify the measured compiler inputs by role and bind them to the receipt for producing commit 66a0b9c724.",
+        "id": "R2-F3",
+        "location": {
+          "file": "docs/missions/sprint7/integration/S7-INTEGRATION-QUALIFICATION-RECORD.md",
+          "line": 50
+        },
+        "priority": "P2",
+        "requested_correction": "Correct the count and supply a sanitized projection of the producing receipt showing the reference roles, relative filenames and digests alongside its package and compiler DLL identity.",
+        "requested_evidence": "Use the existing development receipt identified by SHA-256 60a2a581a4d311a484a649ab07fe78d29333647daeaf7157bc3e7a52844f3c0b. Its references.files and compiler identity fields suffice.",
+        "title": "Show the producing receipt\u2019s reference identities",
+        "trigger": "The reviewer traces the exact-reference build from the qualified DLL back to its compiler inputs."
+      },
+      {
+        "acceptance_ids": [
+          "OWNER AMENDMENT 1 \u00a76",
+          "OWNER AMENDMENT 1 \u00a78"
+        ],
+        "actual": "Both session extracts establish completed transactions and identify their leases. The additional claim that each -Report read found journal status Completed, recoveryRequired false and the shared lock free appears only in prose. The extracts omit runtimeLeaseNow, and the supplied transcript contains only the final gate receipt references.",
+        "blocking_rationale": "A completed transaction establishes that the session released its claims. Shared-lock occupancy at the later report time is a separate machine observation required to substantiate the stated handoff.",
+        "blocks_readiness": true,
+        "category": "evidence_gap",
+        "expected": "Tie each reported post-session lock and journal observation to its lease and observation time.",
+        "id": "R2-F4",
+        "location": {
+          "file": "docs/missions/sprint7/integration/S7-INTEGRATION-QUALIFICATION-RECORD.md",
+          "line": 95
+        },
+        "priority": "P2",
+        "requested_correction": "Include the relevant sanitized fields from each retained report. If a readback must be obtained later, date it explicitly and distinguish it from the original transaction completion.",
+        "requested_evidence": "For leases runtime-20261128T144034Z-f8a48233baee456493332ffa05609c4b and runtime-20261128T144651Z-66384ddafdc54aec9bbc81cefbed1f0f, provide status, recoveryRequired and sharedLockHeldBy with the report identity or timestamp.",
+        "title": "Bind the post-session lock observations to both leases",
+        "trigger": "The owner checks the final lock and journal disposition for each native session."
+      },
+      {
+        "acceptance_ids": [
+          "Mission \u00a75",
+          "OWNER AMENDMENT 1 \u00a72",
+          "OWNER AMENDMENT 1 \u00a79"
+        ],
+        "actual": "795.8 s is exactly the sum of the build, dry admission and two sessions. The same ledger lists a -PlanOnly inspection and two -Report reads with additional elapsed time. The developer report adds 10.3 s for the gates and 38.1 s for development, then calls 844.2 s the cumulative expenditure without accounting for those three commands.",
+        "blocking_rationale": "The amendment replaced the development time ceiling and retained full outer-time accounting. The stated cumulative total has greater precision and coverage than the ledger supports.",
+        "blocks_readiness": true,
+        "category": "required_gap",
+        "expected": "Include the outer time of the listed qualification commands, identifying any time already included in another measured interval.",
+        "id": "R2-F5",
+        "location": {
+          "file": "docs/missions/sprint7/integration/S7-INTEGRATION-QUALIFICATION-RECORD.md",
+          "line": 151
+        },
+        "priority": "P2",
+        "requested_correction": "Reconcile the three commands against retained timestamps. Where an exact interval is unavailable, label the numeric figure as a measured subtotal and carry the unmeasured portion explicitly into the cumulative account.",
+        "requested_evidence": "Use existing command envelopes, timestamps or a documented bound. Keep the accepted 38.1 s development expenditure separate and add subsequent gate times in the developer report.",
+        "title": "Account for the untimed commands in the integration ledger",
+        "trigger": "The owner uses the reported cumulative expenditure as the full outer time of the selected qualification."
+      }
+    ],
+    "prior_finding_assessments": [
+      {
+        "assessment": "deferral_accepted",
+        "finding_id": "R1-F1",
+        "rationale": "OWNER AMENDMENT 1 \u00a78 directs the handoff to carry the clarification while preserving the controller finding. The status page and qualification record now identify codex/s7-master-integration as the destination. Merge f5adee695a has starting master 52755b617c as first parent and accepted Sprint 7 source 3ebdda17da as second parent."
+      },
+      {
+        "assessment": "deferral_accepted",
+        "finding_id": "R1-F2",
+        "rationale": "OWNER AMENDMENT 1 \u00a78 directs the same treatment for the historical candidate identity. Qualification record \u00a76 identifies C2 session 20261126T033419Z on parent candidate 3, source 9c39b1ff7f, package 49f8b88c\u20266413 and harness d77754ba\u2026b4f1. The recovery manifest and C2 session extract support that identification and distinguish it from recovery candidate 3."
+      }
+    ],
+    "request_id": "kmg-codex-s7-master-integration-20261128082100-2218-r02-dab49e",
+    "round": 2,
+    "schema_version": "agent-review.review.v1",
+    "summary": {
+      "delivered_behavior": "Producing commit 66a0b9c724e7a16e425b5e21ac962cd441eaced6 supplied the 0.0.197 development package for both native sessions. Its ZIP SHA-256 is 5824c44426570362c6f0192d4dda007f457a8d99413c7e91dbb6fe7233b3c4e8. The loaded DLL SHA-256 is eb5f8f4c0302a5248ee523a313cdee2bd12c4ef873a4d82d88cf266346c41ca4, MVID fda26bf8-c9c7-4dcd-9ffb-7e5f8c77be8e. Both sessions loaded the retained C2 harness d77754bad4377734e87c9a70aaf0c980a306db82dbee25e335b9e9ba47ebb4f1. The selected mechanics and lifecycle scenarios passed. The remaining corrections concern the qualification record and its evidence.",
+      "pending_later_phase_work": [
+        "After a ready verdict, the controller assigns the new archive SHA, verifies the archive delta and checks the remote handoff for the existing enrollment."
+      ],
+      "remaining_owner_review": [
+        "Judge the T2 Nalfeshnee, T3 Salamander and T6 Dust Mephit appearance using the existing immutable sets. [T2 visual set](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/tree/3ebdda17dac096156974a118474649070b68521c/evidence/sprint7-review/T2-VIS-01) \u00b7 [T3 visual set](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/tree/3ebdda17dac096156974a118474649070b68521c/evidence/sprint7-review/T3-VIS-02) \u00b7 [T6 visual set](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/tree/3ebdda17dac096156974a118474649070b68521c/evidence/sprint7-review/T6-VIS-05)",
+        "Decide the provisional T5 Sweetener_Low_06_Quake and T7 InspireCourage cues using C:\\Dev\\KingmakerGunslingerLab\\private\\s7-listening-packet-r5.zip, SHA-256 2b5f461050807c6593de62a397e0ac16606f6d952729d999e425c88ddfed2565.",
+        "The owner retains the merge, version and release decisions."
+      ],
+      "scope_reviewed": "Round 2 of the amended final checkpoint for draft PR #231. The accepted development head is 5460aff0a422196a1886980bc5972e8932ab50f2 and its archive is 22143dcebccfd090d2cf207235c9b9b8bb049d45. The current documentation and evidence head is 9011aaddb210d8e2e25750622f127aa8a3a42843. The supplied master tip and merge base both equal 52755b617c79328a972ae5b74bc05784422e332d.",
+      "unresolved_questions": []
+    }
+  },
+  "round": 2,
+  "validated_at": "2026-11-28T15:07:16Z",
+  "workflow_fingerprint": "6d613defe7bfe2f01a5818a2cd41b281965f438c45a0ca37ce15957e4dcffe19"
+}

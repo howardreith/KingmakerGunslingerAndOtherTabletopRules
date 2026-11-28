@@ -159,6 +159,151 @@ def measured_rig(path):
     return rig, by_name, hashlib.sha256(raw).hexdigest()
 
 
+# VIS-02: the skin leaves the tail root almost level and turns straight up to
+# the human waist, and the .22 m section turned all at once at the root: the
+# next ring fell up to 7 cm behind the root ring, a waist pleat whose faces
+# point into the body. The rings from a quarter segment before the root to a
+# half segment after it take their facing from the path over three samples
+# either side, so the turn is spread across them. Path, sizes and weights are
+# unchanged. (first, last sweep parameter, samples either side)
+WAIST_TURN = (9.75, 10.5, 3)
+
+
+def turn_sweep(bm, weights, uvs, points, widths, heights, names, turn,
+               region="body", steps=4, sides=14, up=UP, forward=FORWARD,
+               uv_dorsal_at=None):
+    """`generate_snakes.sweep`, line for line, except that a ring whose sweep
+    parameter lies in `turn` faces the mean of the neighbouring tangents. The
+    section frame is carried from the head toward the tail, so rings tailward
+    of the turn take their unchanged frames rather than inheriting its roll."""
+    if not len(points) == len(widths) == len(heights) == len(names):
+        raise ValueError("inconsistent sweep rows")
+    shared = common.shared
+    samples, parameters = [], []
+    for index in range(len(points) - 1):
+        a, b, c, d = (points[max(index - 1, 0)], points[index], points[index + 1],
+                      points[min(index + 2, len(points) - 1)])
+        for step in range(steps):
+            t = step / float(steps)
+            blend = {names[index]: 1 - t}
+            blend[names[index + 1]] = blend.get(names[index + 1], 0) + t
+            samples.append((common.catmull(a, b, c, d, t),
+                            widths[index] * (1 - t) + widths[index + 1] * t,
+                            heights[index] * (1 - t) + heights[index + 1] * t,
+                            [(k, v) for k, v in blend.items() if v > 1e-7]))
+            parameters.append(index + t)
+    samples.append((points[-1], widths[-1], heights[-1], [(names[-1], 1)]))
+    parameters.append(len(points) - 1)
+    first, last, reach = turn
+
+    def tangent_at(index):
+        return (samples[min(index + 1, len(samples) - 1)][0] -
+                samples[max(index - 1, 0)][0]).normalized()
+    handedness = 1 if forward.cross(common.SIDE).dot(up) > 0 else -1
+
+    def frames(smoothed):
+        result, prior_side = {}, common.SIDE
+        for index in reversed(range(len(samples))):
+            tangent = tangent_at(index)
+            if smoothed and first <= parameters[index] <= last:
+                mean = Vector()
+                for other in range(index - reach, index + reach + 1):
+                    mean += tangent_at(min(max(other, 0), len(samples) - 1))
+                tangent = mean.normalized()
+            lateral = prior_side - tangent * prior_side.dot(tangent)
+            if lateral.length < .01:
+                lateral = tangent.cross(up if abs(tangent.dot(up)) < .9 else forward)
+            lateral.normalize()
+            prior_side = lateral
+            result[index] = (lateral, tangent.cross(lateral).normalized() * handedness)
+        return result
+    # Rings tailward of the turn keep their unchanged frames, so the re-faced
+    # turn does not roll the rest of the tail.
+    plain, turned = frames(False), frames(True)
+    laterals = {index: plain[index] if parameters[index] < first else turned[index]
+                for index in plain}
+    rings = []
+    for index, (centre, width, height, influences) in enumerate(samples):
+        lateral, vertical = laterals[index]
+        ring = []
+        for side in range(sides):
+            angle = side * math.tau / sides
+            vertex = bm.verts.new(centre + lateral * math.cos(angle) * width +
+                                  vertical * math.sin(angle) * height)
+            weights[vertex] = influences
+            across = shared.fold(angle)
+            if uv_dorsal_at is not None:
+                dorsal = Vector(uv_dorsal_at(centre))
+                tangent = lateral.cross(vertical).normalized()
+                dorsal -= tangent * dorsal.dot(tangent)
+                if dorsal.length < 1e-7:
+                    raise ValueError("dorsal paint direction parallel to skin")
+                radial = lateral * math.cos(angle) + vertical * math.sin(angle)
+                across = max(0, min(1, .5 + .5 * radial.dot(dorsal.normalized())))
+            uvs[vertex] = shared.region_uv(region, index / (len(samples) - 1), across)
+            ring.append(vertex)
+        if rings:
+            for side in range(sides):
+                bm.faces.new((rings[-1][side], rings[-1][(side + 1) % sides],
+                              ring[(side + 1) % sides], ring[side]))
+        rings.append(ring)
+    for ring, sample in ((rings[0], samples[0]), (rings[-1], samples[-1])):
+        centre = bm.verts.new(sample[0])
+        weights[centre] = sample[3]
+        uvs[centre] = shared.region_uv(region, 0 if ring is rings[0] else 1, .5)
+        for side in range(sides):
+            bm.faces.new((centre, ring[side], ring[(side + 1) % sides]))
+
+
+def digit_tube(bm, weights, uvs, points, radii, bones, region, segments):
+    """`generate_pteranodon.add_tube` for a finger, with its rings, weights,
+    texture coordinates, faces and caps. Only the ring frame can differ, and
+    only where the shared `basis` swaps its reference axis (a direction within
+    .98 of vertical): there it rolls the ring a quarter turn between two
+    joints and twists the segment inside out (VIS-02, the left middle finger).
+    Such a ring carries the previous ring's frame forward instead."""
+    shared = common.shared
+    lengths = [0.0]
+    for index in range(1, len(points)):
+        lengths.append(lengths[-1] + (points[index] - points[index - 1]).length)
+    along = [value / (lengths[-1] or 1.0) for value in lengths]
+    rings, previous = [], None
+    for index, centre in enumerate(points):
+        if index == 0:
+            direction = points[1] - points[0]
+        elif index == len(points) - 1:
+            direction = points[-1] - points[-2]
+        else:
+            direction = points[index + 1] - points[index - 1]
+        right, up, forward = shared.basis(direction)
+        if previous is not None and abs(forward.dot(UP)) > .98:
+            right = previous - forward * previous.dot(forward)
+            right.normalize()
+            up = right.cross(forward).normalized()
+        previous = right
+        ring = []
+        for step in range(segments):
+            angle = 2.0 * math.pi * step / segments
+            offset = right * (math.cos(angle) * radii[index]) + \
+                up * (math.sin(angle) * radii[index])
+            vert = bm.verts.new(centre + offset)
+            ring.append(vert)
+            blend = min(shared.JOINT_BLEND, 0.5)
+            if index + 1 < len(bones) and bones[index + 1] != bones[index]:
+                weights[vert] = [(bones[index], 1.0 - blend), (bones[index + 1], blend)]
+            else:
+                weights[vert] = [(bones[index], 1.0)]
+            uvs[vert] = shared.region_uv(region, along[index], shared.fold(angle))
+        rings.append(ring)
+    for index in range(len(rings) - 1):
+        for step in range(segments):
+            nxt = (step + 1) % segments
+            bm.faces.new((rings[index][step], rings[index + 1][step],
+                          rings[index + 1][nxt], rings[index][nxt]))
+    bm.faces.new(tuple(reversed(rings[0])))
+    bm.faces.new(tuple(rings[-1]))
+
+
 def dorsal(point):
     upright = max(0, min(1, (point.y - .65) / .4))
     return UP * (1 - upright) - FORWARD * upright
@@ -178,9 +323,9 @@ def build_body(bm, weights, uvs, rig, kind):
     names = list(reversed(list(TAIL) + [TAIL[-1]])) + ["Pelvis"] + list(NATIVE[:6])
     width = list(reversed([.22, .23, .22, .20, .17, .14, .11, .085, .06, .035, .008]))
     height = list(reversed([.23, .21, .19, .17, .15, .13, .10, .075, .052, .03, .008]))
-    common.sweep(bm, weights, uvs, points, width + [.205, .20, .22, .25, .27, .09, .10],
-                 height + [.17, .16, .155, .15, .16, .085, .10], names,
-                 up=FORWARD, forward=UP, uv_dorsal_at=dorsal)
+    turn_sweep(bm, weights, uvs, points, width + [.205, .20, .22, .25, .27, .09, .10],
+               height + [.17, .16, .155, .15, .16, .085, .10], names, WAIST_TURN,
+               up=FORWARD, forward=UP, uv_dorsal_at=dorsal)
     # Reptilian original skull/jaw, cheek crests and eyes; no native face.
     mass(at("Head") + UP * .07 + FORWARD * .025, (.125, .16, .13), "Head")
     mass(at("Head") + FORWARD * .14, (.105, .060, .14), "Head")
@@ -196,10 +341,10 @@ def build_body(bm, weights, uvs, rig, kind):
         for digit in (1, 2, 3):
             first, second = (side + "_Toe_%d_%02d" % (digit, joint) for joint in (1, 2))
             direction = (at(second) - at(first)).normalized()
-            common.tube(bm, weights, uvs,
-                        [palm, at(first), at(second), at(second) + direction * .035],
-                        [.021, .021, .016, .004],
-                        [side + "_Hand", first, second, second], "limbs", 8)
+            digit_tube(bm, weights, uvs,
+                       [palm, at(first), at(second), at(second) + direction * .035],
+                       [.021, .021, .016, .004],
+                       [side + "_Hand", first, second, second], "limbs", 8)
         mass(at("Head") + SIDE * sign * .095 + FORWARD * .13 + UP * .064,
              (.018, .018, .018), "Head", "crest")
         for index in range(3):

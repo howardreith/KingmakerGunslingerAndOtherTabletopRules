@@ -47,6 +47,8 @@
     <Compile Include="Summoning\SummonActionTimingPolicy.cs" />
     <Compile Include="Summoning\SummonPortraitPolicy.cs" />
     <Compile Include="Summoning\SummonActionTooltipPolicy.cs" />
+    <Compile Include="Summoning\SummonMovementTargetTooltipPatch.cs" />
+    <Compile Include="Summoning\DustMephitBreathPresentation.cs" />
     <Compile Include="Summoning\MephitBreathPolicy.cs" />
     <Compile Include="Summoning\SummonPlaytestR5Policy.cs" />
     <Compile Include="Summoning\R5CotwSpells.cs" />
@@ -161,6 +163,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR5Spells.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR6Presentation.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonPlaytestR7Models.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.Sprint7Presentation.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonAlphabeticalMenus.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonMenuOrderSunder.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SpiderSummoner.cs" />
@@ -1481,6 +1484,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.cs" />
     <Compile Include="RuntimeTesting\BoundaryObservationPolicy.cs" />
     <Compile Include="RuntimeTesting\ExpandedSummoningNativeProfilePolicy.cs" />
+    <Compile Include="RuntimeTesting\Sprint7ObserverPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningNativeProfile.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.BoundaryDiagnostics.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonViewObservation.cs" />

@@ -1,0 +1,326 @@
+[
+ {
+  "file": "20261124T154136Z-owner-0.33.0-s7-fx-session.json",
+  "session": "20261124T154136Z-owner-0.33.0-s7-fx",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "eca4f8a0f3182c9c10808fb3b431402499fc0c5b0806ae45b818874e86653d36"
+  }
+ },
+ {
+  "file": "20261124T154136Z-owner-0.33.0-s7-fx-01-fx.json",
+  "session": "20261124T154136Z-owner-0.33.0-s7-fx",
+  "launch": "01-fx",
+  "checks": 31,
+  "passed": 27,
+  "sources": {
+   "sprint32-review.json": "6cf69c8d7162fd275c4cfa4421005dec6ceb4b5a7cb7d1f706f16496d1b3da22",
+   "summon-s7-effects.json": "14b3b7337d4aef782e003bc36af454b640288de4b6cd37448757b63b5f723347",
+   "harness-result.json": "df018442d611ee97abe2d04e3437530848b73e018ce71782692e0ad15843fd98"
+  }
+ },
+ {
+  "file": "20261124T154136Z-owner-0.33.0-s7-fx-02-r6.json",
+  "session": "20261124T154136Z-owner-0.33.0-s7-fx",
+  "launch": "02-r6",
+  "checks": 16,
+  "passed": 16,
+  "sources": {
+   "sprint32-review.json": "027d9d2c8134b824a0249788cea73633d99fd5cbaa9cd34aab06252f2521d793",
+   "summon-playtest-r6-presentation.json": "6d1ac0aa70ac9ad56620c589f8a5ac3eb45eb70488bd59e4d3a5d6e7f2fea5ed",
+   "harness-result.json": "94a74a9812727d957d10d0dea920751d3e27e7fcae94711a58388b99e326afb6"
+  }
+ },
+ {
+  "file": "20261124T154929Z-owner-0.33.0-s7-models-session.json",
+  "session": "20261124T154929Z-owner-0.33.0-s7-models",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "764dc27ac23748f98e775e15a5b2517e284e5711e4a90c2b08efa8f5f930b724"
+  }
+ },
+ {
+  "file": "20261124T154929Z-owner-0.33.0-s7-models-01-mod.json",
+  "session": "20261124T154929Z-owner-0.33.0-s7-models",
+  "launch": "01-mod",
+  "checks": 13,
+  "passed": 12,
+  "sources": {
+   "sprint32-review.json": "c5b51c24d4abce9545b51ed4e38da3c4b96fb297e483cce0f8a7c2cbf2deec1e",
+   "summon-s7-models.json": "ea7e60d45577ab41acbee62175e89646280bb4e49adcb4ba3fe3e17d5ee6f211",
+   "harness-result.json": "85da867c5570e1f142eca81b28de291744adb8eafee2bdaa65659860f0a9bb41"
+  }
+ },
+ {
+  "file": "20261124T154929Z-owner-0.33.0-s7-models-02-modd.json",
+  "session": "20261124T154929Z-owner-0.33.0-s7-models",
+  "launch": "02-modd",
+  "checks": 6,
+  "passed": 6,
+  "sources": {
+   "sprint32-review.json": "9e875cb63387c28389d2223b3b9857d99dfd674b9c3e3a396c632b4d9cf4750e",
+   "summon-s7-models-interior.json": "45790043e6bb464953fa4aedcdd983f71aa205569f12d027d938463299a1fba7",
+   "harness-result.json": "43e172d64d373fa10da1ddfe2e14f522b7922ea3f3d6ebb6641023fccd0c223d"
+  }
+ },
+ {
+  "file": "20261124T155421Z-owner-0.33.0-s7-trumpet-reload-session.json",
+  "session": "20261124T155421Z-owner-0.33.0-s7-trumpet-reload",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "d333a1d063fb118e8f1dd5d506cf14435f9d0590b1f8e0a5024106968ec7eeb9"
+  }
+ },
+ {
+  "file": "20261124T155421Z-owner-0.33.0-s7-trumpet-reload-01-trumpet-reload.json",
+  "session": "20261124T155421Z-owner-0.33.0-s7-trumpet-reload",
+  "launch": "01-trumpet-reload",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "dec89d86617ec1b0422b7e75946188b3259cc66500755ce262aa3d2fd98a84ae"
+  }
+ },
+ {
+  "file": "20261124T155639Z-owner-0.33.0-s7-ghaele-session.json",
+  "session": "20261124T155639Z-owner-0.33.0-s7-ghaele",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "0c4e590b63424d219b6041e702d039485b359e2698b08943f625093d3e3b5022"
+  }
+ },
+ {
+  "file": "20261124T155639Z-owner-0.33.0-s7-ghaele-01-ghaele.json",
+  "session": "20261124T155639Z-owner-0.33.0-s7-ghaele",
+  "launch": "01-ghaele",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "f61714070c59fa88a39af6840ddc18211baa846cf746dbfa76248485a8670682"
+  }
+ },
+ {
+  "file": "20261124T155845Z-owner-0.33.0-s7-ghaele-session.json",
+  "session": "20261124T155845Z-owner-0.33.0-s7-ghaele",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "d87ca9b54f6d1f4fee2aaeb48e5cdfec04c6e2d5ccce259c81d4d9cfc0f8ff91"
+  }
+ },
+ {
+  "file": "20261124T155845Z-owner-0.33.0-s7-ghaele-01-ghaele.json",
+  "session": "20261124T155845Z-owner-0.33.0-s7-ghaele",
+  "launch": "01-ghaele",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "a3ec466370e3b02bc0c0764364c43e12d050016c5e445910d620d74bd17717fe"
+  }
+ },
+ {
+  "file": "20261124T161344Z-owner-0.33.0-s7-fx-session.json",
+  "session": "20261124T161344Z-owner-0.33.0-s7-fx",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "a6ccc2df285f98844d9515c76dcccbaa0e2824891d90f4c229d0e718010f1bee"
+  }
+ },
+ {
+  "file": "20261124T161344Z-owner-0.33.0-s7-fx-01-fx.json",
+  "session": "20261124T161344Z-owner-0.33.0-s7-fx",
+  "launch": "01-fx",
+  "checks": 31,
+  "passed": 29,
+  "sources": {
+   "sprint32-review.json": "931cda7a522c57bbb9c4571fdd1b09ce8e1fb3eb493898e5cd78941237429c36",
+   "summon-s7-effects.json": "b1b3d23a1bfa03c8ef87f600c061f47e57b964f79034f1e235f2e40adbe07c28",
+   "harness-result.json": "13bd321e4553df30748269a1ce075044c124bf2361f4cdbbd3967fc4d0583d02"
+  }
+ },
+ {
+  "file": "20261124T161344Z-owner-0.33.0-s7-fx-02-r6.json",
+  "session": "20261124T161344Z-owner-0.33.0-s7-fx",
+  "launch": "02-r6",
+  "checks": 16,
+  "passed": 16,
+  "sources": {
+   "sprint32-review.json": "b479b7313c396383c84f8fa460ed55fb1899334d8ba513423102a4acdb7d2278",
+   "summon-playtest-r6-presentation.json": "41c4fec30de89a8af58f02eb07509ae49af8b910f4f41c793335b3848c68e317",
+   "harness-result.json": "41086fe2983a15351e7d7c0457bf67aa721d27510c38094fea13fbcee723d49b"
+  }
+ },
+ {
+  "file": "20261124T162110Z-owner-0.33.0-s7-models-session.json",
+  "session": "20261124T162110Z-owner-0.33.0-s7-models",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "796c69f307c2cb6bec27f8a171f9fe77d6ca6b7700062bf6542b6c81c46d367b"
+  }
+ },
+ {
+  "file": "20261124T162110Z-owner-0.33.0-s7-models-01-mod.json",
+  "session": "20261124T162110Z-owner-0.33.0-s7-models",
+  "launch": "01-mod",
+  "checks": 13,
+  "passed": 13,
+  "sources": {
+   "sprint32-review.json": "605e945d2bfbcac253491c1808ba325f8ba19e49612b509463001426178bd5fd",
+   "summon-s7-models.json": "ffd47fd27035c9de6c1e9be4b04de1959d3213dffb5063e5f36e115b4dab5d99",
+   "harness-result.json": "4bed84f96d757cfd15b99e4bafee11c6a097e1f849d143e8cbebf4ed4e4f31bd"
+  }
+ },
+ {
+  "file": "20261124T162110Z-owner-0.33.0-s7-models-02-modd.json",
+  "session": "20261124T162110Z-owner-0.33.0-s7-models",
+  "launch": "02-modd",
+  "checks": 6,
+  "passed": 6,
+  "sources": {
+   "sprint32-review.json": "45083ed18bd3d2d37261acbe0a243f434d64943fab1fb62ec42f1812d554e0cb",
+   "summon-s7-models-interior.json": "150b315bf46f85acec72fb63a0a69ec2345b4753c1b3da5df37ec59ffdc2c378",
+   "harness-result.json": "e8e5ceaf0fd138b2ba3d766e48726f28168d01aee991bd220e47adfbd42b9c88"
+  }
+ },
+ {
+  "file": "20261124T162605Z-owner-0.33.0-s7-trumpet-reload-session.json",
+  "session": "20261124T162605Z-owner-0.33.0-s7-trumpet-reload",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "11df6cef2213fedc2362fd75563ec49de9a03d3cb391cadfd1f0fd9a10ad1524"
+  }
+ },
+ {
+  "file": "20261124T162605Z-owner-0.33.0-s7-trumpet-reload-01-trumpet-reload.json",
+  "session": "20261124T162605Z-owner-0.33.0-s7-trumpet-reload",
+  "launch": "01-trumpet-reload",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "bff2e0154789e6c470189b7b2eb69e2c9f125576ff29623ac50bbdc79051d166"
+  }
+ },
+ {
+  "file": "20261124T162819Z-owner-0.33.0-s7-ghaele-session.json",
+  "session": "20261124T162819Z-owner-0.33.0-s7-ghaele",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "a413064e75a195e0d658c337c94f277ec5124faf183c23ac8a9702a6f7cea36e"
+  }
+ },
+ {
+  "file": "20261124T162819Z-owner-0.33.0-s7-ghaele-01-ghaele.json",
+  "session": "20261124T162819Z-owner-0.33.0-s7-ghaele",
+  "launch": "01-ghaele",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "dd374c1cc6b9a353f5b6eaed93c4943353046b4e9cffc42dbd72122c69709476"
+  }
+ },
+ {
+  "file": "20261124T163235Z-owner-0.33.0-s7-ghaele-session.json",
+  "session": "20261124T163235Z-owner-0.33.0-s7-ghaele",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "59bd49fa9af7d5a8f4982e94cf396fb37708874c03cf46899a64d0e2ef0f0ab2"
+  }
+ },
+ {
+  "file": "20261124T163235Z-owner-0.33.0-s7-ghaele-01-ghaele.json",
+  "session": "20261124T163235Z-owner-0.33.0-s7-ghaele",
+  "launch": "01-ghaele",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "a569d4ad5a1d1c3ef2e61081dc6eda56a16f0079d6eb36a3bc48a496f9ecaafe"
+  }
+ },
+ {
+  "file": "20261124T164749Z-owner-0.33.0-s7-fx-session.json",
+  "session": "20261124T164749Z-owner-0.33.0-s7-fx",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "57d21e08b9e0606c16b328dde818459435ba394271cbb163b5b2c4fb2e963751"
+  }
+ },
+ {
+  "file": "20261124T164749Z-owner-0.33.0-s7-fx-01-fx.json",
+  "session": "20261124T164749Z-owner-0.33.0-s7-fx",
+  "launch": "01-fx",
+  "checks": 31,
+  "passed": 28,
+  "sources": {
+   "sprint32-review.json": "4d4ad823b4edb11c67794871136653ef9691ca00ddfd36ef48b77ab4f955b7ad",
+   "summon-s7-effects.json": "acd12159bb966103890a9649e497005f3e1dcee07cd73f90305ea1f67ea0d08a",
+   "harness-result.json": "da2a00653e49ad7c17b18c9fff60dbba4ece229e8bbd0a3687a68bc2387abdaf"
+  }
+ },
+ {
+  "file": "20261124T164749Z-owner-0.33.0-s7-fx-02-r6.json",
+  "session": "20261124T164749Z-owner-0.33.0-s7-fx",
+  "launch": "02-r6",
+  "checks": 16,
+  "passed": 16,
+  "sources": {
+   "sprint32-review.json": "461af4e5b4ee81567490d38fd8e2666672fbe3e3ee7a0136c2b4c46612388eb5",
+   "summon-playtest-r6-presentation.json": "b3cdebaaf71a9444eddee6a6facc9bc4d7f540c929af285675f65403452d4044",
+   "harness-result.json": "d384e67d631dd4ff128923a94b9bca0148a6384254064a171adc59cee388b514"
+  }
+ },
+ {
+  "file": "20261124T170720Z-owner-0.33.0-s7-fx-session.json",
+  "session": "20261124T170720Z-owner-0.33.0-s7-fx",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "169308a23e69a8aa72e39c3dcf71555acd5a3d179a8470121ef6087f290d44b2"
+  }
+ },
+ {
+  "file": "20261124T170720Z-owner-0.33.0-s7-fx-01-fx.json",
+  "session": "20261124T170720Z-owner-0.33.0-s7-fx",
+  "launch": "01-fx",
+  "checks": 31,
+  "passed": 31,
+  "sources": {
+   "sprint32-review.json": "78f37d3a454779e268803fde4da33c36209f8c13c50341b7ae57f4ff0adf4b80",
+   "summon-s7-effects.json": "7c957ded92001a9b04fc36fe0be1586e14659b0ba513e94d6a0cea39e28dafa1",
+   "harness-result.json": "9e93b91d5c9133c962a026a2c67c24737a410b394db349ccebddf780888aee0d"
+  }
+ },
+ {
+  "file": "20261124T170720Z-owner-0.33.0-s7-fx-02-r6.json",
+  "session": "20261124T170720Z-owner-0.33.0-s7-fx",
+  "launch": "02-r6",
+  "checks": 16,
+  "passed": 16,
+  "sources": {
+   "sprint32-review.json": "8289ca582afee0e1a579ee7ed6bc55494d2fa34a8bfaa0100e0f5b68636c38d1",
+   "summon-playtest-r6-presentation.json": "010478f9e9e4a62f444619e509e0a6daa98a6ad70130f1f15d2b19262214aa6b",
+   "harness-result.json": "bcb21604323b3c19682f53f8dea4c8ab2ffd330a57d618d0e479b962df1333b0"
+  }
+ }
+]

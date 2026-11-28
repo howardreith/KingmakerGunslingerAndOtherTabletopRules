@@ -1,0 +1,135 @@
+{
+ "source": {
+  "file": "KingmakerGunslinger-0.0.197-development-s7-integration-native-66a0b9c724e7.zip.development-receipt.json",
+  "sha256": "60a2a581a4d311a484a649ab07fe78d29333647daeaf7157bc3e7a52844f3c0b",
+  "note": "Projection of the producing development receipt; absolute machine paths are omitted."
+ },
+ "candidateKind": "development",
+ "releaseQualification": false,
+ "purpose": "s7-integration-native",
+ "generatedAtUtc": "2026-11-28T14:39:16.0953223Z",
+ "commit": "66a0b9c724e7a16e425b5e21ac962cd441eaced6",
+ "branch": "codex/s7-master-integration",
+ "sourceStateSha256": "4ff837e1c02013df8753957929fc58a08b8767add99b8ba7c8ebb0e52305d3b6",
+ "version": "0.0.197",
+ "informationalVersion": "0.0.197-elemental-persistence-coverage",
+ "packageFile": "KingmakerGunslinger-0.0.197-development-s7-integration-native-66a0b9c724e7.zip",
+ "packageSha256": "5824c44426570362c6f0192d4dda007f457a8d99413c7e91dbb6fe7233b3c4e8",
+ "dllSha256": "eb5f8f4c0302a5248ee523a313cdee2bd12c4ef873a4d82d88cf266346c41ca4",
+ "dllMvid": "fda26bf8-c9c7-4dcd-9ffb-7e5f8c77be8e",
+ "packagedDllSha256": "eb5f8f4c0302a5248ee523a313cdee2bd12c4ef873a4d82d88cf266346c41ca4",
+ "compilerDllSha256": "eb5f8f4c0302a5248ee523a313cdee2bd12c4ef873a4d82d88cf266346c41ca4",
+ "compilerDllMvid": "fda26bf8-c9c7-4dcd-9ffb-7e5f8c77be8e",
+ "embeddedGitCommit": "66a0b9c724e7a16e425b5e21ac962cd441eaced6",
+ "references": {
+  "loaderPinsSha256": "b13bed40b1687c03ac256acdfd233cf2546bf7fcbde2d2ea3445fb0c52d88534",
+  "minimumManagerVersion": "0.31.1",
+  "files": [
+   {
+    "role": "installed-game",
+    "relativePath": "Assembly-CSharp.dll",
+    "sha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb"
+   },
+   {
+    "role": "installed-game",
+    "relativePath": "Assembly-CSharp-firstpass.dll",
+    "sha256": "069a7362ce5e3ccd597206174aec13743c2db5a1bfbc2a42f15a5fbd1ea30d30"
+   },
+   {
+    "role": "installed-game",
+    "relativePath": "UniRx.dll",
+    "sha256": "bfee7eca22156d8b95c149ba1383f065124b7b44a62ed4eafc32a5e67f6bc68a"
+   },
+   {
+    "role": "installed-game",
+    "relativePath": "Newtonsoft.Json.dll",
+    "sha256": "3a23988f473e9e8304fbbcfff16872cca919bd1a1f3dee1e374acc1f0cbbbc80"
+   },
+   {
+    "role": "installed-game",
+    "relativePath": "UnityEngine.dll",
+    "sha256": "50b79c57f46bf4e060bb27461b6d4fac6f078e08b57e776c7a811554c4899fd6"
+   },
+   {
+    "role": "installed-game",
+    "relativePath": "UnityEngine.AnimationModule.dll",
+    "sha256": "18636cc226c7e6299e80210d4ae808eb2552cbcdb92c8713caee6a7f0e1be1a5"
+   },
+   {
+    "role": "installed-game",
+    "relativePath": "UnityEngine.AudioModule.dll",
+    "sha256": "fb42210ac3bc75107fed62ec1e9ef4aeee500318af14aae1a47eadb4c5fd7dd9"
+   },
+   {
+    "role": "installed-game",
+    "relativePath": "UnityEngine.AssetBundleModule.dll",
+    "sha256": "a11128e604a59eadd61ea870f2017ea18d4c19240dd1c1b8b6d4ffb7976b569b"
+   },
+   {
+    "role": "installed-game",
+    "relativePath": "UnityEngine.CoreModule.dll",
+    "sha256": "3a76df7f709d465e3273502e08edbffb536b1c2f78c3a132b8668e59fddd2803"
+   },
+   {
+    "role": "installed-game",
+    "relativePath": "UnityEngine.ClothModule.dll",
+    "sha256": "390e7edea7c242f764c4645c8582cf02bfdb3d2d86f51d4ea8d8b91ac5e57e91"
+   },
+   {
+    "role": "installed-game",
+    "relativePath": "UnityEngine.PhysicsModule.dll",
+    "sha256": "724ac786e5dceae9d24521b6dcfb3c595de7529b4a7096e70fd6871809ad2ac7"
+   },
+   {
+    "role": "installed-game",
+    "relativePath": "UnityEngine.UI.dll",
+    "sha256": "4dee942e8974492511733e5482f89fde39e3964008f072ec9c12d05e40a9080d"
+   },
+   {
+    "role": "installed-game",
+    "relativePath": "UnityEngine.UIModule.dll",
+    "sha256": "51b32055e2a03c78d3e7b2d7d8a6425ee80d415c1e07ea0ec7b1dd84eddc9f12"
+   },
+   {
+    "role": "installed-game",
+    "relativePath": "UnityEngine.TextRenderingModule.dll",
+    "sha256": "9ece6f5f1d1221809aeee9c591d67a38d51cde32dc6f525719f2ae2b20bf7fac"
+   },
+   {
+    "role": "pinned-loader",
+    "relativePath": "UnityModManager/UnityModManager.dll",
+    "sha256": "2e038ff23ab01d538dfef792096e1f5c04802d1edac3660db20d0d54c167c2c4",
+    "assemblyVersion": "0.31.1.0",
+    "source": "https://api.nuget.org/v3-flatcontainer/unitymodmanager/0.31.1/unitymodmanager.0.31.1.nupkg"
+   },
+   {
+    "role": "pinned-loader",
+    "relativePath": "UnityModManager/0Harmony12.dll",
+    "sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+    "assemblyVersion": "1.2.0.1",
+    "source": "https://raw.githubusercontent.com/newman55/unity-mod-manager/10cfb1cce51914a5114928c5bc6a06d1d2c31fe2/lib/Harmony/1.2/0Harmony12.dll"
+   }
+  ]
+ },
+ "validation": {
+  "validator": "tools/validate_development_candidate.py",
+  "purpose": "s7-integration-native",
+  "releaseQualification": false,
+  "baselineCommit": "329ad1b0738b0060f180df8931d41b3c7fb00430",
+  "baselineVersion": "0.0.197",
+  "releasedIdentities": 7935,
+  "identities": 7935,
+  "appendedIdentities": 0,
+  "ledgerSha256": "35c8e73d4178520968bdec193f10771adaf892d86e655321451f9edb6c10ce76",
+  "summarySha256": "44cd589b28290e8e47b5308ae86a2126333b40de29b36b7752c9ba5bc411f064"
+ },
+ "selectedTests": {
+  "filter": "sprint7-visual",
+  "selected": 25,
+  "registered": 3218,
+  "failures": 0,
+  "passedNamesSha256": "59d6a5450b3312ccfe56cbca58dbe100274267a54155f9a303d64fba23881da6",
+  "notApplicable": [],
+  "logSha256": "9861584beb9dbb1e2b95508b472b16e7167dd5df8573cff2097ec9963a3e89e8"
+ }
+}

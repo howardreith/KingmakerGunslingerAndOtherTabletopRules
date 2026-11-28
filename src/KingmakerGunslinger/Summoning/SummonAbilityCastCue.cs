@@ -94,14 +94,32 @@ namespace KingmakerGunslinger.Summoning
                 if (Contexts.TryGetValue(context, out seen)) return;
                 Contexts.Add(context, Played);
             }
+            Post(eventName, view, context.AbilityBlueprint == null ? null : context.AbilityBlueprint.name,
+                caster.UniqueId);
+        }
+
+        /// <summary>
+        /// VIS-04: one owned cue for a resolved native event whose caller has
+        /// already stamped it exactly once (the Ankylosaurus tail strike's
+        /// attack roll). The same emitter, playing-ID tracking, retirement and
+        /// records as a cast cue; no once-per-cast key applies.
+        /// </summary>
+        internal static void PlayImpact(string eventName, UnitEntityData source, string label)
+        {
+            UnitEntityView view = source == null ? null : source.View;
+            if (string.IsNullOrEmpty(eventName) || view == null || !AkSoundEngine.IsInitialized()) return;
+            Post(eventName, view, label, source.UniqueId);
+        }
+
+        private static void Post(string eventName, UnitEntityView view, string ability, string casterId)
+        {
             if (!s_BankRequested)
             {
                 s_BankRequested = true;
                 AkBankManager.LoadBank(SummonPlaytestR6Policy.CueBank, false, false);
             }
             var record = new SummonCastCueRecord { EventName = eventName,
-                Ability = context.AbilityBlueprint == null ? null : context.AbilityBlueprint.name,
-                CasterId = caster.UniqueId, Utc = DateTime.UtcNow, Frame = Time.frameCount };
+                Ability = ability, CasterId = casterId, Utc = DateTime.UtcNow, Frame = Time.frameCount };
             record.PlayingId = AkSoundEngine.PostEvent(eventName, view.gameObject,
                 (uint)AkCallbackType.AK_EndOfEvent, Ended, record);
             if (record.PlayingId != 0)

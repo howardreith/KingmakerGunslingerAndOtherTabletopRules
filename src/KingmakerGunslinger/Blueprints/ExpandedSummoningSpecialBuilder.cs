@@ -705,6 +705,10 @@ namespace KingmakerGunslinger.Blueprints
                 RhinocerosPowerfulChargeSymbol, "rhinoceros");
             ConfigureUngulatePowerfulCharge(bySymbol, WoollyRhinocerosUnitSymbol,
                 WoollyRhinocerosPowerfulChargeSymbol, "woolly-rhinoceros");
+            // VIS-03: the owned movement actions' target row, built once.
+            SummonMovementTargetPresentation.Range = LocalizationService.Create(
+                "KMG.ExpandedSummoning.MovementAction.TargetRange",
+                SummonActionTooltipPolicy.MovementTargetRange);
             ConfigureUngulateTrample(library, bySymbol, "KMG.Summoning.Unit.Aurochs",
                 AurochsTrampleSymbol, "aurochs");
             ConfigureUngulateTrample(library, bySymbol, "KMG.Summoning.Unit.Bison",

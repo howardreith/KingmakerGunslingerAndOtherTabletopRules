@@ -1,0 +1,386 @@
+{
+ "source": "20261127T022022Z-owner-0.33.0-s7-c3-mechanics/01-mechanics/product/summon-s7-effects-mechanics.json",
+ "sourceSha256": "56f42596b1dfc022697b7173d239e4140eb34b375739478bb3894435e4cf31bd",
+ "path": "ankylosaurus.callbackLoss",
+ "liveVerdict": null,
+ "row": {
+  "synthetic": "the product's end-of-event callback for one exact survivor record is withheld from the product by the observer; native playback is untouched and read separately",
+  "declaredWindowSeconds": 12.0,
+  "declaredDisposalSeconds": 6.0,
+  "declaredOverlapSeconds": 16.0,
+  "evaluator": "Sprint7ObserverPolicy.CallbackLossRound7",
+  "window": [
+   {
+    "utc": "2026-11-27T02:22:40.7758481Z",
+    "frame": 5471,
+    "survivorPlayback": "playing",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 0,
+    "otherPlayback": "playing"
+   },
+   {
+    "utc": "2026-11-27T02:22:41.3022403Z",
+    "frame": 5494,
+    "survivorPlayback": "playing",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 0,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:41.8339534Z",
+    "frame": 5515,
+    "survivorPlayback": "playing",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 0,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:42.3350969Z",
+    "frame": 5535,
+    "survivorPlayback": "playing",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 0,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:42.8357734Z",
+    "frame": 5554,
+    "survivorPlayback": "playing",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 0,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:43.3367825Z",
+    "frame": 5571,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:43.8415352Z",
+    "frame": 5592,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:44.3677189Z",
+    "frame": 5611,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:44.8689038Z",
+    "frame": 5632,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:45.4016318Z",
+    "frame": 5654,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:45.9035584Z",
+    "frame": 5675,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:46.4359238Z",
+    "frame": 5697,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:46.9373970Z",
+    "frame": 5716,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:47.4693765Z",
+    "frame": 5734,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:47.9696316Z",
+    "frame": 5753,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:48.4697156Z",
+    "frame": 5770,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:49.0016255Z",
+    "frame": 5791,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:49.5022255Z",
+    "frame": 5811,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:50.0042671Z",
+    "frame": 5830,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:50.5095811Z",
+    "frame": 5846,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:51.0338977Z",
+    "frame": 5866,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:51.5349991Z",
+    "frame": 5887,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:52.0353693Z",
+    "frame": 5908,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   },
+   {
+    "utc": "2026-11-27T02:22:52.5361517Z",
+    "frame": 5928,
+    "survivorPlayback": "inactive",
+    "survivorEndUtc": null,
+    "survivorTracked": true,
+    "callbacksWithheld": 1,
+    "otherPlayback": "inactive"
+   }
+  ],
+  "overlapSchedule": [
+   {
+    "delivery": 0,
+    "frame": 5471,
+    "sameFrame": true,
+    "keeperCalls": 1,
+    "otherCalls": 1,
+    "bothPlaying": true,
+    "keeperPlayingId": 522,
+    "otherPlayingId": 523
+   }
+  ],
+  "overlapSetup": "constructed: declared same-frame delivery of fresh resolved tail hits (attack roll result set to Hit) to each source's own AnkylosaurusTailControl; cues are the production handler's real postings",
+  "cuesBeforeSelection": {
+   "survivorSource": [
+    {
+     "event": "Sweetener_Low_06_Quake",
+     "playingId": 522,
+     "frame": 5471,
+     "utc": "2026-11-27T02:22:40.7728474Z",
+     "endUtc": null,
+     "stopReason": null,
+     "stopRequestedUtc": null,
+     "stopResult": null,
+     "seconds": null
+    }
+   ],
+   "otherSource": [
+    {
+     "event": "Sweetener_Low_06_Quake",
+     "playingId": 523,
+     "frame": 5471,
+     "utc": "2026-11-27T02:22:40.7738465Z",
+     "endUtc": null,
+     "stopReason": null,
+     "stopRequestedUtc": null,
+     "stopResult": null,
+     "seconds": null
+    }
+   ]
+  },
+  "before": {
+   "survivor": {
+    "event": "Sweetener_Low_06_Quake",
+    "playingId": 522,
+    "frame": 5471,
+    "utc": "2026-11-27T02:22:40.7728474Z",
+    "endUtc": null,
+    "stopReason": null,
+    "stopRequestedUtc": null,
+    "stopResult": null,
+    "seconds": null
+   },
+   "survivorPlayback": "playing",
+   "other": {
+    "event": "Sweetener_Low_06_Quake",
+    "playingId": 523,
+    "frame": 5471,
+    "utc": "2026-11-27T02:22:40.7738465Z",
+    "endUtc": null,
+    "stopReason": null,
+    "stopRequestedUtc": null,
+    "stopResult": null,
+    "seconds": null
+   },
+   "otherPlayback": "playing",
+   "frame": 5471
+  },
+  "otherRetiredUtc": "2026-11-27T02:22:40.7748479Z",
+  "afterOtherRetired": {
+   "other": {
+    "event": "Sweetener_Low_06_Quake",
+    "playingId": 523,
+    "frame": 5471,
+    "utc": "2026-11-27T02:22:40.7738465Z",
+    "endUtc": null,
+    "stopReason": null,
+    "stopRequestedUtc": null,
+    "stopResult": null,
+    "seconds": null
+   },
+   "otherStopAttempts": 0,
+   "survivorStopAttempts": 0,
+   "note": "read in the retirement frame, before the product's stop runs; the verdict reads the settled values at the window end"
+  },
+  "survivorFirstInactiveUtc": "2026-11-27T02:22:43.3367825Z",
+  "otherRetirementSettled": {
+   "other": {
+    "event": "Sweetener_Low_06_Quake",
+    "playingId": 523,
+    "frame": 5471,
+    "utc": "2026-11-27T02:22:40.7738465Z",
+    "endUtc": "2026-11-27T02:22:40.8040089Z",
+    "stopReason": "view-destroyed",
+    "stopRequestedUtc": "2026-11-27T02:22:40.7788460Z",
+    "stopResult": "stop-requested",
+    "seconds": 0.0301624,
+    "stopAttempts": 1
+   },
+   "survivorStopAttemptsThroughWindow": 0
+  },
+  "survivorAtWindowEnd": {
+   "cue": {
+    "event": "Sweetener_Low_06_Quake",
+    "playingId": 522,
+    "frame": 5471,
+    "utc": "2026-11-27T02:22:40.7728474Z",
+    "endUtc": null,
+    "stopReason": null,
+    "stopRequestedUtc": null,
+    "stopResult": null,
+    "seconds": null
+   },
+   "playback": "inactive",
+   "tracked": true,
+   "callbacksWithheld": [
+    "2026-11-27T02:22:42.9048391Z"
+   ],
+   "callbacksPassedThrough": 1
+  },
+  "componentBeforeDisposal": true,
+  "survivorAfterDisposal": {
+   "cue": {
+    "event": "Sweetener_Low_06_Quake",
+    "playingId": 522,
+    "frame": 5471,
+    "utc": "2026-11-27T02:22:40.7728474Z",
+    "endUtc": null,
+    "stopReason": "view-destroyed",
+    "stopRequestedUtc": "2026-11-27T02:22:52.8080932Z",
+    "stopResult": "stop-requested",
+    "seconds": null
+   },
+   "stopAttempts": 1,
+   "playback": "inactive",
+   "viewDestroyed": true,
+   "playbackComponentDestroyed": true,
+   "unrelatedRecordsChanged": 0,
+   "note": "a stop request issued by the source's own retirement for an already inactive playing ID is a request, not completion; EndUtc stays unset"
+  },
+  "releaseFailures": [],
+  "retirementFailures": [],
+  "interventionDisposeFailures": [],
+  "independentCleanup": {
+   "commandsInterrupted": 0,
+   "sourcesRetiredHere": 0,
+   "survivorRetirementRequested": true,
+   "otherRetirementRequested": true
+  },
+  "hookAttempted": true,
+  "interventionHooksAfter": 0,
+  "hookSetupFailure": null,
+  "hookSetup": null,
+  "verdict": null,
+  "disposition": "Established under the synthetic loss: the survivor's playback ended normally (confirmed inactive by the native query, including at the window end and after its own source's disposal), the other source was unaffected, and the only residual was the survivor's tracking on its own source's playback component, which went away when that component was destroyed with the source. Owner amendment 2 section 4 accepts this as a documented development limitation; no product change."
+ }
+}

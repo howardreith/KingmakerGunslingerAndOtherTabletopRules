@@ -1,0 +1,156 @@
+[
+ {
+  "file": "20261124T180635Z-owner-0.33.0-s7-fx-session.json",
+  "session": "20261124T180635Z-owner-0.33.0-s7-fx",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "2597d607f57fd73f161f249dcec521a3620b117e2640eb9ebb34077bd3f54f95"
+  }
+ },
+ {
+  "file": "20261124T180635Z-owner-0.33.0-s7-fx-01-fx.json",
+  "session": "20261124T180635Z-owner-0.33.0-s7-fx",
+  "launch": "01-fx",
+  "checks": 33,
+  "passed": 33,
+  "sources": {
+   "sprint32-review.json": "16639a9d493c26f2f62194f9a32ebf1c2437f1e0c5cd578c96e10f3525879cd5",
+   "summon-s7-effects.json": "941cd17456946db2c9f10eb77bc6ea734497449afb7a0cf0b45d7f0353f73141",
+   "harness-result.json": "8ac36af503cd4aa17ca08d1a327dca7c8380d03b0b9cc54c6aaf4db72858f367"
+  }
+ },
+ {
+  "file": "20261124T180635Z-owner-0.33.0-s7-fx-02-r6.json",
+  "session": "20261124T180635Z-owner-0.33.0-s7-fx",
+  "launch": "02-r6",
+  "checks": 16,
+  "passed": 16,
+  "sources": {
+   "sprint32-review.json": "26d009c3ccabb14279c08332b3b7663fed9d7fc35d04fa1db75c3ea045154593",
+   "summon-playtest-r6-presentation.json": "e1d6b7fb56047eb18a1cc041a454517aa87cdfbee52aa561af44f214053574f1",
+   "harness-result.json": "53f13a318434e2f46f50a18700d77376d9629328c2dd3ecae2abdfed3e16e4b0"
+  }
+ },
+ {
+  "file": "20261124T181432Z-owner-0.33.0-s7-trumpet-reload-session.json",
+  "session": "20261124T181432Z-owner-0.33.0-s7-trumpet-reload",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "20e402559f32ae953d51bb323ad9eb2f6eb6f5ce9c60b3f767653b9b88403646"
+  }
+ },
+ {
+  "file": "20261124T181432Z-owner-0.33.0-s7-trumpet-reload-01-trumpet-reload.json",
+  "session": "20261124T181432Z-owner-0.33.0-s7-trumpet-reload",
+  "launch": "01-trumpet-reload",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "17025252228d7b0a75c6aa9a2262cb29d294cf3fc332bdfc5975a5d925541d0f"
+  }
+ },
+ {
+  "file": "20261124T181609Z-owner-0.33.0-s7-ghaele-session.json",
+  "session": "20261124T181609Z-owner-0.33.0-s7-ghaele",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "b2591faa6b6d3c06374972376642c8e856e56e57a33140b7455d7536544ab479"
+  }
+ },
+ {
+  "file": "20261124T181609Z-owner-0.33.0-s7-ghaele-01-ghaele.json",
+  "session": "20261124T181609Z-owner-0.33.0-s7-ghaele",
+  "launch": "01-ghaele",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "ed61cb301559a183852f144f45e14a73170e38fce5bae6ddc9d5cec23932e0e0"
+  }
+ },
+ {
+  "file": "20261124T182018Z-owner-0.33.0-s7-ghaele-session.json",
+  "session": "20261124T182018Z-owner-0.33.0-s7-ghaele",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "18175dc553c46373e1928f80a2e2bf0497cea25e150cf8e3708e23b7ff7368cc"
+  }
+ },
+ {
+  "file": "20261124T182018Z-owner-0.33.0-s7-ghaele-01-ghaele.json",
+  "session": "20261124T182018Z-owner-0.33.0-s7-ghaele",
+  "launch": "01-ghaele",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "c722afbf8fabafd235211312b085c4d60bc8f582b7d98ff81fded235dedac61b"
+  }
+ },
+ {
+  "file": "20261124T182558Z-owner-0.33.0-s7-trumpet-reload-session.json",
+  "session": "20261124T182558Z-owner-0.33.0-s7-trumpet-reload",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "1df34ffbb5df79a2a7a73c080eb5f8c1ad35d1b7dd60cd5a725a7e4ece181715"
+  }
+ },
+ {
+  "file": "20261124T182558Z-owner-0.33.0-s7-trumpet-reload-01-trumpet-reload.json",
+  "session": "20261124T182558Z-owner-0.33.0-s7-trumpet-reload",
+  "launch": "01-trumpet-reload",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "3ebaaf9ed1dacfd57b3419e3c5ba3dc7ba870e8cbe139776d1d6f560047b923d"
+  }
+ },
+ {
+  "file": "20261124T182757Z-owner-0.33.0-s7-ghaele-session.json",
+  "session": "20261124T182757Z-owner-0.33.0-s7-ghaele",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "80b4a2ae6c3a5acd5390d1f8fe9770e7e01cbf9952bb0cf3d555298b0433a74e"
+  }
+ },
+ {
+  "file": "20261124T182757Z-owner-0.33.0-s7-ghaele-01-ghaele.json",
+  "session": "20261124T182757Z-owner-0.33.0-s7-ghaele",
+  "launch": "01-ghaele",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "241105191c2ab0dc34bb72c54a0a391723e64b2c348ef109575960fd01f8bbc1"
+  }
+ },
+ {
+  "file": "20261124T183206Z-owner-0.33.0-s7-ghaele-session.json",
+  "session": "20261124T183206Z-owner-0.33.0-s7-ghaele",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "aafd164760c3421d0dceceeee81352e0555d4f60efa27e72665a788dd0931e78"
+  }
+ },
+ {
+  "file": "20261124T183206Z-owner-0.33.0-s7-ghaele-01-ghaele.json",
+  "session": "20261124T183206Z-owner-0.33.0-s7-ghaele",
+  "launch": "01-ghaele",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "614557afc6fb653b4638c60a1e1dcde2762bf45e209f9086188b516f3f30a6ac"
+  }
+ }
+]

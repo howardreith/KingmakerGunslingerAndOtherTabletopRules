@@ -1,0 +1,114 @@
+{
+  "audited_commit": "a84d0b0d073055da8c192ba6e3edf0880644f550",
+  "verdict": "corrections_required",
+  "findings": [
+    {
+      "id": "A1-F1",
+      "severity": "blocking",
+      "relates_to": "R3-F2",
+      "file": "src/KingmakerGunslinger/RuntimeTesting/Sprint7ObserverPolicy.cs",
+      "line": 981,
+      "summary": "A failed context read can still turn an unresolved condition into a confirmed nonmatch.",
+      "failure_scenario": "Both delivery notifications are missed. The command’s process is subsequently retained and reads ended, but its context getter throws while a new Sickened is being attributed. RetainsContext skips the exception and returns false. Commands.Unknown is empty because the process itself was found. Release and RemainingIdentities can both exclude the condition, allowing clean admission.",
+      "required_correction": "Preserve a named attribution uncertainty when no exact match was found and a relevant lookup was unreadable. An independent positive match must still win. Drive the missed notifications, recovery of an already-ended process, and the zero-live census through the production attribution and admission path. Check that recovery removes the matching condition without creating an observed delivery."
+    },
+    {
+      "id": "A1-F2",
+      "severity": "blocking",
+      "relates_to": "R3-F1 R3-F4",
+      "file": "src/KingmakerGunslinger/RuntimeTesting/Sprint7ObserverPolicy.cs",
+      "line": 1389,
+      "summary": "An empty condition list can discharge reconciliation while its subscription is still active.",
+      "failure_scenario": "The focused control at Sprint7VisualRepairTests.cs:1921 makes the transferred unsubscribe throw before clearing Subscribed. The exact error reaches the phase, but reconcile returns true from the empty condition list, so Settle removes the terminal action. If the final condition read is unreadable, settledNow has also already been set, leaving only a polling delegate and a no-op terminator. The ended-then-throwing control can even write settledAtCleanup=true during terminal teardown at line 1386.",
+      "required_correction": "Track which cleanup operations completed and retain executable ownership of unfinished work through bounded terminal accounting. Preserve the original error, record an unresolved subscription if release cannot be established, and derive the settlement and subscription fields from what actually happened. Extend the existing late-unsubscribe and ended-then-throwing controls to assert those outcomes."
+    },
+    {
+      "id": "A1-F3",
+      "severity": "blocking",
+      "relates_to": "R3-F1 R3-F3 R3-F4",
+      "file": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.Sprint7Presentation.cs",
+      "line": 3677,
+      "summary": "Phase teardown can destroy the outside target before deferred Dust settlement reads its control.",
+      "failure_scenario": "Dispose the phase during the ordinary final Dust cast with the same-caster control acquired and an execution pending. ReleaseOutstanding retires the outside target before the final Settle and TerminatePending calls. The subsequent presence check sees a destroyed target and reports the control missing. Moving retirement into terminal reconciliation alone also leaves a gap. Sprint7CellIsolation.TerminatePending at Sprint7ObserverPolicy.cs:803 iterates one snapshot, so a retirement residual published by a terminator can remain pending after the phase clears its owners.",
+      "required_correction": "Give reconciliation its control read and releases before fallback retirement of that exact target. Consume any retirement published during terminal cleanup, recording settlement or a named unresolved failure before phase exit. Exercise forced teardown with the real one-request retirement record."
+    },
+    {
+      "id": "A1-F4",
+      "severity": "blocking",
+      "relates_to": "R3-F3",
+      "file": "tests/KingmakerGunslinger.DomainTests/Sprint7VisualRepairTests.cs",
+      "line": 1984,
+      "summary": "The focused control supplies absent and unreadable values without executing the production presence read or its independent releases.",
+      "failure_scenario": "ControlResults receives literal false and null. No getter throws, no acquired control is released, and no admission or retirement decision runs. The transfer fixture at line 1474 also inserts an outside-target residual directly. These tests stay green if the real afterSettlement caller skips the second release or retirement publication.",
+      "required_correction": "Drive the production Dust settlement operation with a missing required same-caster handle and with two acquired handles whose first presence read throws. Assert the read ran once, the other control was released, admission was refused, and exactly one outside-target retirement reached the consuming owner through deferred settlement. Preserve the distinct expectation for a deliberately stopped child."
+    },
+    {
+      "id": "A1-F5",
+      "severity": "blocking",
+      "relates_to": "R2-F7",
+      "file": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.Sprint7Presentation.cs",
+      "line": 2736,
+      "summary": "Passive Dust and Ice casts bypass the phase’s issued-command list.",
+      "failure_scenario": "R6RunPassive calls conditions.Own and then runs the command directly at RuntimeTestRunner.SummonPlaytestR6Presentation.cs:235. The cell knows the command, but _s7Issued never receives it. If the cell’s interruption throws and the command remains unfinished, phase teardown cannot select that exact command before actor retirement.",
+      "required_correction": "Record the actor and command reference in the existing passive issue callback before its single native Run. Keep the separate same-caster command outside that record. Exercise the production registration path in the focused command control."
+    },
+    {
+      "id": "A1-F6",
+      "severity": "blocking",
+      "relates_to": "R2-F7",
+      "file": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.Sprint7Presentation.cs",
+      "line": 3666,
+      "summary": "The interruption predicate is exact, but unconditional queue maintenance can still dispatch another owner’s queued command.",
+      "failure_scenario": "After an owned command is interrupted, Kingmaker 2.1.7b’s RemoveFinishedAndUpdateQueue removes an eligible queue head and calls Run on it when its slot is free. A foreign command can therefore be dequeued and started during cleanup. The focused case at Sprint7VisualRepairTests.cs:1971 never places b2 in an actor queue. Its assertion that b2 was untouched cannot detect this behavior.",
+      "required_correction": "Guard queue maintenance so cleanup preserves the foreign command at this boundary. Put distinct owned and foreign command objects on the same actor in the focused control, use the production selector, and inspect the actual queue before actor retirement. Keep permitted maintenance and combat exit independent of a throwing interruption."
+    },
+    {
+      "id": "A1-F7",
+      "severity": "blocking",
+      "relates_to": "R1-F9",
+      "file": "tests/KingmakerGunslinger.DomainTests/Sprint7VisualRepairTests.cs",
+      "line": 2004,
+      "summary": "Production now guards baseline placement, but the focused test writes the expected phase failure itself.",
+      "failure_scenario": "The test calls setup.Acquire directly, catches the placement exception, and calls isolation.Fail with the expected message. It would pass if ReviewSprint7Effects moved placement back outside S7PhaseAcquire or stopped reporting the error.",
+      "required_correction": "Drive the phase setup sequence used by ReviewSprint7Effects with a throwing placement boundary after both subscriptions. Assert the production-published original error, both subscription releases, the position-restoration attempt, and incomplete required cells."
+    },
+    {
+      "id": "A1-F8",
+      "severity": "blocking",
+      "relates_to": "R2-F8",
+      "file": "tests/KingmakerGunslinger.DomainTests/Sprint7VisualRepairTests.cs",
+      "line": 2063,
+      "summary": "The ID-free removal exception executes, but the test supplies both the identity callback and the early failure publication.",
+      "failure_scenario": "PlainRemovalThenFailingRead invokes AcquisitionLedger.Release and calls isolation.Fail itself. Removing the identity argument from S7DustConditions.Release or removing the production early ReleaseFailed call would leave this test green.",
+      "required_correction": "Exercise the early release-and-publication operation used by Dust. Make removal throw an ID-free exception, then make the later read fail. Assert one publication with the exact instance and original error, the later read failure, and refused admission."
+    },
+    {
+      "id": "A1-F9",
+      "severity": "blocking",
+      "relates_to": "R1-F13",
+      "file": "docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md",
+      "line": 511,
+      "summary": "The candidate chronology is corrected, but the active per-parent map still omits relevant findings and overstates focused evidence.",
+      "failure_scenario": "Round 3 binds R2-F8 to parent R4-F1, yet its current correction appears only on the R7-F2 row. R3-F4 is bound to R7-F2 and R7-F5, yet appears only on the R4-F1 row. Lines 362–367 also claim focused preservation of a foreign command on the same actor, although the test never queues that command.",
+      "required_correction": "Align the affected rows with the supplied round-3 acceptance IDs and record the caller coverage the corrected tests actually establish. Keep the 20261126T134425Z PASS bound to candidate 3 source 66b0ff3f14, distinct from reviewed head f0ca78cbab, records commit 80d224bd56, and the pending candidate 4 and archive."
+    }
+  ],
+  "verified": [
+    {
+      "finding": "R3-F1",
+      "evidence": "For ordinary phase settlement, Sprint7ObserverPolicy.cs:739 and :753 forward later failures and residuals after the handoff at :1245. EffectsOwnershipRecovery at Sprint7VisualRepairTests.cs:1925 checks the exact late unsubscribe failure alongside the original driver failure, and :1931 checks that the phase consumes the forwarded residual."
+    },
+    {
+      "finding": "R3-F4",
+      "evidence": "Sprint7ObserverPolicy.cs:1395 registers the obligation before the immediate attempt at :1402. EffectsOwnershipRecovery at Sprint7VisualRepairTests.cs:1939 makes the third end-state read throw and checks that the subscription remains held until the terminal action runs once."
+    },
+    {
+      "finding": "R1-F11",
+      "evidence": "RuntimeTestRunner.Sprint7Presentation.cs:3595 passes fixture.RetirementAttempted to RetireRecorded before disposal. RuntimeTestRunner.ExpandedSummoningCorrection.cs:272 consumes that collection and :306 excludes attempted units from the final sweep. EffectsOwnershipRecovery at Sprint7VisualRepairTests.cs:1838 and :1848 passes the collection written by the production operation through FixtureTeardownCandidates for both direct failure positions. Line 1681 explicitly asserts that the throwing context getter ran before the successful match."
+    },
+    {
+      "finding": "R3-F5",
+      "evidence": "S7-RECOVERY-MANIFEST.md:603, :608, :612 and :617 reconcile to 59 min 37.0 s and 17 failed attempts at the round-3 stop. The four receipts total 8.9 s within the 17.3 s outer batch. The three later focused gates add 49.8 s, giving 60 min 26.8 s spent, 29 min 33.2 s remaining, and 18 failed attempts. The latest recorded focused gate passed 25 tests. This audit used read-only inspection and launched no gate, build, or native session."
+    }
+  ]
+}

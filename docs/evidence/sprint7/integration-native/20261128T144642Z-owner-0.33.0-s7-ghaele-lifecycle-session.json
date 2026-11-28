@@ -1,0 +1,50 @@
+{
+ "admission": {
+  "dllMvid": "fda26bf8-c9c7-4dcd-9ffb-7e5f8c77be8e",
+  "dllSha256": "eb5f8f4c0302a5248ee523a313cdee2bd12c4ef873a4d82d88cf266346c41ca4",
+  "mode": "development",
+  "packageSha256": "5824c44426570362c6f0192d4dda007f457a8d99413c7e91dbb6fe7233b3c4e8",
+  "producerCommit": "66a0b9c724e7a16e425b5e21ac962cd441eaced6",
+  "releaseTag": null,
+  "version": "0.0.197"
+ },
+ "candidateDllSha256": "eb5f8f4c0302a5248ee523a313cdee2bd12c4ef873a4d82d88cf266346c41ca4",
+ "candidateVersion": "0.0.197",
+ "candidateZipSha256": "5824c44426570362c6f0192d4dda007f457a8d99413c7e91dbb6fe7233b3c4e8",
+ "failure": null,
+ "git": "66a0b9c724e7a16e425b5e21ac962cd441eaced6",
+ "hostConflict": null,
+ "loaderProfile": "owner-0.33.0",
+ "ownerInstallUnchanged": true,
+ "ownerIntegrity": "verified",
+ "ownerSavesUnchanged": true,
+ "ownership": "completed",
+ "registryRestored": true,
+ "registryVerification": {
+  "backupSha256": "5ffd592266de96ee065718826ba5667ec0da59412daa69e50c03486839fc6b38",
+  "path": "<lab>/registry-readback-62f33ab4706d4a418a7d68fcf5e6f339.reg",
+  "sha256": "5ffd592266de96ee065718826ba5667ec0da59412daa69e50c03486839fc6b38",
+  "status": "verified"
+ },
+ "retained": null,
+ "runtimeLease": "runtime-20261128T144651Z-66384ddafdc54aec9bbc81cefbed1f0f",
+ "scenarioPassed": true,
+ "session": "s7-ghaele-lifecycle",
+ "sessionId": "20261128T144642Z-owner-0.33.0-s7-ghaele-lifecycle",
+ "sources": {
+  "session-summary.json": "12d233bd2a790b4d8d8b1a337da010d458a1d343d099877ac4a2d2ebcc68ecf8"
+ },
+ "stagedMods": {
+  "KingmakerGunslinger": {
+   "dllSha256": "eb5f8f4c0302a5248ee523a313cdee2bd12c4ef873a4d82d88cf266346c41ca4",
+   "managerVersion": "0.31.1",
+   "zipSha256": "5824c44426570362c6f0192d4dda007f457a8d99413c7e91dbb6fe7233b3c4e8"
+  },
+  "KmgLoaderCompatHarness": {
+   "dllSha256": "d77754bad4377734e87c9a70aaf0c980a306db82dbee25e335b9e9ba47ebb4f1"
+  }
+ },
+ "status": "PASS",
+ "transactionId": "a9e2e856d24e47d4958c3b893cfac96d",
+ "transactionSucceeded": true
+}

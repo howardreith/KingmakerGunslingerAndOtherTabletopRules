@@ -1,0 +1,74 @@
+{
+  "name": "s7-trumpet-reload",
+  "description": "Sprint 7 T7 / VIS-06 review R1-F12: the Trumpet Archon's owned cast cue across the admitted same-process reload in the disposable fixture save. Step before: a published Trumpet Archon blasts once (cue followed to its native end) and again, ending while the second cue still plays; saveGame then saves during that playback; loadLastSave loads it in the same process; step after: the saved cue's playing ID has a native end (natural, or the product's retirement stop when the old view went away), the load posted nothing again, and the loaded Trumpet's fresh blast posts exactly one cue that ends naturally. Disclosed: appear buffs removed, brain off, time unpaused, a saving throw seeded to a natural 20 only when its rule belongs to the observed blast execution and its saver is not the Trumpet (generator saved at that rule's start and put back at its end), so nobody is paralyzed; during the first blast an unrelated save and draw are compared with the generator's own control values (R2-F2). Then step abandon starts a blast and is abandoned by its 4 s step timeout (expected failure), and abandon-check confirms the abandoned probe's subscription, seeding, command and Trumpet ended. The product runs alone with the harness. Round 5: no shared-generator intervention; the owned save's own d20 rule is pre-rolled to 20 through the native rule contract, and a foreign draw and save dispatched inside the owned save's callbacks, plus the following draw, are compared with an untreated control. Round 6 (R2-F2): no die is forced; only the blast’s own top-level save passes through its AutoPass; a foreign d20 dispatched directly inside the owned save before its native roll, the owned save die and the following draw are compared with an untreated generator copy.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "trumpet-reload",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgTrumpetCue",
+            "label": "before",
+            "match": "before",
+            "timeoutSeconds": 180
+          },
+          {
+            "op": "saveGame",
+            "label": "s7trumpet",
+            "timeoutSeconds": 120
+          },
+          {
+            "op": "loadLastSave",
+            "label": "same-process-load",
+            "timeoutSeconds": 240
+          },
+          {
+            "op": "kmgTrumpetCue",
+            "label": "after",
+            "match": "after",
+            "timeoutSeconds": 180
+          },
+          {
+            "op": "kmgTrumpetCue",
+            "label": "abandon",
+            "match": "abandon",
+            "timeoutSeconds": 4,
+            "expectFailure": "step timeout"
+          },
+          {
+            "op": "kmgTrumpetCue",
+            "label": "abandon-check",
+            "match": "abandon-check",
+            "timeoutSeconds": 30
+          }
+        ]
+      }
+    }
+  ]
+}
