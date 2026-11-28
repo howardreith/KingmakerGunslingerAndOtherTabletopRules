@@ -19,4 +19,7 @@ mission inputs. Production copies go in the established icon source and export
 trees. The mod package does not ship them from this directory.
 
 The implementation record that replaces the packet's template is kept in
-[IMPLEMENTATION-RECORD.md](IMPLEMENTATION-RECORD.md) once work begins.
+[docs/TURN-UNDEAD-IMPLEMENTATION-RECORD.md](../../docs/TURN-UNDEAD-IMPLEMENTATION-RECORD.md),
+under docs/ so record and evidence updates during native runs leave the
+candidate under test current. Curated native evidence goes under
+docs/evidence/turn-undead/.
