@@ -123,12 +123,46 @@ derives the icon set from the catalog's runtime exports).
 
 Development candidate builds on DATA, measured: `Build-Local -DevelopmentPurpose turn-undead-first -DevelopmentTestFilter turn-undead` at `6da197e9` ran 20:27-00:31 (4 h 04 min) and stopped at packaging (fixed in `d37f4af63`); the rebuild at `d37f4af63` ran 00:46-04:14 (3 h 28 min) and produced package `4fd152379c5ad7993dfd4522047d2122d956174a7bbe5a1db19290eadc2a2b48`, DLL `c53594af8d385fb355a8f7574e25243788599027ef01acd920cbc1cfbf3b95bc`. Almost all of the time is the repository-validation wrapper's per-file git object reads: the shared object store held 4,517 packs (~18k files in `objects/pack`; listing it took ~45 s, so each object-reading git command took ~58 s with no CPU and no lazy fetch). This is far outside the 15/30-minute validation budget; the owner authorized a repack after the rebuild. After `git repack -a -d --cruft` (04:28-04:34, 3 packs, 1.02 GiB) the same lookup takes 0.02 s. The first native session attempt at `d37f4af63` was refused at admission before anything was acquired, because the probe negative control and this record (then under planning/) had been committed after the candidate; every file outside docs/ is a candidate material input. The record moved under docs/ and the candidate was rebuilt with the probe change. Native observation launches only after a candidate exists and its runtime transaction is admitted; the budget applies to each validation phase, and the build duration is reported here rather than repeated unchanged.
 
+## Native evidence: first turn (intermediate checkpoint)
+
+| Field | Value |
+| --- | --- |
+| Session | `scripts/compatibility/loader-compat/sessions/turn-undead-first.json`, run `20261128T100756Z-umm-0.31.1-turn-undead-first`, verdict PASS (135 s), transaction completed, game settings applied, owner files verified |
+| Candidate | commit `4b5f14e11297` (development purpose `turn-undead-first`), package `6e9d59eddf5d7500a5b1ac690e3b3c46519c9f86c02e325e26aad00797465622`, DLL `d3b707679cfd32fb63a4595d90374be5ca31af714b6297c4b262b5726eb7af9e`; product sources identical to `d37f4af63` (later commits changed only the probe and records) |
+| Runtime | disposable game copy `game-copies/loader-compat`, profile `umm-0.31.1` (UMM `2e038ff2...`, Harmony12 `aa1cd483...`), vanilla (active mods: the candidate and the harness only), fixture save `KMCS_AFTER_NORMAL_012_MODONLY.zks`, `locale=enGB` |
+| Observer | `tools/LoaderCompatHarness/TurnUndeadProbes.cs` at `4b5f14e11` (mode `first-turn`); evidence retained in the lab under `runtime-evidence/loader-compat/20261128T100756Z-umm-0.31.1-turn-undead-first` |
+| Fixture disclosure | 25 pre-existing units (area NPCs and the party character) silenced for the observation and restored on release; spawned units brain-off; Will totals set on spawned undead; positive channel added as a fact (the level-up controller left it unselected); feat added as a fact |
+
+Observed:
+
+- Log: `[turn-undead][initialize.complete] registered=10;featPublished=True;resistance=a9ac84c6...:4+8;cotw=absent;menuChildren=0`; no `initialize.failed`, `cotw.unavailable` or root-cause lines.
+- Cleric 5 / fighter 2, Charisma bonus +3: learning the feat granted exactly the cleric action and left the channel pool at 6. Tooltip texts: "Will negates", "1 minute"; action icon `KMG_Icon_turn-undead-action`.
+- Negative control (same build, no feat, pool 6): no Turn action granted; the cleric Turn blueprint fails its caster checks (`IsAvailableForCast` false); the feat holder passes.
+- One `UnitUseAbility` cast (Success, 2.17 s): pool 6 -> 5. Initial Will saves at DC 15 (= 10 + 5/2 + 3; the native character-level formula would give 16): skeleton fail, zombie lord fail, Will-raised zombie lord pass (no effect). The skeleton 16.0 m away and the living hostile 3.0 m away were not affected. No Turn damage or healing.
+- Flight state persisted on the effect: skeleton `mindless-family`, zombie lord `intelligent-identity-fact`, both DC 15 and source = the cleric Turn action; both Frightened.
+- 13 s real time: skeleton 2.42 -> 18.97 m, zombie lord 4.34 -> 18.63 m. Skeleton: no repeat saves. Zombie lord: two failed round saves 6 s apart (DC 15, reason = the flight effect), then a successful save 4.7 s after its Will was raised ended the effect and Frightened; the skeleton was still fleeing.
+- The skeleton's effect ended 61.9 s after the cast, unrefreshed, with no repeat save; Frightened cleared.
+- `AbilityData.CalculateParams()` reports 16 because it runs no ability calculator; the native tooltip shows no number, and every rolled save used 15. Recorded as informational.
+
+Failed attempts (retained, not hidden): `20261128T094042Z` (preview-API assertion and a far target whose navmesh trace collapsed to 2.11 m), `20261128T095145Z` (an area unit damaged the fleeing skeleton, ending its effect at 26 s), `20261128T095946Z` (every product assertion passed, 61.9 s expiry, but the party character auto-attacked tracked units). Each led to the probe change named in its commit; no product change.
+
 ## Acceptance evidence index
 
 | IDs | Result | Evidence and candidate | Limits |
 | --- | --- | --- | --- |
 | TU-01 | PASS | intake commit `5236e51a`; INTAKE.md; enrollment above | |
 | TU-02 | PASS (contracts) | this record; installed assembly hash | native census PENDING |
-| TU-03 | PASS (mapping) | source table; `turn-undead.source-catalog` | native per-source PENDING |
-| TU-04 | PASS (policy) | inventory; `turn-undead.classification-*` | 2.1.7b census PENDING |
+| TU-03 | PASS (mapping) | source table; `turn-undead.source-catalog` | native paladin/Hospitaler/Empyreal PENDING |
+| TU-04 | PASS (policy) | inventory; `turn-undead.classification-*`; native skeleton/zombie lord classification in the first turn | 2.1.7b census PENDING |
+| TU-06 | PARTIAL | first turn negative control (no feat, positive channel present) | negative-only cleric, non-channel class and permission-only fixtures through normal acquisition PENDING |
+| TU-08 | PASS (cleric) | first turn: one use for several undead | paladin two uses, Hospitaler, Empyreal PENDING |
+| TU-13 | PASS (real time) | first turn: standard-action command, one activation | turn-based PENDING |
+| TU-14 | PASS | first turn: in-range undead affected; 16.0 m undead and in-range living unaffected | |
+| TU-17 | PASS | first turn: success prevents, failure applies, both minds saved initially | |
+| TU-18 | PASS | first turn: mindless skeleton fled the whole minute with no repeat save | |
+| TU-19 | PASS (real time) | first turn: round saves 6 s apart, failure retains, success ends, no debit | turn-based PENDING |
+| TU-20 | PASS | first turn: unrefreshed 61.9 s end | |
+| TU-21 | PARTIAL | first turn: cleric 5 + fighter 2, Cha +3 -> DC 15 (unrelated levels excluded) | odd/even levels and other Charisma values PENDING; the engine exposes no numeric preview in the tooltip |
+| TU-24 | PASS (first turn) | no Turn damage/heal; no allegiance change observed | altered-HP group PENDING |
+| TU-28 | PARTIAL | first turn: vanilla direct action, source and icon identity | UI/hotbar presentation PENDING |
 | others | NOT RUN | | |
