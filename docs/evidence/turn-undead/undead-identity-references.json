@@ -1,0 +1,212 @@
+{
+ "schema": "kmg.turn-undead.installed-references.v1",
+ "source": {
+  "file": "Kingmaker_Data/sharedassets1.assets",
+  "sha256": "cc779caf2fef21d111856a57d40b510677b0c236ad2723d1849564626445f785",
+  "reader": "docs/evidence/turn-undead/read_installed_blueprints.py"
+ },
+ "note": "Installed 2.1.7b blueprint references (names, GUIDs, counts only). 'via' lists the element types between the unit and the owning blueprint, e.g. a spawn action inside an ability's run action. BlueprintRoot and BlueprintLibrary registrations are omitted.",
+ "units": [
+  {
+   "guid": "4050be4512d245f40bf9461074b672f4",
+   "name": "SkeletonSummoned",
+   "referencedBy": [
+    {
+     "blueprint": "AnimateDead",
+     "guid": "4b76d32feb089ad4499c3a1ce8e1ac27",
+     "via": [
+      "AbilityActionSpawnMonster",
+      "AbilityEffectRunAction"
+     ]
+    },
+    {
+     "blueprint": "UndeadSummonAnimate",
+     "guid": "4c1556984f24e5c4282c6fcda832b7b2",
+     "via": [
+      "AbilityActionSpawnMonster",
+      "AbilityEffectRunAction"
+     ]
+    },
+    {
+     "blueprint": "FionnAnimateDeadAbility",
+     "guid": "b27a8af70e0d1574eb96c1357ca376fe",
+     "via": [
+      "AbilityActionSpawnMonster",
+      "AbilityEffectRunAction"
+     ]
+    }
+   ]
+  },
+  {
+   "guid": "209f78dd464984c40b1eb43fabdab5a0",
+   "name": "SkeletonSummoned_ch5",
+   "referencedBy": []
+  },
+  {
+   "guid": "53e228ba7fe18104c93dc4b7294a1b30",
+   "name": "SummonedSkeletonChampion",
+   "referencedBy": [
+    {
+     "blueprint": "BlueprintRoot",
+     "guid": "2d77316c72b9ed44f888ceefc2a131f6"
+    },
+    {
+     "blueprint": "JaethalCampBuff",
+     "guid": "e9cc770ccca8b73488196e1f508e2675",
+     "via": [
+      "ContextActionSpawnMonster",
+      "AddFactContextActions"
+     ]
+    }
+   ]
+  },
+  {
+   "guid": "976d4937eb2620c4baf465bb6c7a00a7",
+   "name": "CR0.5_SkeletonMage",
+   "referencedBy": [
+    {
+     "blueprint": "DungeonDLC3",
+     "guid": "d5ac7a99563987948b653b03b341167b"
+    }
+   ]
+  },
+  {
+   "guid": "f68391521a2175647ab311fc64108574",
+   "name": "CR13_BloodyBonesBarbarian",
+   "referencedBy": [
+    {
+     "blueprint": "BlueprintRoot",
+     "guid": "2d77316c72b9ed44f888ceefc2a131f6"
+    },
+    {
+     "blueprint": "DungeonDLC3",
+     "guid": "d5ac7a99563987948b653b03b341167b"
+    }
+   ]
+  },
+  {
+   "guid": "39ace3bd77efd5546ad85b9e9947a311",
+   "name": "LoneWarrior",
+   "referencedBy": [
+    {
+     "blueprint": "LonelyBarrow",
+     "guid": "295bafa1ddd480c47b21594f140a3aba",
+     "via": [
+      "UnitHealthTrigger"
+     ]
+    }
+   ]
+  },
+  {
+   "guid": "fe662d20a0272bb4ea66bef675b4b52d",
+   "name": "CR12_DreadZombieCyclopCleric",
+   "referencedBy": [
+    {
+     "blueprint": "BlueprintRoot",
+     "guid": "2d77316c72b9ed44f888ceefc2a131f6"
+    },
+    {
+     "blueprint": "DungeonDLC3",
+     "guid": "d5ac7a99563987948b653b03b341167b"
+    },
+    {
+     "blueprint": "UndeadCyclopsPriest",
+     "guid": "f0a4efcaa7173bd43ba7fcf1f576e484"
+    },
+    {
+     "blueprint": "UndeadCyclopsPriest",
+     "guid": "2e286f14e73b385499551761afa66ce1"
+    },
+    {
+     "blueprint": "DLC2Village_DreadZombieCyclopCleric",
+     "guid": "113ee4680b60b974696313c00b29c4aa"
+    },
+    {
+     "blueprint": "TanekaUrgathoaCleric",
+     "guid": "234845a562eeda94a88e0cbff72129bf"
+    }
+   ]
+  },
+  {
+   "guid": "113ee4680b60b974696313c00b29c4aa",
+   "name": "DLC2Village_DreadZombieCyclopCleric",
+   "referencedBy": []
+  },
+  {
+   "guid": "2e286f14e73b385499551761afa66ce1",
+   "name": "UndeadCyclopsPriest",
+   "referencedBy": []
+  },
+  {
+   "guid": "f0a4efcaa7173bd43ba7fcf1f576e484",
+   "name": "UndeadCyclopsPriest",
+   "referencedBy": []
+  }
+ ],
+ "nativeHarmSaves": [
+  {
+   "guid": "279447a6bf2d3544d93a0a39c3b8e91d",
+   "name": "ChannelPositiveHarm",
+   "saves": [
+    {
+     "element": "$ContextActionSavingThrow$1eb24b29-07b4-46ca-a843-560395038549",
+     "type": "Will",
+     "conditionalDcIncreaseCount": 0
+    },
+    {
+     "element": "$ContextActionSavingThrow$7c69f5fd-a57b-4349-80ac-167e4dd81099",
+     "type": "Will",
+     "conditionalDcIncreaseCount": 0
+    }
+   ]
+  },
+  {
+   "guid": "4937473d1cfd7774a979b625fb833b47",
+   "name": "ChannelEnergyPaladinHarm",
+   "saves": [
+    {
+     "element": "$ContextActionSavingThrow$1eb24b29-07b4-46ca-a843-560395038549",
+     "type": "Will",
+     "conditionalDcIncreaseCount": 0
+    },
+    {
+     "element": "$ContextActionSavingThrow$7c69f5fd-a57b-4349-80ac-167e4dd81099",
+     "type": "Will",
+     "conditionalDcIncreaseCount": 0
+    }
+   ]
+  },
+  {
+   "guid": "cc17243b2185f814aa909ac6b6599eaa",
+   "name": "ChannelEnergyHospitalerHarm",
+   "saves": [
+    {
+     "element": "$ContextActionSavingThrow$1eb24b29-07b4-46ca-a843-560395038549",
+     "type": "Will",
+     "conditionalDcIncreaseCount": 0
+    },
+    {
+     "element": "$ContextActionSavingThrow$7c69f5fd-a57b-4349-80ac-167e4dd81099",
+     "type": "Will",
+     "conditionalDcIncreaseCount": 0
+    }
+   ]
+  },
+  {
+   "guid": "e1536ee240c5d4141bf9f9485a665128",
+   "name": "ChannelEnergyEmpyrealHarm",
+   "saves": [
+    {
+     "element": "$ContextActionSavingThrow$1eb24b29-07b4-46ca-a843-560395038549",
+     "type": "Will",
+     "conditionalDcIncreaseCount": 0
+    },
+    {
+     "element": "$ContextActionSavingThrow$7c69f5fd-a57b-4349-80ac-167e4dd81099",
+     "type": "Will",
+     "conditionalDcIncreaseCount": 0
+    }
+   ]
+  }
+ ]
+}
