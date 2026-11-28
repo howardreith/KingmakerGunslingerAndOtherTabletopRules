@@ -1,0 +1,59 @@
+TURN UNDEAD — CLAUDE IMPLEMENTATION MISSION
+Prepared for Howie Reith, 2026-11-27
+
+This packet contains the implementation mission and two original icon concepts.
+It contains no implemented feature, game binaries, or installer.
+
+CLAUDE START PROMPT
+-------------------
+Implement the Turn Undead feature described in this packet for
+howardreith/KingmakerGunslingerAndOtherTabletopRules. Read MISSION.md and all
+of its listed appendices, then read the current target repository instructions
+and the installed development-process instructions. Use the genuine foreground
+Claude developer session and independent Codex review process described in
+DEVELOPMENT_PROCESS.md. Work in an isolated branch/worktree, preserve unrelated
+missions, integrate the supplied feat and action icons, and continue ordinary
+implementation and review corrections within the existing authorization and
+enrollment limits. End with the verified draft-PR owner-review handoff. Do not
+merge or publish a release.
+
+The mission is Turn Undead only. Implement neither Command/Control Undead nor
+rebuking. Historical native blueprint observations must be checked against the
+actual supported installation. Distinguish verified behavior from assumptions.
+
+READING ORDER
+-------------
+1. MISSION.md — objective, scope, decisions, milestones, completion contract.
+2. DEVELOPMENT_PROCESS.md — real controller enrollment/review/finalization.
+3. TECHNICAL_CONTRACT.md — rules, native seams, resources, UI, persistence.
+4. ACCEPTANCE_MATRIX.md — finite behavior checklist and evidence requirements.
+5. ICON_INTEGRATION_NOTES.md — source intake, cache/bindings, catalog, export.
+6. SOURCES.md — pinned primary-source map and evidence limitations.
+7. assets/asset-manifest.json and assets/GENERATION_PROMPTS.md — exact art bytes.
+8. resources/IMPLEMENTATION_RECORD_TEMPLATE.md — fill with actual findings.
+
+ICONS
+-----
+assets/icons/turn-undead-feat.png      64 x 64, RGBA, transparent
+assets/icons/turn-undead-action.png   128 x 128, RGBA, opaque painted background
+
+The byte-preserved 1254 x 1254 originals are in assets/source/. The supplied
+runtime PNGs are valid format exports made with Pillow bicubic resizing. The
+repository uses a Windows GDI+ canonical exporter; follow ICON_INTEGRATION_NOTES
+for scoped canonical intake and actual new hashes. Do not regenerate the art
+or claim an unperformed owner visual approval. previews/icon-review.png is a
+thumbnail/contrast review sheet, not an in-game screenshot.
+
+CONTROLLER PLAN
+---------------
+turn-undead.plan.json is an optional real agent-review.plan.v1 plan with one
+intermediate checkpoint and one final checkpoint inside ONE draft PR. Before
+enrollment, copy it to a trusted plan directory as documented; an arbitrary
+path inside this extracted ZIP is not accepted by the inspected controller.
+
+INTEGRITY
+---------
+PACKAGE_MANIFEST.json identifies the contents and research baselines.
+SHA256SUMS.txt covers every other packaged file. Paths are relative to this
+directory. Keep the packet intact as a research/mission input; place production
+files in the repository's established locations during implementation.

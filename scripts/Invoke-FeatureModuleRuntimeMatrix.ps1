@@ -12,7 +12,13 @@ param(
     [switch]$Boundary14,
     [switch]$ReuseInstalledArtifact,
     [string]$DeploymentManifestPath,
-    [string]$PackagePath
+    [string]$PackagePath,
+    # Turn Undead feat offer, independent of the thirteen modules: default writes
+    # OFF only in the all-off state; on/off write that value in every state.
+    # Declared last so every earlier positional argument keeps its position;
+    # ValidateSet accepts any letter case and the converter below honours it.
+    [ValidateSet('default', 'on', 'off')]
+    [string]$TurnUndead = 'default'
 )
 
 Set-StrictMode -Version Latest
@@ -76,15 +82,16 @@ if ($ReuseInstalledArtifact -and
 $failure = $null
 try {
     foreach ($entry in $combinations) {
-        $configuration = [ordered]@{
-            schemaVersion = 12
-        }
         $runtimeParameters = @{}
         foreach ($module in $moduleCatalog) {
-            $enabled = [bool]$entry.Values[$module.RuntimeParameter]
-            $configuration[$module.JsonKey] = $enabled
-            $runtimeParameters[$module.RuntimeParameter] = $enabled
+            $runtimeParameters[$module.RuntimeParameter] = [bool]$entry.Values[$module.RuntimeParameter]
         }
+        # Every catalog key plus the explicit Turn Undead key; the runtime
+        # parameters forwarded to the product stay the thirteen modules.
+        $documentValues = @{} + $runtimeParameters
+        $turnUndeadValue = ConvertTo-KmgTurnUndeadRuntimeValue -Value $TurnUndead
+        if ($null -ne $turnUndeadValue) { $documentValues['turnUndead'] = $turnUndeadValue }
+        $configuration = New-KmgFeatureModuleSettingsDocument -RuntimeValues $documentValues
         $json = $configuration | ConvertTo-Json -Depth 4
         $temporary = $settings + '.kmg-module-matrix.tmp'
         [IO.File]::WriteAllText($temporary, $json, (New-Object Text.UTF8Encoding($false)))

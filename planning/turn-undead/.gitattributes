@@ -1,0 +1,2 @@
+# Keep the mission packet byte-identical to its SHA256SUMS.txt in every checkout.
+*.txt text eol=lf

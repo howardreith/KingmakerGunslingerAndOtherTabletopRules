@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "key": "turn-undead-feat",
+  "behavior": "General feat: spend one use of an existing positive channel (two lay on hands uses for a paladin) as a standard action so undead within 30 feet that fail a Will save flee for one minute; intelligent undead save again each round. No damage, healing or control.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/TurnUndead/TurnUndeadBlueprints.cs",
+    "src/KingmakerGunslinger/Blueprints/OwnedIconAssignments.cs",
+    "planning/turn-undead/ICON_INTEGRATION_NOTES.md",
+    "planning/turn-undead/assets/GENERATION_PROMPTS.md"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/turn-undead-feat.png",
+  "sourceSha256": "9805f019db30b0722834ba1ef2f8431b248f1f3dcacac89804e348613b0a98e8",
+  "tool": "image_gen.imagegen (built-in); underlying model version not exposed by the tool; request transparent_background=true; output exec-7dbd69ea-774f-498c-b2d9-18e88b58bf13.png (1254x1254 RGBA); no post-generation artwork edits",
+  "referenceImages": [
+    {
+      "path": "assets/game/icons/rapid-reload.png",
+      "role": "Approved combat-emblem-64 anchor: thin circular scaffold weight and transparent negative space; style reference only, no copied pixels."
+    },
+    {
+      "path": "planning/turn-undead/assets/asset-manifest.json",
+      "role": "Records the second style input: a 512x512 nearest-neighbor enlargement (sha256 4da408d7dc97dc32d0f95b29d33544aeb34327f1d8fdc4534d332bbc95b41dee) of Call of the Wild Icon_Channel_Extra.png (sha256 07b593ff58b248ef2bb322af9689a8b4a42e19c432fe62fa9ef3b59ec568d3af); mod art, not a native Owlcat sprite, not redistributed."
+    }
+  ],
+  "prompt": "Use case: stylized-concept. Asset: an original Pathfinder Kingmaker Turn Undead FEAT emblem. Derive a NEW emblem from the two supplied reference images, which are STYLE REFERENCES ONLY; do not copy their pixels or existing symbol. Reference 1 shows the related channel-feat vocabulary (muted terracotta circular scaffold, slate-blue subordinate shape, parchment light); reference 2 shows the approved very thin circular emblem weight and transparent negative space.\nPrimary request: create one clean square 1024x1024 original feat icon that will be exported to 64x64 RGBA. A simple recognizable skull in right-facing profile recoils and turns away from a small radiant sun on the left, with two or three outward arcing rays showing repulsion. The icon must convey turning undead away, not commanding them and not destroying them. Keep the skull large and immediately recognizable with one dark eye socket and a simple jaw. Use a single thin terracotta circular scaffold behind the subject, like the reference family's internal ring; this is part of the emblem, not a square UI frame.\nStyle: flat restrained ink/silhouette work, slightly weathered hand-drawn edges, antique tabletop RPG feat glyph; broad low-detail shapes, muted rust/terracotta and pale warm parchment with a small slate-blue secondary accent. No photographic materials, no shiny gold medallion, no elaborate illustration. All main shapes must remain distinct at 32 and 64 pixels.\nComposition: centered, balanced; important silhouette within the central 82 percent; ring within 86 percent. Transparent background including open spaces inside the ring. No lettering, no numbers, no runes, no border square, no checkerboard, no watermark, no selected-state glow. Exactly one icon, not a sheet.",
+  "visualStatus": "HumanReview: NOT_PERFORMED_NONBLOCKING",
+  "subjectAndSilhouette": "A right-facing skull recoils from a small radiant sun with arcing repulsion waves inside one thin terracotta ring, on transparency.",
+  "artFamily": "combat-emblem",
+  "reviewGroup": "turn-undead",
+  "confusedWith": [
+    "turn-undead-action"
+  ],
+  "uiSurfaces": [
+    "general feat selection / character-sheet feat / tooltip"
+  ],
+  "exportProfile": "combat-emblem-64",
+  "forbiddenInterpretations": [
+    "No command, rebuke, domination or control of undead.",
+    "No destruction, damage or healing channel.",
+    "No deity-specific holy symbol.",
+    "No owner visual approval inferred from technical tests."
+  ]
+}

@@ -31,12 +31,72 @@ foreach ($mask in 0..8191) {
     }
     & $validation
     $settings = & $makeSettings
-    if ($settings.Count -ne 14 -or $settings.schemaVersion -ne 12) { throw 'Wrong compatibility settings schema/count.' }
+    if ($settings.Count -ne 15 -or $settings.schemaVersion -ne 12) { throw 'Wrong compatibility settings schema/count.' }
+    if ($settings['turn-undead'] -isnot [bool] -or $settings['turn-undead'] -ne ($mask -ne 0)) {
+        throw "Compatibility settings Turn Undead must be OFF only in the all-off profile (mask $mask)."
+    }
+    # The module matrix's shared generator must write the identical document.
+    $generated = New-KmgFeatureModuleSettingsDocument -RuntimeValues $Parameters
+    if (($generated | ConvertTo-Json -Depth 4) -cne ($settings | ConvertTo-Json -Depth 4)) {
+        throw "Matrix and compatibility settings generators disagree (mask $mask)."
+    }
     foreach ($module in $catalog) {
         if ($settings[$module.JsonKey] -isnot [bool] -or
             $settings[$module.JsonKey] -ne $Parameters[$module.RuntimeParameter]) {
             throw "Compatibility settings lost explicit intent: $($module.JsonKey), mask $mask."
         }
+    }
+    $checks++
+}
+$rejectedEmpty = $false
+try { [void](New-KmgFeatureModuleSettingsDocument -RuntimeValues @{}) } catch { $rejectedEmpty = $true }
+if (-not $rejectedEmpty) { throw 'The shared generator accepted missing module values.' }
+$checks++
+# Independent turnUndead: an explicit value overrides the all-off rule in both writers.
+foreach ($mask in @(0, 1, 4096, 8191)) {
+    foreach ($explicit in @($true, $false)) {
+        $Parameters = @{}
+        for ($index = 0; $index -lt $catalog.Count; $index++) {
+            $Parameters[$catalog[$index].RuntimeParameter] = [bool]($mask -band (1 -shl $index))
+        }
+        $Parameters['turnUndead'] = $explicit
+        & $validation
+        $settings = & $makeSettings
+        if ($settings.Count -ne 15 -or $settings['turn-undead'] -isnot [bool] -or $settings['turn-undead'] -ne $explicit) {
+            throw "Compatibility settings ignored the explicit turnUndead=$explicit (mask $mask)."
+        }
+        $generated = New-KmgFeatureModuleSettingsDocument -RuntimeValues $Parameters
+        if (($generated | ConvertTo-Json -Depth 4) -cne ($settings | ConvertTo-Json -Depth 4)) {
+            throw "Matrix and compatibility settings generators disagree on explicit turnUndead (mask $mask)."
+        }
+        $checks++
+    }
+}
+$Parameters = @{}
+foreach ($entry in $catalog) { $Parameters[$entry.RuntimeParameter] = $true }
+$Parameters['turnUndead'] = 'true'
+$rejectedTurn = $false
+try { & $validation } catch { $rejectedTurn = $true }
+if (-not $rejectedTurn) { throw 'A non-Boolean turnUndead was accepted.' }
+$rejectedTurn = $false
+try { [void](New-KmgFeatureModuleSettingsDocument -RuntimeValues $Parameters) } catch { $rejectedTurn = $true }
+if (-not $rejectedTurn) { throw 'The shared generator accepted a non-Boolean turnUndead.' }
+$checks++
+# Generator-to-loader fixtures: the C# loader test (turn-undead.settings-key) loads these same files.
+$fixtureRoot = Join-Path $PSScriptRoot '..\..\tests\fixtures\turn-undead\generated-profiles'
+foreach ($case in @(
+    @{ File = 'all-off.json'; On = @(); Turn = $null },
+    @{ File = 'turn-undead-alone.json'; On = @(); Turn = $true },
+    @{ File = 'gunslinger-turn-undead-off.json'; On = @('gunslinger'); Turn = $false })) {
+    $values = @{}
+    foreach ($module in $catalog) { $values[$module.RuntimeParameter] = [bool]($case.On -contains $module.RuntimeParameter) }
+    if ($null -ne $case.Turn) { $values['turnUndead'] = [bool]$case.Turn }
+    $generated = New-KmgFeatureModuleSettingsDocument -RuntimeValues $values
+    $fixture = Get-Content -LiteralPath (Join-Path $fixtureRoot $case.File) -Raw | ConvertFrom-Json
+    $fixtureKeys = @($fixture.PSObject.Properties | ForEach-Object { $_.Name })
+    if (($fixtureKeys -join ',') -cne (@($generated.Keys) -join ',')) { throw "Generated keys differ from $($case.File)." }
+    foreach ($key in $fixtureKeys) {
+        if ($fixture.$key -ne $generated[$key]) { throw "Generated $key differs from $($case.File)." }
     }
     $checks++
 }
@@ -103,4 +163,53 @@ foreach ($Scenario in @('observe-feature-module-settings', 'disposable-teleporta
     }
     $checks++
 }
+# Module matrix launcher binding (in memory, nothing launched): the original
+# positional arguments keep their parameters, and every accepted spelling of
+# -TurnUndead selects the requested settings value.
+$matrixPath = Join-Path $PSScriptRoot '..\Invoke-FeatureModuleRuntimeMatrix.ps1'
+$matrixAst = [Management.Automation.Language.Parser]::ParseFile($matrixPath, [ref]$tokens, [ref]$parseErrors)
+if ($parseErrors.Count -ne 0) { throw 'Module matrix parse errors.' }
+$matrixAttributes = @($matrixAst.ParamBlock.Attributes | ForEach-Object { $_.Extent.Text })
+if (-not ($matrixAttributes | Where-Object { $_ -like '`[CmdletBinding*' })) { throw 'The module matrix parameter block lost its CmdletBinding.' }
+$bindProbe = [scriptblock]::Create(($matrixAttributes -join "`n") + "`n" + $matrixAst.ParamBlock.Extent.Text + @'
+
+[pscustomobject]@{ ExpectedVersion = $ExpectedVersion; Scenario = $Scenario; TimeoutSeconds = $TimeoutSeconds
+    Combination = $Combination; TurnUndead = $TurnUndead; Bound = @($PSBoundParameters.Keys) }
+'@)
+$positional = & $bindProbe '0.0.200' 'observe-feature-module-settings' 120 'gunslinger-only'
+if ($positional.ExpectedVersion -cne '0.0.200' -or $positional.Scenario -cne 'observe-feature-module-settings' -or
+    $positional.TimeoutSeconds -ne 120 -or $positional.Combination -cne 'gunslinger-only' -or
+    $positional.TurnUndead -cne 'default' -or $positional.Bound -contains 'TurnUndead') {
+    throw "Module matrix positional binding changed: $($positional | ConvertTo-Json -Compress)"
+}
+$checks++
+$moduleValues = @{}
+foreach ($module in $catalog) { $moduleValues[$module.RuntimeParameter] = $false }
+foreach ($case in @(
+        @{ Spelling = 'on'; Expected = $true }, @{ Spelling = 'On'; Expected = $true }, @{ Spelling = 'ON'; Expected = $true },
+        @{ Spelling = 'off'; Expected = $false }, @{ Spelling = 'Off'; Expected = $false }, @{ Spelling = 'OFF'; Expected = $false },
+        @{ Spelling = 'default'; Expected = $null }, @{ Spelling = 'Default'; Expected = $null }, @{ Spelling = 'DEFAULT'; Expected = $null })) {
+    $bound = & $bindProbe -TurnUndead $case.Spelling
+    $value = ConvertTo-KmgTurnUndeadRuntimeValue -Value $bound.TurnUndead
+    if ($null -eq $case.Expected) {
+        if ($null -ne $value) { throw "-TurnUndead $($case.Spelling) must leave the default rule in force." }
+    } elseif ($value -isnot [bool] -or $value -ne $case.Expected) {
+        throw "-TurnUndead $($case.Spelling) produced $value instead of $($case.Expected)."
+    }
+    foreach ($allOff in @($true, $false)) {
+        $values = @{} + $moduleValues
+        if (-not $allOff) { $values[$catalog[0].RuntimeParameter] = $true }
+        if ($null -ne $value) { $values['turnUndead'] = $value }
+        $document = New-KmgFeatureModuleSettingsDocument -RuntimeValues $values
+        $expectedSetting = if ($null -ne $case.Expected) { [bool]$case.Expected } else { -not $allOff }
+        if ($document['turn-undead'] -ne $expectedSetting) {
+            throw "-TurnUndead $($case.Spelling) staged turn-undead=$($document['turn-undead']) (all-off=$allOff)."
+        }
+        $checks++
+    }
+}
+$rejectedSpelling = $false
+try { $null = & $bindProbe -TurnUndead 'yes' } catch { $rejectedSpelling = $true }
+if (-not $rejectedSpelling) { throw 'The module matrix accepted -TurnUndead yes.' }
+$checks++
 Write-Host "Compatibility module parameter/settings checks passed: $checks; no profile staged or game launched."

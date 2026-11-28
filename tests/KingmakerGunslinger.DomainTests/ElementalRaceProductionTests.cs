@@ -189,7 +189,8 @@ namespace KingmakerGunslinger.DomainTests
                     KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length +
                     AlternateSummoningTests.AppendedLedgerIdentities +
                 (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedCatalogIdentityCount +
-                    SummoningCurrentSurface.SpiderSummonerLedgerIdentityCount),
+                    SummoningCurrentSurface.SpiderSummonerLedgerIdentityCount +
+                    SummoningCurrentSurface.TurnUndeadLedgerIdentityCount),
                 all.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Manifest active count must include all elemental identities.");

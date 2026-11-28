@@ -336,12 +336,13 @@ $python = (Get-Command python -ErrorAction Stop).Source
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Count every declared summon icon, including authorized new creatures. The
-# other 278 paths include the two exact Sprint32 Lillend exports and v170/v171 notes;
+# other 280 paths include the two exact Sprint32 Lillend exports, v170/v171 notes and
+# the two Turn Undead icon exports (turn-undead-feat, turn-undead-action);
 # strict package validation below still requires its exact complete path/hash
 # set. The optional soundbank and manifest remain a two-file delta.
 . (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
 $summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
-$basePackageFileCount = 278 + @($summonManifest.icons).Count +
+$basePackageFileCount = 280 + @($summonManifest.icons).Count +
     $s3031OriginalBodyParts.Count + $shadowOutsiderFiles.Count +
     $infernalFiles.Count + $infernal35Files.Count + $infernal36Files.Count +
     $vrock37Files.Count + $glabrezu38Files.Count + $nalfeshnee39Files.Count +

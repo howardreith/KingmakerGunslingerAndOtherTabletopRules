@@ -6,9 +6,11 @@ namespace KingmakerGunslinger.FeatureModules
     {
         internal FeatureModuleSettingsState(FeatureModuleConfiguration active,
             string path, string source, bool recovered,
-            bool showOriginalSummonElemental = false)
+            bool showOriginalSummonElemental = false, bool turnUndead = true)
         {
             ShowOriginalSummonElemental = showOriginalSummonElemental;
+            ActiveTurnUndead = turnUndead;
+            PendingTurnUndead = turnUndead;
             Active = active ?? throw new ArgumentNullException("active");
             Pending = new FeatureModuleConfiguration(active.Gunslinger,
                 active.AcadamaeGraduate, active.ShieldOther,
@@ -38,7 +40,17 @@ namespace KingmakerGunslinger.FeatureModules
         internal bool MigrationWriteFailed { get; private set; }
 
         internal void MarkMigrationWriteFailed() { MigrationWriteFailed = true; }
-        internal bool RestartRequired { get { return !Active.Equals(Pending); } }
+        internal bool RestartRequired
+        { get { return !Active.Equals(Pending) || ActiveTurnUndead != PendingTurnUndead; } }
+
+        // Turn Undead feat offer. An optional default-ON key outside the guarded
+        // thirteen-module runtime matrix: a missing key means ON, earlier
+        // releases ignore it, and it needs no schema migration. Like a module,
+        // the process keeps its startup value; a change applies after restart.
+        internal bool ActiveTurnUndead { get; private set; }
+        internal bool PendingTurnUndead { get; private set; }
+
+        internal void SetPendingTurnUndead(bool value) { PendingTurnUndead = value; }
 
         // Presentation option, not a feature module: no restart; close and
         // reopen the spell list to apply. Persisted on save and never part of

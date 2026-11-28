@@ -1,0 +1,207 @@
+{
+  "schema_version": "turn-undead.asset-package.v1",
+  "preparedDate": "2026-11-27",
+  "purpose": "Portable mission-package asset metadata, not a drop-in repository icon-catalog record",
+  "pathBase": "Package root",
+  "conceptCount": 2,
+  "runtimeIconCount": 2,
+  "assets": [
+    {
+      "key": "turn-undead-feat",
+      "displayName": "Turn Undead feat",
+      "source": {
+        "path": "assets/source/turn-undead-feat-original.png",
+        "sha256": "9805f019db30b0722834ba1ef2f8431b248f1f3dcacac89804e348613b0a98e8",
+        "dimensions": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "preservedOriginalBytes": true
+      },
+      "runtimeExport": {
+        "path": "assets/icons/turn-undead-feat.png",
+        "sha256": "3b69de4048dc398f14e5ff159072f4f4dbb75b00edfdd66eaa6fb2be74b8bda4",
+        "dimensions": [
+          64,
+          64
+        ],
+        "mode": "RGBA",
+        "pngBitDepth": 8,
+        "pngColorType": 6,
+        "alphaRange": [
+          0,
+          255
+        ],
+        "exportProfile": "combat-emblem-64",
+        "exporter": "Pillow 13.0.0, RGBA conversion, BICUBIC resize, PNG compress_level=9",
+        "canonicalRepositoryExporterRun": false
+      },
+      "integration": {
+        "proposedCacheKey": "turn-undead-feat",
+        "repositoryRuntimePath": "assets/game/icons/turn-undead-feat.png",
+        "installedPath": "assets/icons/turn-undead-feat.png",
+        "proposedRepositoryOriginalPath": "assets-source/original-icons/icon-overhaul-v2/production/sources/turn-undead-feat.png",
+        "consumers": [
+          "Selectable general feat",
+          "Visible learned feat fact"
+        ],
+        "newBlueprintGuids": null,
+        "guidStatus": "Allocate through current repository manifest during implementation; no new gameplay GUIDs reserved by package"
+      },
+      "generation": {
+        "tool": "image_gen.imagegen (built-in)",
+        "modelVersion": null,
+        "modelVersionStatus": "Not exposed by tool result",
+        "transparentBackgroundRequested": true,
+        "requestedDimensionsInPrompt": [
+          1024,
+          1024
+        ],
+        "actualDimensions": [
+          1254,
+          1254
+        ],
+        "outputBasename": "exec-7dbd69ea-774f-498c-b2d9-18e88b58bf13.png",
+        "exactPromptFile": "assets/GENERATION_PROMPTS.md",
+        "referenceIds": [
+          "cotw-extra-channel",
+          "rapid-reload"
+        ],
+        "postGenerationArtworkEdits": []
+      },
+      "review": {
+        "fileFormat": "PASS",
+        "thumbnailContrastReview": "PASS for handoff at 32/48/64 on dark/parchment and grayscale",
+        "minorObservations": [
+          "Pale sun has low contrast on parchment at 32px/grayscale; skull/wave/ring remain readable."
+        ],
+        "nativeUi": "NOT RUN",
+        "canonicalWindowsExport": "NOT RUN",
+        "ownerVisualApproval": "NOT ASSERTED"
+      }
+    },
+    {
+      "key": "turn-undead-action",
+      "displayName": "Turn Undead execution action",
+      "source": {
+        "path": "assets/source/turn-undead-action-original.png",
+        "sha256": "6f5d93530399d81b7ab81c69873921bfc6f0b2e3486c8eab457a19da8adca69d",
+        "dimensions": [
+          1254,
+          1254
+        ],
+        "mode": "RGB",
+        "preservedOriginalBytes": true
+      },
+      "runtimeExport": {
+        "path": "assets/icons/turn-undead-action.png",
+        "sha256": "868d10444544d97d8f47f0e9d4946f75ad74579d19068dddcf57def7ba007079",
+        "dimensions": [
+          128,
+          128
+        ],
+        "mode": "RGBA",
+        "pngBitDepth": 8,
+        "pngColorType": 6,
+        "alphaRange": [
+          255,
+          255
+        ],
+        "exportProfile": "project-painted-128",
+        "exporter": "Pillow 13.0.0, RGBA conversion, BICUBIC resize, PNG compress_level=9",
+        "canonicalRepositoryExporterRun": false
+      },
+      "integration": {
+        "proposedCacheKey": "turn-undead-action",
+        "repositoryRuntimePath": "assets/game/icons/turn-undead-action.png",
+        "installedPath": "assets/icons/turn-undead-action.png",
+        "proposedRepositoryOriginalPath": "assets-source/original-icons/icon-overhaul-v2/production/sources/turn-undead-action.png",
+        "consumers": [
+          "Actual executable Turn Undead ability",
+          "Source-specific Turn Undead variants when required",
+          "Pinned execution action"
+        ],
+        "newBlueprintGuids": null,
+        "guidStatus": "Allocate through current repository manifest during implementation; no new gameplay GUIDs reserved by package"
+      },
+      "generation": {
+        "tool": "image_gen.imagegen (built-in)",
+        "modelVersion": null,
+        "modelVersionStatus": "Not exposed by tool result",
+        "transparentBackgroundRequested": false,
+        "requestedDimensionsInPrompt": [
+          1024,
+          1024
+        ],
+        "actualDimensions": [
+          1254,
+          1254
+        ],
+        "outputBasename": "exec-89175a86-b02f-4372-9d17-a3fb5161e083.png",
+        "exactPromptFile": "assets/GENERATION_PROMPTS.md",
+        "referenceIds": [
+          "fire-affinity"
+        ],
+        "postGenerationArtworkEdits": []
+      },
+      "review": {
+        "fileFormat": "PASS",
+        "thumbnailContrastReview": "PASS for handoff at 32/48/64 on dark/parchment and grayscale",
+        "minorObservations": [],
+        "nativeUi": "NOT RUN",
+        "canonicalWindowsExport": "NOT RUN",
+        "ownerVisualApproval": "NOT ASSERTED"
+      }
+    }
+  ],
+  "referenceImages": {
+    "cotw-extra-channel": {
+      "sourceUrl": "https://github.com/Holic75/KingmakerRebalance/blob/1332fb0db844b7863f484ca978bea2349fe49769/CallOfTheWild/Icons/FeatIcons/Icon_Channel_Extra.png",
+      "sourceSha256": "07b593ff58b248ef2bb322af9689a8b4a42e19c432fe62fa9ef3b59ec568d3af",
+      "originalDimensions": [
+        64,
+        64
+      ],
+      "toolInputBasename": "channel-feat-reference-large.png",
+      "toolInputDimensions": [
+        512,
+        512
+      ],
+      "toolInputSha256": "4da408d7dc97dc32d0f95b29d33544aeb34327f1d8fdc4534d332bbc95b41dee",
+      "preparation": "Nearest-neighbor enlargement and PNG metadata re-encoding for reference visibility only.",
+      "classification": "Call of the Wild mod art; not verified native Owlcat sprite",
+      "included": false
+    },
+    "rapid-reload": {
+      "sourceUrl": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/52755b617c79328a972ae5b74bc05784422e332d/assets/game/icons/rapid-reload.png",
+      "sourceSha256": "5c3280145815f7b161602da161264ac1f43fb3ac3c4bf47ff907b0919a2aa9d3",
+      "toolInputBasename": "rapid-reload.png",
+      "toolInputDimensions": [
+        64,
+        64
+      ],
+      "classification": "Existing project emblem-family anchor",
+      "included": false
+    },
+    "fire-affinity": {
+      "sourceUrl": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/52755b617c79328a972ae5b74bc05784422e332d/assets/game/icons/fire-affinity.png",
+      "sourceSha256": "d5ef14e589d286ba39dc6ce8880f6ef3f8b4eb6454653c3d06c0ffe7543a4394",
+      "toolInputBasename": "fire-affinity.png",
+      "toolInputDimensions": [
+        128,
+        128
+      ],
+      "classification": "Existing project painted channeling-family anchor",
+      "included": false
+    }
+  },
+  "reviewSheet": "previews/icon-review.png",
+  "intakeNotes": [
+    "Read current repository icon guide and catalog schema.",
+    "Preserve source masters and generation provenance; run scoped canonical Windows GDI+ export where available.",
+    "Record actual new export bytes/hashes; do not label Pillow bytes as canonical GDI+ output.",
+    "Preserve the existing positive-channel parent icon.",
+    "Do not package source masters or this mission packet in the player mod distribution."
+  ]
+}
