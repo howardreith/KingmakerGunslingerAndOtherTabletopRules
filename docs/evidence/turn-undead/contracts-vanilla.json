@@ -1,20 +1,20 @@
 {
  "schema": "kmg.turn-undead.contracts.v1",
- "run": "20261128T112755Z-umm-0.31.1-turn-undead-first",
+ "run": "20261128T113902Z-umm-0.31.1-turn-undead-first",
  "loaderProfile": "umm-0.31.1",
  "candidate": {
-  "producerCommit": "4c09b15b5cd06b8ec77f324d748b26dcc928e93c",
-  "packageSha256": "b03d65bf713ab2e4e0921cd52a5902f1651e92f0837f914caa7754975a72be8f",
-  "dllSha256": "e50d27c799679d31fbe950e8aa901a23442f020843da197fc8aada68ffce0b03"
+  "producerCommit": "39012ab43d758933adc35e0bec9f31715419939b",
+  "packageSha256": "be702ef32a639c72c8722d59e126000a94f9cd939011dc21ec2af78e72f1723e",
+  "dllSha256": "6c83e77d43f1ba9c0ff438cceddbcd12169c675e7fa6f67eae4956ddabb783a6"
  },
  "activeMods": [
   "KingmakerGunslinger 0.0.197",
   "KmgLoaderCompatHarness 0.1.0"
  ],
  "sourceRecords": {
-  "session-summary.json": "21af9436012f7f5c5d19c810b5b48df491592048d09c3d038acae4bb41a54b95",
-  "01-first-turn/launch-summary.json": "a679ad399020557ade79c1abea61beb902e63da936e9b096654c875453025cc3",
-  "01-first-turn/harness/harness-result.json": "eb4175791d0194d842fca4460fb72d8e036beec2d459d09f9e840aea27569d99"
+  "session-summary.json": "c376c2d39001debd317c0dbf02eae196b72077232973623861e84ac861231e2e",
+  "01-first-turn/launch-summary.json": "c89df7241f5dd6241fc6839d507b80c152b5a6ccf6e52a860a9e0a71885bf692",
+  "01-first-turn/harness/harness-result.json": "9c9d94622cf2b3b7cdbaa3e51dd7a6fbf06edf83be67d4111f963c2ca8077b4d"
  },
  "problems": [],
  "moduleStatus": "published",
@@ -434,6 +434,7 @@
    {
     "guid": "279447a6bf2d3544d93a0a39c3b8e91d",
     "name": "ChannelPositiveHarm",
+    "spellDescriptors": [],
     "components": [
      {
       "$type": "AbilityResourceLogic",
@@ -470,15 +471,93 @@
          "ConditionsChecker": {
           "$type": "ConditionsChecker",
           "Operation": "And",
-          "Conditions": "Condition[]"
+          "Conditions": [
+           {
+            "$type": "ContextConditionCasterHasFact",
+            "Fact": "fd30c69417b434d47b6b03b9c1f568ff:SelectiveChannel",
+            "Not": false
+           }
+          ]
          },
          "IfTrue": {
           "$type": "ActionList",
-          "Actions": "GameAction[]"
+          "Actions": [
+           {
+            "$type": "Conditional",
+            "Comment": "",
+            "ConditionsChecker": {
+             "$type": "ConditionsChecker",
+             "Operation": "And",
+             "Conditions": [
+              {
+               "$type": "ContextConditionIsEnemy",
+               "Not": false
+              },
+              {
+               "$type": "ContextConditionHasFact",
+               "Fact": "734a29b693e9ec346ba2951b27987e33:UndeadType",
+               "Not": false
+              }
+             ]
+            },
+            "IfTrue": {
+             "$type": "ActionList",
+             "Actions": [
+              null,
+              null,
+              null,
+              {
+               "$type": "ContextActionSavingThrow",
+               "Type": "Will",
+               "m_ConditionalDCIncrease": "ConditionalDCIncrease[]",
+               "Actions": "ActionList"
+              }
+             ]
+            },
+            "IfFalse": {
+             "$type": "ActionList",
+             "Actions": []
+            }
+           }
+          ]
          },
          "IfFalse": {
           "$type": "ActionList",
-          "Actions": "GameAction[]"
+          "Actions": [
+           null,
+           {
+            "$type": "Conditional",
+            "Comment": "",
+            "ConditionsChecker": {
+             "$type": "ConditionsChecker",
+             "Operation": "And",
+             "Conditions": [
+              {
+               "$type": "ContextConditionHasFact",
+               "Fact": "734a29b693e9ec346ba2951b27987e33:UndeadType",
+               "Not": false
+              }
+             ]
+            },
+            "IfTrue": {
+             "$type": "ActionList",
+             "Actions": [
+              null,
+              null,
+              {
+               "$type": "ContextActionSavingThrow",
+               "Type": "Will",
+               "m_ConditionalDCIncrease": "ConditionalDCIncrease[]",
+               "Actions": "ActionList"
+              }
+             ]
+            },
+            "IfFalse": {
+             "$type": "ActionList",
+             "Actions": []
+            }
+           }
+          ]
          }
         }
        ]
@@ -528,6 +607,7 @@
    {
     "guid": "4937473d1cfd7774a979b625fb833b47",
     "name": "ChannelEnergyPaladinHarm",
+    "spellDescriptors": [],
     "components": [
      {
       "$type": "AbilityResourceLogic",
@@ -564,15 +644,93 @@
          "ConditionsChecker": {
           "$type": "ConditionsChecker",
           "Operation": "And",
-          "Conditions": "Condition[]"
+          "Conditions": [
+           {
+            "$type": "ContextConditionCasterHasFact",
+            "Fact": "fd30c69417b434d47b6b03b9c1f568ff:SelectiveChannel",
+            "Not": false
+           }
+          ]
          },
          "IfTrue": {
           "$type": "ActionList",
-          "Actions": "GameAction[]"
+          "Actions": [
+           {
+            "$type": "Conditional",
+            "Comment": "",
+            "ConditionsChecker": {
+             "$type": "ConditionsChecker",
+             "Operation": "And",
+             "Conditions": [
+              {
+               "$type": "ContextConditionIsEnemy",
+               "Not": false
+              },
+              {
+               "$type": "ContextConditionHasFact",
+               "Fact": "734a29b693e9ec346ba2951b27987e33:UndeadType",
+               "Not": false
+              }
+             ]
+            },
+            "IfTrue": {
+             "$type": "ActionList",
+             "Actions": [
+              null,
+              null,
+              null,
+              {
+               "$type": "ContextActionSavingThrow",
+               "Type": "Will",
+               "m_ConditionalDCIncrease": "ConditionalDCIncrease[]",
+               "Actions": "ActionList"
+              }
+             ]
+            },
+            "IfFalse": {
+             "$type": "ActionList",
+             "Actions": []
+            }
+           }
+          ]
          },
          "IfFalse": {
           "$type": "ActionList",
-          "Actions": "GameAction[]"
+          "Actions": [
+           null,
+           {
+            "$type": "Conditional",
+            "Comment": "",
+            "ConditionsChecker": {
+             "$type": "ConditionsChecker",
+             "Operation": "And",
+             "Conditions": [
+              {
+               "$type": "ContextConditionHasFact",
+               "Fact": "734a29b693e9ec346ba2951b27987e33:UndeadType",
+               "Not": false
+              }
+             ]
+            },
+            "IfTrue": {
+             "$type": "ActionList",
+             "Actions": [
+              null,
+              null,
+              {
+               "$type": "ContextActionSavingThrow",
+               "Type": "Will",
+               "m_ConditionalDCIncrease": "ConditionalDCIncrease[]",
+               "Actions": "ActionList"
+              }
+             ]
+            },
+            "IfFalse": {
+             "$type": "ActionList",
+             "Actions": []
+            }
+           }
+          ]
          }
         }
        ]
@@ -627,6 +785,7 @@
    {
     "guid": "cc17243b2185f814aa909ac6b6599eaa",
     "name": "ChannelEnergyHospitalerHarm",
+    "spellDescriptors": [],
     "components": [
      {
       "$type": "AbilityResourceLogic",
@@ -663,15 +822,93 @@
          "ConditionsChecker": {
           "$type": "ConditionsChecker",
           "Operation": "And",
-          "Conditions": "Condition[]"
+          "Conditions": [
+           {
+            "$type": "ContextConditionCasterHasFact",
+            "Fact": "fd30c69417b434d47b6b03b9c1f568ff:SelectiveChannel",
+            "Not": false
+           }
+          ]
          },
          "IfTrue": {
           "$type": "ActionList",
-          "Actions": "GameAction[]"
+          "Actions": [
+           {
+            "$type": "Conditional",
+            "Comment": "",
+            "ConditionsChecker": {
+             "$type": "ConditionsChecker",
+             "Operation": "And",
+             "Conditions": [
+              {
+               "$type": "ContextConditionIsEnemy",
+               "Not": false
+              },
+              {
+               "$type": "ContextConditionHasFact",
+               "Fact": "734a29b693e9ec346ba2951b27987e33:UndeadType",
+               "Not": false
+              }
+             ]
+            },
+            "IfTrue": {
+             "$type": "ActionList",
+             "Actions": [
+              null,
+              null,
+              null,
+              {
+               "$type": "ContextActionSavingThrow",
+               "Type": "Will",
+               "m_ConditionalDCIncrease": "ConditionalDCIncrease[]",
+               "Actions": "ActionList"
+              }
+             ]
+            },
+            "IfFalse": {
+             "$type": "ActionList",
+             "Actions": []
+            }
+           }
+          ]
          },
          "IfFalse": {
           "$type": "ActionList",
-          "Actions": "GameAction[]"
+          "Actions": [
+           null,
+           {
+            "$type": "Conditional",
+            "Comment": "",
+            "ConditionsChecker": {
+             "$type": "ConditionsChecker",
+             "Operation": "And",
+             "Conditions": [
+              {
+               "$type": "ContextConditionHasFact",
+               "Fact": "734a29b693e9ec346ba2951b27987e33:UndeadType",
+               "Not": false
+              }
+             ]
+            },
+            "IfTrue": {
+             "$type": "ActionList",
+             "Actions": [
+              null,
+              null,
+              {
+               "$type": "ContextActionSavingThrow",
+               "Type": "Will",
+               "m_ConditionalDCIncrease": "ConditionalDCIncrease[]",
+               "Actions": "ActionList"
+              }
+             ]
+            },
+            "IfFalse": {
+             "$type": "ActionList",
+             "Actions": []
+            }
+           }
+          ]
          }
         }
        ]
@@ -726,6 +963,7 @@
    {
     "guid": "e1536ee240c5d4141bf9f9485a665128",
     "name": "ChannelEnergyEmpyrealHarm",
+    "spellDescriptors": [],
     "components": [
      {
       "$type": "AbilityResourceLogic",
@@ -762,15 +1000,93 @@
          "ConditionsChecker": {
           "$type": "ConditionsChecker",
           "Operation": "And",
-          "Conditions": "Condition[]"
+          "Conditions": [
+           {
+            "$type": "ContextConditionCasterHasFact",
+            "Fact": "fd30c69417b434d47b6b03b9c1f568ff:SelectiveChannel",
+            "Not": false
+           }
+          ]
          },
          "IfTrue": {
           "$type": "ActionList",
-          "Actions": "GameAction[]"
+          "Actions": [
+           {
+            "$type": "Conditional",
+            "Comment": "",
+            "ConditionsChecker": {
+             "$type": "ConditionsChecker",
+             "Operation": "And",
+             "Conditions": [
+              {
+               "$type": "ContextConditionIsEnemy",
+               "Not": false
+              },
+              {
+               "$type": "ContextConditionHasFact",
+               "Fact": "734a29b693e9ec346ba2951b27987e33:UndeadType",
+               "Not": false
+              }
+             ]
+            },
+            "IfTrue": {
+             "$type": "ActionList",
+             "Actions": [
+              null,
+              null,
+              null,
+              {
+               "$type": "ContextActionSavingThrow",
+               "Type": "Will",
+               "m_ConditionalDCIncrease": "ConditionalDCIncrease[]",
+               "Actions": "ActionList"
+              }
+             ]
+            },
+            "IfFalse": {
+             "$type": "ActionList",
+             "Actions": []
+            }
+           }
+          ]
          },
          "IfFalse": {
           "$type": "ActionList",
-          "Actions": "GameAction[]"
+          "Actions": [
+           null,
+           {
+            "$type": "Conditional",
+            "Comment": "",
+            "ConditionsChecker": {
+             "$type": "ConditionsChecker",
+             "Operation": "And",
+             "Conditions": [
+              {
+               "$type": "ContextConditionHasFact",
+               "Fact": "734a29b693e9ec346ba2951b27987e33:UndeadType",
+               "Not": false
+              }
+             ]
+            },
+            "IfTrue": {
+             "$type": "ActionList",
+             "Actions": [
+              null,
+              null,
+              {
+               "$type": "ContextActionSavingThrow",
+               "Type": "Will",
+               "m_ConditionalDCIncrease": "ConditionalDCIncrease[]",
+               "Actions": "ActionList"
+              }
+             ]
+            },
+            "IfFalse": {
+             "$type": "ActionList",
+             "Actions": []
+            }
+           }
+          ]
          }
         }
        ]
@@ -822,6 +1138,7 @@
    {
     "guid": "a79013ff4bcd4864cb669622a29ddafb",
     "name": "ChannelEnergyFeature",
+    "spellDescriptors": [],
     "components": [
      {
       "$type": "AddFacts",
@@ -846,6 +1163,7 @@
    {
     "guid": "cb6d55dda5ab906459d18a435994a760",
     "name": "ChannelEnergyPaladinFeature",
+    "spellDescriptors": [],
     "components": [
      {
       "$type": "AddFacts",
@@ -861,6 +1179,7 @@
    {
     "guid": "a9ab1bbc79ecb174d9a04699986ce8d5",
     "name": "ChannelEnergyHospitalerFeature",
+    "spellDescriptors": [],
     "components": [
      {
       "$type": "AddFacts",
@@ -885,6 +1204,7 @@
    {
     "guid": "7d49d7f590dc9a948b3bd1c8b7979854",
     "name": "ChannelEnergyEmpyrealFeature",
+    "spellDescriptors": [],
     "components": [
      {
       "$type": "AddFacts",
@@ -922,6 +1242,7 @@
   "frightenedUndeadDonor": {
    "guid": "1265c0b27ef559c4e980a900dfc68d1e",
    "name": "FrightenedUndead",
+   "spellDescriptors": [],
    "components": [
     {
      "$type": "BuffStatusCondition",
@@ -935,6 +1256,7 @@
   "wizardTurnUndead": {
    "guid": "71b8898b1d26d654b9a3eeac87e3e2f8",
    "name": "TurnUndeadNecromancy",
+   "spellDescriptors": [],
    "components": [
     {
      "$type": "AbilityEffectRunAction",
@@ -947,11 +1269,47 @@
         "$type": "ContextActionConditionalSaved",
         "Succeed": {
          "$type": "ActionList",
-         "Actions": "GameAction[]"
+         "Actions": []
         },
         "Failed": {
          "$type": "ActionList",
-         "Actions": "GameAction[]"
+         "Actions": [
+          {
+           "$type": "ContextActionApplyBuff",
+           "Buff": "1265c0b27ef559c4e980a900dfc68d1e:FrightenedUndead",
+           "Permanent": false,
+           "UseDurationSeconds": false,
+           "DurationValue": {
+            "$type": "ContextDurationValue",
+            "Rate": "Minutes",
+            "DiceType": "Zero",
+            "DiceCountValue": {
+             "$type": "ContextValue",
+             "ValueType": "Simple",
+             "Value": 0,
+             "ValueRank": "Default",
+             "ValueShared": "Damage",
+             "Property": "None",
+             "CustomProperty": null
+            },
+            "BonusValue": {
+             "$type": "ContextValue",
+             "ValueType": "Simple",
+             "Value": 1,
+             "ValueRank": "Default",
+             "ValueShared": "Damage",
+             "Property": "None",
+             "CustomProperty": null
+            },
+            "m_IsExtendable": true
+           },
+           "DurationSeconds": 0.0,
+           "IsFromSpell": false,
+           "IsNotDispelable": false,
+           "ToCaster": false,
+           "AsChild": true
+          }
+         ]
         }
        }
       ]
@@ -1029,6 +1387,7 @@
   "undeadType": {
    "guid": "734a29b693e9ec346ba2951b27987e33",
    "name": "UndeadType",
+   "spellDescriptors": [],
    "components": [
     {
      "$type": "UndeadHealth",
@@ -1044,9 +1403,89 @@
     }
    ]
   },
+  "undeadImmunities": {
+   "guid": "8a75eb16bfff86949a4ddcb3dd2f83ae",
+   "name": "UndeadImmunities",
+   "spellDescriptors": [],
+   "components": [
+    {
+     "$type": "AddConditionImmunity",
+     "$name": "$AddConditionImmunity$e9468234-1521-4f8a-8d6d-610a35cf23c4",
+     "Condition": "Nauseated"
+    },
+    {
+     "$type": "AddConditionImmunity",
+     "$name": "$AddConditionImmunity$1941b6f7-6098-4360-a258-889cddd02c2b",
+     "Condition": "Fatigued"
+    },
+    {
+     "$type": "AddConditionImmunity",
+     "$name": "$AddConditionImmunity$ffa417e1-0295-440a-82fd-278c11fa28c6",
+     "Condition": "Sickened"
+    },
+    {
+     "$type": "BuffDescriptorImmunity",
+     "$name": "$BuffDescriptorImmunity$eb929088-4f9e-4c60-92ee-89a0fa13d8f1",
+     "Descriptor": {
+      "$type": "SpellDescriptorWrapper",
+      "m_IntValue": 6597704040704
+     },
+     "IgnoreFeature": null,
+     "CheckFact": false,
+     "FactToCheck": null
+    },
+    {
+     "$type": "BuffDescriptorImmunity",
+     "$name": "$BuffDescriptorImmunity$d4fb14f4-7d7b-45b3-ab7f-d7eb6f9f7a63",
+     "Descriptor": {
+      "$type": "SpellDescriptorWrapper",
+      "m_IntValue": 4366631152
+     },
+     "IgnoreFeature": "1a5e7191279e7cd479b17a6ca438498c:BloodlineUndeadArcana",
+     "CheckFact": false,
+     "FactToCheck": null
+    },
+    {
+     "$type": "DerivativeStatBonus",
+     "$name": "$DerivativeStatBonus$24891956-1323-478e-b0a4-b96472b79ad6",
+     "BaseStat": "Charisma",
+     "DerivativeStat": "SaveFortitude",
+     "Descriptor": "None"
+    },
+    {
+     "$type": "SpellImmunityToSpellDescriptor",
+     "$name": "$SpellImmunityToSpellDescriptor$c0976aae-8934-4994-9b1a-f5614f7d4f26",
+     "Descriptor": {
+      "$type": "SpellDescriptorWrapper",
+      "m_IntValue": 2199657529600
+     },
+     "CasterIgnoreImmunityFact": null
+    },
+    {
+     "$type": "SpellImmunityToSpellDescriptor",
+     "$name": "$SpellImmunityToSpellDescriptor$fb56d182-0078-4f5e-a1dd-5730215f7e72",
+     "Descriptor": {
+      "$type": "SpellDescriptorWrapper",
+      "m_IntValue": 4366631152
+     },
+     "CasterIgnoreImmunityFact": "1a5e7191279e7cd479b17a6ca438498c:BloodlineUndeadArcana"
+    },
+    {
+     "$type": "AddImmunityToAbilityScoreDamage",
+     "$name": "$AddImmunityToAbilityScoreDamage$d886f4a4-2033-4ed0-bf23-14c29641d25b",
+     "Drain": true
+    },
+    {
+     "$type": "AddEnergyImmunity",
+     "$name": "$AddEnergyImmunity$75dd9c23-8027-4cd3-8753-dbe454f520e3",
+     "Type": "NegativeEnergy"
+    }
+   ]
+  },
   "channelResistance4": {
    "guid": "a9ac84c6f48b491438f91bb237bc9212",
    "name": "ChannelResistance4",
+   "spellDescriptors": [],
    "components": [
     {
      "$type": "SavingThrowBonusAgainstSpecificSpells",
@@ -1076,6 +1515,7 @@
   "turnFlight": {
    "guid": "230ec4917d7d4ec0b0c8f58f4e5c81e3",
    "name": "KMG_TurnUndead_Fleeing",
+   "spellDescriptors": [],
    "components": [
     {
      "$type": "TurnUndeadFleeingState",
