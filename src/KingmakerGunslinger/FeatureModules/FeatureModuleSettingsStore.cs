@@ -13,6 +13,8 @@ namespace KingmakerGunslinger.FeatureModules
         // Optional default-OFF presentation key. Not a schema change: earlier
         // releases ignore an unknown key, and a missing key means hidden.
         internal const string ShowOriginalSummonElementalId = "show-original-summon-elemental";
+        // Optional default-ON Turn Undead feat offer; also not a schema change.
+        internal const string TurnUndeadId = "turn-undead";
 
         internal static FeatureModuleSettingsState Load(string modPath,
             Action<string> warning = null, Func<DateTime> utcNow = null)
@@ -63,6 +65,7 @@ namespace KingmakerGunslinger.FeatureModules
                     FeatureModuleConfiguration.MagicCircleSpellsId);
                 bool showOriginalSummonElemental = ReadDefaultOff(root,
                     ShowOriginalSummonElementalId);
+                bool turnUndead = ReadDefaultOn(root, TurnUndeadId);
                 var state = new FeatureModuleSettingsState(
                     new FeatureModuleConfiguration(gunslinger, acadamae,
                         shieldOther, expandedSummoning, elvenBranchedSpears,
@@ -71,7 +74,7 @@ namespace KingmakerGunslinger.FeatureModules
                         protectionFromAlignmentControlImmunity,
                         elementalRaces, teleportationSpells, magicCircleSpells), path,
                     schema < CurrentSchemaVersion ? "migrated-schema-" + schema :
-                        "settings", false, showOriginalSummonElemental);
+                        "settings", false, showOriginalSummonElemental, turnUndead);
                 if (schema < CurrentSchemaVersion)
                     PersistMigration(state, schema, warning);
                 return state;
@@ -167,7 +170,8 @@ namespace KingmakerGunslinger.FeatureModules
                     state.Pending.TeleportationSpells,
                 [FeatureModuleConfiguration.MagicCircleSpellsId] =
                     state.Pending.MagicCircleSpells,
-                [ShowOriginalSummonElementalId] = state.ShowOriginalSummonElemental
+                [ShowOriginalSummonElementalId] = state.ShowOriginalSummonElemental,
+                [TurnUndeadId] = state.PendingTurnUndead
             };
             string temporary = state.Path + ".tmp";
             string backup = state.Path + ".previous";

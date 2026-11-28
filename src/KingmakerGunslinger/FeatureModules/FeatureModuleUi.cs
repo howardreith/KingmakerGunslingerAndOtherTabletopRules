@@ -68,6 +68,8 @@ namespace KingmakerGunslinger.FeatureModules
                 _state.Pending.TeleportationSpells, "World-Map Teleportation Spells");
             bool magicCircleSpells = ImmediateModeGui.Toggle(
                 _state.Pending.MagicCircleSpells, "Magic Circle Spells");
+            _state.SetPendingTurnUndead(ImmediateModeGui.Toggle(
+                _state.PendingTurnUndead, "Turn Undead feat"));
             _state.SetPending(gunslinger, acadamae, shieldOther, expandedSummoning,
                 elvenBranchedSpears, easternWeapons, brownFurTransmuter,
                 urbanBarbarian, bodyguardFeats,
@@ -95,6 +97,9 @@ namespace KingmakerGunslinger.FeatureModules
             ImmediateModeGui.Label("Helpful publication: " +
                 aidAnother.PublicationStatus);
             ImmediateModeGui.Label("Aid Another detail: " + aidAnother.Detail);
+            ImmediateModeGui.Label("Turn Undead: " + TurnUndead.TurnUndeadModule.Status +
+                "; offered this process: " + _state.ActiveTurnUndead +
+                "; saved for next restart: " + _state.PendingTurnUndead);
             ImmediateModeGui.Label("Craft Magic Items compatibility: " +
                 CraftMagicItemsCompatibilityStatusRegistry.Current.Display);
             ImmediateModeGui.Label("Elemental character traits reconcile immediately; other module changes require restart.");

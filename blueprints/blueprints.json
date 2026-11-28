@@ -63487,6 +63487,86 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Feats.TurnUndead.Feat",
+      "guid": "fd2d5083cb294a9396c390e8d39f4efd",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Turn Undead feat",
+      "notes": "General feat; always registered for save hydration; general-feat publication follows the turn-undead setting."
+    },
+    {
+      "symbol": "KMG.Feats.TurnUndead.Fleeing",
+      "guid": "230ec4917d7d4ec0b0c8f58f4e5c81e3",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Turn Undead feat",
+      "notes": "Owned flight effect cloned from native FrightenedUndead; intelligent-only repeat saves; always registered for save hydration."
+    },
+    {
+      "symbol": "KMG.Feats.TurnUndead.Cleric.Ability",
+      "guid": "8ec33a2aab964efc8b02448c2a3257c0",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Turn Undead feat",
+      "notes": "Directly granted pinnable cleric-source Turn Undead action; always registered for save hydration."
+    },
+    {
+      "symbol": "KMG.Feats.TurnUndead.Cleric.MenuChild",
+      "guid": "f912eecd256d4fec847a3176e46fb1ca",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Turn Undead feat",
+      "notes": "Never-granted cleric-source child placed only under a loaded provider's positive-harm channel wrapper."
+    },
+    {
+      "symbol": "KMG.Feats.TurnUndead.Paladin.Ability",
+      "guid": "7283033206e24c40bb5493e49f1caab5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Turn Undead feat",
+      "notes": "Directly granted pinnable paladin-source Turn Undead action; always registered for save hydration."
+    },
+    {
+      "symbol": "KMG.Feats.TurnUndead.Paladin.MenuChild",
+      "guid": "1f5435313e6f44afa9b9f71b2001ef10",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Turn Undead feat",
+      "notes": "Never-granted paladin-source child placed only under a loaded provider's positive-harm channel wrapper."
+    },
+    {
+      "symbol": "KMG.Feats.TurnUndead.Hospitaler.Ability",
+      "guid": "b5f405c1b3064a1fb3ad0f64fb81551d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Turn Undead feat",
+      "notes": "Directly granted pinnable hospitaler-source Turn Undead action; always registered for save hydration."
+    },
+    {
+      "symbol": "KMG.Feats.TurnUndead.Hospitaler.MenuChild",
+      "guid": "f0d424709d034a198cb440ceefcc6f1e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Turn Undead feat",
+      "notes": "Never-granted hospitaler-source child placed only under a loaded provider's positive-harm channel wrapper."
+    },
+    {
+      "symbol": "KMG.Feats.TurnUndead.Empyreal.Ability",
+      "guid": "e4174ef789e84c1ab1d7d9728be19043",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Turn Undead feat",
+      "notes": "Directly granted pinnable empyreal-source Turn Undead action; always registered for save hydration."
+    },
+    {
+      "symbol": "KMG.Feats.TurnUndead.Empyreal.MenuChild",
+      "guid": "be2eeaa2ea51420f83496d374689377d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Turn Undead feat",
+      "notes": "Never-granted empyreal-source child placed only under a loaded provider's positive-harm channel wrapper."
     }
   ]
 }

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "key": "turn-undead-action",
+  "behavior": "General feat: spend one use of an existing positive channel (two lay on hands uses for a paladin) as a standard action so undead within 30 feet that fail a Will save flee for one minute; intelligent undead save again each round. No damage, healing or control.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/TurnUndead/TurnUndeadBlueprints.cs",
+    "src/KingmakerGunslinger/Blueprints/OwnedIconAssignments.cs",
+    "planning/turn-undead/ICON_INTEGRATION_NOTES.md",
+    "planning/turn-undead/assets/GENERATION_PROMPTS.md"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/turn-undead-action.png",
+  "sourceSha256": "6f5d93530399d81b7ab81c69873921bfc6f0b2e3486c8eab457a19da8adca69d",
+  "tool": "image_gen.imagegen (built-in); underlying model version not exposed by the tool; transparent_background=false; output exec-89175a86-b02f-4372-9d17-a3fb5161e083.png (1254x1254 RGB, exported as opaque RGBA); no post-generation artwork edits",
+  "referenceImages": [
+    {
+      "path": "assets/game/icons/fire-affinity.png",
+      "role": "Approved painted channeling-family anchor: brushwork, light-dark contrast and broad hand gesture; style reference only, no copied pixels or flame."
+    }
+  ],
+  "prompt": "Use case: stylized-concept. Asset: an original Pathfinder Kingmaker Turn Undead ACTION-BAR icon. The supplied Fire Affinity image is a PAINTED MAGIC STYLE REFERENCE ONLY (brushwork, strong light-dark contrast, broad hand gesture, dark atmospheric background). Create a new original image, do not reuse reference pixels or depict flame.\nCreate one square 1024x1024 icon intended for a 128x128 RGBA game export. Show an outstretched living hand at lower left releasing one curved wave of radiant ivory and pale gold positive energy toward a large skeletal head and upper torso at upper right. The skeleton visibly recoils and twists away, jaw open, one bony arm raised in retreat. This is supernatural repulsion causing undead to flee, not burning, damage, explosion, disintegration, healing, necromantic control, or a summoned skeleton. Keep the skeleton intact. No chains, leash, puppeteer strings, swords, blood, green necromancy or purple hypnosis.\nStyle: painterly old fantasy CRPG spell icon, tactile brushwork, robust easily legible silhouette, very simple scene with just hand, light wave, retreating skeleton. Bone-white skull, restrained gold/ivory light, cool slate-blue shadows on the skeleton, deep charcoal/umber full-bleed background. The bright wave has a clear outward curve without becoming a complete ornamental UI ring. Strongest focus skull plus radiant palm. Important subject within central 84 percent, generous safety margin for game masking; background goes to every edge.\nNo text, letters, numbers, no square frame, no game UI, no counters, no watermark, no collage. Single icon.",
+  "visualStatus": "HumanReview: NOT_PERFORMED_NONBLOCKING",
+  "subjectAndSilhouette": "An outstretched living hand releases a curved wave of ivory-gold positive energy that drives an intact recoiling skeleton away on a dark full-bleed background.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "turn-undead",
+  "confusedWith": [
+    "turn-undead-feat"
+  ],
+  "uiSurfaces": [
+    "granted action bar / tooltip",
+    "positive-channel variant menu / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No burning, explosion, disintegration or damage.",
+    "No necromantic control, chains or summoned servant.",
+    "No healing depiction.",
+    "No owner visual approval inferred from technical tests."
+  ]
+}

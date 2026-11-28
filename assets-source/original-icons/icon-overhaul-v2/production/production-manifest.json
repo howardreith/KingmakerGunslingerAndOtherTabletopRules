@@ -1737,6 +1737,44 @@
       "approvedHash": "06c2d14a488e915fed5cd0058d5de3d6917d3113c7ac7ce10efa60c0e994f88d"
     },
     {
+      "key": "turn-undead-action",
+      "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/turn-undead-action.png",
+      "sourceSha256": "6f5d93530399d81b7ab81c69873921bfc6f0b2e3486c8eab457a19da8adca69d",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/production/exports/turn-undead-action.png",
+      "exportSha256": "c65c5052a355649be1d13ca27e3637d11002cfd452680892a19b38a1b4a26e07",
+      "exportSize": [
+        128,
+        128
+      ],
+      "brief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/turn-undead-action.json",
+      "technicalStatus": "candidate-export",
+      "visualStatus": "awaiting-owner-production-review",
+      "approvedHash": null
+    },
+    {
+      "key": "turn-undead-feat",
+      "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/turn-undead-feat.png",
+      "sourceSha256": "9805f019db30b0722834ba1ef2f8431b248f1f3dcacac89804e348613b0a98e8",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/production/exports/turn-undead-feat.png",
+      "exportSha256": "b210edd2022830277de7d3777e45d4403aee17ace1bc7a5656869a48a5a9610d",
+      "exportSize": [
+        64,
+        64
+      ],
+      "brief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/turn-undead-feat.json",
+      "technicalStatus": "candidate-export",
+      "visualStatus": "awaiting-owner-production-review",
+      "approvedHash": null
+    },
+    {
       "key": "undine-racial-spell-like-ability-selection",
       "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/undine-racial-spell-like-ability-selection.png",
       "sourceSha256": "1276c537d4f7eb582ccfec9fb6e7d6852c16213c83355939c4a75f8b1bad67e6",

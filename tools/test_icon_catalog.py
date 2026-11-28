@@ -1,5 +1,6 @@
 """Focused corruption fixtures for the icon authoring gate; never mutate originals."""
 import copy
+import re
 import sys
 import unittest
 from functools import lru_cache
@@ -72,8 +73,12 @@ class IconCatalogTests(unittest.TestCase):
 
     def test_crocodilian_emblem_scope_does_not_change_painted_history(self):
         mapping = self.catalog["runtimeMapping"]
-        self.assertEqual(104, mapping["paintedConceptCount"])
-        self.assertEqual(165, mapping["paintedConsumerCount"])
+        # The Turn Undead mission adds exactly one painted concept with eight
+        # action consumers; the earlier painted history is otherwise unchanged.
+        turn_undead = [c for c in self.catalog["consumers"] if c["concept"] == "turn-undead-action"]
+        self.assertEqual(8, len(turn_undead))
+        self.assertEqual(104, mapping["paintedConceptCount"] - 1)
+        self.assertEqual(165, mapping["paintedConsumerCount"] - len(turn_undead))
         self.assertEqual(9, sum(c["concept"] in {"crocodilian-sprint", "crocodilian-death-roll", "dire-crocodile-swallowed"}
                                 for c in self.catalog["consumers"]))
         self.assertEqual(mapping["additionalEmblemConsumerCount"],
@@ -81,6 +86,23 @@ class IconCatalogTests(unittest.TestCase):
         catalog = copy.deepcopy(self.catalog)
         catalog["runtimeMapping"]["additionalEmblemConcepts"].remove("dire-crocodile-swallowed")
         self.rejects("Additional emblem coverage counts disagree", catalog=catalog)
+
+    def test_turn_undead_bindings_are_exact_and_role_separated(self):
+        source = (ROOT / self.catalog["runtimeMapping"]["source"]).read_text(encoding="utf-8")
+        bindings = re.findall(r'new Binding\("(KMG\.Feats\.TurnUndead\.[^"]+)", "([^"]+)", typeof\((\w+)\)\)', source)
+        self.assertEqual([("KMG.Feats.TurnUndead.Feat", "turn-undead-feat", "BlueprintFeature")],
+                         [b for b in bindings if b[1] == "turn-undead-feat"])
+        self.assertEqual(8, sum(b[1] == "turn-undead-action" and b[2] == "BlueprintAbility" for b in bindings))
+        self.assertEqual(9, len(bindings))
+        swapped = source.replace('new Binding("KMG.Feats.TurnUndead.Feat", "turn-undead-feat"',
+                                 'new Binding("KMG.Feats.TurnUndead.Feat", "turn-undead-action"')
+        self.assertNotEqual(source, swapped)
+        self.assertIn("Compiled owned icon bindings disagree with exact catalog consumers",
+                      runtime_mapping_errors(ROOT, self.catalog, swapped))
+        dropped = "\n".join(line for line in source.splitlines()
+                            if 'new Binding("KMG.Feats.TurnUndead.Empyreal.MenuChild"' not in line)
+        self.assertIn("Compiled owned icon bindings disagree with exact catalog consumers",
+                      runtime_mapping_errors(ROOT, self.catalog, dropped))
 
     def test_source_file_without_compile_item_is_rejected(self):
         project = (ROOT / 'src/KingmakerGunslinger/KingmakerGunslinger.csproj').read_text(encoding='utf-8-sig')

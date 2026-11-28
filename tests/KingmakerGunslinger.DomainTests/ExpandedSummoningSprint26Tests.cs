@@ -81,9 +81,13 @@ namespace KingmakerGunslinger.DomainTests
             RepairR3PrivateIdentityCount + RepairR4PrivateIdentityCount + RepairR5PrivateIdentityCount +
             Risk06PrivateIdentityCount;
         internal const int SpiderSummonerLedgerIdentityCount = 39;
+        // Turn Undead feat: feat, flight buff, and a direct action plus a
+        // menu child for each of four positive-channel sources (all active).
+        internal const int TurnUndeadLedgerIdentityCount = 10;
         internal const int AppendedLedgerIdentityCount =
             AppendedCatalogIdentityCount +
-            Sprint36ReservedIdentityCount + SpiderSummonerLedgerIdentityCount;
+            Sprint36ReservedIdentityCount + SpiderSummonerLedgerIdentityCount +
+            TurnUndeadLedgerIdentityCount;
         internal static int RegisteredCreatureCount => ExpandedSummoningCatalog.All.Count;
         internal static int RegisteredMonsterCreatureCount => ExpandedSummoningCatalog.All.Count(value => value.MonsterTier.HasValue);
         internal static int RegisteredNatureAllyCreatureCount => ExpandedSummoningCatalog.All.Count(value => value.NaturesAllyTier.HasValue);

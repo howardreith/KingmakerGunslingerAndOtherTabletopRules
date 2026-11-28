@@ -27,6 +27,9 @@ namespace KingmakerGunslinger.Blueprints
             internal bool IsCharacterTrait => Symbol.StartsWith("KMG.ElementalRaces.CharacterTraits.", StringComparison.Ordinal);
             internal bool IsMagicCircle => Symbol.StartsWith("KMG.Spells.MagicCircle.", StringComparison.Ordinal);
             internal bool IsStrategic => Symbol.StartsWith("KMG.Spells.", StringComparison.Ordinal) && !IsMagicCircle;
+            // Registered after core bootstrap by TurnUndeadModule, which applies
+            // these bindings itself through ApplyTurnUndead.
+            internal bool IsTurnUndead => Symbol.StartsWith("KMG.Feats.TurnUndead.", StringComparison.Ordinal);
 
             internal BlueprintScriptableObject Resolve(LibraryScriptableObject library,
                 BlueprintManifest manifest)
@@ -219,6 +222,18 @@ namespace KingmakerGunslinger.Blueprints
             new Binding("KMG.Spells.MagicCircle.Chaos.Carrier", "magic-circle-against-chaos", typeof(BlueprintBuff)),
             new Binding("KMG.Spells.MagicCircle.Chaos.Recipient", "magic-circle-against-chaos", typeof(BlueprintBuff)),
             new Binding("KMG.Spells.MagicCircle.Chaos.Scroll", "scroll-of-magic-circle-against-chaos", typeof(BlueprintItemEquipmentUsable)),
+            // Turn Undead: the feat emblem on the selectable feat and its learned
+            // fact; the painted action on every executable source action and
+            // menu child. The flight buff keeps the native Fear condition icon.
+            new Binding("KMG.Feats.TurnUndead.Feat", "turn-undead-feat", typeof(BlueprintFeature)),
+            new Binding("KMG.Feats.TurnUndead.Cleric.Ability", "turn-undead-action", typeof(BlueprintAbility)),
+            new Binding("KMG.Feats.TurnUndead.Cleric.MenuChild", "turn-undead-action", typeof(BlueprintAbility)),
+            new Binding("KMG.Feats.TurnUndead.Paladin.Ability", "turn-undead-action", typeof(BlueprintAbility)),
+            new Binding("KMG.Feats.TurnUndead.Paladin.MenuChild", "turn-undead-action", typeof(BlueprintAbility)),
+            new Binding("KMG.Feats.TurnUndead.Hospitaler.Ability", "turn-undead-action", typeof(BlueprintAbility)),
+            new Binding("KMG.Feats.TurnUndead.Hospitaler.MenuChild", "turn-undead-action", typeof(BlueprintAbility)),
+            new Binding("KMG.Feats.TurnUndead.Empyreal.Ability", "turn-undead-action", typeof(BlueprintAbility)),
+            new Binding("KMG.Feats.TurnUndead.Empyreal.MenuChild", "turn-undead-action", typeof(BlueprintAbility)),
         };
 
         internal static IEnumerable<Binding> Bindings => Entries;
@@ -231,19 +246,35 @@ namespace KingmakerGunslinger.Blueprints
             if (library == null || manifest == null) throw new ArgumentNullException("library/manifest");
             // Preserve the existing independent Teleportation registration failure
             // boundary. An OFF module still registers its save-hydration identities.
-            var targets = Entries.Where(value => (!value.IsCharacterTrait || KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitPublicationCoordinator.GraphRegistered) && (!value.IsStrategic || strategicIdentitiesRegistered) &&
+            var targets = Entries.Where(value => !value.IsTurnUndead && (!value.IsCharacterTrait || KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitPublicationCoordinator.GraphRegistered) && (!value.IsStrategic || strategicIdentitiesRegistered) &&
                     (!value.IsMagicCircle || KingmakerGunslinger.Bootstrap.BlueprintBootstrap.MagicCircles != null))
                 .Select(value => new { Blueprint = value.Resolve(library, manifest),
                     Icon = ProjectAssetIcons.RequireIcon(value.Key) }).ToArray();
+            ApplyTargets(targets.Select(value => new KeyValuePair<BlueprintScriptableObject, UnityEngine.Sprite>(
+                value.Blueprint, value.Icon)));
+        }
+
+        /// <summary>Applies the exact Turn Undead bindings once its identities exist.</summary>
+        internal static void ApplyTurnUndead(LibraryScriptableObject library, BlueprintManifest manifest)
+        {
+            if (library == null || manifest == null) throw new ArgumentNullException("library/manifest");
+            var targets = Entries.Where(value => value.IsTurnUndead)
+                .Select(value => new KeyValuePair<BlueprintScriptableObject, UnityEngine.Sprite>(
+                    value.Resolve(library, manifest), ProjectAssetIcons.RequireIcon(value.Key))).ToArray();
+            ApplyTargets(targets);
+        }
+
+        private static void ApplyTargets(IEnumerable<KeyValuePair<BlueprintScriptableObject, UnityEngine.Sprite>> targets)
+        {
             var facts = BlueprintUnitFactAccess.Resolve();
             var items = BlueprintItemAccess.Resolve();
-            foreach (var target in targets)
+            foreach (var pair in targets)
             {
-                var fact = target.Blueprint as BlueprintUnitFact;
-                var item = target.Blueprint as BlueprintItem;
-                if (fact != null) facts.SetIcon(fact, target.Icon);
-                else if (item != null) items.SetIcon(item, target.Icon);
-                else throw new InvalidOperationException("Unsupported owned icon type: " + target.Blueprint.GetType());
+                var fact = pair.Key as BlueprintUnitFact;
+                var item = pair.Key as BlueprintItem;
+                if (fact != null) facts.SetIcon(fact, pair.Value);
+                else if (item != null) items.SetIcon(item, pair.Value);
+                else throw new InvalidOperationException("Unsupported owned icon type: " + pair.Key.GetType());
             }
         }
     }

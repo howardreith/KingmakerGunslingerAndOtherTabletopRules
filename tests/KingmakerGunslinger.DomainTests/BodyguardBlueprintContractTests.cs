@@ -92,7 +92,8 @@ namespace KingmakerGunslinger.DomainTests
                     KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length +
                     AlternateSummoningTests.AppendedLedgerIdentities +
                 (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedCatalogIdentityCount +
-                    SummoningCurrentSurface.SpiderSummonerLedgerIdentityCount),
+                    SummoningCurrentSurface.SpiderSummonerLedgerIdentityCount +
+                    SummoningCurrentSurface.TurnUndeadLedgerIdentityCount),
                 entries.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Current active identity count changed.");
