@@ -354,12 +354,15 @@ namespace KmgLoaderCompatHarness
             UnitEntityData[] silencedUnits = nested.silenced.ToArray();
             UnitEntityData[] spawned = nested.created.ToArray();
             CleanupReport report = nested.Release("abandoned by the abandon check");
+            // UnitEntityData.Destroy completes on a later frame; wait for it before judging.
+            int frames = 0;
+            while (frames < 30 && spawned.Any(u => u != null && !u.Destroyed)) { frames++; yield return null; }
             result["abandon"] = new JObject
             {
                 ["suspendedAfterPauseAndSilence"] = suspended, ["polls"] = polls, ["priorPause"] = prior,
                 ["pauseAfterRelease"] = Game.Instance.IsPaused, ["silenced"] = silencedUnits.Length,
                 ["brainsRestored"] = silencedUnits.Count(u => u != null && !u.Destroyed && u.IsBrainActive),
-                ["spawned"] = spawned.Length, ["spawnedRemaining"] = spawned.Count(u => u != null && !u.Destroyed),
+                ["spawned"] = spawned.Length, ["spawnedRemaining"] = spawned.Count(u => u != null && !u.Destroyed), ["framesUntilDestroyed"] = frames,
                 ["cleanupAttempted"] = new JArray(report.Attempted.Cast<object>().ToArray()),
                 ["cleanupFailures"] = new JArray(report.Failures.Cast<object>().ToArray()), ["cleanupRestored"] = report.Restored,
                 ["nestedCleanupScope"] = nested.result["cleanupScope"]
