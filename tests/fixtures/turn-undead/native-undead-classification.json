@@ -411,7 +411,7 @@
    "brain": "CyclopClericBrain",
    "identityFacts": [],
    "expectedMind": "Mindless",
-   "reviewReason": "dread zombie cyclops: zombie (identity resolved)"
+   "reviewReason": "owner-review default (provisional): family kept; spellcasting zombie priest"
   },
   {
    "unit": "ccc5faf34b4788b429b9dacbfbcfdc43",
@@ -447,7 +447,7 @@
    "brain": "CyclopClericBrain",
    "identityFacts": [],
    "expectedMind": "Mindless",
-   "reviewReason": "dread zombie cyclops variant: zombie (identity resolved)"
+   "reviewReason": "owner-review default (provisional): family kept; spellcasting zombie priest variant"
   },
   {
    "unit": "bad3213a31f643a4c947766f489f7b4d",
@@ -519,7 +519,7 @@
    "brain": "CyclopClericBrain",
    "identityFacts": [],
    "expectedMind": "Mindless",
-   "reviewReason": "dread zombie cyclops variant: zombie (identity resolved)"
+   "reviewReason": "owner-review default (provisional): family kept; spellcasting zombie priest variant"
   },
   {
    "unit": "f0a4efcaa7173bd43ba7fcf1f576e484",
@@ -531,7 +531,7 @@
    "brain": "CyclopClericBrain",
    "identityFacts": [],
    "expectedMind": "Mindless",
-   "reviewReason": "dread zombie cyclops variant: zombie (identity resolved)"
+   "reviewReason": "owner-review default (provisional): family kept; spellcasting zombie priest variant"
   },
   {
    "unit": "5c9facb3d35d6ef449ac8ab5a0b237a7",
@@ -903,7 +903,7 @@
    "brain": "Dumb Monster Brain",
    "identityFacts": [],
    "expectedMind": "Mindless",
-   "reviewReason": "bloody skeleton: mindless family variant (identity resolved)"
+   "reviewReason": "owner-review default (provisional): family kept; no creature-specific evidence of the bloody-skeleton template"
   },
   {
    "unit": "6c3d554093121ad4a93718f0ce7926d6",

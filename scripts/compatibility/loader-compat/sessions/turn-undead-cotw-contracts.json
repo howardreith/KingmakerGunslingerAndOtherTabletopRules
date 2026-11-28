@@ -1,6 +1,6 @@
 {
   "name": "turn-undead-cotw-contracts",
-  "description": "Turn Undead beside Call of the Wild alone (the lab snapshot's installed 1.14.4c). Contracts: the completion line reports CotW present and the paladin extra-channel route present; the harness records installed method IL hashes, a compact projection of the native and constructed Turn blueprints (DC calculators with the CotW channel progression, every native save with its conditional DC adjustments), the CotW channel registry (read, not unreadable; the supported sources' entries present; none a Turn identity), exact per-identity Turn membership on every DC and resistance list with a duplicate-substitution control, and each source's menu child placement. cotw-rollback drives the product adapter and the product's own reporting boundary (TurnUndeadModule.PublishCotwWithEngine) against an isolated copy of the publication surface with substitute engines: publication and exact rollback, a drift (missing sacred_conduit after earlier mutations) reported as cotw=failed with the reduced-compatibility warning and every direct action visible, an optional-null holder, an already-populated publication, re-publication and swapped-parent checks; the live publication and the module's rollback handle are only observed and must be unchanged. cotw-rollback-interrupt interrupts that probe immediately after its isolated rollback and requires a restored verdict with no fixture objects left and the live publication unchanged. cotw-gameplay casts through the Turn menu children: the cleric DC counts Holy Vindicator levels but not fighter levels, and the paladin's lay on hands and extra-channel routes each spend only their own pool at their own cost. The drift case writes one [turn-undead][cotw.unavailable] warning naming the missing sacred_conduit seam; a startup drift is excluded by the required ';cotw=present ' completion text. Setup is disclosed in tools/LoaderCompatHarness/TurnUndead*Probes.cs.",
+  "description": "Turn Undead beside Call of the Wild alone (the lab snapshot's installed 1.14.4c). Contracts: the completion line reports CotW present and the paladin extra-channel route present; the harness records installed method IL hashes, a compact projection of the native and constructed Turn blueprints (DC calculators with the CotW channel progression, every native save with its conditional DC adjustments), the CotW channel registry (read, not unreadable; the supported sources' entries present; none a Turn identity), exact per-identity Turn membership on every DC and resistance list with a duplicate-substitution control, and each source's menu child placement. cotw-rollback drives the product adapter and the product's own reporting boundary (TurnUndeadModule.PublishCotwWithEngine) against an isolated copy of the publication surface with substitute engines: publication and exact rollback, a drift (missing sacred_conduit after earlier mutations) reported as cotw=failed with the reduced-compatibility warning and every direct action visible, an optional-null holder, an already-populated publication, re-publication and swapped-parent checks; the live publication and the module's rollback handle are only observed and must be unchanged. cotw-rollback-interrupt interrupts that probe immediately after its isolated rollback and requires a restored verdict with no fixture objects left and the live publication unchanged. cotw-gameplay casts through the Turn menu children: the cleric DC counts Holy Vindicator levels but not fighter levels, and the paladin's lay on hands and extra-channel routes each spend only their own pool at their own cost. The drift case writes one [turn-undead][cotw.unavailable] warning naming the missing sacred_conduit seam; a startup drift is excluded by the required ';cotw=present ' completion text. Setup is disclosed in tools/LoaderCompatHarness/TurnUndead*Probes.cs. cotw-registration-boundary drives the product's DC-calculator plan and paladin extra-route builder with isolated donors: a healthy donor keeps the CotW progression; a donor with two DC calculators makes a core source fall back to its class level with a cotw.dc-progression-unavailable report and makes the optional extra route unavailable with a cotw.extra-route-unavailable report, without an exception; a failing registration delegate is contained the same way; the live registration stays intact. Those reports name the isolated donors; a startup drift is excluded by the required dc= and extraRoute=present completion text.",
   "ownerMods": [
     "CallOfTheWild"
   ],
@@ -17,16 +17,20 @@
         "present": [
           "[blueprints][initialize.complete]",
           "[turn-undead][initialize.complete]",
-          ";extraRoute=present;cotw=present ",
+          ";dc=cleric:progression,paladin:progression,hospitaler:progression,empyreal:progression;extraRoute=present;cotw=present ",
           "[turn-undead][cotw.unavailable]",
-          "sacred_conduit drifted (field missing)"
+          "sacred_conduit drifted (field missing)",
+          "[turn-undead][cotw.dc-progression-unavailable]",
+          "KmgTurnUndeadIsolated_DriftCleric",
+          "[turn-undead][cotw.extra-route-unavailable]",
+          "KmgTurnUndeadIsolated_DriftExtra",
+          "isolated registration failure"
         ],
         "absent": [
           "[initialize.root-cause]",
           "[initialize.failed]",
           "[turn-undead][initialize.failed]",
-          "[turn-undead][publication.failed]",
-          "[turn-undead][cotw.extra-route-unavailable]"
+          "[turn-undead][publication.failed]"
         ]
       },
       "harness": {
@@ -55,6 +59,12 @@
             "label": "cotw-gameplay",
             "match": "cotw-gameplay",
             "timeoutSeconds": 300
+          },
+          {
+            "op": "kmgTurnUndead",
+            "label": "cotw-registration-boundary",
+            "match": "cotw-registration-boundary",
+            "timeoutSeconds": 60
           }
         ]
       }

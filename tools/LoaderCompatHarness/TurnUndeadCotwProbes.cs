@@ -9,6 +9,7 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
@@ -17,6 +18,7 @@ using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.Utility;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -53,8 +55,10 @@ namespace KmgLoaderCompatHarness
 
     internal sealed partial class TurnUndeadProbe
     {
-        private bool injectCleanupFailure;
-        private bool injectNestedCleanupFailureForTest;
+        /// <summary>A test cleanup failure this probe's own Release throws (null: none).</summary>
+        private string injectedCleanupFailure;
+        /// <summary>The cleanup failure an abandon probe gives its nested first-turn probe (null: none).</summary>
+        private string injectedNestedCleanupFailure;
 
         // ---------------------------------------------------------------- menu placement (independent of child.Parent)
 
@@ -528,29 +532,52 @@ namespace KmgLoaderCompatHarness
 
         // ---------------------------------------------------------------- nested cleanup through probe slots
 
+        private sealed class DriverCase
+        {
+            internal bool Interrupt;
+            internal string Inject;
+        }
+
+        /// <summary>The abandon-interrupt cases; null runs the standard three.</summary>
+        private List<DriverCase> driverCases;
+        /// <summary>Set while the driver waits for a closed child's deferred unit destruction (an interruption point).</summary>
+        private bool awaitingDestruction;
+        private bool stoppedOnCleanupFailure;
+        private UnitEntityData[] lastSilenced = new UnitEntityData[0], lastSpawned = new UnitEntityData[0];
+
         /// <summary>
-        /// Abandon probes run through the harness's own ProbeSlot: interrupted after the nested probe's first yield
-        /// (clean, and with an injected nested cleanup failure) and run to normal completion with the injected failure.
+        /// Abandon probes run through the harness's own ProbeSlot: by default interrupted after the nested probe's
+        /// first yield (clean, and with an injected nested cleanup failure) and run to normal completion with the
+        /// injected failure. A closed child's outcome is merged into this driver's own cleanup record at once, before
+        /// any yield, continue or later case. Only the driver's own injected marker is expected; any other cleanup
+        /// failure is genuine: it is reported, reaches this driver's isolation verdict, and no further case starts.
         /// The real state (pause flag, brains, rule subscription, spawned units) must be restored in every case; a
         /// nested cleanup failure must reach the slot's outcome as unrestored isolation and refuse the next probe.
-        /// The injected failure is the harness's own marker, so this driver does not count it against itself.
         /// </summary>
         private IEnumerable<object> AbandonInterrupt()
         {
-            dropInjectedChildFailures = true;
+            droppedChildMarker = InjectedMarker;
             var cases = new JArray();
             result["abandonInterrupt"] = cases;
-            foreach (var plan in new[] { new { Interrupt = true, Inject = false }, new { Interrupt = true, Inject = true }, new { Interrupt = false, Inject = true } })
+            List<DriverCase> plans = driverCases ?? new List<DriverCase>
+            {
+                new DriverCase { Interrupt = true, Inject = null },
+                new DriverCase { Interrupt = true, Inject = InjectedMarker },
+                new DriverCase { Interrupt = false, Inject = InjectedMarker }
+            };
+            foreach (DriverCase plan in plans)
             {
                 Game.Instance.IsPaused = false;
                 var slot = new ProbeSlot();
                 childSlots.Add(slot);
-                var probe = new TurnUndeadProbe("abandon") { injectNestedCleanupFailureForTest = plan.Inject };
-                string owner = "abandon-" + (plan.Interrupt ? "interrupted" : "completed") + (plan.Inject ? "-injected" : "");
+                var probe = new TurnUndeadProbe("abandon") { injectedNestedCleanupFailure = plan.Inject };
+                string owner = "abandon-" + (plan.Interrupt ? "interrupted" : "completed") +
+                    (plan.Inject == null ? "" : plan.Inject == InjectedMarker ? "-injected" : "-distinct");
                 slot.Begin(owner, probe);
                 ProbeOutcome outcome = null;
                 TurnUndeadProbe nested = null;
-                UnitEntityData[] silencedUnits = new UnitEntityData[0], spawned = new UnitEntityData[0];
+                lastSilenced = new UnitEntityData[0];
+                lastSpawned = new UnitEntityData[0];
                 bool pausedAtInterrupt = false;
                 int polls = 0;
                 while (outcome == null && polls++ < 2400)
@@ -559,8 +586,8 @@ namespace KmgLoaderCompatHarness
                     if (current != null)
                     {
                         nested = current;
-                        if (current.silenced.Count > 0) silencedUnits = current.silenced.ToArray();
-                        if (current.created.Count > 0) spawned = current.created.ToArray();
+                        if (current.silenced.Count > 0) lastSilenced = current.silenced.ToArray();
+                        if (current.created.Count > 0) lastSpawned = current.created.ToArray();
                     }
                     if (plan.Interrupt && current != null && current.silenced.Count > 0)
                     {
@@ -572,8 +599,18 @@ namespace KmgLoaderCompatHarness
                     if (outcome == null) yield return null;
                 }
                 if (outcome == null) { outcome = slot.Abandon("timed out"); problems.Add(owner + ": the abandon probe did not finish"); }
+                // The closed child's outcome belongs to this driver now, before any yield, continue or later case.
+                RecordSlotOutcome(outcome, plan.Interrupt ? "interrupted" : "completed");
+                string[] genuine = outcome.Cleanup.Failures.Where(f => f.IndexOf(InjectedMarker, StringComparison.Ordinal) < 0).ToArray();
+                if (genuine.Length != 0)
+                {
+                    stoppedOnCleanupFailure = true;
+                    problems.Add(owner + ": genuine cleanup failure; no further case runs: " + string.Join("; ", genuine));
+                }
+                awaitingDestruction = true;
                 int frames = 0;
-                while (frames < 30 && spawned.Any(u => u != null && !u.Destroyed)) { frames++; yield return null; }
+                while (frames < 30 && lastSpawned.Any(u => u != null && !u.Destroyed)) { frames++; yield return null; }
+                awaitingDestruction = false;
                 string nextRefusal = null;
                 try
                 {
@@ -584,30 +621,257 @@ namespace KmgLoaderCompatHarness
                 var row = new JObject
                 {
                     ["case"] = owner, ["polls"] = polls, ["pausedAtInterrupt"] = pausedAtInterrupt,
-                    ["pauseAfterRelease"] = Game.Instance.IsPaused, ["silenced"] = silencedUnits.Length,
-                    ["brainsRestored"] = silencedUnits.Count(u => u != null && !u.Destroyed && u.IsBrainActive),
+                    ["pauseAfterRelease"] = Game.Instance.IsPaused, ["silenced"] = lastSilenced.Length,
+                    ["brainsRestored"] = lastSilenced.Count(u => u != null && !u.Destroyed && u.IsBrainActive),
                     ["nestedSubscriptionReleased"] = nested != null && nested.subscription == null,
-                    ["spawned"] = spawned.Length, ["spawnedRemaining"] = spawned.Count(u => u != null && !u.Destroyed),
+                    ["spawned"] = lastSpawned.Length, ["spawnedRemaining"] = lastSpawned.Count(u => u != null && !u.Destroyed),
                     ["testFailure"] = outcome.TestFailure, ["isolationRestored"] = outcome.IsolationRestored,
                     ["cleanupFailures"] = Strings(outcome.Cleanup.Failures), ["nextProbeRefusal"] = nextRefusal
                 };
                 cases.Add(row);
-                if (nested == null) { problems.Add(owner + ": no nested probe was observed"); continue; }
-                if (plan.Interrupt && !pausedAtInterrupt) problems.Add(owner + ": the nested probe had not paused the game at the interruption");
+                if (nested == null) problems.Add(owner + ": no nested probe was observed");
+                else
+                {
+                    if (plan.Interrupt && !pausedAtInterrupt) problems.Add(owner + ": the nested probe had not paused the game at the interruption");
+                    if (Game.Instance.IsPaused) problems.Add(owner + ": the prior pause flag (false) was not restored");
+                    if (lastSilenced.Length == 0 || lastSilenced.Any(u => u != null && !u.Destroyed && !u.IsBrainActive)) problems.Add(owner + ": silenced brains were not observed restored");
+                    if (nested.subscription != null) problems.Add(owner + ": the nested rule subscription was left open");
+                    if (lastSpawned.Any(u => u != null && !u.Destroyed)) problems.Add(owner + ": spawned units left");
+                    if (plan.Inject == null && (!outcome.IsolationRestored || nextRefusal != null)) problems.Add(owner + ": a clean release did not restore isolation: " + outcome.Failure);
+                    if (plan.Inject != null)
+                    {
+                        if (outcome.IsolationRestored) problems.Add(owner + ": a failed nested cleanup produced a restored isolation verdict");
+                        if (plan.Inject == InjectedMarker && !TurnUndeadObserverRules.OnlyInjected(outcome.Cleanup.Failures, InjectedMarker))
+                            problems.Add(owner + ": cleanup failures other than the injected one: " + string.Join("; ", outcome.Cleanup.Failures.ToArray()));
+                        if (nextRefusal == null || nextRefusal.IndexOf("isolation was not restored", StringComparison.Ordinal) < 0) problems.Add(owner + ": the next probe was not refused after unrestored isolation");
+                        if (!plan.Interrupt && string.IsNullOrEmpty(outcome.TestFailure)) problems.Add(owner + ": the completed abandon check did not report the nested cleanup failure");
+                    }
+                }
+                if (stoppedOnCleanupFailure) yield break;
+            }
+        }
+
+        /// <summary>
+        /// The driver's own recording, checked from outside through a further probe slot. Its abandon child carries a
+        /// cleanup failure the driver does not expect (the distinct marker). (1) The driver is interrupted after that
+        /// child's slot has closed, while it waits for deferred unit destruction: the outer outcome must carry the
+        /// failure as unrestored isolation and refuse the next probe. (2) The driver continues instead, with a second
+        /// case queued: it must stop before that case, with the same unrestored verdict. Real state must be restored.
+        /// This check expects only the distinct marker, so it does not count it against itself.
+        /// </summary>
+        private IEnumerable<object> AbandonInterruptRecording()
+        {
+            droppedChildMarker = DistinctMarker;
+            var cases = new JArray();
+            result["abandonInterruptRecording"] = cases;
+            foreach (bool interrupt in new[] { true, false })
+            {
+                Game.Instance.IsPaused = false;
+                var slot = new ProbeSlot();
+                childSlots.Add(slot);
+                var driver = new TurnUndeadProbe("abandon-interrupt")
+                {
+                    driverCases = interrupt
+                        ? new List<DriverCase> { new DriverCase { Interrupt = false, Inject = DistinctMarker } }
+                        : new List<DriverCase> { new DriverCase { Interrupt = false, Inject = DistinctMarker }, new DriverCase { Interrupt = true, Inject = null } }
+                };
+                string owner = interrupt ? "driver-interrupted-during-deferred-destruction" : "driver-continued-after-failure";
+                slot.Begin(owner, driver);
+                ProbeOutcome outcome = null;
+                bool interrupted = false;
+                int polls = 0;
+                while (outcome == null && polls++ < 2400)
+                {
+                    if (interrupt && driver.awaitingDestruction)
+                    {
+                        interrupted = true;
+                        outcome = slot.Abandon("interrupted after the driver's child slot closed, while destruction is deferred");
+                        break;
+                    }
+                    outcome = slot.Poll(owner);
+                    if (outcome == null) yield return null;
+                }
+                if (outcome == null) { outcome = slot.Abandon("timed out"); problems.Add(owner + ": the driver did not finish"); }
+                RecordSlotOutcome(outcome, owner);
+                UnitEntityData[] silencedUnits = driver.lastSilenced, spawned = driver.lastSpawned;
+                int frames = 0;
+                while (frames < 30 && spawned.Any(u => u != null && !u.Destroyed)) { frames++; yield return null; }
+                string nextRefusal = null;
+                try
+                {
+                    slot.Begin("after " + owner, new TurnUndeadProbe("contracts"));
+                    slot.Terminate("after " + owner, "not run");
+                }
+                catch (InvalidOperationException e) { nextRefusal = e.Message; }
+                var driverRows = (JArray)((JObject)driver.Result)["abandonInterrupt"];
+                var row = new JObject
+                {
+                    ["case"] = owner, ["interruptedDuringDeferredDestruction"] = interrupted, ["polls"] = polls,
+                    ["driverCasesStarted"] = driverRows == null ? 0 : driverRows.Count + (interrupted ? 1 : 0),
+                    ["driverStoppedOnFailure"] = driver.stoppedOnCleanupFailure,
+                    ["testFailure"] = outcome.TestFailure, ["isolationRestored"] = outcome.IsolationRestored,
+                    ["cleanupFailures"] = Strings(outcome.Cleanup.Failures), ["nextProbeRefusal"] = nextRefusal,
+                    ["pauseAfterRelease"] = Game.Instance.IsPaused, ["silenced"] = silencedUnits.Length,
+                    ["brainsRestored"] = silencedUnits.Count(u => u != null && !u.Destroyed && u.IsBrainActive),
+                    ["spawnedRemaining"] = spawned.Count(u => u != null && !u.Destroyed)
+                };
+                cases.Add(row);
+                if (interrupt && !interrupted) problems.Add(owner + ": the driver was never caught waiting for deferred destruction");
+                if (outcome.IsolationRestored) problems.Add(owner + ": a genuine child cleanup failure produced a restored driver verdict");
+                if (!outcome.Cleanup.Failures.Any(f => f.IndexOf(DistinctMarker, StringComparison.Ordinal) >= 0)) problems.Add(owner + ": the distinct cleanup failure did not reach the driver's outcome");
+                if (!TurnUndeadObserverRules.OnlyInjected(outcome.Cleanup.Failures, DistinctMarker)) problems.Add(owner + ": unexpected cleanup failures: " + string.Join("; ", outcome.Cleanup.Failures.ToArray()));
+                if (nextRefusal == null || nextRefusal.IndexOf("isolation was not restored", StringComparison.Ordinal) < 0) problems.Add(owner + ": the next probe was not refused");
+                if (!interrupt && (!driver.stoppedOnCleanupFailure || driverRows == null || driverRows.Count != 1)) problems.Add(owner + ": the driver did not stop before its second case");
+                if (!interrupt && (outcome.TestFailure == null || outcome.TestFailure.IndexOf("no further case runs", StringComparison.Ordinal) < 0)) problems.Add(owner + ": the driver's verdict does not report the genuine cleanup failure");
                 if (Game.Instance.IsPaused) problems.Add(owner + ": the prior pause flag (false) was not restored");
                 if (silencedUnits.Length == 0 || silencedUnits.Any(u => u != null && !u.Destroyed && !u.IsBrainActive)) problems.Add(owner + ": silenced brains were not observed restored");
-                if (nested.subscription != null) problems.Add(owner + ": the nested rule subscription was left open");
                 if (spawned.Any(u => u != null && !u.Destroyed)) problems.Add(owner + ": spawned units left");
-                if (!plan.Inject && (!outcome.IsolationRestored || nextRefusal != null)) problems.Add(owner + ": a clean release did not restore isolation: " + outcome.Failure);
-                if (plan.Inject)
-                {
-                    if (outcome.IsolationRestored) problems.Add(owner + ": a failed nested cleanup produced a restored isolation verdict");
-                    if (!TurnUndeadObserverRules.OnlyInjected(outcome.Cleanup.Failures, InjectedMarker)) problems.Add(owner + ": cleanup failures other than the injected one: " + string.Join("; ", outcome.Cleanup.Failures.ToArray()));
-                    if (nextRefusal == null || nextRefusal.IndexOf("isolation was not restored", StringComparison.Ordinal) < 0) problems.Add(owner + ": the next probe was not refused after unrestored isolation");
-                    if (!plan.Interrupt && string.IsNullOrEmpty(outcome.TestFailure)) problems.Add(owner + ": the completed abandon check did not report the nested cleanup failure");
-                }
-                RecordSlotOutcome(outcome, plan.Interrupt ? "interrupted" : "completed");
             }
+        }
+
+        // ---------------------------------------------------------------- CotW registration failure boundary (isolated donors)
+
+        /// <summary>
+        /// Drives the product's own DC-calculator plan and paladin extra-route builder (the code registration uses)
+        /// with isolated donors: healthy copies keep the CotW channel progression; a donor with an unsupported
+        /// calculator shape (two calculators) makes a core source fall back to its class level with a report, and
+        /// makes the optional extra route unavailable with a report, without an exception; a failing registration
+        /// delegate is contained the same way. The live registration is then checked intact.
+        /// </summary>
+        private IEnumerable<object> CotwRegistrationBoundary()
+        {
+            Assembly product = ProductProbes.Entry().Assembly;
+            Type blueprints = product.GetType("KingmakerGunslinger.TurnUndead.TurnUndeadBlueprints", true);
+            Type sourceType = product.GetType("KingmakerGunslinger.TurnUndead.TurnUndeadSourceBlueprints", true);
+            MethodInfo plan = blueprints.GetMethod("PlanDcCalculator", Any);
+            MethodInfo build = blueprints.GetMethod("BuildPaladinExtra", Any);
+            Type module = product.GetType("KingmakerGunslinger.TurnUndead.TurnUndeadModule", true);
+            if (plan == null || build == null || !CotwLoaded) { problems.Add("a product registration seam or CotW is unavailable"); yield break; }
+            var steps = new JObject();
+            result["registrationBoundary"] = steps;
+            Func<BlueprintAbility, string, bool, BlueprintAbility> isolatedDonor = (source, name, drift) =>
+            {
+                BlueprintAbility copy = UnityEngine.Object.Instantiate(source);
+                copy.name = "KmgTurnUndeadIsolated_" + name;
+                isolatedObjects.Add(copy);
+                if (drift)
+                {
+                    var second = (ContextCalculateAbilityParamsBasedOnClass)FreshComponent(typeof(ContextCalculateAbilityParamsBasedOnClass), name + "_SecondDc");
+                    copy.ComponentsArray = copy.ComponentsArray.Concat(new BlueprintComponent[] { second }).ToArray();
+                }
+                return copy;
+            };
+            Func<object, JObject> describePlan = value =>
+            {
+                string status = (string)Member(value, "Status");
+                var create = (Func<BlueprintComponent>)Member(value, "Create");
+                BlueprintComponent component = create();
+                isolatedObjects.Add(component);
+                StatType stat;
+                bool fixedStat;
+                string[] classes = CalculatorShape(component, out stat, out fixedStat);
+                return new JObject { ["status"] = status, ["calculator"] = component.GetType().Name, ["classes"] = new JArray(classes ?? new string[0]), ["stat"] = stat.ToString() };
+            };
+
+            // ---- core source calculator plan (cleric), healthy and drifted
+            object clericContract = Member(SourceOf("Cleric"), "Contract");
+            var clericHarm = Blueprint<BlueprintAbility>(ExpectedSources[0].NativeHarm);
+            var clericClass = Blueprint<BlueprintCharacterClass>(ClericClass);
+            JObject healthyCore = describePlan(plan.Invoke(null, new object[] { clericContract, "IsolatedCleric", isolatedDonor(clericHarm, "HealthyCleric", false), clericClass, true }));
+            JObject driftCore = describePlan(plan.Invoke(null, new object[] { clericContract, "IsolatedCleric", isolatedDonor(clericHarm, "DriftCleric", true), clericClass, true }));
+            string strictCore = null;
+            try { plan.Invoke(null, new object[] { clericContract, "IsolatedCleric", isolatedDonor(clericHarm, "StrictCleric", true), clericClass, false }); }
+            catch (TargetInvocationException e) { strictCore = e.InnerException == null ? e.Message : e.InnerException.Message; }
+            steps["coreCalculator"] = new JObject { ["healthy"] = healthyCore, ["drift"] = driftCore, ["strictModeRefusal"] = strictCore };
+            string[] cotwClasses = new[] { ClericClass }.Concat(CotwProgressionClasses).ToArray();
+            if ((string)healthyCore["status"] != "progression" || !healthyCore["classes"].Select(c => (string)c).SequenceEqual(cotwClasses))
+                problems.Add("a healthy cleric donor did not keep its CotW channel progression: " + healthyCore.ToString(Newtonsoft.Json.Formatting.None));
+            if (!((string)driftCore["status"]).StartsWith("fallback") || (string)driftCore["calculator"] != "ContextCalculateAbilityParamsBasedOnClass" ||
+                !driftCore["classes"].Select(c => (string)c).SequenceEqual(new[] { ClericClass }) || (string)driftCore["stat"] != "Charisma")
+                problems.Add("a drifted cleric donor did not fall back to the cleric level with a report: " + driftCore.ToString(Newtonsoft.Json.Formatting.None));
+            if (strictCore == null || strictCore.IndexOf("2 DC calculators", StringComparison.Ordinal) < 0) problems.Add("the strict plan did not refuse the drifted donor: " + strictCore);
+            yield return null;
+
+            // ---- optional paladin extra route, healthy, drifted, and with a failing registration
+            object paladinSource = SourceOf("Paladin");
+            object paladinContract = Member(paladinSource, "Contract");
+            var paladinFeature = (BlueprintFeature)Member(paladinSource, "SourceFeature");
+            var extraHarm = Blueprint<BlueprintAbility>(CotwPaladinExtraHarm);
+            var extraPool = Blueprint<BlueprintAbilityResource>(CotwPaladinExtraResource);
+            var paladinClass = Blueprint<BlueprintCharacterClass>(ExpectedSources[1].ClassGuid);
+            var undead = Blueprint<BlueprintFeature>(UndeadType);
+            Sprite icon = Direct("Paladin").Icon;
+            const BindingFlags ctor = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            Func<object> isolatedPaladin = () => Activator.CreateInstance(sourceType, ctor, null, new object[]
+                { paladinContract, paladinFeature, Fresh<BlueprintAbility>("Paladin_Harm"), Fresh<BlueprintAbility>("Paladin_Direct"), Fresh<BlueprintAbility>("Paladin_Child") }, null);
+            var built = new List<BlueprintAbility>();
+            Func<Func<BlueprintAbility>, BlueprintAbility> register = factory =>
+            {
+                BlueprintAbility ability = factory();
+                built.Add(ability);
+                isolatedObjects.Add(ability);
+                return ability;
+            };
+            Func<Func<BlueprintAbility>, BlueprintAbility> failingRegister = factory => { throw new InvalidOperationException("isolated registration failure"); };
+            var routes = new JObject();
+            foreach (string kind in new[] { "healthy", "drift", "failingRegistration" })
+            {
+                object paladin = isolatedPaladin();
+                BlueprintAbility donor = isolatedDonor(extraHarm, kind == "drift" ? "DriftExtra" : kind == "healthy" ? "HealthyExtra" : "FailingExtra", kind == "drift");
+                int before = built.Count;
+                string status = null, thrown = null;
+                try
+                {
+                    status = (string)build.Invoke(null, new object[] { paladinContract, paladin, donor, extraPool, paladinClass, Feat, undead, Fleeing, icon,
+                        kind == "failingRegistration" ? failingRegister : register });
+                }
+                catch (TargetInvocationException e) { thrown = (e.InnerException ?? e).GetType().Name + ": " + (e.InnerException ?? e).Message; }
+                var child = (BlueprintAbility)Member(paladin, "ExtraMenuChild");
+                var row = new JObject { ["status"] = status, ["thrown"] = thrown, ["childBuilt"] = built.Count - before, ["attached"] = child != null };
+                if (child != null)
+                {
+                    BlueprintComponent calculator = child.ComponentsArray.FirstOrDefault(c => c is ContextAbilityParamsCalculator);
+                    StatType stat;
+                    bool fixedStat;
+                    row["classes"] = new JArray(CalculatorShape(calculator, out stat, out fixedStat) ?? new string[0]);
+                    AbilityResourceLogic logic = child.GetComponents<AbilityResourceLogic>().FirstOrDefault();
+                    row["resource"] = logic == null || logic.RequiredResource == null ? null : logic.RequiredResource.AssetGuid + " x" + logic.Amount;
+                }
+                routes[kind] = row;
+                if (thrown != null) problems.Add("the extra-route builder threw (" + kind + "): " + thrown);
+                else if (kind == "healthy" && (status != "present" || child == null || !row["classes"].Select(c => (string)c).SequenceEqual(new[] { ExpectedSources[1].ClassGuid }.Concat(CotwProgressionClasses)) ||
+                    (string)row["resource"] != CotwPaladinExtraResource + " x1"))
+                    problems.Add("a healthy extra donor did not build the progression child: " + row.ToString(Newtonsoft.Json.Formatting.None));
+                else if (kind == "drift" && (status == null || !status.StartsWith("drift") || status.IndexOf("2 DC calculators", StringComparison.Ordinal) < 0 || child != null || built.Count != before))
+                    problems.Add("a drifted extra donor was not reported unavailable without construction: " + row.ToString(Newtonsoft.Json.Formatting.None));
+                else if (kind == "failingRegistration" && (status == null || !status.StartsWith("drift") || status.IndexOf("isolated registration failure", StringComparison.Ordinal) < 0 || child != null))
+                    problems.Add("a failing extra-route registration was not contained: " + row.ToString(Newtonsoft.Json.Formatting.None));
+            }
+            steps["extraRoute"] = routes;
+            yield return null;
+
+            // ---- the live registration stays intact
+            object liveSet = module.GetProperty("Blueprints", Any).GetValue(null, null);
+            var identities = new JObject
+            {
+                ["moduleStatus"] = (string)module.GetProperty("Status", Any).GetValue(null, null),
+                ["feat"] = Feat.AssetGuid, ["fleeing"] = Fleeing.AssetGuid,
+                ["dcSummary"] = (string)Member(liveSet, "DcSummary"), ["extraRouteStatus"] = (string)Member(liveSet, "ExtraRouteStatus")
+            };
+            var actions = new JArray();
+            foreach (SourceExpectation e in ExpectedSources)
+                foreach (string role in new[] { "Direct", "MenuChild" })
+                {
+                    var ability = (BlueprintAbility)Member(SourceOf(e.Kind), role);
+                    actions.Add(e.Kind + "." + role + "=" + ability.AssetGuid + (ReferenceEquals(ResourcesLibrary.TryGetBlueprint<BlueprintAbility>(ability.AssetGuid), ability) ? "" : " (not resolvable)"));
+                }
+            identities["sourceActions"] = actions;
+            steps["liveRegistration"] = identities;
+            if (Feat.AssetGuid != "fd2d5083cb294a9396c390e8d39f4efd" || !ReferenceEquals(ResourcesLibrary.TryGetBlueprint<BlueprintFeature>(Feat.AssetGuid), Feat))
+                problems.Add("the core feat is not resolvable at its stable GUID");
+            if (!ReferenceEquals(ResourcesLibrary.TryGetBlueprint<BlueprintBuff>(Fleeing.AssetGuid), Fleeing)) problems.Add("the flight buff is not resolvable");
+            if (actions.Any(a => ((string)a).EndsWith("(not resolvable)"))) problems.Add("a native source action is not resolvable: " + actions.ToString(Newtonsoft.Json.Formatting.None));
+            if ((string)identities["dcSummary"] != "cleric:progression,paladin:progression,hospitaler:progression,empyreal:progression") problems.Add("the live DC summary is " + identities["dcSummary"]);
         }
 
         // ---------------------------------------------------------------- CotW gameplay: progression DC and paladin payment
@@ -648,6 +912,11 @@ namespace KmgLoaderCompatHarness
             Ability wrapperFact = child.Parent == null ? null : unit.Descriptor.Abilities.GetAbility(child.Parent);
             return wrapperFact != null && new AbilityData(new AbilityData(wrapperFact), child).IsAvailableForCast;
         }
+
+        /// <summary>Every tracked unit that rolled a save against this cast's source ability since <paramref name="seq"/>.</summary>
+        private JArray Recipients(int seq) => new JArray(trace.Events
+            .Where(e => (int)e["seq"] > seq && (string)e["what"] == "save" && (string)e["sourceAbility"] == turnSource)
+            .Select(e => (object)new JObject { ["unit"] = e["unit"], ["dc"] = e["dc"], ["passed"] = e["passed"], ["natural"] = e["natural"] }).ToArray());
 
         private static IEnumerable<object> WaitFor(ProbeCastResult cast)
         {
@@ -704,7 +973,8 @@ namespace KmgLoaderCompatHarness
                 {
                     ["build"] = label, ["clericLevel"] = clericLevel, ["holyVindicatorLevel"] = vindicatorLevel,
                     ["characterLevel"] = caster.Descriptor.Progression.CharacterLevel, ["charismaBonus"] = caster.Stats.Charisma.Bonus,
-                    ["expectedDc"] = expectedDc, ["available"] = cast.Available, ["castProblem"] = cast.Problem, ["saves"] = Saves(skeleton, seq)
+                    ["expectedDc"] = expectedDc, ["available"] = cast.Available, ["castProblem"] = cast.Problem, ["saves"] = Saves(skeleton, seq),
+                    ["recipients"] = Recipients(seq)
                 };
                 progression.Add(row);
                 if (vindicator && vindicatorLevel != 2) problems.Add("fixture: the Holy Vindicator levels were not added");
@@ -773,7 +1043,8 @@ namespace KmgLoaderCompatHarness
                 var row = new JObject
                 {
                     ["available"] = cast.Available, ["castProblem"] = cast.Problem, ["layOnHands"] = new JArray(layBefore, layAfter),
-                    ["extraPool"] = new JArray(extraBefore, extraAfter), ["expectedDc"] = dc, ["saves"] = Saves(skeleton, seq)
+                    ["extraPool"] = new JArray(extraBefore, extraAfter), ["expectedDc"] = dc, ["saves"] = Saves(skeleton, seq),
+                    ["recipients"] = Recipients(seq), ["effectCheckedOn"] = skeleton.UniqueId
                 };
                 payment[viaExtra ? "extraRoute" : "layOnHandsRoute"] = row;
                 if (cast.Problem != null || !cast.Available) { problems.Add(label + ": not castable: " + (cast.Problem ?? "unavailable")); continue; }

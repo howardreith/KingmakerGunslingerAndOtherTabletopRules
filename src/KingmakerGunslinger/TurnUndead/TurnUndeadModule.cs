@@ -177,7 +177,7 @@ namespace KingmakerGunslinger.TurnUndead
             TurnUndeadDiagnostics.Info("initialize.complete",
                 "registered=" + registry.RegisteredCount + ";featPublished=" + offer +
                 ";resistance=" + string.Join(",", resistance.Evidence.ToArray()) +
-                ";extraRoute=" + set.ExtraRouteStatus + ";" + cotwOutcome.StatusText);
+                ";dc=" + set.DcSummary + ";extraRoute=" + set.ExtraRouteStatus + ";" + cotwOutcome.StatusText);
         }
 
         /// <summary>

@@ -159,17 +159,19 @@ namespace KingmakerGunslinger.TurnUndead
             { "ce2d24dec712e094d94c336053abeb57", new UnitException(TurnUndeadMind.Mindless,
                 "CR14_DreadZombieCyclopGreat", false,
                 "Greater dread zombie cyclops (zombie family) with no unit type.") },
-            // Identity resolved from installed references: variants of mindless families.
-            { "f68391521a2175647ab311fc64108574", Mindless("CR13_BloodyBonesBarbarian",
-                "Bloody skeleton (Bestiary: mindless) of the Skeleton unit type with Barbarian levels; class levels scale Hit Dice and do not change the creature.") },
-            { "fe662d20a0272bb4ea66bef675b4b52d", Mindless("CR12_DreadZombieCyclopCleric",
-                "Dread zombie cyclops (CyclopZombie unit type; Pathfinder zombies are mindless). Its encounter cleric spells are a Kingmaker addition; the creature remains a zombie.") },
-            { "113ee4680b60b974696313c00b29c4aa", Mindless("DLC2Village_DreadZombieCyclopCleric",
-                "Dread zombie cyclops variant derived from CR12_DreadZombieCyclopCleric (installed reference); a zombie.") },
-            { "2e286f14e73b385499551761afa66ce1", Mindless("UndeadCyclopsPriest (2e286f14)",
-                "Dread zombie cyclops variant derived from CR12_DreadZombieCyclopCleric (installed reference); a zombie.") },
-            { "f0a4efcaa7173bd43ba7fcf1f576e484", Mindless("UndeadCyclopsPriest (f0a4efca)",
-                "Dread zombie cyclops variant derived from CR12_DreadZombieCyclopCleric (installed reference); a zombie.") },
+            // Provisional: family default (mindless), owner review. The installed references identify only the
+            // encounters and the variants' relationship to their base unit; no creature-specific record ties
+            // these Kingmaker stat blocks to a mindless template, and they cast spells or carry class levels.
+            { "f68391521a2175647ab311fc64108574", Review("CR13_BloodyBonesBarbarian",
+                "Provisional: Skeleton unit type with Barbarian levels and Intelligence 18 in the stat block; referenced by BlueprintRoot and DungeonDLC3 only. Nothing installed equates it with the mindless bloody-skeleton template.") },
+            { "fe662d20a0272bb4ea66bef675b4b52d", Review("CR12_DreadZombieCyclopCleric",
+                "Provisional: CyclopZombie unit type, but it casts cleric spells (CyclopClericBrain); no installed record says whether this priest follows the mindless zombie rule.") },
+            { "113ee4680b60b974696313c00b29c4aa", Review("DLC2Village_DreadZombieCyclopCleric",
+                "Provisional: references CR12_DreadZombieCyclopCleric; same spellcasting zombie priest ambiguity.") },
+            { "2e286f14e73b385499551761afa66ce1", Review("UndeadCyclopsPriest (2e286f14)",
+                "Provisional: references CR12_DreadZombieCyclopCleric; same spellcasting zombie priest ambiguity.") },
+            { "f0a4efcaa7173bd43ba7fcf1f576e484", Review("UndeadCyclopsPriest (f0a4efca)",
+                "Provisional: references CR12_DreadZombieCyclopCleric; same spellcasting zombie priest ambiguity.") },
             // No tabletop identity: Kingmaker-only skeleton encounters. Family default, owner review.
             { "976d4937eb2620c4baf465bb6c7a00a7", Review("CR0.5_SkeletonMage",
                 "Kingmaker-only spellcasting skeleton (Skeleton unit type, referenced only by DungeonDLC3); no tabletop creature to resolve against; kept with its family (mindless) until the owner decides.") },
@@ -265,9 +267,6 @@ namespace KingmakerGunslinger.TurnUndead
 
         private static UnitException Intelligent(string name, string evidence)
         { return new UnitException(TurnUndeadMind.Intelligent, name, false, evidence); }
-
-        private static UnitException Mindless(string name, string evidence)
-        { return new UnitException(TurnUndeadMind.Mindless, name, false, evidence); }
 
         private static UnitException Review(string name, string evidence)
         { return new UnitException(TurnUndeadMind.Mindless, name, true, evidence); }

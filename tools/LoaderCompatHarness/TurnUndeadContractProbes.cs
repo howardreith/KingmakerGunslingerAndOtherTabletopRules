@@ -399,6 +399,7 @@ namespace KmgLoaderCompatHarness
                     else if (value is string || value is bool || value is int || value is float || value is double || value is long) o[field.Name] = JToken.FromObject(value);
                     else if (value is BlueprintScriptableObject) o[field.Name] = Ref((BlueprintScriptableObject)value);
                     else if (value is Feet) o[field.Name] = ((Feet)value).Value + " ft";
+                    else if (IsValueObject(value)) o[field.Name] = ValueObject(value, 2);
                     else if (value is IEnumerable)
                     {
                         object[] items = ((IEnumerable)value).Cast<object>().ToArray();
@@ -408,6 +409,34 @@ namespace KmgLoaderCompatHarness
                     }
                     else o[field.Name] = value.GetType().Name;
                 }
+            return o;
+        }
+
+        /// <summary>Small value types whose scalar fields carry contract meaning (descriptor masks, DC and duration values).</summary>
+        private static bool IsValueObject(object value) =>
+            value != null && (value is SpellDescriptorWrapper || value.GetType().Name == "ContextValue" ||
+                value.GetType().Name == "ContextDiceValue" || value.GetType().Name == "ContextDurationValue");
+
+        private static JToken ValueObject(object value, int depth)
+        {
+            if (value is SpellDescriptorWrapper)
+            {
+                SpellDescriptor mask = ((SpellDescriptorWrapper)value).Value;
+                return new JObject { ["mask"] = (long)mask, ["flags"] = mask.ToString() };
+            }
+            var o = new JObject { ["$type"] = value.GetType().Name };
+            foreach (FieldInfo field in value.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            {
+                if (field.IsNotSerialized || field.Name.Contains("<")) continue;
+                if (!field.IsPublic && field.GetCustomAttributes(typeof(SerializeField), true).Length == 0) continue;
+                object v = field.GetValue(value);
+                if (v == null) o[field.Name] = null;
+                else if (v is Enum) o[field.Name] = v.ToString();
+                else if (v is string || v is bool || v is int || v is float || v is double || v is long) o[field.Name] = JToken.FromObject(v);
+                else if (v is BlueprintScriptableObject) o[field.Name] = Ref((BlueprintScriptableObject)v);
+                else if (depth > 0 && IsValueObject(v)) o[field.Name] = ValueObject(v, depth - 1);
+                else o[field.Name] = v.GetType().Name;
+            }
             return o;
         }
 
@@ -446,8 +475,8 @@ namespace KmgLoaderCompatHarness
             return increases;
         }
 
-        /// <summary>Every save in an action tree with the branch path that reaches it.</summary>
-        private static void SavesIn(ActionList list, string path, JArray into)
+        /// <summary>Every save in an action tree with the branch path that reaches it; buff applications go to <paramref name="applications"/>.</summary>
+        private static void SavesIn(ActionList list, string path, JArray into, JArray applications = null)
         {
             foreach (GameAction action in list == null || list.Actions == null ? new GameAction[0] : list.Actions)
             {
@@ -455,10 +484,21 @@ namespace KmgLoaderCompatHarness
                 var conditional = action as Conditional;
                 var save = action as ContextActionSavingThrow;
                 var saved = action as ContextActionConditionalSaved;
+                var apply = action as ContextActionApplyBuff;
+                if (apply != null && applications != null)
+                {
+                    applications.Add(new JObject
+                    {
+                        ["path"] = path.TrimStart(' ', '/'), ["buff"] = Ref(apply.Buff), ["permanent"] = apply.Permanent,
+                        ["duration"] = ValueObject(apply.DurationValue, 2), ["asChild"] = apply.AsChild,
+                        ["notDispelable"] = apply.IsNotDispelable, ["fromSpell"] = apply.IsFromSpell
+                    });
+                    continue;
+                }
                 if (conditional != null)
                 {
-                    SavesIn(conditional.IfTrue, path + " / if " + CheckerText(conditional.ConditionsChecker), into);
-                    SavesIn(conditional.IfFalse, path + " / unless " + CheckerText(conditional.ConditionsChecker), into);
+                    SavesIn(conditional.IfTrue, path + " / if " + CheckerText(conditional.ConditionsChecker), into, applications);
+                    SavesIn(conditional.IfFalse, path + " / unless " + CheckerText(conditional.ConditionsChecker), into, applications);
                 }
                 else if (save != null)
                 {
@@ -470,12 +510,12 @@ namespace KmgLoaderCompatHarness
                         ["onResult"] = new JArray((save.Actions == null || save.Actions.Actions == null ? new GameAction[0] : save.Actions.Actions)
                             .Where(a => a != null).Select(a => (object)a.GetType().Name).ToArray())
                     });
-                    SavesIn(save.Actions, path + " / after save", into);
+                    SavesIn(save.Actions, path + " / after save", into, applications);
                 }
                 else if (saved != null)
                 {
-                    SavesIn(saved.Succeed, path + " / on success", into);
-                    SavesIn(saved.Failed, path + " / on failure", into);
+                    SavesIn(saved.Succeed, path + " / on success", into, applications);
+                    SavesIn(saved.Failed, path + " / on failure", into, applications);
                 }
             }
         }
@@ -488,7 +528,8 @@ namespace KmgLoaderCompatHarness
             ConditionsChecker filter = around == null ? null : (ConditionsChecker)typeof(AbilityTargetsAround).GetField("m_Condition", Any).GetValue(around);
             AbilityEffectRunAction run = ability.GetComponents<AbilityEffectRunAction>().FirstOrDefault();
             var saves = new JArray();
-            if (run != null) SavesIn(run.Actions, "", saves);
+            var applications = new JArray();
+            if (run != null) SavesIn(run.Actions, "", saves, applications);
             return new JObject
             {
                 ["guid"] = ability.AssetGuid, ["name"] = ability.name, ["type"] = ability.Type.ToString(), ["action"] = ability.ActionType.ToString(),
@@ -498,6 +539,7 @@ namespace KmgLoaderCompatHarness
                 ["targets"] = around == null ? null : new JObject { ["radius"] = around.AoERadius.Value + " ft", ["targetType"] = around.TargetType.ToString(), ["filter"] = CheckerText(filter) },
                 ["effectSave"] = run == null ? null : run.SavingThrowType.ToString(),
                 ["saves"] = saves,
+                ["buffApplications"] = applications,
                 ["calculators"] = new JArray(ability.ComponentsArray.Where(c => c is ContextAbilityParamsCalculator).Select(c => (object)Shallow(c)).ToArray()),
                 ["alignment"] = new JArray(ability.GetComponents<AbilityCasterAlignment>().Select(c => (object)c.Alignment.ToString()).ToArray()),
                 ["descriptors"] = new JArray(ability.ComponentsArray.OfType<SpellDescriptorComponent>().Select(d => (object)d.Descriptor.Value.ToString()).ToArray()),
@@ -761,7 +803,7 @@ namespace KmgLoaderCompatHarness
         {
             Game.Instance.IsPaused = false;
             bool prior = Game.Instance.IsPaused;
-            TurnUndeadProbe nested = AdoptChild(new TurnUndeadProbe("first-turn") { injectCleanupFailure = injectNestedCleanupFailureForTest });
+            TurnUndeadProbe nested = AdoptChild(new TurnUndeadProbe("first-turn") { injectedCleanupFailure = injectedNestedCleanupFailure });
             string verdict = null;
             int polls = 0;
             while (verdict == null && !(nested.silenced.Count > 0 && Game.Instance.IsPaused) && polls++ < 600)

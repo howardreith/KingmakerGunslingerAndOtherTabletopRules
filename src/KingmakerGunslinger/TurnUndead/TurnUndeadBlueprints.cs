@@ -53,6 +53,13 @@ namespace KingmakerGunslinger.TurnUndead
         internal BlueprintAbility ExtraHarm { get; private set; }
         internal BlueprintAbility ExtraMenuChild { get; private set; }
 
+        /// <summary>
+        /// How this source's DC level is computed: "native" (source class only), "progression"
+        /// (the installed donor's CotW channel progression), or "fallback: reason" (the donor's
+        /// progression could not be copied; source class only, reported).
+        /// </summary>
+        internal string DcStatus { get; set; }
+
         internal void AttachExtraRoute(BlueprintAbility harm, BlueprintAbility child)
         {
             ExtraHarm = harm;
@@ -88,6 +95,17 @@ namespace KingmakerGunslinger.TurnUndead
         /// <summary>Why the CotW paladin extra route is or is not present ("absent", "present", or a drift reason).</summary>
         internal string ExtraRouteStatus { get; set; }
 
+        /// <summary>Per-source DC computation for the completion line, e.g. "cleric:progression,...".</summary>
+        internal string DcSummary
+        {
+            get
+            {
+                return string.Join(",", Sources.Select(value => value.Contract.Key + ":" +
+                    (value.DcStatus == null ? "?" : value.DcStatus.StartsWith("fallback", StringComparison.Ordinal) ?
+                        "fallback" : value.DcStatus)).ToArray());
+            }
+        }
+
         internal IEnumerable<BlueprintAbility> AllAbilities
         {
             get
@@ -97,6 +115,19 @@ namespace KingmakerGunslinger.TurnUndead
                     : new[] { value.Direct, value.MenuChild, value.ExtraMenuChild });
             }
         }
+    }
+
+    /// <summary>A validated DC calculator plan: its status and a factory for one fresh calculator per ability.</summary>
+    internal sealed class TurnUndeadDcPlan
+    {
+        internal TurnUndeadDcPlan(string status, Func<BlueprintComponent> create)
+        {
+            Status = status;
+            Create = create;
+        }
+
+        internal string Status { get; private set; }
+        internal Func<BlueprintComponent> Create { get; private set; }
     }
 
     /// <summary>
@@ -156,13 +187,16 @@ namespace KingmakerGunslinger.TurnUndead
                 var route = new TurnUndeadRoute(contract.DisplayName, contract.DisplayName, harm, resource,
                     contract.ResourceCost, contract.Kind == TurnUndeadSourceKind.Paladin ?
                         "two uses of lay on hands" : "one use of channel positive energy");
+                // A core source always registers: a drifted CotW progression falls back to the
+                // source class alone and is reported, never rolling back the core identities.
+                TurnUndeadDcPlan dc = PlanDcCalculator(contract, contract.DisplayName, harm, dcClass, true);
                 BlueprintAbility direct = registry.Register<BlueprintAbility>(
-                    contract.DirectAbilitySymbol, () => CreateAbility(contract, route,
+                    contract.DirectAbilitySymbol, () => CreateAbility(contract, route, dc,
                         dcClass, sourceFeature, feat, undeadType, fleeing, actionIcon, false));
                 BlueprintAbility child = registry.Register<BlueprintAbility>(
-                    contract.MenuChildSymbol, () => CreateAbility(contract, route,
+                    contract.MenuChildSymbol, () => CreateAbility(contract, route, dc,
                         dcClass, sourceFeature, feat, undeadType, fleeing, actionIcon, true));
-                var built = new TurnUndeadSourceBlueprints(contract, sourceFeature, harm, direct, child);
+                var built = new TurnUndeadSourceBlueprints(contract, sourceFeature, harm, direct, child) { DcStatus = dc.Status };
                 if (contract.Kind == TurnUndeadSourceKind.Paladin)
                     extraStatus = RegisterPaladinExtra(library, registry, contract, built, dcClass,
                         feat, undeadType, fleeing, actionIcon);
@@ -188,8 +222,53 @@ namespace KingmakerGunslinger.TurnUndead
             library.BlueprintsByAssetId.TryGetValue(TurnUndeadSourceCatalog.PaladinExtraHarmGuid, out harmValue);
             library.BlueprintsByAssetId.TryGetValue(TurnUndeadSourceCatalog.PaladinExtraResourceGuid, out resourceValue);
             if (harmValue == null && resourceValue == null) return "absent";
-            var harm = harmValue as BlueprintAbility;
-            var resource = resourceValue as BlueprintAbilityResource;
+            return BuildPaladinExtra(contract, paladin, harmValue as BlueprintAbility, resourceValue as BlueprintAbilityResource,
+                dcClass, feat, undeadType, fleeing, actionIcon,
+                factory => registry.Register<BlueprintAbility>(TurnUndeadSourceCatalog.PaladinExtraMenuChildSymbol, factory));
+        }
+
+        /// <summary>
+        /// Builds the CotW paladin extra-channel child inside its own failure boundary: any drift in the
+        /// donor's payment, alignment, targeting, selective structure or DC calculator, or a failure while
+        /// constructing or registering the child, leaves the route unavailable and reported
+        /// (cotw.extra-route-unavailable) and returns normally, so the core Turn identities registered
+        /// before it are never rolled back. The registry runs a factory before it changes the library, so a
+        /// failed construction registers nothing. Registration and the harness (with an isolated donor and
+        /// its own register delegate) use this same method.
+        /// </summary>
+        internal static string BuildPaladinExtra(TurnUndeadSourceContract contract, TurnUndeadSourceBlueprints paladin,
+            BlueprintAbility harm, BlueprintAbilityResource resource, BlueprintCharacterClass dcClass,
+            BlueprintFeature feat, BlueprintFeature undeadType, BlueprintBuff fleeing, Sprite actionIcon,
+            Func<Func<BlueprintAbility>, BlueprintAbility> register)
+        {
+            string drift = null;
+            try
+            {
+                drift = ExtraRouteDrift(harm, resource);
+                if (drift == null)
+                {
+                    TurnUndeadDcPlan dc = PlanDcCalculator(contract, "PaladinExtra", harm, dcClass, false);
+                    var route = new TurnUndeadRoute("PaladinExtra", "Paladin, Extra Channel", harm, resource,
+                        TurnUndeadSourceCatalog.PaladinExtraCost,
+                        "one use of extra channel (the pool Call of the Wild's Extra Channel (Paladin) feat provides)");
+                    BlueprintAbility child = register(() => CreateAbility(contract, route, dc,
+                        dcClass, paladin.SourceFeature, feat, undeadType, fleeing, actionIcon, true));
+                    paladin.AttachExtraRoute(harm, child);
+                    return "present";
+                }
+            }
+            catch (Exception exception)
+            {
+                drift = exception.GetType().Name + ": " + exception.Message;
+            }
+            TurnUndeadDiagnostics.Warning("cotw.extra-route-unavailable",
+                "Call of the Wild's paladin extra-channel route was not given a Turn Undead action (" +
+                (harm == null ? "no extra harm" : harm.name) + "): " + drift + ". The four native sources are unaffected.");
+            return "drift: " + drift;
+        }
+
+        private static string ExtraRouteDrift(BlueprintAbility harm, BlueprintAbilityResource resource)
+        {
             string drift = null;
             if (harm == null || resource == null)
                 drift = "extra harm " + (harm != null) + ", extra pool " + (resource != null);
@@ -211,20 +290,7 @@ namespace KingmakerGunslinger.TurnUndead
                     catch (InvalidOperationException exception) { drift = exception.Message; }
                 }
             }
-            if (drift != null)
-            {
-                TurnUndeadDiagnostics.Warning("cotw.extra-route-unavailable",
-                    "Call of the Wild's paladin extra-channel route was not given a Turn Undead action: " + drift + ".");
-                return "drift: " + drift;
-            }
-            var route = new TurnUndeadRoute("PaladinExtra", "Paladin, Extra Channel", harm, resource,
-                TurnUndeadSourceCatalog.PaladinExtraCost,
-                "one use of extra channel (the pool Call of the Wild's Extra Channel (Paladin) feat provides)");
-            BlueprintAbility child = registry.Register<BlueprintAbility>(
-                TurnUndeadSourceCatalog.PaladinExtraMenuChildSymbol, () => CreateAbility(contract, route,
-                    dcClass, paladin.SourceFeature, feat, undeadType, fleeing, actionIcon, true));
-            paladin.AttachExtraRoute(harm, child);
-            return "present";
+            return drift;
         }
 
         private static BlueprintBuff CreateFleeingBuff(BlueprintBuff nativeFlight)
@@ -258,7 +324,7 @@ namespace KingmakerGunslinger.TurnUndead
                 LocalizationService.Create("KMG.Feat.TurnUndead.Description",
                     "Prerequisite: Channel positive energy class feature.\n" +
                     "Benefit: As a standard action, you can use one of your uses of channel positive energy to cause all undead within 30 feet of you to flee, as if panicked. Undead receive a Will save to negate the effect. The DC for this Will save is equal to 10 + 1/2 your cleric level + your Charisma modifier. Undead that fail their save flee for 1 minute. Intelligent undead receive a new saving throw each round to end the effect. If you use channel energy in this way, it has no other effect (it does not heal or harm nearby creatures).\n" +
-                    "In Kingmaker: undead allies are affected too, unless you have Selective Channel, in which case only enemy undead are affected. Supported channels are a cleric's positive channel, a paladin's channel (two uses of lay on hands, or one use of the extra channel pool from Call of the Wild's Extra Channel (Paladin) feat when that mod is loaded), a hospitaler's channel and an empyreal sorcerer's channel; other channel energy sources, including those added by other mods, do not qualify. Each supported channel gains its own Turn Undead action that spends that channel's uses, with its own DC: that class's level (plus levels in classes that advance that channel, when Call of the Wild adds them) and the channel's statistic (Wisdom for an empyreal sorcerer). Panic is represented by the game's frightened fleeing condition; affected undead do not drop what they are holding."),
+                    "In Kingmaker: undead allies are affected too, unless you have Selective Channel, in which case only enemy undead are affected. Supported channels are a cleric's positive channel, a paladin's channel (two uses of lay on hands, or one use of the extra channel pool from Call of the Wild's Extra Channel (Paladin) feat when that mod is loaded), a hospitaler's channel and an empyreal sorcerer's channel; other channel energy sources, including those added by other mods, do not qualify. Each supported channel gains its own Turn Undead action that spends that channel's uses, with its own DC: 10 + half that class's level (with Call of the Wild, half the total of that class's levels and the levels of classes that advance that channel), rounded down, + the channel's statistic modifier (Wisdom for an empyreal sorcerer). Panic is represented by the game's frightened fleeing condition; affected undead do not drop what they are holding."),
                 icon);
             return feature;
         }
@@ -305,7 +371,7 @@ namespace KingmakerGunslinger.TurnUndead
         }
 
         private static BlueprintAbility CreateAbility(TurnUndeadSourceContract contract,
-            TurnUndeadRoute route, BlueprintCharacterClass dcClass, BlueprintFeature sourceFeature,
+            TurnUndeadRoute route, TurnUndeadDcPlan dc, BlueprintCharacterClass dcClass, BlueprintFeature sourceFeature,
             BlueprintFeature feat, BlueprintFeature undeadType, BlueprintBuff fleeing,
             Sprite icon, bool menuChild)
         {
@@ -314,18 +380,21 @@ namespace KingmakerGunslinger.TurnUndead
                 (menuChild ? "_MenuChild" : "_Ability");
             BlueprintAbility result = BlueprintCloneService.Clone(harm, stem);
             string statName = contract.DcStat == TurnUndeadDcStat.Wisdom ? "Wisdom" : "Charisma";
-            BlueprintComponent parameters = CreateDcCalculator(contract, route.Key, harm, dcClass);
+            BlueprintComponent parameters = dc.Create();
             BlueprintCharacterClass[] progression;
             StatType ignored;
             ReadCalculator(parameters, out progression, out ignored);
-            string advanced = progression.Length > 1 ? " plus levels in classes that advance this channel" : string.Empty;
+            // The game sums every qualifying class level, halves the total (rounded down), then adds the statistic.
+            string level = progression.Length > 1
+                ? "half the total of your " + contract.DcClassName + " levels and your levels in classes that advance this channel, rounded down,"
+                : "1/2 your " + contract.DcClassName + " level (rounded down)";
             BlueprintUnitFactAccess.Resolve().Configure(result,
                 LocalizationService.Create("KMG.TurnUndead." + route.Key + ".Name",
                     "Turn Undead (" + route.DisplayName + ")"),
                 LocalizationService.Create("KMG.TurnUndead." + route.Key + ".Description",
                     "As a standard action, spend " + route.PoolText +
-                    " to cause undead within 30 feet of you to flee for 1 minute: every undead creature, allies included, or only enemy undead if you have Selective Channel. Each affected undead can attempt a Will save to negate the effect (DC 10 + 1/2 your " +
-                    contract.DcClassName + " level" + advanced + " + your " + statName +
+                    " to cause undead within 30 feet of you to flee for 1 minute: every undead creature, allies included, or only enemy undead if you have Selective Channel. Each affected undead can attempt a Will save to negate the effect (DC 10 + " +
+                    level + " + your " + statName +
                     " modifier). Intelligent undead attempt a new save each round to end the effect; mindless undead do not. This channel neither heals nor harms."),
                 icon);
             result.Type = AbilityType.Supernatural;
@@ -478,44 +547,67 @@ namespace KingmakerGunslinger.TurnUndead
         private const string CotwClassesCalculator = "ContextCalculateAbilityParamsBasedOnClasses";
 
         /// <summary>
-        /// The DC calculator. Vanilla donors carry none, so Turn uses the native single-class
-        /// calculator (source class level, source statistic). When a loaded provider gave the
-        /// installed donor Call of the Wild's multi-class calculator (the source class plus the
-        /// prestige classes whose levels advance that channel, e.g. Holy Vindicator and Dawnflower
-        /// Anchorite), Turn takes a fresh copy of it: the same channel progression, unrelated class
-        /// levels still excluded, with the source's own statistic (Wisdom for an empyreal sorcerer;
-        /// the native Empyreal override names only the native heal and harm). Unknown calculators
-        /// refuse registration.
+        /// The DC calculator plan for one route, validated once before any ability is built. Vanilla
+        /// donors carry none, so Turn uses the native single-class calculator (source class level, source
+        /// statistic). When a loaded provider gave the installed donor Call of the Wild's multi-class
+        /// calculator (the source class plus the prestige classes whose levels advance that channel, e.g.
+        /// Holy Vindicator and Dawnflower Anchorite), each Turn ability gets a fresh copy with the source's
+        /// own statistic (Wisdom for an empyreal sorcerer; the native Empyreal override names only the
+        /// native heal and harm). A donor whose calculator cannot be copied (several calculators, an
+        /// unknown type, a copy that loses the source class or fixes no statistic) is drift: with
+        /// <paramref name="allowFallback"/> (a core source) Turn uses the source class alone and reports
+        /// cotw.dc-progression-unavailable; without it (an optional route) the plan throws.
         /// </summary>
-        private static BlueprintComponent CreateDcCalculator(TurnUndeadSourceContract contract, string key,
-            BlueprintAbility harm, BlueprintCharacterClass dcClass)
+        internal static TurnUndeadDcPlan PlanDcCalculator(TurnUndeadSourceContract contract, string key,
+            BlueprintAbility harm, BlueprintCharacterClass dcClass, bool allowFallback)
         {
             StatType stat = contract.DcStat == TurnUndeadDcStat.Wisdom ? StatType.Wisdom : StatType.Charisma;
+            Func<BlueprintComponent> native = () =>
+            {
+                var parameters = ScriptableObject.CreateInstance<ContextCalculateAbilityParamsBasedOnClass>();
+                parameters.name = "$KMG_TurnUndead_" + key + "_Dc";
+                parameters.CharacterClass = dcClass;
+                parameters.StatType = stat;
+                parameters.UseKineticistMainStat = false;
+                return parameters;
+            };
             BlueprintComponent[] donors = (harm.ComponentsArray ?? Array.Empty<BlueprintComponent>())
                 .Where(component => component is ContextAbilityParamsCalculator).ToArray();
-            if (donors.Length > 1)
-                throw new InvalidOperationException("The installed " + harm.name + " has " + donors.Length + " DC calculators.");
-            if (donors.Length == 1 && donors[0].GetType().Name == CotwClassesCalculator)
+            string drift = null;
+            if (donors.Length == 0) return new TurnUndeadDcPlan("native", native);
+            if (donors.Length > 1) drift = donors.Length + " DC calculators";
+            else if (donors[0].GetType().Name == CotwClassesCalculator)
             {
-                BlueprintComponent copy = UnityEngine.Object.Instantiate(donors[0]);
-                copy.name = "$KMG_TurnUndead_" + key + "_Dc";
-                SetField(copy, "StatType", stat);
-                BlueprintCharacterClass[] classes;
-                StatType copied;
-                if (!ReadCalculator(copy, out classes, out copied) || !classes.Contains(dcClass))
-                    throw new InvalidOperationException("The installed " + harm.name +
-                        " channel progression no longer includes " + contract.DcClassName + " or uses another statistic source.");
-                return copy;
+                BlueprintComponent donor = donors[0];
+                BlueprintComponent probe = null;
+                try
+                {
+                    probe = CopyProgression(donor, key, stat);
+                    BlueprintCharacterClass[] classes;
+                    StatType copied;
+                    if (!ReadCalculator(probe, out classes, out copied) || copied != stat || !classes.Contains(dcClass))
+                        drift = "the copied channel progression lost " + contract.DcClassName + " or fixes no statistic";
+                }
+                catch (Exception exception) { drift = exception.GetType().Name + ": " + exception.Message; }
+                finally { if (probe != null) UnityEngine.Object.DestroyImmediate(probe); }
+                if (drift == null) return new TurnUndeadDcPlan("progression", () => CopyProgression(donor, key, stat));
             }
-            if (donors.Length == 1 && !(donors[0] is ContextCalculateAbilityParamsBasedOnClass))
-                throw new InvalidOperationException("The installed " + harm.name + " uses an unknown DC calculator " +
-                    donors[0].GetType().FullName + ".");
-            var parameters = ScriptableObject.CreateInstance<ContextCalculateAbilityParamsBasedOnClass>();
-            parameters.name = "$KMG_TurnUndead_" + key + "_Dc";
-            parameters.CharacterClass = dcClass;
-            parameters.StatType = stat;
-            parameters.UseKineticistMainStat = false;
-            return parameters;
+            else if (donors[0] is ContextCalculateAbilityParamsBasedOnClass) return new TurnUndeadDcPlan("native", native);
+            else drift = "unknown DC calculator " + donors[0].GetType().FullName;
+            if (!allowFallback)
+                throw new InvalidOperationException("the installed " + harm.name + " DC calculator drifted: " + drift);
+            TurnUndeadDiagnostics.Warning("cotw.dc-progression-unavailable",
+                "Turn Undead (" + contract.DisplayName + ") uses its " + contract.DcClassName +
+                " level alone: the installed " + harm.name + " channel progression could not be copied (" + drift + ").");
+            return new TurnUndeadDcPlan("fallback: " + drift, native);
+        }
+
+        private static BlueprintComponent CopyProgression(BlueprintComponent donor, string key, StatType stat)
+        {
+            BlueprintComponent copy = UnityEngine.Object.Instantiate(donor);
+            copy.name = "$KMG_TurnUndead_" + key + "_Dc";
+            SetField(copy, "StatType", stat);
+            return copy;
         }
 
         /// <summary>
@@ -678,11 +770,14 @@ namespace KingmakerGunslinger.TurnUndead
                     BlueprintComponent[] donorCalculators = check.Harm.ComponentsArray.Where(value => value is ContextAbilityParamsCalculator).ToArray();
                     BlueprintCharacterClass[] classes, donorClasses;
                     StatType stat, donorStat;
+                    // A native single-class calculator names exactly the source class (vanilla, or a reported
+                    // fallback); a copied CotW progression lists exactly the donor's classes.
                     bool dcValid = calculators.Length == 1 && ReadCalculator(calculators[0], out classes, out stat) &&
                         classes.Any(value => value.AssetGuid == source.Contract.DcClassGuid) &&
                         stat == (source.Contract.DcStat == TurnUndeadDcStat.Wisdom ? StatType.Wisdom : StatType.Charisma) &&
-                        (donorCalculators.Length == 0 ? classes.Length == 1 :
-                            ReadCalculator(donorCalculators[0], out donorClasses, out donorStat) && classes.SequenceEqual(donorClasses));
+                        (calculators[0] is ContextCalculateAbilityParamsBasedOnClass ? classes.Length == 1 :
+                            donorCalculators.Length == 1 && ReadCalculator(donorCalculators[0], out donorClasses, out donorStat) &&
+                            classes.SequenceEqual(donorClasses));
                     AbilityEffectRunAction effect = ability.ComponentsArray.OfType<AbilityEffectRunAction>().Single();
                     ContextActionApplyBuff[] applications = TurnApplications(effect, NativeSelectiveChannel(check.Harm));
                     if (ability.Type != AbilityType.Supernatural ||

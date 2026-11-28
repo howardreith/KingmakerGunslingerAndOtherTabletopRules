@@ -116,8 +116,8 @@ namespace KmgLoaderCompatHarness
                 new KeyValuePair<string, Action>("disposable units", () => { foreach (UnitEntityData u in created.Where(u => u != null && !u.Destroyed).ToArray()) u.Destroy(); created.Clear(); }),
                 new KeyValuePair<string, Action>("unit blueprint clones", () => { foreach (BlueprintUnit c in clones) UnityEngine.Object.DestroyImmediate(c); clones.Clear(); })
             };
-            if (injectCleanupFailure)
-                releases.Add(new KeyValuePair<string, Action>("injected test failure", () => { throw new InvalidOperationException(InjectedMarker); }));
+            if (injectedCleanupFailure != null)
+                releases.Add(new KeyValuePair<string, Action>("injected test failure", () => { throw new InvalidOperationException(injectedCleanupFailure); }));
             CleanupReport report = ProbeCleanup.RunAll(releases);
             foreach (KeyValuePair<string, string> failure in childFailures) report.Failures.Add("child " + failure.Key + ": " + failure.Value);
             childFailures.Clear();
@@ -127,11 +127,13 @@ namespace KmgLoaderCompatHarness
         // ---------------------------------------------------------------- child ownership
 
         internal const string InjectedMarker = "injected by abandon-interrupt";
+        /// <summary>A test failure the abandon-interrupt driver does not expect: it must treat it as genuine.</summary>
+        internal const string DistinctMarker = "distinct test cleanup failure (driver-recording check)";
         private readonly List<TurnUndeadProbe> activeChildren = new List<TurnUndeadProbe>();
         private readonly List<ProbeSlot> childSlots = new List<ProbeSlot>();
         private readonly List<KeyValuePair<string, string>> childFailures = new List<KeyValuePair<string, string>>();
-        /// <summary>True for a driver whose children carry the harness's own injected failure on purpose.</summary>
-        private bool dropInjectedChildFailures;
+        /// <summary>The one test-failure marker a driver injected on purpose and therefore does not count against itself.</summary>
+        private string droppedChildMarker;
 
         /// <summary>The child probe currently owned (abandon modes), or null.</summary>
         private TurnUndeadProbe CurrentChild => activeChildren.FirstOrDefault();
@@ -161,7 +163,7 @@ namespace KmgLoaderCompatHarness
         private void RecordChildFailures(string child, IEnumerable<string> failures)
         {
             foreach (string failure in failures)
-                if (!(dropInjectedChildFailures && failure.IndexOf(InjectedMarker, StringComparison.Ordinal) >= 0))
+                if (!(droppedChildMarker != null && failure.IndexOf(droppedChildMarker, StringComparison.Ordinal) >= 0))
                     childFailures.Add(new KeyValuePair<string, string>(child, failure));
         }
 
@@ -192,7 +194,9 @@ namespace KmgLoaderCompatHarness
                 mode == "abandon-interrupt" ? AbandonInterrupt() :
                 mode == "cotw-rollback" ? CotwRollback() :
                 mode == "cotw-rollback-interrupt" ? CotwRollbackInterrupt() :
-                mode == "cotw-gameplay" ? CotwGameplay() : null;
+                mode == "cotw-gameplay" ? CotwGameplay() :
+                mode == "abandon-interrupt-recording" ? AbandonInterruptRecording() :
+                mode == "cotw-registration-boundary" ? CotwRegistrationBoundary() : null;
             if (body == null) { problems.Add("unknown mode " + mode); yield break; }
             foreach (object step in body) yield return step;
         }

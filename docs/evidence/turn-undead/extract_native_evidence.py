@@ -172,6 +172,10 @@ def project_probe(name, probe):
         out["cotwRollback"] = probe.get("cotwRollback")
     elif mode == "cotw-rollback-interrupt":
         out["cotwRollbackInterrupt"] = probe.get("cotwRollbackInterrupt")
+    elif mode == "abandon-interrupt-recording":
+        out["abandonInterruptRecording"] = probe.get("abandonInterruptRecording")
+    elif mode == "cotw-registration-boundary":
+        out["registrationBoundary"] = probe.get("registrationBoundary")
     elif mode == "cotw-gameplay":
         out["dcProgression"] = [with_saves(row, ["saves"]) for row in probe.get("dcProgression") or []]
         payment = dict(probe.get("paladinPayment") or {})

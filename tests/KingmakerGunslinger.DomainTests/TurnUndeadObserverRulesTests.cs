@@ -115,7 +115,12 @@ namespace KingmakerGunslinger.DomainTests
                 "The Animate Dead skeleton is mindless and no longer an owner-review case.");
             var priest = TurnUndeadClassificationPolicy.Classify(new TurnUndeadUnitRecord("fe662d20a0272bb4ea66bef675b4b52d",
                 "e2fc4028eca4b40448e0339964d93b87", new string[0]));
-            Assertions.True(priest.Mind == TurnUndeadMind.Mindless && !priest.OwnerReview, "A dread zombie cyclops priest is a zombie.");
+            Assertions.True(priest.Mind == TurnUndeadMind.Mindless && priest.OwnerReview,
+                "A spellcasting dread zombie cyclops priest stays a provisional owner-review default.");
+            var beast = TurnUndeadClassificationPolicy.Classify(new TurnUndeadUnitRecord("f68391521a2175647ab311fc64108574",
+                TurnUndeadClassificationPolicy.SkeletonType, new string[0]));
+            Assertions.True(beast.Mind == TurnUndeadMind.Mindless && beast.OwnerReview,
+                "The Bloody Bones Beast stays a provisional owner-review default.");
             var champion = TurnUndeadClassificationPolicy.Classify(new TurnUndeadUnitRecord("209f78dd464984c40b1eb43fabdab5a0",
                 TurnUndeadClassificationPolicy.SkeletonType, new string[0]));
             Assertions.Equal(TurnUndeadMind.Intelligent, champion.Mind, "The summoned greater skeletal champion stays intelligent.");
