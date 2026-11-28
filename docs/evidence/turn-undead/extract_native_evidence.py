@@ -31,11 +31,15 @@ RUNS = [
     "20261128T115155Z-umm-0.31.1-turn-undead-first",
     "20261128T115425Z-umm-0.31.1-turn-undead-cotw-contracts",
     "20261128T115645Z-umm-0.31.1-turn-undead-first",
+    "20261128T135648Z-umm-0.31.1-turn-undead-first",
+    "20261128T135954Z-umm-0.31.1-turn-undead-cotw-contracts",
+    "20261128T140857Z-umm-0.31.1-turn-undead-first",
+    "20261128T141137Z-umm-0.31.1-turn-undead-cotw-contracts",
 ]
 # The runs whose contracts step is published as the profile contract extract.
 CONTRACT_RUNS = [
-    ("20261128T115645Z-umm-0.31.1-turn-undead-first", "contracts-vanilla.json"),
-    ("20261128T115425Z-umm-0.31.1-turn-undead-cotw-contracts", "contracts-cotw.json"),
+    ("20261128T140857Z-umm-0.31.1-turn-undead-first", "contracts-vanilla.json"),
+    ("20261128T141137Z-umm-0.31.1-turn-undead-cotw-contracts", "contracts-cotw.json"),
 ]
 SESSION_FIELDS = [
     "sessionId", "session", "loaderProfile", "candidateZipSha256", "candidateDllSha256", "admission", "git",
