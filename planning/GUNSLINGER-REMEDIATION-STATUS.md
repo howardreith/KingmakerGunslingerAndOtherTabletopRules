@@ -235,6 +235,15 @@ DEF-06 is worked on `codex/def06-controller-launcher-consolidation`, stacked on 
 identities. The inherited complete-suite result stays 3,147 of 3,148 (the pre-existing `model-d` firearm-source pin
 from RISK-01).
 
+## Sprint 7 master integration (started 2026-11-28; separate enrollment, development checkpoint)
+
+- **Scope.** The accepted parent source `3ebdda17da` (PR #219, archive `d682b6bd4e`) merged into `master` `52755b617c`
+  on branch `codex/s7-master-integration`, with compilation and focused validation. At most four formal reviews.
+  Packaging, native qualification, merging and release are later boundaries.
+- **Record.** `docs/missions/sprint7/integration/S7-MASTER-INTEGRATION-RECORD.md`, a dated pre-submission snapshot.
+  The completed parent section below is unchanged and stays the parent's own record.
+- **Still pending with the owner:** the T2/T3/T6 visual decisions and the T5/T7 listening decisions.
+
 ## Sprint 7 (started 2026-11-23; agent-review controller, foreground)
 
 **Current state (pre-submission snapshot for formal review 9, 2026-11-28T09:54Z UTC): ACTIVE in `develop` under owner amendment 5; 8 of 9 authorized reviews completed.**
