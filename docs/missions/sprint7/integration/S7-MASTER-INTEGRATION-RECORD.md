@@ -111,7 +111,22 @@ The ordinary 15-minute planning target and 30-minute ceiling apply, and full out
 final ledger (71 min 40.3 s of 85 min) and C3's ledger are separate, unchanged, and are not this task's budget. No
 runtime transaction was in progress at the start.
 
-Results: pending at this snapshot. The gates run on the committed head, and the developer report cites their receipts.
+The controller ran both selected gates on head `28f2408e6fd17e4382994354213f9a327622f965`. That head is the merge plus the
+first records commit, and it differs from the submitted head only in this section. Receipts are in the enrollment's
+private `evidence/` folder.
+
+| Gate on `28f2408e6f` | Selected | Result | Receipt duration | Outer duration | Receipt (SHA-256) |
+|---|---|---|---|---|---|
+| `-Filter sprint7-visual` | 25 of 3,218 | 25 PASS, 0 failures; production compiled with `Pinned loader references verified: UnityModManager.dll 0.31.1.0, 0Harmony12.dll 1.2.0.1` | 21.9 s | 23.2 s | `gate-focused-28f2408e6fd1-d88e49a1250-a10f9d5aef1-20261128T132208333466Z.json` (`77d8fa17ad8bf027d461bec71a004248cf0c8655192400597acfd5a1212822f6`) |
+| `-Filter loader.production-dll-references-pinned-loader` | 1 of 3,218 | 1 PASS, 0 failures, 0 not applicable | 3.2 s | 4.4 s | `gate-focused-28f2408e6fd1-d88e49a1250-a32501bde64-20261128T132228600439Z.json` (`4bca55da9cea1873dab845edd7bdee04e07d0b9bd02ffbba558a799c6f6e0bbd`) |
+
+- **Charged so far:** 27.6 s of outer time, from 13:21:45Z to 13:22:28Z.
+- **What the loader case inspected.** The production DLL compiled by the first gate, SHA-256
+  `6d4a643e41ed01dc72d7890777967fdbd37115ec05f98ab60b06f022a6652187`. The second gate's incremental compile left it
+  unchanged. This is a development compile output that is checkout-specific, not a candidate or package identity.
+- **Gates on the submitted head.** The same two selections run again there, and the developer report cites their
+  receipts and adds their outer time to this ledger. The results above are not relabelled as execution on the submitted
+  head.
 
 ## 6. Inherited evidence: original identities and scope
 
