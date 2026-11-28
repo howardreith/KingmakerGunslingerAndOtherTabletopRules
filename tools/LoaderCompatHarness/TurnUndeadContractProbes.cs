@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Text;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
@@ -13,6 +14,7 @@ using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.Designers.EventConditionActionSystem.Actions;
 using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Entities;
@@ -39,16 +41,19 @@ namespace KmgLoaderCompatHarness
     /// <summary>
     /// Turn Undead modes beyond the first turn:
     ///  * "contracts": a machine-generated, hash-bound extract of the installed engine and blueprint contracts
-    ///    (method IL hashes for the DC, save-reason, targeting and fear routes; the native donors, source grants,
-    ///    resources, costs, radius and target filter; the channel resistance list; CotW channel entries and wrapper
-    ///    membership when CotW is loaded), and an assertion of every constructed Turn component against literal
-    ///    expectations written here independently of the product catalog, so a wrong qualifying fact, calculator
-    ///    class or statistic, resource, cost or target filter fails.
+    ///    (method IL hashes for the DC, save-reason, targeting and fear routes; a compact projection of the
+    ///    native donors, source grants, resources, costs, radius, target filter, DC calculators, every native save
+    ///    with its conditional DC adjustments; the channel resistance list; CotW channel registry, wrapper
+    ///    membership and modifier holders when CotW is loaded), and an assertion of every constructed Turn
+    ///    component against literal expectations written here independently of the product catalog. Only the
+    ///    fields the contract needs are projected: no recursive component dumps (they stay in the lab).
     ///  * "undead-caster": a true undead channeler receives the initial save from its own Turn; a living control
     ///    in range does not.
-    ///  * "abandon": a nested first-turn probe is released while suspended after it paused the game and silenced
-    ///    the area; the prior pause flag, every brain and every spawned unit must be restored, with an accurate
-    ///    cleanup verdict.
+    ///  * "selective": the same cast with and without the native Selective Channel feat beside an allied and an
+    ///    enemy skeleton.
+    ///  * "abandon": a nested first-turn probe (an owned child) is released while suspended after it paused the
+    ///    game and silenced the area; the prior pause flag, every brain and every spawned unit must be restored,
+    ///    and the child's cleanup report becomes part of this probe's own.
     /// </summary>
     internal sealed partial class TurnUndeadProbe
     {
@@ -72,15 +77,22 @@ namespace KmgLoaderCompatHarness
             new SourceExpectation { Kind = "Empyreal", Feature = "7d49d7f590dc9a948b3bd1c8b7979854", Resource = "f9af9354fb8a79649a6e512569387dc5",
                 Cost = 1, ClassGuid = "b3a505fb61437dc4097f43c3f8f9a4cf", Stat = StatType.Wisdom, NativeHarm = "e1536ee240c5d4141bf9f9485a665128", LawfulGood = false }
         };
+        // Call of the Wild 1.14.4c: the paladin's extra-channel harm, its pool, and the prestige classes whose levels
+        // CotW adds to every positive channel's DC progression (Holy Vindicator, Dawnflower Anchorite).
+        private const string CotwPaladinExtraHarm = "c2d7e09fb9484d09932e62b6ed8339d1";
+        private const string CotwPaladinExtraResource = "e5995b0657a841f993052fdb1cc566dd";
+        private static readonly string[] CotwProgressionClasses = { "88463e2b13924071a0f89b4b59591f38", "3bdfed13c1b747b38b4193faf0213423" };
         private const string BasicFeatSelection = "247a4068296e8be42890143f451b4b45";
         private const string ChannelResistanceFour = "a9ac84c6f48b491438f91bb237bc9212";
         private const string NativeFrightenedUndead = "1265c0b27ef559c4e980a900dfc68d1e";
+        private const string SelectiveChannel = "fd30c69417b434d47b6b03b9c1f568ff";
 
         private static readonly string[][] ContractMethods =
         {
             new[] { "RuleCalculateAbilityParams", "OnTrigger", "DC route: caster level = spellbook CL or character level; DC = 10 + stat bonus + spell level (+ bonuses)" },
             new[] { "ContextCalculateAbilityParamsBasedOnClass", "Calculate", "replaces caster level with the class level and spell level with half of it, and the statistic" },
             new[] { "AbilityData", "CalculateParams", "preview path: triggers RuleCalculateAbilityParams without ability calculators" },
+            new[] { "ContextActionSavingThrow", "RunAction", "save DC = context DC plus each conditional DC increase whose condition holds" },
             new[] { "SavingThrowBonusAgainstSpecificSpells", "OnEventAboutToTrigger", "channel resistance matches Reason.Context.SourceAbility" },
             new[] { "BuffStatusCondition", "OnNewRound", "native fear buffs re-save each round with Reason = the buff fact" },
             new[] { "AbilityTargetsAround", "Select", "all units within the radius with line of sight, filtered by target type and condition; includes the caster" },
@@ -89,6 +101,8 @@ namespace KmgLoaderCompatHarness
             new[] { "AddFeatureIfHasFact", "HandleUnitGainLevel", "re-checks on every level-up; never removes" },
             new[] { "UnitFearController", "TickOnUnit", "Frightened units flee from visible enemies" }
         };
+
+        private static bool CotwLoaded => AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "CallOfTheWild");
 
         // ---------------------------------------------------------------- contracts
 
@@ -118,10 +132,11 @@ namespace KmgLoaderCompatHarness
 
             BlueprintFeature feat = Feat;
             BlueprintBuff fleeing = Fleeing;
+            bool cotw = CotwLoaded;
             var sources = new JArray();
             foreach (SourceExpectation expected in ExpectedSources)
             {
-                object source = ((Array)Member(set, "Sources")).Cast<object>().Single(s => Member(Member(s, "Contract"), "Kind").ToString() == expected.Kind);
+                object source = SourceOf(expected.Kind);
                 var feature = Blueprint<BlueprintFeature>(expected.Feature);
                 var harm = Blueprint<BlueprintAbility>(expected.NativeHarm);
                 var row = new JObject
@@ -130,13 +145,26 @@ namespace KmgLoaderCompatHarness
                     ["sourceFeature"] = feature.AssetGuid + ":" + feature.name,
                     ["sourceGrants"] = new JArray(feature.GetComponents<AddFacts>().SelectMany(a => a.Facts ?? new BlueprintUnitFact[0])
                         .Select(f => (object)(f.AssetGuid + ":" + f.name)).ToArray()),
-                    ["nativeHarm"] = DescribeAbility(harm)
+                    ["nativeHarm"] = AbilityContract(harm)
                 };
+                string[] classes = cotw ? new[] { expected.ClassGuid }.Concat(CotwProgressionClasses).ToArray() : new[] { expected.ClassGuid };
                 foreach (string role in new[] { "Direct", "MenuChild" })
                 {
                     var ability = (BlueprintAbility)Member(source, role);
                     row[role] = DescribeAbility(ability);
-                    CheckConstructed(expected, role, ability, harm, feat, fleeing);
+                    CheckConstructed(expected.Kind + " " + role, ability, harm, feat, fleeing, expected.Feature, expected.Resource,
+                        expected.Cost, classes, expected.Stat, expected.LawfulGood, role == "MenuChild");
+                }
+                if (expected.Kind == "Paladin")
+                {
+                    var extra = (BlueprintAbility)Member(source, "ExtraMenuChild");
+                    var extraHarm = ResourcesLibrary.TryGetBlueprint<BlueprintAbility>(CotwPaladinExtraHarm);
+                    row["extraRoute"] = extra == null ? (JToken)"absent" : DescribeAbility(extra);
+                    if (extraHarm != null) row["extraRouteDonor"] = AbilityContract(extraHarm);
+                    if (cotw != (extra != null)) problems.Add("the CotW paladin extra-channel child is " + (extra == null ? "absent" : "present") + " with CotW " + (cotw ? "loaded" : "absent"));
+                    if (extra != null)
+                        CheckConstructed("Paladin extra-channel MenuChild", extra, extraHarm, feat, fleeing, expected.Feature, CotwPaladinExtraResource,
+                            1, classes, expected.Stat, true, true);
                 }
                 sources.Add(row);
             }
@@ -166,7 +194,7 @@ namespace KmgLoaderCompatHarness
                 problems.Add("the feat prerequisite is not exactly one of the four source features");
             if (!feat.Groups.Contains(FeatureGroup.Feat)) problems.Add("the feat is not in the Feat group");
 
-            // Flight effect and resistance.
+            // Flight effect and the native channel resistance list (exact per-identity membership).
             var nativeFear = Blueprint<BlueprintBuff>(NativeFrightenedUndead);
             result["flight"] = new JObject
             {
@@ -176,29 +204,33 @@ namespace KmgLoaderCompatHarness
             };
             var resistance = Blueprint<BlueprintFeature>(ChannelResistanceFour);
             BlueprintAbility[] spells = resistance.GetComponents<SavingThrowBonusAgainstSpecificSpells>().SelectMany(c => c.Spells ?? new BlueprintAbility[0]).ToArray();
-            BlueprintAbility[] turn = ExpectedSources.SelectMany(e => new[] { Direct(e.Kind), (BlueprintAbility)Member(SourceOf(e.Kind), "MenuChild") }).ToArray();
+            string[] turnGuids = TurnIdentities().Select(a => a.AssetGuid).ToArray();
+            List<string> resistanceMembership = TurnUndeadObserverRules.MembershipProblems("ChannelResistance4", turnGuids,
+                spells.Where(a => a != null && turnGuids.Contains(a.AssetGuid)).Select(a => a.AssetGuid));
             result["channelResistance4"] = new JObject
             {
                 ["components"] = resistance.GetComponents<SavingThrowBonusAgainstSpecificSpells>().Count(),
-                ["entries"] = spells.Length, ["turnEntries"] = turn.Count(t => spells.Contains(t))
+                ["entries"] = spells.Length, ["nativeHarmEntries"] = ExpectedSources.Count(e => spells.Any(a => a != null && a.AssetGuid == e.NativeHarm)),
+                ["turnIdentities"] = turnGuids.Length, ["membershipProblems"] = new JArray(resistanceMembership.Cast<object>().ToArray())
             };
-            if (turn.Any(t => !spells.Contains(t))) problems.Add("native ChannelResistance4 lacks a Turn identity");
+            problems.AddRange(resistanceMembership);
 
-            // Full component dumps of every native blueprint the design relies on (donors, turning donor, undead
-            // immunities, the Empyreal override, channel resistance) and of the constructed flight effect.
-            result["nativeFacts"] = new JObject
+            // Compact projection of every native blueprint the design relies on.
+            var empyreal = Blueprint<BlueprintFeature>("7d49d7f590dc9a948b3bd1c8b7979854");
+            result["nativeContract"] = new JObject
             {
-                ["harmDonors"] = new JArray(ExpectedSources.Select(e => (object)DumpFact(Blueprint<BlueprintAbility>(e.NativeHarm))).ToArray()),
-                ["sourceFeatures"] = new JArray(ExpectedSources.Select(e => (object)DumpFact(Blueprint<BlueprintFeature>(e.Feature))).ToArray()),
-                ["frightenedUndeadDonor"] = DumpFact(nativeFear),
-                ["wizardTurnUndead"] = DumpFact(ResourcesLibrary.TryGetBlueprint<BlueprintAbility>("71b8898b1d26d654b9a3eeac87e3e2f8")),
-                ["undeadType"] = DumpFact(Blueprint<BlueprintUnitFact>(UndeadType)),
-                ["undeadImmunities"] = DumpFact(Blueprint<BlueprintUnitFact>("8a75eb16bfff86949a4ddcb3dd2f83ae")),
-                ["channelResistance4"] = DumpFact(resistance),
-                ["turnFlight"] = DumpFact(fleeing)
+                ["harmDonors"] = new JArray(ExpectedSources.Select(e => (object)AbilityContract(Blueprint<BlueprintAbility>(e.NativeHarm))).ToArray()),
+                ["sourceFeatures"] = new JArray(ExpectedSources.Select(e => (object)FactContract(Blueprint<BlueprintFeature>(e.Feature))).ToArray()),
+                ["frightenedUndeadDonor"] = FactContract(nativeFear),
+                ["wizardTurnUndead"] = AbilityContract(ResourcesLibrary.TryGetBlueprint<BlueprintAbility>("71b8898b1d26d654b9a3eeac87e3e2f8")),
+                ["undeadType"] = FactContract(Blueprint<BlueprintUnitFact>(UndeadType)),
+                ["undeadImmunities"] = FactContract(Blueprint<BlueprintUnitFact>("8a75eb16bfff86949a4ddcb3dd2f83ae")),
+                ["empyrealDcOverride"] = new JArray(empyreal.ComponentsArray.Where(c => c != null && c.GetType().Name == "ReplaceAbilityDC").Select(c => (object)Shallow(c)).ToArray()),
+                ["channelResistance4"] = FactContract(resistance),
+                ["turnFlight"] = FactContract(fleeing)
             };
 
-            // Call of the Wild, when loaded: channel entries, Turn wrapper membership and the modifier holders.
+            // Call of the Wild, when loaded: channel registry, Turn wrapper membership and the modifier holders.
             result["callOfTheWild"] = DescribeCotw();
             yield break;
         }
@@ -206,20 +238,56 @@ namespace KmgLoaderCompatHarness
         private object SourceOf(string kind) =>
             ((Array)Member(set, "Sources")).Cast<object>().Single(s => Member(Member(s, "Contract"), "Kind").ToString() == kind);
 
-        private void CheckConstructed(SourceExpectation expected, string role, BlueprintAbility ability, BlueprintAbility harm,
-            BlueprintFeature feat, BlueprintBuff fleeing)
+        /// <summary>Every Turn identity the product registered (direct actions, menu children, the CotW extra child).</summary>
+        private List<BlueprintAbility> TurnIdentities()
         {
-            string label = expected.Kind + " " + role;
-            var dc = ability.GetComponents<ContextCalculateAbilityParamsBasedOnClass>().ToArray();
-            if (dc.Length != 1 || dc[0].CharacterClass == null || dc[0].CharacterClass.AssetGuid != expected.ClassGuid ||
-                dc[0].StatType != expected.Stat || dc[0].UseKineticistMainStat)
-                problems.Add(label + ": DC calculator is not " + expected.ClassGuid + "/" + expected.Stat);
+            var all = new List<BlueprintAbility>();
+            foreach (SourceExpectation e in ExpectedSources)
+            {
+                object source = SourceOf(e.Kind);
+                all.Add((BlueprintAbility)Member(source, "Direct"));
+                all.Add((BlueprintAbility)Member(source, "MenuChild"));
+                var extra = (BlueprintAbility)Member(source, "ExtraMenuChild");
+                if (extra != null) all.Add(extra);
+            }
+            return all;
+        }
+
+        /// <summary>The DC classes and statistic of a native or CotW calculator, read by reflection; null when unknown.</summary>
+        private static string[] CalculatorShape(BlueprintComponent component, out StatType stat, out bool fixedStat)
+        {
+            stat = StatType.Unknown;
+            fixedStat = false;
+            var native = component as ContextCalculateAbilityParamsBasedOnClass;
+            if (native != null)
+            {
+                stat = native.StatType;
+                fixedStat = !native.UseKineticistMainStat;
+                return native.CharacterClass == null ? new string[0] : new[] { native.CharacterClass.AssetGuid };
+            }
+            if (component == null || component.GetType().Name != "ContextCalculateAbilityParamsBasedOnClasses") return null;
+            Type type = component.GetType();
+            stat = (StatType)type.GetField("StatType", Any).GetValue(component);
+            fixedStat = !(bool)type.GetField("use_kineticist_main_stat", Any).GetValue(component) && type.GetField("property", Any).GetValue(component) == null;
+            return ((BlueprintCharacterClass[])type.GetField("CharacterClasses", Any).GetValue(component) ?? new BlueprintCharacterClass[0])
+                .Select(c => c == null ? "null" : c.AssetGuid).ToArray();
+        }
+
+        private void CheckConstructed(string label, BlueprintAbility ability, BlueprintAbility harm, BlueprintFeature feat, BlueprintBuff fleeing,
+            string sourceFeature, string resourceGuid, int cost, string[] dcClasses, StatType dcStat, bool lawfulGood, bool menuChild)
+        {
+            BlueprintComponent[] calculators = ability.ComponentsArray.Where(c => c is ContextAbilityParamsCalculator).ToArray();
+            StatType stat;
+            bool fixedStat;
+            string[] classes = calculators.Length == 1 ? CalculatorShape(calculators[0], out stat, out fixedStat) : null;
+            if (calculators.Length != 1 || classes == null || !classes.SequenceEqual(dcClasses) || calculators.Length == 1 && (CalculatorShape(calculators[0], out stat, out fixedStat) == null || stat != dcStat || !fixedStat))
+                problems.Add(label + ": DC calculator is not " + string.Join("+", dcClasses) + "/" + dcStat);
             var resource = ability.GetComponents<AbilityResourceLogic>().ToArray();
-            if (resource.Length != 1 || resource[0].RequiredResource == null || resource[0].RequiredResource.AssetGuid != expected.Resource ||
-                resource[0].Amount != expected.Cost || !resource[0].IsSpendResource)
-                problems.Add(label + ": resource is not " + expected.Resource + " x" + expected.Cost);
+            if (resource.Length != 1 || resource[0].RequiredResource == null || resource[0].RequiredResource.AssetGuid != resourceGuid ||
+                resource[0].Amount != cost || !resource[0].IsSpendResource)
+                problems.Add(label + ": resource is not " + resourceGuid + " x" + cost);
             var around = ability.GetComponents<AbilityTargetsAround>().ToArray();
-            AbilityTargetsAround native = harm.GetComponents<AbilityTargetsAround>().SingleOrDefault();
+            AbilityTargetsAround native = harm == null ? null : harm.GetComponents<AbilityTargetsAround>().SingleOrDefault();
             if (around.Length != 1 || native == null || Math.Abs(around[0].AoERadius.Value - 30f) > 0.001f ||
                 Math.Abs(around[0].AoERadius.Value - native.AoERadius.Value) > 0.001f || around[0].TargetType != native.TargetType)
                 problems.Add(label + ": targeting is not the native 30-foot " + (native == null ? "?" : native.TargetType.ToString()) + " burst");
@@ -228,28 +296,31 @@ namespace KmgLoaderCompatHarness
                 var checker = (ConditionsChecker)typeof(AbilityTargetsAround).GetField("m_Condition", Any).GetValue(around[0]);
                 Condition[] conditions = checker == null ? new Condition[0] : checker.Conditions ?? new Condition[0];
                 if (conditions.Length != 1 || !(conditions[0] is ContextConditionHasFact) || conditions[0].Not ||
-                    ((ContextConditionHasFact)conditions[0]).Fact == null || ((ContextConditionHasFact)conditions[0]).Fact.AssetGuid != "734a29b693e9ec346ba2951b27987e33")
+                    ((ContextConditionHasFact)conditions[0]).Fact == null || ((ContextConditionHasFact)conditions[0]).Fact.AssetGuid != UndeadType)
                     problems.Add(label + ": target filter is not exactly 'has UndeadType'");
             }
             var casterFacts = ability.GetComponents<AbilityCasterHasFacts>().ToArray();
             if (casterFacts.Length != 2 || casterFacts.Any(c => c.NeedsAll || c.Facts == null || c.Facts.Length != 1) ||
-                !casterFacts.Any(c => c.Facts[0] == feat) || !casterFacts.Any(c => c.Facts[0].AssetGuid == expected.Feature))
-                problems.Add(label + ": caster restriction is not exactly (feat) and (" + expected.Feature + ")");
+                !casterFacts.Any(c => c.Facts[0] == feat) || !casterFacts.Any(c => c.Facts[0].AssetGuid == sourceFeature))
+                problems.Add(label + ": caster restriction is not exactly (feat) and (" + sourceFeature + ")");
+            int shows = ability.GetComponents<AbilityShowIfCasterHasFact>().Count();
+            if (shows != (menuChild ? 2 : 0)) problems.Add(label + ": " + shows + " show-if conditions");
             bool alignment = ability.GetComponents<AbilityCasterAlignment>().Any();
-            if (alignment != expected.LawfulGood) problems.Add(label + ": alignment restriction present=" + alignment + ", expected " + expected.LawfulGood);
+            if (alignment != lawfulGood) problems.Add(label + ": alignment restriction present=" + alignment + ", expected " + lawfulGood);
             // Expected: the native harm structure. Top Conditional on CasterHasFact(Selective Channel fd30c694);
             // its IfTrue a Conditional on IsEnemy whose IfTrue is the save and IfFalse empty; its IfFalse the save.
-            // Each save: ContextActionSavingThrow(Will) -> ConditionalSaved(Succeed empty, Failed ApplyBuff flight 1 min).
+            // Each save: ContextActionSavingThrow(Will, no conditional DC increase) -> ConditionalSaved(Succeed empty,
+            // Failed ApplyBuff flight 1 min).
             var run = ability.GetComponents<AbilityEffectRunAction>().ToArray();
             string effectIssue = run.Length != 1 ? "effect count " + run.Length :
-                run[0].SavingThrowType != Kingmaker.EntitySystem.Stats.SavingThrowType.Unknown ? "effect-level save " + run[0].SavingThrowType : null;
-            var top = effectIssue == null && run[0].Actions.Actions.Length == 1 ? run[0].Actions.Actions[0] as Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional : null;
+                run[0].SavingThrowType != SavingThrowType.Unknown ? "effect-level save " + run[0].SavingThrowType : null;
+            var top = effectIssue == null && run[0].Actions.Actions.Length == 1 ? run[0].Actions.Actions[0] as Conditional : null;
             if (effectIssue == null && top == null) effectIssue = "no single top Conditional";
             if (effectIssue == null)
             {
                 var casterFact = top.ConditionsChecker.Conditions.Length == 1 ? top.ConditionsChecker.Conditions[0] as ContextConditionCasterHasFact : null;
-                var enemy = top.IfTrue.Actions.Length == 1 ? top.IfTrue.Actions[0] as Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional : null;
-                if (casterFact == null || casterFact.Not || casterFact.Fact == null || casterFact.Fact.AssetGuid != "fd30c69417b434d47b6b03b9c1f568ff")
+                var enemy = top.IfTrue.Actions.Length == 1 ? top.IfTrue.Actions[0] as Conditional : null;
+                if (casterFact == null || casterFact.Not || casterFact.Fact == null || casterFact.Fact.AssetGuid != SelectiveChannel)
                     effectIssue = "top condition is not CasterHasFact(Selective Channel)";
                 else if (enemy == null || enemy.ConditionsChecker.Conditions.Length != 1 || !(enemy.ConditionsChecker.Conditions[0] is ContextConditionIsEnemy) ||
                     enemy.ConditionsChecker.Conditions[0].Not || enemy.IfFalse.Actions.Length != 0 || enemy.IfTrue.Actions.Length != 1 || top.IfFalse.Actions.Length != 1)
@@ -260,9 +331,11 @@ namespace KmgLoaderCompatHarness
                         var save = branch as ContextActionSavingThrow;
                         var saved = save == null || save.Actions.Actions.Length != 1 ? null : save.Actions.Actions[0] as ContextActionConditionalSaved;
                         var apply = saved == null || saved.Failed.Actions.Length != 1 ? null : saved.Failed.Actions[0] as ContextActionApplyBuff;
-                        if (save == null || save.Type != Kingmaker.EntitySystem.Stats.SavingThrowType.Will || saved == null || saved.Succeed.Actions.Length != 0 ||
+                        if (save == null || save.Type != SavingThrowType.Will || saved == null || saved.Succeed.Actions.Length != 0 ||
                             apply == null || apply.Buff != fleeing || apply.DurationValue.Rate != DurationRate.Minutes || apply.DurationValue.BonusValue.Value != 1)
                             effectIssue = "a branch is not Will negates -> flight for 1 minute";
+                        else if (ConditionalIncreases(save).Count != 0)
+                            effectIssue = "a Turn save carries conditional DC increases";
                     }
             }
             if (effectIssue != null) problems.Add(label + ": effect structure: " + effectIssue);
@@ -274,16 +347,190 @@ namespace KmgLoaderCompatHarness
         {
             AbilityTargetsAround around = ability.GetComponents<AbilityTargetsAround>().FirstOrDefault();
             AbilityResourceLogic resource = ability.GetComponents<AbilityResourceLogic>().FirstOrDefault();
-            ContextCalculateAbilityParamsBasedOnClass dc = ability.GetComponents<ContextCalculateAbilityParamsBasedOnClass>().FirstOrDefault();
+            BlueprintComponent calculator = ability.ComponentsArray.FirstOrDefault(c => c is ContextAbilityParamsCalculator);
+            StatType stat;
+            bool fixedStat;
+            string[] classes = calculator == null ? null : CalculatorShape(calculator, out stat, out fixedStat);
+            CalculatorShape(calculator, out stat, out fixedStat);
             return new JObject
             {
                 ["guid"] = ability.AssetGuid, ["name"] = ability.name, ["type"] = ability.Type.ToString(), ["action"] = ability.ActionType.ToString(),
                 ["parent"] = ability.Parent == null ? null : ability.Parent.AssetGuid, ["hidden"] = ability.Hidden,
                 ["resource"] = resource == null ? null : (resource.RequiredResource == null ? "null" : resource.RequiredResource.AssetGuid) + " x" + resource.Amount,
                 ["radiusFeet"] = around == null ? (JToken)null : around.AoERadius.Value, ["targetType"] = around == null ? null : around.TargetType.ToString(),
-                ["dcCalculator"] = dc == null ? null : (dc.CharacterClass == null ? "null" : dc.CharacterClass.AssetGuid) + "/" + dc.StatType,
+                ["dcCalculator"] = calculator == null ? null : calculator.GetType().Name + ":" + (classes == null ? "unknown" : string.Join("+", classes)) + "/" + stat,
                 ["components"] = new JArray(ability.ComponentsArray.Select(c => (object)(c.GetType().Name + ":" + c.name)).ToArray())
             };
+        }
+
+        // ---------------------------------------------------------------- compact projections
+
+        private static JToken Ref(BlueprintScriptableObject value) => value == null ? null : (JToken)(value.AssetGuid + ":" + value.name);
+
+        /// <summary>Blueprint references: listed when short, otherwise their count and a SHA-256 of the GUID list.</summary>
+        private static JToken RefList(IEnumerable<BlueprintScriptableObject> values)
+        {
+            BlueprintScriptableObject[] list = values.ToArray();
+            if (list.Length <= 16) return new JArray(list.Select(v => (object)(v == null ? null : v.AssetGuid + ":" + v.name)).ToArray());
+            return new JObject
+            {
+                ["count"] = list.Length,
+                ["guidListSha256"] = Sha256(Encoding.UTF8.GetBytes(string.Join(",", list.Select(v => v == null ? "null" : v.AssetGuid).ToArray())))
+            };
+        }
+
+        /// <summary>
+        /// A component's own serialized scalar, enum and blueprint-reference fields, one level deep: nested objects
+        /// (action lists, prefab links, structs) are named by type only, never expanded.
+        /// </summary>
+        private static JObject Shallow(object component)
+        {
+            var o = new JObject { ["$type"] = component.GetType().Name };
+            for (Type t = component.GetType(); t != null && t != typeof(BlueprintComponent) && t != typeof(ScriptableObject) && t != typeof(object); t = t.BaseType)
+                foreach (FieldInfo field in t.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                {
+                    if (field.IsNotSerialized || field.Name.Contains("<") || o[field.Name] != null) continue;
+                    if (!field.IsPublic && field.GetCustomAttributes(typeof(SerializeField), true).Length == 0) continue;
+                    object value;
+                    try { value = field.GetValue(component); }
+                    catch (Exception e) { o[field.Name] = "unreadable: " + e.GetType().Name; continue; }
+                    if (value == null) o[field.Name] = null;
+                    else if (value is Enum) o[field.Name] = value.ToString();
+                    else if (value is string || value is bool || value is int || value is float || value is double || value is long) o[field.Name] = JToken.FromObject(value);
+                    else if (value is BlueprintScriptableObject) o[field.Name] = Ref((BlueprintScriptableObject)value);
+                    else if (value is Feet) o[field.Name] = ((Feet)value).Value + " ft";
+                    else if (value is IEnumerable)
+                    {
+                        object[] items = ((IEnumerable)value).Cast<object>().ToArray();
+                        o[field.Name] = items.All(i => i == null || i is BlueprintScriptableObject)
+                            ? RefList(items.Cast<BlueprintScriptableObject>())
+                            : (JToken)(items.Length + " x " + value.GetType().Name);
+                    }
+                    else o[field.Name] = value.GetType().Name;
+                }
+            return o;
+        }
+
+        private static JObject FactContract(BlueprintScriptableObject fact)
+        {
+            if (fact == null) return null;
+            return new JObject
+            {
+                ["guid"] = fact.AssetGuid, ["name"] = fact.name,
+                ["components"] = new JArray(fact.ComponentsArray.Where(c => c != null).Select(c => (object)Shallow(c)).ToArray())
+            };
+        }
+
+        private static string ConditionText(Condition condition)
+        {
+            FieldInfo fact = condition.GetType().GetFields(Any).FirstOrDefault(f => typeof(BlueprintScriptableObject).IsAssignableFrom(f.FieldType));
+            var target = fact == null ? null : fact.GetValue(condition) as BlueprintScriptableObject;
+            return (condition.Not ? "not " : "") + condition.GetType().Name + (target == null ? "" : "(" + target.AssetGuid + ")");
+        }
+
+        private static string CheckerText(ConditionsChecker checker) =>
+            checker == null || checker.Conditions == null ? "always" : checker.Operation + "[" + string.Join(", ", checker.Conditions.Select(ConditionText).ToArray()) + "]";
+
+        /// <summary>The conditional DC increases of a native save (private struct array): count, conditions and values.</summary>
+        private static JArray ConditionalIncreases(ContextActionSavingThrow save)
+        {
+            var increases = new JArray();
+            var array = typeof(ContextActionSavingThrow).GetField("m_ConditionalDCIncrease", Any).GetValue(save) as Array;
+            foreach (object entry in array ?? new object[0])
+            {
+                Type type = entry.GetType();
+                var condition = type.GetField("Condition", Any).GetValue(entry) as ConditionsChecker;
+                object value = type.GetField("Value", Any).GetValue(entry);
+                increases.Add(new JObject { ["condition"] = CheckerText(condition), ["value"] = value == null ? null : Shallow(value) });
+            }
+            return increases;
+        }
+
+        /// <summary>Every save in an action tree with the branch path that reaches it.</summary>
+        private static void SavesIn(ActionList list, string path, JArray into)
+        {
+            foreach (GameAction action in list == null || list.Actions == null ? new GameAction[0] : list.Actions)
+            {
+                if (action == null) continue;
+                var conditional = action as Conditional;
+                var save = action as ContextActionSavingThrow;
+                var saved = action as ContextActionConditionalSaved;
+                if (conditional != null)
+                {
+                    SavesIn(conditional.IfTrue, path + " / if " + CheckerText(conditional.ConditionsChecker), into);
+                    SavesIn(conditional.IfFalse, path + " / unless " + CheckerText(conditional.ConditionsChecker), into);
+                }
+                else if (save != null)
+                {
+                    JArray increases = ConditionalIncreases(save);
+                    into.Add(new JObject
+                    {
+                        ["path"] = path.TrimStart(' ', '/'), ["type"] = save.Type.ToString(),
+                        ["conditionalDcIncreaseCount"] = increases.Count, ["conditionalDcIncreases"] = increases,
+                        ["onResult"] = new JArray((save.Actions == null || save.Actions.Actions == null ? new GameAction[0] : save.Actions.Actions)
+                            .Where(a => a != null).Select(a => (object)a.GetType().Name).ToArray())
+                    });
+                    SavesIn(save.Actions, path + " / after save", into);
+                }
+                else if (saved != null)
+                {
+                    SavesIn(saved.Succeed, path + " / on success", into);
+                    SavesIn(saved.Failed, path + " / on failure", into);
+                }
+            }
+        }
+
+        private static JObject AbilityContract(BlueprintAbility ability)
+        {
+            if (ability == null) return null;
+            AbilityResourceLogic resource = ability.GetComponents<AbilityResourceLogic>().FirstOrDefault();
+            AbilityTargetsAround around = ability.GetComponents<AbilityTargetsAround>().FirstOrDefault();
+            ConditionsChecker filter = around == null ? null : (ConditionsChecker)typeof(AbilityTargetsAround).GetField("m_Condition", Any).GetValue(around);
+            AbilityEffectRunAction run = ability.GetComponents<AbilityEffectRunAction>().FirstOrDefault();
+            var saves = new JArray();
+            if (run != null) SavesIn(run.Actions, "", saves);
+            return new JObject
+            {
+                ["guid"] = ability.AssetGuid, ["name"] = ability.name, ["type"] = ability.Type.ToString(), ["action"] = ability.ActionType.ToString(),
+                ["parent"] = Ref(ability.Parent), ["hidden"] = ability.Hidden,
+                ["resource"] = resource == null ? null : (resource.RequiredResource == null ? "null" : resource.RequiredResource.AssetGuid + ":" + resource.RequiredResource.name) +
+                    " x" + resource.Amount + (resource.IsSpendResource ? " spend" : " no-spend"),
+                ["targets"] = around == null ? null : new JObject { ["radius"] = around.AoERadius.Value + " ft", ["targetType"] = around.TargetType.ToString(), ["filter"] = CheckerText(filter) },
+                ["effectSave"] = run == null ? null : run.SavingThrowType.ToString(),
+                ["saves"] = saves,
+                ["calculators"] = new JArray(ability.ComponentsArray.Where(c => c is ContextAbilityParamsCalculator).Select(c => (object)Shallow(c)).ToArray()),
+                ["alignment"] = new JArray(ability.GetComponents<AbilityCasterAlignment>().Select(c => (object)c.Alignment.ToString()).ToArray()),
+                ["descriptors"] = new JArray(ability.ComponentsArray.OfType<SpellDescriptorComponent>().Select(d => (object)d.Descriptor.Value.ToString()).ToArray()),
+                ["components"] = new JArray(ability.ComponentsArray.Where(c => c != null).Select(c => (object)c.GetType().Name).ToArray())
+            };
+        }
+
+        // ---------------------------------------------------------------- Call of the Wild contract
+
+        /// <summary>
+        /// The provider's channel registry: the entry list, or null with the reason it could not be read. An unreadable
+        /// registry is never treated as an empty one.
+        /// </summary>
+        private static object[] ReadRegistry(Type engineType, out string status)
+        {
+            FieldInfo field = engineType == null ? null : engineType.GetField("channel_entires", Any);
+            if (field == null) { status = "unreadable: channel_entires field missing"; return null; }
+            object value;
+            try { value = field.GetValue(null); }
+            catch (Exception e) { status = "unreadable: " + e.GetType().Name; return null; }
+            var list = value as IEnumerable;
+            if (list == null) { status = "unreadable: channel_entires is " + (value == null ? "null" : value.GetType().Name); return null; }
+            object[] entries = list.Cast<object>().ToArray();
+            status = "read " + entries.Length + " entries";
+            return entries;
+        }
+
+        private static IEnumerable<BlueprintAbility> ListAbilities(object component, string field)
+        {
+            FieldInfo info = component.GetType().GetField(field, Any);
+            var values = info == null ? null : info.GetValue(component) as IEnumerable;
+            if (values == null) throw new InvalidOperationException(component.GetType().Name + " has no readable " + field + " list");
+            return values.Cast<object>().OfType<BlueprintAbility>();
         }
 
         private JToken DescribeCotw()
@@ -292,73 +539,120 @@ namespace KmgLoaderCompatHarness
             if (cotw == null)
             {
                 var vanillaMenu = new JArray();
-                foreach (string issue in MenuPlacementProblems(vanillaMenu)) problems.Add("vanilla menu placement: " + issue);
+                foreach (string issue in PlacementProblems(LiveCases(), vanillaMenu)) problems.Add("vanilla menu placement: " + issue);
                 return new JObject { ["status"] = "absent", ["turnMenu"] = vanillaMenu };
             }
             Type engineType = cotw.GetType("CallOfTheWild.ChannelEnergyEngine", false);
-            var entries = new JArray();
-            IEnumerable list = engineType == null ? null : engineType.GetField("channel_entires", Any)?.GetValue(null) as IEnumerable;
-            var supported = new HashSet<string>(ExpectedSources.Select(e => e.Feature));
-            var turnGuids = new HashSet<string>(ExpectedSources.SelectMany(e => new[] { Direct(e.Kind), (BlueprintAbility)Member(SourceOf(e.Kind), "MenuChild") }).Select(a => a.AssetGuid));
+            if (engineType == null) { problems.Add("CotW has no ChannelEnergyEngine"); return new JObject { ["status"] = "engine missing" }; }
+            List<BlueprintAbility> turn = TurnIdentities();
+            string[] turnGuids = turn.Select(a => a.AssetGuid).ToArray();
+            var turnSet = new HashSet<string>(turnGuids);
+
+            // Registry: read (or fail), Turn-free, and the supported sources' plain positive-harm entries present.
+            string registryStatus;
+            object[] registry = ReadRegistry(engineType, out registryStatus);
+            if (registry == null) problems.Add("CotW channel registry " + registryStatus);
+            string controlStatus;
+            object[] control = ReadRegistry(typeof(TurnUndeadMissingRegistryEngine), out controlStatus);
+            if (control != null || !controlStatus.StartsWith("unreadable")) problems.Add("the registry reader accepted an engine without channel_entires: " + controlStatus);
             var byType = new JObject();
-            int allEntries = 0, turnEntries = 0;
-            foreach (object entry in list ?? new object[0])
-            {
-                object anyType = entry.GetType().GetField("channel_type", Any)?.GetValue(entry);
-                var anyAbility = entry.GetType().GetField("ability", Any)?.GetValue(entry) as BlueprintAbility;
-                allEntries++;
-                string typeName = anyType == null ? "null" : anyType.ToString();
-                byType[typeName] = ((int?)byType[typeName] ?? 0) + 1;
-                if (anyAbility != null && (turnGuids.Contains(anyAbility.AssetGuid) || (anyAbility.Parent != null && turnGuids.Contains(anyAbility.Parent.AssetGuid)))) turnEntries++;
-            }
-            if (turnEntries != 0) problems.Add(turnEntries + " CotW channel entries (of any form) are Turn identities");
-            foreach (object entry in list ?? new object[0])
+            int turnEntries = 0;
+            var entries = new JArray();
+            var supportedFeatures = new HashSet<string>(ExpectedSources.Select(e => e.Feature));
+            var expectedEntries = ExpectedSources.Select(e => new[] { e.NativeHarm, e.Feature }).Concat(new[] { new[] { CotwPaladinExtraHarm, ExpectedSources[1].Feature } }).ToArray();
+            var seenSupported = new Dictionary<string, int>(StringComparer.Ordinal);
+            foreach (object entry in registry ?? new object[0])
             {
                 object type = entry.GetType().GetField("channel_type", Any)?.GetValue(entry);
-                if (type == null || Convert.ToInt32(type) != 9) continue; // plain PositiveHarm entries
                 var ability = entry.GetType().GetField("ability", Any)?.GetValue(entry) as BlueprintAbility;
+                string typeName = type == null ? "null" : type.ToString();
+                byType[typeName] = ((int?)byType[typeName] ?? 0) + 1;
+                if (ability != null && (turnSet.Contains(ability.AssetGuid) || (ability.Parent != null && turnSet.Contains(ability.Parent.AssetGuid)))) turnEntries++;
+                if (type == null || Convert.ToInt32(type) != 9) continue; // plain PositiveHarm entries
                 var parent = entry.GetType().GetField("parent_feature", Any)?.GetValue(entry) as BlueprintFeature;
                 var wrapper = entry.GetType().GetField("base_ability", Any)?.GetValue(entry) as BlueprintAbility;
                 AbilityResourceLogic entryResource = ability == null ? null : ability.GetComponents<AbilityResourceLogic>().FirstOrDefault();
+                bool supported = parent != null && supportedFeatures.Contains(parent.AssetGuid);
+                if (supported && ability != null)
+                {
+                    int n;
+                    seenSupported.TryGetValue(ability.AssetGuid + ">" + parent.AssetGuid, out n);
+                    seenSupported[ability.AssetGuid + ">" + parent.AssetGuid] = n + 1;
+                }
                 entries.Add(new JObject
                 {
-                    ["ability"] = ability == null ? null : ability.AssetGuid + ":" + ability.name,
+                    ["ability"] = Ref(ability),
                     ["resource"] = entryResource == null ? null : (entryResource.RequiredResource == null ? "null" : entryResource.RequiredResource.AssetGuid + ":" + entryResource.RequiredResource.name) + " x" + entryResource.Amount,
-                    ["parentFeature"] = parent == null ? null : parent.AssetGuid + ":" + parent.name,
-                    ["wrapper"] = wrapper == null ? null : wrapper.AssetGuid + ":" + wrapper.name,
-                    ["turnUndeadSupport"] = parent != null && supported.Contains(parent.AssetGuid) ? "supported" : "unsupported (not a Turn Undead source)"
+                    ["parentFeature"] = Ref(parent), ["wrapper"] = Ref(wrapper),
+                    ["turnUndeadSupport"] = supported ? "supported" : "unsupported (not a Turn Undead source)"
                 });
             }
+            if (turnEntries != 0) problems.Add(turnEntries + " CotW channel entries (of any form) are Turn identities");
+            foreach (string[] expected in expectedEntries)
+            {
+                int n;
+                seenSupported.TryGetValue(expected[0] + ">" + expected[1], out n);
+                if (registry != null && n != 1) problems.Add("CotW registry has " + n + " plain positive-harm entries for supported " + expected[0] + " under " + expected[1] + ", expected one");
+            }
+            int unexpectedSupported = seenSupported.Keys.Count(k => !expectedEntries.Any(e => e[0] + ">" + e[1] == k));
+            if (unexpectedSupported != 0) problems.Add(unexpectedSupported + " unexpected plain positive-harm entries under a supported source feature");
+
             var menu = new JArray();
-            List<string> placement = MenuPlacementProblems(menu);
-            foreach (string issue in placement) problems.Add("CotW menu placement: " + issue);
+            foreach (string issue in PlacementProblems(LiveCases(), menu)) problems.Add("CotW menu placement: " + issue);
+
+            // Modifier holders: exact per-identity membership on every list, with a mutation control.
             var holders = new JObject();
-            foreach (string field in new[] { "improved_channel", "sacred_conduit", "consecrate_buff" })
-                holders[field] = DumpFact(engineType == null ? null : engineType.GetField(field, Any)?.GetValue(null) as BlueprintScriptableObject);
-            var membership = new JObject();
+            JArray mutationControl = null;
             foreach (string field in new[] { "improved_channel", "sacred_conduit", "consecrate_buff" })
             {
-                var holder = engineType == null ? null : engineType.GetField(field, Any)?.GetValue(null) as BlueprintUnitFact;
-                if (holder == null) { membership[field] = "absent"; continue; }
-                int count = holder.ComponentsArray.Where(c => c != null && c.GetType().Name == "IncreaseSpecifiedSpellsDC")
-                    .Sum(c => ((IEnumerable)c.GetType().GetField("spells", Any).GetValue(c)).Cast<object>().OfType<BlueprintAbility>().Count(a => turnGuids.Contains(a.AssetGuid)));
-                membership[field] = count;
-                if (count != turnGuids.Count) problems.Add("CotW " + field + " lists " + count + " Turn identities, expected " + turnGuids.Count);
+                var holder = engineType.GetField(field, Any)?.GetValue(null) as BlueprintUnitFact;
+                if (holder == null) { holders[field] = "absent"; continue; }
+                var lists = new JArray();
+                var membership = new List<string>();
+                foreach (BlueprintComponent c in holder.ComponentsArray.Where(c => c != null && c.GetType().Name == "IncreaseSpecifiedSpellsDC"))
+                {
+                    BlueprintAbility[] spells = ListAbilities(c, "spells").ToArray();
+                    lists.Add(Shallow(c));
+                    membership.AddRange(TurnUndeadObserverRules.MembershipProblems(field, turnGuids,
+                        spells.Where(a => a != null && turnSet.Contains(a.AssetGuid)).Select(a => a.AssetGuid)));
+                    if (field == "improved_channel" && mutationControl == null)
+                    {
+                        // A duplicate standing in for a missing identity must fail although the count still matches.
+                        string direct = Direct("Cleric").AssetGuid, child = ((BlueprintAbility)Member(SourceOf("Cleric"), "MenuChild")).AssetGuid;
+                        IEnumerable<string> mutated = spells.Where(a => a != null && turnSet.Contains(a.AssetGuid)).Select(a => a.AssetGuid == direct ? child : a.AssetGuid);
+                        mutationControl = new JArray(TurnUndeadObserverRules.MembershipProblems("mutated " + field, turnGuids, mutated).Cast<object>().ToArray());
+                        if (mutationControl.Count == 0) problems.Add("the membership check accepted a duplicate in place of a missing identity");
+                    }
+                }
+                if (lists.Count == 0) membership.Add(field + ": no IncreaseSpecifiedSpellsDC component");
+                problems.AddRange(membership);
+                holders[field] = new JObject { ["fact"] = Ref(holder), ["lists"] = lists, ["membershipProblems"] = new JArray(membership.Cast<object>().ToArray()) };
             }
-            foreach (BlueprintUnitFact fact in ((engineType == null ? null : engineType.GetField("channel_resistances", Any)?.GetValue(null)) as IEnumerable<BlueprintUnitFact> ?? new BlueprintUnitFact[0]))
+            var resistances = new JArray();
+            var resistanceFacts = engineType.GetField("channel_resistances", Any)?.GetValue(null) as IEnumerable<BlueprintUnitFact>;
+            if (resistanceFacts == null) problems.Add("CotW channel_resistances unreadable");
+            foreach (BlueprintUnitFact fact in resistanceFacts ?? new BlueprintUnitFact[0])
             {
-                int count = fact.ComponentsArray.Where(c => c != null && (c.GetType().Name == "SavingThrowBonusAgainstSpecificSpells" || c.GetType().Name == "ContextSavingThrowBonusAgainstSpecificSpells"))
-                    .Sum(c => ((IEnumerable)c.GetType().GetField("Spells", Any).GetValue(c)).Cast<object>().OfType<BlueprintAbility>().Count(a => turnGuids.Contains(a.AssetGuid)));
-                membership["resistance:" + fact.AssetGuid + ":" + fact.name] = count;
-                if (count != turnGuids.Count) problems.Add("CotW resistance " + fact.name + " lists " + count + " Turn identities, expected " + turnGuids.Count);
+                var membership = new List<string>();
+                BlueprintComponent[] lists = fact.ComponentsArray.Where(c => c != null && (c.GetType().Name == "SavingThrowBonusAgainstSpecificSpells" || c.GetType().Name == "ContextSavingThrowBonusAgainstSpecificSpells")).ToArray();
+                if (lists.Length == 0) membership.Add(fact.name + ": no ability-specific list");
+                foreach (BlueprintComponent c in lists)
+                    membership.AddRange(TurnUndeadObserverRules.MembershipProblems("resistance " + fact.name, turnGuids,
+                        ListAbilities(c, "Spells").Where(a => a != null && turnSet.Contains(a.AssetGuid)).Select(a => a.AssetGuid)));
+                problems.AddRange(membership);
+                resistances.Add(new JObject
+                {
+                    ["fact"] = Ref(fact), ["lists"] = new JArray(lists.Select(c => (object)Shallow(c)).ToArray()),
+                    ["membershipProblems"] = new JArray(membership.Cast<object>().ToArray())
+                });
             }
-            var resistances = new JArray(((engineType == null ? null : engineType.GetField("channel_resistances", Any)?.GetValue(null)) as IEnumerable<BlueprintUnitFact> ?? new BlueprintUnitFact[0])
-                .Select(f => (object)DumpFact(f)).ToArray());
             return new JObject
             {
                 ["assemblyVersion"] = cotw.GetName().Version.ToString(), ["sha256"] = Sha256File(cotw.Location),
-                ["channelEntries"] = allEntries, ["channelEntriesByType"] = byType, ["channelEntriesThatAreTurn"] = turnEntries,
-                ["positiveHarmEntries"] = entries, ["turnMenu"] = menu, ["dcHolders"] = holders, ["channelResistances"] = resistances, ["turnMembership"] = membership
+                ["registryStatus"] = registryStatus, ["registryUnreadableControl"] = controlStatus,
+                ["channelEntriesByType"] = byType, ["channelEntriesThatAreTurn"] = turnEntries,
+                ["positiveHarmEntries"] = entries, ["turnIdentities"] = new JArray(turn.Select(a => (object)(a.AssetGuid + ":" + a.name)).ToArray()),
+                ["turnMenu"] = menu, ["dcHolders"] = holders, ["membershipMutationControl"] = mutationControl, ["channelResistances"] = resistances
             };
         }
 
@@ -389,18 +683,16 @@ namespace KmgLoaderCompatHarness
             cleric.Commands.InterruptAll(true);
             cleric.Commands.Run(command);
             foreach (object step in Settle(0.0, 30f, () => command.IsFinished && (command.ExecutionProcess == null || command.ExecutionProcess.IsEnded))) yield return step;
-            JArray clericSaves = Saves(cleric, seq), skeletonSaves = Saves(skeleton, seq), livingSaves = Saves(living, seq);
             result["undeadCaster"] = new JObject
             {
                 ["clericUndead"] = cleric.Descriptor.HasFact(Blueprint<BlueprintUnitFact>(UndeadType)), ["commandResult"] = command.Result.ToString(),
-                ["expectedDc"] = expectedDc, ["clericSaves"] = clericSaves, ["skeletonSaves"] = skeletonSaves, ["livingControlSaves"] = livingSaves,
+                ["expectedDc"] = expectedDc, ["clericSaves"] = Saves(cleric, seq), ["skeletonSaves"] = Saves(skeleton, seq), ["livingControlSaves"] = Saves(living, seq),
                 ["clericFleeing"] = FleeingOn(cleric) != null, ["skeletonFleeing"] = FleeingOn(skeleton) != null
             };
-            if (clericSaves.Count != 1 || (string)clericSaves[0]["type"] != "Will" || (int)clericSaves[0]["dc"] != expectedDc || !(bool)clericSaves[0]["passed"])
-                problems.Add("the undead channeler did not make exactly one passed Will save at DC " + expectedDc + " against its own Turn: " + clericSaves.ToString(Newtonsoft.Json.Formatting.None));
-            if (skeletonSaves.Count != 1 || FleeingOn(skeleton) == null) problems.Add("the skeleton beside the undead channeler was not turned");
-            if (livingSaves.Count != 0 || FleeingOn(living) != null) problems.Add("the living control was affected");
-            if (FleeingOn(cleric) != null) problems.Add("the undead channeler is fleeing although it saved");
+            // The channeler's inclusion is shown by its own roll; the effect must follow that roll either way.
+            result["undeadCaster"]["clericOutcome"] = Judge("the undead channeler", cleric, true, seq, expectedDc);
+            result["undeadCaster"]["skeletonOutcome"] = Judge("the skeleton beside the undead channeler", skeleton, true, seq, expectedDc);
+            Judge("the living control", living, false, seq, expectedDc);
         }
 
         // ---------------------------------------------------------------- Selective Channel and allied undead
@@ -420,7 +712,7 @@ namespace KmgLoaderCompatHarness
             BlueprintAbility clericTurn = Direct("Cleric");
             turnSource = clericTurn.AssetGuid;
             Game.Instance.IsPaused = true;
-            var selectiveFact = Blueprint<BlueprintUnitFact>("fd30c69417b434d47b6b03b9c1f568ff");
+            var selectiveFact = Blueprint<BlueprintUnitFact>(SelectiveChannel);
             var cases = new JArray();
             result["selective"] = cases;
             foreach (bool selective in new[] { false, true })
@@ -439,27 +731,27 @@ namespace KmgLoaderCompatHarness
                 ally.Stats.SaveWill.BaseValue = -100;
                 yield return null;
                 int seq = Seq;
+                int expectedDc = 10 + 5 / 2 + cleric.Stats.Charisma.Bonus;
                 var command = new UnitUseAbility(new AbilityData(cleric.Descriptor.Abilities.GetAbility(clericTurn)), new TargetWrapper(cleric));
                 command.IgnoreCooldown(null);
                 cleric.Commands.InterruptAll(true);
                 cleric.Commands.Run(command);
                 foreach (object step in Settle(0.0, 30f, () => command.IsFinished && (command.ExecutionProcess == null || command.ExecutionProcess.IsEnded))) yield return step;
-                JArray enemySaves = Saves(enemy, seq), allySaves = Saves(ally, seq);
+                string label = selective ? "with Selective Channel" : "without Selective Channel";
                 var row = new JObject
                 {
                     ["selectiveChannel"] = cleric.Descriptor.HasFact(selectiveFact), ["commandResult"] = command.Result.ToString(),
                     ["allyIsEnemy"] = ally.IsEnemy(cleric), ["enemyIsEnemy"] = enemy.IsEnemy(cleric),
-                    ["enemySaves"] = enemySaves, ["allySaves"] = allySaves,
+                    ["enemySaves"] = Saves(enemy, seq), ["allySaves"] = Saves(ally, seq),
                     ["enemyFleeing"] = FleeingOn(enemy) != null, ["allyFleeing"] = FleeingOn(ally) != null,
                     ["enemyDistance"] = Math.Round(Vector3.Distance(enemy.Position, cleric.Position), 2),
                     ["allyDistance"] = Math.Round(Vector3.Distance(ally.Position, cleric.Position), 2)
                 };
                 cases.Add(row);
-                string label = selective ? "with Selective Channel" : "without Selective Channel";
                 if (ally.IsEnemy(cleric) || !enemy.IsEnemy(cleric)) problems.Add(label + ": fixture allegiance is wrong");
-                if (enemySaves.Count != 1 || FleeingOn(enemy) == null) problems.Add(label + ": the enemy skeleton was not turned");
-                if (selective && (allySaves.Count != 0 || FleeingOn(ally) != null)) problems.Add(label + ": the allied skeleton was affected or rolled a save");
-                if (!selective && (allySaves.Count != 1 || FleeingOn(ally) == null)) problems.Add(label + ": the allied skeleton was not turned (all-undead behavior)");
+                // Inclusion is the rolled save's existence; the effect follows the roll.
+                row["enemyOutcome"] = Judge(label + ": the enemy skeleton", enemy, true, seq, expectedDc);
+                row["allyOutcome"] = Judge(label + ": the allied skeleton", ally, !selective, seq, expectedDc);
             }
         }
 
@@ -469,8 +761,7 @@ namespace KmgLoaderCompatHarness
         {
             Game.Instance.IsPaused = false;
             bool prior = Game.Instance.IsPaused;
-            var nested = new TurnUndeadProbe("first-turn") { injectCleanupFailure = injectNestedCleanupFailureForTest };
-            abandonNested = nested;
+            TurnUndeadProbe nested = AdoptChild(new TurnUndeadProbe("first-turn") { injectCleanupFailure = injectNestedCleanupFailureForTest });
             string verdict = null;
             int polls = 0;
             while (verdict == null && !(nested.silenced.Count > 0 && Game.Instance.IsPaused) && polls++ < 600)
@@ -481,8 +772,8 @@ namespace KmgLoaderCompatHarness
             bool suspended = verdict == null && nested.silenced.Count > 0 && Game.Instance.IsPaused;
             UnitEntityData[] silencedUnits = nested.silenced.ToArray();
             UnitEntityData[] spawned = nested.created.ToArray();
-            abandonNested = null;
-            CleanupReport report = nested.Release("abandoned by the abandon check");
+            // Normal completion: the child is released here once; its report is kept and merged into ours by Release.
+            CleanupReport report = ReleaseChild(nested, "abandoned by the abandon check");
             // UnitEntityData.Destroy completes on a later frame; wait for it before judging.
             int frames = 0;
             while (frames < 30 && spawned.Any(u => u != null && !u.Destroyed)) { frames++; yield return null; }
@@ -500,7 +791,7 @@ namespace KmgLoaderCompatHarness
             if (Game.Instance.IsPaused != prior) problems.Add("Release did not restore the prior pause flag");
             if (silencedUnits.Any(u => u != null && !u.Destroyed && !u.IsBrainActive)) problems.Add("Release left silenced brains off");
             if (spawned.Any(u => u != null && !u.Destroyed)) problems.Add("Release left spawned units");
-            if (!report.Restored) problems.Add("the cleanup verdict reported failures: " + string.Join("; ", report.Failures.ToArray()));
+            if (!report.Restored) problems.Add("the nested cleanup verdict reported failures: " + string.Join("; ", report.Failures.ToArray()));
         }
 
         // ---------------------------------------------------------------- hashing

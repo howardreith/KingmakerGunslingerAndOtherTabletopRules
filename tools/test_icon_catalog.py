@@ -73,10 +73,10 @@ class IconCatalogTests(unittest.TestCase):
 
     def test_crocodilian_emblem_scope_does_not_change_painted_history(self):
         mapping = self.catalog["runtimeMapping"]
-        # The Turn Undead mission adds exactly one painted concept with eight
+        # The Turn Undead mission adds exactly one painted concept with nine
         # action consumers; the earlier painted history is otherwise unchanged.
         turn_undead = [c for c in self.catalog["consumers"] if c["concept"] == "turn-undead-action"]
-        self.assertEqual(8, len(turn_undead))
+        self.assertEqual(9, len(turn_undead))
         self.assertEqual(104, mapping["paintedConceptCount"] - 1)
         self.assertEqual(165, mapping["paintedConsumerCount"] - len(turn_undead))
         self.assertEqual(9, sum(c["concept"] in {"crocodilian-sprint", "crocodilian-death-roll", "dire-crocodile-swallowed"}
@@ -92,8 +92,8 @@ class IconCatalogTests(unittest.TestCase):
         bindings = re.findall(r'new Binding\("(KMG\.Feats\.TurnUndead\.[^"]+)", "([^"]+)", typeof\((\w+)\)\)', source)
         self.assertEqual([("KMG.Feats.TurnUndead.Feat", "turn-undead-feat", "BlueprintFeature")],
                          [b for b in bindings if b[1] == "turn-undead-feat"])
-        self.assertEqual(8, sum(b[1] == "turn-undead-action" and b[2] == "BlueprintAbility" for b in bindings))
-        self.assertEqual(9, len(bindings))
+        self.assertEqual(9, sum(b[1] == "turn-undead-action" and b[2] == "BlueprintAbility" for b in bindings))
+        self.assertEqual(10, len(bindings))
         swapped = source.replace('new Binding("KMG.Feats.TurnUndead.Feat", "turn-undead-feat"',
                                  'new Binding("KMG.Feats.TurnUndead.Feat", "turn-undead-action"')
         self.assertNotEqual(source, swapped)

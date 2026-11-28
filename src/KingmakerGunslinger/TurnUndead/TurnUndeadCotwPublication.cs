@@ -24,7 +24,9 @@ namespace KingmakerGunslinger.TurnUndead
     ///    source's native harm channel) gains that source's never-granted Turn
     ///    Undead child, appended once; the child's Parent is that wrapper. The
     ///    directly granted action of a source whose child was placed is hidden
-    ///    for this process so the option appears once.
+    ///    for this process so the option appears once. The ordinary paladin's CotW
+    ///    extra-channel child, when CotW defines that route, joins the same wrapper
+    ///    beside CotW's own extra-channel harm.
     ///  * DC: Improved Channel, Sacred Conduit and Consecrate add their exact
     ///    IncreaseSpecifiedSpellsDC bonus to the Turn Undead identities.
     ///  * Resistance: every CotW-registered channel resistance fact receives
@@ -138,6 +140,30 @@ namespace KingmakerGunslinger.TurnUndead
             _evidence.Add(source.Contract.Key + ":menu=" + wrapper.AssetGuid + ":" + wrapper.name +
                 ";variants=" + (before == null ? 0 : before.Length) + "->" + component.Variants.Length +
                 ";direct-hidden");
+            if (source.ExtraMenuChild != null) PlaceExtraChild(source, wrapper, component);
+        }
+
+        private void PlaceExtraChild(TurnUndeadSourceBlueprints source, BlueprintAbility wrapper, AbilityVariants component)
+        {
+            BlueprintAbility child = source.ExtraMenuChild;
+            if (component.Variants == null || !component.Variants.Contains(source.ExtraHarm))
+                throw new InvalidOperationException("Call of the Wild's " + source.ExtraHarm.name + " is not under " +
+                    wrapper.name + "; the paladin extra-channel Turn child has no menu (contract drift).");
+            if (child.Parent != null && !ReferenceEquals(child.Parent, wrapper))
+                throw new InvalidOperationException("The paladin extra-channel Turn child already belongs to another wrapper.");
+            BlueprintAbility[] before = component.Variants;
+            BlueprintAbility[] after = TurnUndeadListPolicy.AppendMissing(before, new[] { child });
+            BlueprintAbility priorParent = child.Parent;
+            if (after != null) component.Variants = after;
+            child.Parent = wrapper;
+            _undo.Add(() =>
+            {
+                if (after != null) component.Variants = before;
+                child.Parent = priorParent;
+            });
+            MenuChildren++;
+            _evidence.Add(source.Contract.Key + "-extra:menu=" + wrapper.AssetGuid + ":" + wrapper.name +
+                ";variants=" + before.Length + "->" + component.Variants.Length);
         }
 
         private void AppendDcBonus(Type engine, string fieldName, TurnUndeadBlueprintSet set)

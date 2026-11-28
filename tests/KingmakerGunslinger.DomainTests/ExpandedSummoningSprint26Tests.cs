@@ -81,9 +81,10 @@ namespace KingmakerGunslinger.DomainTests
             RepairR3PrivateIdentityCount + RepairR4PrivateIdentityCount + RepairR5PrivateIdentityCount +
             Risk06PrivateIdentityCount;
         internal const int SpiderSummonerLedgerIdentityCount = 39;
-        // Turn Undead feat: feat, flight buff, and a direct action plus a
-        // menu child for each of four positive-channel sources (all active).
-        internal const int TurnUndeadLedgerIdentityCount = 10;
+        // Turn Undead feat: feat, flight buff, a direct action plus a menu child
+        // for each of four positive-channel sources, and the Call of the Wild
+        // paladin extra-channel child (all active).
+        internal const int TurnUndeadLedgerIdentityCount = 11;
         internal const int AppendedLedgerIdentityCount =
             AppendedCatalogIdentityCount +
             Sprint36ReservedIdentityCount + SpiderSummonerLedgerIdentityCount +

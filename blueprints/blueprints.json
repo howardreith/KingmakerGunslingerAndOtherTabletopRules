@@ -63567,6 +63567,14 @@
       "status": "active",
       "milestone": "Turn Undead feat",
       "notes": "Never-granted empyreal-source child placed only under a loaded provider's positive-harm channel wrapper."
+    },
+    {
+      "symbol": "KMG.Feats.TurnUndead.PaladinExtra.MenuChild",
+      "guid": "6e07413d323c48dc83e3e376658ba1f7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Turn Undead feat",
+      "notes": "Never-granted paladin child spending Call of the Wild's PaladinExtraChannelResource x1, placed only under the paladin positive-harm wrapper beside CotW's extra-channel harm; registered only when CotW defines that route."
     }
   ]
 }

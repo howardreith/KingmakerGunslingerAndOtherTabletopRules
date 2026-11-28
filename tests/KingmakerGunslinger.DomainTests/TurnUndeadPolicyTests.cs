@@ -51,7 +51,7 @@ namespace KingmakerGunslinger.DomainTests
                 "The wizard necromancer turning power is not a Turn Undead source.");
             string[] symbols = TurnUndeadSourceCatalog.AllSymbols().ToArray();
             Assertions.Equal(SummoningCurrentSurface.TurnUndeadLedgerIdentityCount, symbols.Length,
-                "Feat, flight buff and two actions per source.");
+                "Feat, flight buff, two actions per source and the CotW paladin extra child.");
             JToken[] manifest = JObject.Parse(File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "blueprints", "blueprints.json")))["entries"].ToArray();
             foreach (string symbol in symbols)
@@ -67,7 +67,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(manifest.Skip(manifest.Length - symbols.Length)
                     .Select(value => (string)value["symbol"]).SequenceEqual(symbols),
                 "Turn Undead identities are the exact append-only manifest tail.");
-            Assertions.Equal(10, symbols.Distinct(StringComparer.Ordinal).Count(),
+            Assertions.Equal(11, symbols.Distinct(StringComparer.Ordinal).Count(),
                 "Source-specific child identities never share a symbol.");
         }
 
@@ -97,8 +97,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(outcome.Registered && !outcome.Published && outcome.PublicationFailure != null &&
                 outcome.RegistrationFailure == null && !registrationRolledBack,
                 "A publication failure keeps the registration.");
-            Assertions.True(identities.Count == 10 && identities.Distinct(StringComparer.Ordinal).Count() == 10,
-                "The ten saved identities stay singular and resolvable.");
+            Assertions.True(identities.Count == 11 && identities.Distinct(StringComparer.Ordinal).Count() == 11,
+                "The eleven saved identities stay singular and resolvable.");
             Assertions.True(foreignSurface.SequenceEqual(surfaceBefore), "The foreign surface is restored exactly.");
 
             bool publicationRan = false;

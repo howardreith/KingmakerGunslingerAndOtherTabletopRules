@@ -411,7 +411,7 @@
    "brain": "CyclopClericBrain",
    "identityFacts": [],
    "expectedMind": "Mindless",
-   "reviewReason": "owner-review default: family kept"
+   "reviewReason": "dread zombie cyclops: zombie (identity resolved)"
   },
   {
    "unit": "ccc5faf34b4788b429b9dacbfbcfdc43",
@@ -447,7 +447,7 @@
    "brain": "CyclopClericBrain",
    "identityFacts": [],
    "expectedMind": "Mindless",
-   "reviewReason": "owner-review default: family kept"
+   "reviewReason": "dread zombie cyclops variant: zombie (identity resolved)"
   },
   {
    "unit": "bad3213a31f643a4c947766f489f7b4d",
@@ -519,7 +519,7 @@
    "brain": "CyclopClericBrain",
    "identityFacts": [],
    "expectedMind": "Mindless",
-   "reviewReason": "owner-review default: family kept"
+   "reviewReason": "dread zombie cyclops variant: zombie (identity resolved)"
   },
   {
    "unit": "f0a4efcaa7173bd43ba7fcf1f576e484",
@@ -531,7 +531,7 @@
    "brain": "CyclopClericBrain",
    "identityFacts": [],
    "expectedMind": "Mindless",
-   "reviewReason": "owner-review default: family kept"
+   "reviewReason": "dread zombie cyclops variant: zombie (identity resolved)"
   },
   {
    "unit": "5c9facb3d35d6ef449ac8ab5a0b237a7",
@@ -903,7 +903,7 @@
    "brain": "Dumb Monster Brain",
    "identityFacts": [],
    "expectedMind": "Mindless",
-   "reviewReason": "owner-review default: family kept"
+   "reviewReason": "bloody skeleton: mindless family variant (identity resolved)"
   },
   {
    "unit": "6c3d554093121ad4a93718f0ce7926d6",
@@ -1178,8 +1178,8 @@
    "intelligence": 9,
    "brain": "CleaveMonsterBrain",
    "identityFacts": [],
-   "expectedMind": "Intelligent",
-   "reviewReason": "skeletal champion stat block"
+   "expectedMind": "Mindless",
+   "reviewReason": "Animate Dead skeleton (installed 2.1.7b references: AnimateDead, UndeadSummonAnimate, FionnAnimateDeadAbility)"
   },
   {
    "unit": "209f78dd464984c40b1eb43fabdab5a0",

@@ -163,4 +163,53 @@ foreach ($Scenario in @('observe-feature-module-settings', 'disposable-teleporta
     }
     $checks++
 }
+# Module matrix launcher binding (in memory, nothing launched): the original
+# positional arguments keep their parameters, and every accepted spelling of
+# -TurnUndead selects the requested settings value.
+$matrixPath = Join-Path $PSScriptRoot '..\Invoke-FeatureModuleRuntimeMatrix.ps1'
+$matrixAst = [Management.Automation.Language.Parser]::ParseFile($matrixPath, [ref]$tokens, [ref]$parseErrors)
+if ($parseErrors.Count -ne 0) { throw 'Module matrix parse errors.' }
+$matrixAttributes = @($matrixAst.ParamBlock.Attributes | ForEach-Object { $_.Extent.Text })
+if (-not ($matrixAttributes | Where-Object { $_ -like '`[CmdletBinding*' })) { throw 'The module matrix parameter block lost its CmdletBinding.' }
+$bindProbe = [scriptblock]::Create(($matrixAttributes -join "`n") + "`n" + $matrixAst.ParamBlock.Extent.Text + @'
+
+[pscustomobject]@{ ExpectedVersion = $ExpectedVersion; Scenario = $Scenario; TimeoutSeconds = $TimeoutSeconds
+    Combination = $Combination; TurnUndead = $TurnUndead; Bound = @($PSBoundParameters.Keys) }
+'@)
+$positional = & $bindProbe '0.0.200' 'observe-feature-module-settings' 120 'gunslinger-only'
+if ($positional.ExpectedVersion -cne '0.0.200' -or $positional.Scenario -cne 'observe-feature-module-settings' -or
+    $positional.TimeoutSeconds -ne 120 -or $positional.Combination -cne 'gunslinger-only' -or
+    $positional.TurnUndead -cne 'default' -or $positional.Bound -contains 'TurnUndead') {
+    throw "Module matrix positional binding changed: $($positional | ConvertTo-Json -Compress)"
+}
+$checks++
+$moduleValues = @{}
+foreach ($module in $catalog) { $moduleValues[$module.RuntimeParameter] = $false }
+foreach ($case in @(
+        @{ Spelling = 'on'; Expected = $true }, @{ Spelling = 'On'; Expected = $true }, @{ Spelling = 'ON'; Expected = $true },
+        @{ Spelling = 'off'; Expected = $false }, @{ Spelling = 'Off'; Expected = $false }, @{ Spelling = 'OFF'; Expected = $false },
+        @{ Spelling = 'default'; Expected = $null }, @{ Spelling = 'Default'; Expected = $null }, @{ Spelling = 'DEFAULT'; Expected = $null })) {
+    $bound = & $bindProbe -TurnUndead $case.Spelling
+    $value = ConvertTo-KmgTurnUndeadRuntimeValue -Value $bound.TurnUndead
+    if ($null -eq $case.Expected) {
+        if ($null -ne $value) { throw "-TurnUndead $($case.Spelling) must leave the default rule in force." }
+    } elseif ($value -isnot [bool] -or $value -ne $case.Expected) {
+        throw "-TurnUndead $($case.Spelling) produced $value instead of $($case.Expected)."
+    }
+    foreach ($allOff in @($true, $false)) {
+        $values = @{} + $moduleValues
+        if (-not $allOff) { $values[$catalog[0].RuntimeParameter] = $true }
+        if ($null -ne $value) { $values['turnUndead'] = $value }
+        $document = New-KmgFeatureModuleSettingsDocument -RuntimeValues $values
+        $expectedSetting = if ($null -ne $case.Expected) { [bool]$case.Expected } else { -not $allOff }
+        if ($document['turn-undead'] -ne $expectedSetting) {
+            throw "-TurnUndead $($case.Spelling) staged turn-undead=$($document['turn-undead']) (all-off=$allOff)."
+        }
+        $checks++
+    }
+}
+$rejectedSpelling = $false
+try { $null = & $bindProbe -TurnUndead 'yes' } catch { $rejectedSpelling = $true }
+if (-not $rejectedSpelling) { throw 'The module matrix accepted -TurnUndead yes.' }
+$checks++
 Write-Host "Compatibility module parameter/settings checks passed: $checks; no profile staged or game launched."

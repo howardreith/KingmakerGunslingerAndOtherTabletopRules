@@ -513,6 +513,8 @@
     <Compile Include="BodyguardBlueprintContractTests.cs" />
     <Compile Include="BodyguardPolicyTests.cs" />
     <Compile Include="TurnUndeadPolicyTests.cs" />
+    <Compile Include="TurnUndeadObserverRulesTests.cs" />
+    <Compile Include="..\..\tools\LoaderCompatHarness\TurnUndeadObserverRules.cs"><Link>TurnUndead\TurnUndeadObserverRules.cs</Link></Compile>
     <Compile Include="ImmediateActionEconomyPolicyTests.cs" />
     <Compile Include="BodyguardRuntimeContractTests.cs" />
     <Compile Include="AidAnotherCompatibilityTests.cs" />

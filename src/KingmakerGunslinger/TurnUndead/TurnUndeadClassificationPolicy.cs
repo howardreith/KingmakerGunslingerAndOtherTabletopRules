@@ -146,9 +146,10 @@ namespace KingmakerGunslinger.TurnUndead
             { "b2ade2a85518eac4c815a0a44fb74ce2", Intelligent("SkeletalGuest3", ChampionEvidence) },
             { "53e228ba7fe18104c93dc4b7294a1b30", Intelligent("SummonedSkeletonChampion", ChampionEvidence) },
             { "209f78dd464984c40b1eb43fabdab5a0", Intelligent("SkeletonSummoned_ch5", ChampionEvidence) },
-            { "4050be4512d245f40bf9461074b672f4", new UnitException(TurnUndeadMind.Intelligent,
-                "SkeletonSummoned", true,
-                "Summoned skeleton uses the skeletal champion stat block (Int 9, Fighter levels); classified by that stat block. Owner review: confirm that the summoning spell's tabletop mindless skeleton is not the intended identity.") },
+            // Resolved from installed 2.1.7b references (docs/evidence/turn-undead/undead-identity-references.json).
+            { "4050be4512d245f40bf9461074b672f4", new UnitException(TurnUndeadMind.Mindless,
+                "SkeletonSummoned", false,
+                "The skeleton created by the native Animate Dead spell (AnimateDead 4b76d32f, UndeadSummonAnimate 4c155698, FionnAnimateDeadAbility b27a8af7 spawn it). Animate Dead creates mindless skeletons; its class levels scale Hit Dice and do not make it a skeletal champion.") },
             { "7237a32613fe55e479d1141682f2bbd4", Intelligent("CR11_GraveknightSummoned",
                 "Graveknight (Int 15 tabletop) carried under the Skeleton unit type.") },
             // Dread zombie cyclopes outside the CyclopZombie unit type.
@@ -158,21 +159,22 @@ namespace KingmakerGunslinger.TurnUndead
             { "ce2d24dec712e094d94c336053abeb57", new UnitException(TurnUndeadMind.Mindless,
                 "CR14_DreadZombieCyclopGreat", false,
                 "Greater dread zombie cyclops (zombie family) with no unit type.") },
-            // Documented defaults inside mindless families awaiting owner review.
+            // Identity resolved from installed references: variants of mindless families.
+            { "f68391521a2175647ab311fc64108574", Mindless("CR13_BloodyBonesBarbarian",
+                "Bloody skeleton (Bestiary: mindless) of the Skeleton unit type with Barbarian levels; class levels scale Hit Dice and do not change the creature.") },
+            { "fe662d20a0272bb4ea66bef675b4b52d", Mindless("CR12_DreadZombieCyclopCleric",
+                "Dread zombie cyclops (CyclopZombie unit type; Pathfinder zombies are mindless). Its encounter cleric spells are a Kingmaker addition; the creature remains a zombie.") },
+            { "113ee4680b60b974696313c00b29c4aa", Mindless("DLC2Village_DreadZombieCyclopCleric",
+                "Dread zombie cyclops variant derived from CR12_DreadZombieCyclopCleric (installed reference); a zombie.") },
+            { "2e286f14e73b385499551761afa66ce1", Mindless("UndeadCyclopsPriest (2e286f14)",
+                "Dread zombie cyclops variant derived from CR12_DreadZombieCyclopCleric (installed reference); a zombie.") },
+            { "f0a4efcaa7173bd43ba7fcf1f576e484", Mindless("UndeadCyclopsPriest (f0a4efca)",
+                "Dread zombie cyclops variant derived from CR12_DreadZombieCyclopCleric (installed reference); a zombie.") },
+            // No tabletop identity: Kingmaker-only skeleton encounters. Family default, owner review.
             { "976d4937eb2620c4baf465bb6c7a00a7", Review("CR0.5_SkeletonMage",
-                "Ordinary skeleton family stat block that casts spells; kept with its family (mindless) until the owner confirms.") },
-            { "f68391521a2175647ab311fc64108574", Review("CR13_BloodyBonesBarbarian",
-                "Bloody skeleton variant (Bestiary: mindless) with Barbarian levels; kept with its family.") },
+                "Kingmaker-only spellcasting skeleton (Skeleton unit type, referenced only by DungeonDLC3); no tabletop creature to resolve against; kept with its family (mindless) until the owner decides.") },
             { "39ace3bd77efd5546ad85b9e9947a311", Review("LoneWarrior",
-                "Named skeleton encounter with Barbarian levels and no intelligent identity fact; kept with its family.") },
-            { "fe662d20a0272bb4ea66bef675b4b52d", Review("CR12_DreadZombieCyclopCleric",
-                "Dread zombie cyclops priest that casts cleric spells; kept with the zombie family until the owner confirms.") },
-            { "113ee4680b60b974696313c00b29c4aa", Review("DLC2Village_DreadZombieCyclopCleric",
-                "Dread zombie cyclops priest that casts cleric spells; kept with the zombie family until the owner confirms.") },
-            { "2e286f14e73b385499551761afa66ce1", Review("UndeadCyclopsPriest (2e286f14)",
-                "Dread zombie cyclops priest that casts cleric spells; kept with the zombie family until the owner confirms.") },
-            { "f0a4efcaa7173bd43ba7fcf1f576e484", Review("UndeadCyclopsPriest (f0a4efca)",
-                "Dread zombie cyclops priest that casts cleric spells; kept with the zombie family until the owner confirms.") },
+                "Named skeleton of the Lonely Barrow with scripted health triggers and Barbarian levels; no tabletop creature to resolve against; kept with its family until the owner decides.") },
         };
 
         /// <summary>
@@ -263,6 +265,9 @@ namespace KingmakerGunslinger.TurnUndead
 
         private static UnitException Intelligent(string name, string evidence)
         { return new UnitException(TurnUndeadMind.Intelligent, name, false, evidence); }
+
+        private static UnitException Mindless(string name, string evidence)
+        { return new UnitException(TurnUndeadMind.Mindless, name, false, evidence); }
 
         private static UnitException Review(string name, string evidence)
         { return new UnitException(TurnUndeadMind.Mindless, name, true, evidence); }

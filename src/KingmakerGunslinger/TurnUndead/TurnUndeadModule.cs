@@ -127,7 +127,7 @@ namespace KingmakerGunslinger.TurnUndead
             TurnUndeadBlueprintSet set = null;
             TurnUndeadResistancePublication resistance = null;
             TurnUndeadCotwPublication cotw = null;
-            string cotwFailure = null;
+            TurnUndeadCotwOutcome cotwOutcome = null;
             BodyguardFeatPublicationTransaction<BlueprintFeature> publication = null;
             bool offer = context.FeatureModules.ActiveTurnUndead;
 
@@ -135,27 +135,14 @@ namespace KingmakerGunslinger.TurnUndead
                 () =>
                 {
                     set = TurnUndeadBlueprints.Register(library, registry);
-                    OwnedIconAssignments.ApplyTurnUndead(library, manifest);
+                    OwnedIconAssignments.ApplyTurnUndead(library, manifest, set.ExtraRouteStatus == "present");
                 },
                 () => { set = null; registry.RollbackAll(); },
                 () =>
                 {
                     resistance = TurnUndeadResistancePublication.Publish(library, set.AllAbilities.ToArray());
-                    try
-                    {
-                        cotw = TurnUndeadCotwPublication.Publish(set, context.ModEntry);
-                    }
-                    catch (Exception exception)
-                    {
-                        // Publish restored its own changes: no submenu child, no CotW DC or
-                        // resistance lists. Baseline Turn Undead with reduced CotW compatibility.
-                        cotw = null;
-                        cotwFailure = exception.GetType().Name + ": " + exception.Message;
-                        TurnUndeadDiagnostics.Warning("cotw.unavailable",
-                            "Call of the Wild integration was not applied (reduced compatibility: no channel " +
-                            "submenu entry, no CotW DC bonuses or channel resistances); the direct actions remain. " +
-                            cotwFailure);
-                    }
+                    cotwOutcome = PublishCotw(set, () => TurnUndeadCotwPublication.Publish(set, context.ModEntry));
+                    cotw = cotwOutcome.Publication;
                     if (offer) publication = PublishFeat(library, set.Feat);
                 },
                 () =>
@@ -190,9 +177,40 @@ namespace KingmakerGunslinger.TurnUndead
             TurnUndeadDiagnostics.Info("initialize.complete",
                 "registered=" + registry.RegisteredCount + ";featPublished=" + offer +
                 ";resistance=" + string.Join(",", resistance.Evidence.ToArray()) +
-                (cotw == null ? ";cotw=failed" : ";cotw=" + cotw.Availability + ";menuChildren=" +
-                    cotw.MenuChildren + (cotw.Evidence.Count == 0 ? string.Empty :
-                        ";" + string.Join(",", cotw.Evidence.ToArray()))));
+                ";extraRoute=" + set.ExtraRouteStatus + ";" + cotwOutcome.StatusText);
+        }
+
+        /// <summary>
+        /// The product's Call of the Wild boundary: runs one publication attempt and turns any
+        /// adapter exception (the adapter has already restored its own changes) into the reported
+        /// reduced-compatibility state: the cotw.unavailable warning naming the failed seam, a
+        /// "cotw=failed" status, and every source's direct action left visible. Install calls it with
+        /// the live provider; the harness calls PublishCotwWithEngine with substitute engines.
+        /// </summary>
+        internal static TurnUndeadCotwOutcome PublishCotw(TurnUndeadBlueprintSet set,
+            Func<TurnUndeadCotwPublication> publish)
+        {
+            if (set == null) throw new ArgumentNullException("set");
+            if (publish == null) throw new ArgumentNullException("publish");
+            try
+            {
+                return new TurnUndeadCotwOutcome(publish(), null, null, set);
+            }
+            catch (Exception exception)
+            {
+                string failure = exception.GetType().Name + ": " + exception.Message;
+                string warning = "Call of the Wild integration was not applied (reduced compatibility: no channel " +
+                    "submenu entry, no CotW DC bonuses or channel resistances); the direct actions remain. " + failure;
+                TurnUndeadDiagnostics.Warning("cotw.unavailable", warning);
+                return new TurnUndeadCotwOutcome(null, failure, warning, set);
+            }
+        }
+
+        /// <summary>The same boundary against a given channel-engine type (harness seam).</summary>
+        internal static TurnUndeadCotwOutcome PublishCotwWithEngine(TurnUndeadBlueprintSet set, Type engine,
+            string version)
+        {
+            return PublishCotw(set, () => TurnUndeadCotwPublication.PublishWithEngine(set, engine, version));
         }
 
         private static BodyguardFeatPublicationTransaction<BlueprintFeature> PublishFeat(
@@ -210,6 +228,35 @@ namespace KingmakerGunslinger.TurnUndead
             };
             return BodyguardFeatPublicationTransaction<BlueprintFeature>.Publish(surfaces,
                 new[] { feat }, value => value.AssetGuid, value => value.Name ?? string.Empty);
+        }
+    }
+
+    /// <summary>What one Call of the Wild publication attempt left: a publication, or the reported failure.</summary>
+    internal sealed class TurnUndeadCotwOutcome
+    {
+        internal TurnUndeadCotwOutcome(TurnUndeadCotwPublication publication, string failure, string warning,
+            TurnUndeadBlueprintSet set)
+        {
+            Publication = publication;
+            Failure = failure;
+            Warning = warning;
+            VisibleDirectActions = set.Sources.Count(source => !source.Direct.Hidden);
+        }
+
+        internal TurnUndeadCotwPublication Publication { get; private set; }
+        internal string Failure { get; private set; }
+        internal string Warning { get; private set; }
+        /// <summary>Directly granted actions left visible after the attempt (all four after a failure).</summary>
+        internal int VisibleDirectActions { get; private set; }
+
+        internal string StatusText
+        {
+            get
+            {
+                return Publication == null ? "cotw=failed;directVisible=" + VisibleDirectActions :
+                    "cotw=" + Publication.Availability + ";menuChildren=" + Publication.MenuChildren +
+                    (Publication.Evidence.Count == 0 ? string.Empty : ";" + string.Join(",", Publication.Evidence.ToArray()));
+            }
         }
     }
 

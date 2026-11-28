@@ -234,6 +234,7 @@ namespace KingmakerGunslinger.Blueprints
             new Binding("KMG.Feats.TurnUndead.Hospitaler.MenuChild", "turn-undead-action", typeof(BlueprintAbility)),
             new Binding("KMG.Feats.TurnUndead.Empyreal.Ability", "turn-undead-action", typeof(BlueprintAbility)),
             new Binding("KMG.Feats.TurnUndead.Empyreal.MenuChild", "turn-undead-action", typeof(BlueprintAbility)),
+            new Binding("KMG.Feats.TurnUndead.PaladinExtra.MenuChild", "turn-undead-action", typeof(BlueprintAbility)),
         };
 
         internal static IEnumerable<Binding> Bindings => Entries;
@@ -255,10 +256,13 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         /// <summary>Applies the exact Turn Undead bindings once its identities exist.</summary>
-        internal static void ApplyTurnUndead(LibraryScriptableObject library, BlueprintManifest manifest)
+        internal static void ApplyTurnUndead(LibraryScriptableObject library, BlueprintManifest manifest,
+            bool paladinExtraRouteRegistered)
         {
             if (library == null || manifest == null) throw new ArgumentNullException("library/manifest");
-            var targets = Entries.Where(value => value.IsTurnUndead)
+            // The CotW paladin extra-channel child exists only when Call of the Wild defines that route.
+            var targets = Entries.Where(value => value.IsTurnUndead && (paladinExtraRouteRegistered ||
+                    value.Symbol != KingmakerGunslinger.TurnUndead.TurnUndeadSourceCatalog.PaladinExtraMenuChildSymbol))
                 .Select(value => new KeyValuePair<BlueprintScriptableObject, UnityEngine.Sprite>(
                     value.Resolve(library, manifest), ProjectAssetIcons.RequireIcon(value.Key))).ToArray();
             ApplyTargets(targets);

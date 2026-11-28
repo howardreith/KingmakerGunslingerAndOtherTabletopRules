@@ -93,8 +93,14 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(region.Contains("\"disposition\": \"original-required\""),
                     "Scroll consumer is not dedicated original art: " + symbol);
             }
+            // The Turn Undead mission adds exactly one painted concept and its action consumers;
+            // the painted history these scroll icons belong to is otherwise unchanged.
+            Newtonsoft.Json.Linq.JObject parsed = Newtonsoft.Json.Linq.JObject.Parse(catalog);
+            int turnUndeadConsumers = parsed["consumers"].Count(c => (string)c["concept"] == "turn-undead-action");
+            Assertions.True((int)parsed["runtimeMapping"]["paintedConceptCount"] - 1 == 104 &&
+                (int)parsed["runtimeMapping"]["paintedConsumerCount"] - turnUndeadConsumers == 165,
+                "Catalog painted counts changed beyond the Turn Undead concept and its consumers.");
             foreach (string token in new[] {
-                "\"paintedConceptCount\": 104", "\"paintedConsumerCount\": 165",
                 "scroll-of-teleport", "scroll-of-greater-teleport",
                 "scroll-of-word-of-recall" })
                 Assertions.True(catalog.Contains(token),

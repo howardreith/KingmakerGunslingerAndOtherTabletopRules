@@ -111,6 +111,19 @@ namespace KingmakerGunslinger.TurnUndead
         internal const string ChannelResistanceFourGuid = "a9ac84c6f48b491438f91bb237bc9212";
         internal const string BasicFeatSelectionGuid = "247a4068296e8be42890143f451b4b45";
 
+        /// <summary>
+        /// Call of the Wild's alternate payment route for the ordinary paladin source (owner
+        /// amendment 1, 2026-11-28): CotW's PaladinChannelEnergyHarmUndeadExtra spends one use of
+        /// PaladinExtraChannelResource (the pool its Extra Channel (Paladin) feat raises) instead
+        /// of two uses of lay on hands, under the same paladin positive-harm wrapper. Turn gains
+        /// a matching paladin child that spends that pool; it exists only when CotW defines the
+        /// route (no pool is created, refilled or borrowed).
+        /// </summary>
+        internal const string PaladinExtraHarmGuid = "c2d7e09fb9484d09932e62b6ed8339d1";
+        internal const string PaladinExtraResourceGuid = "e5995b0657a841f993052fdb1cc566dd";
+        internal const int PaladinExtraCost = 1;
+        internal const string PaladinExtraMenuChildSymbol = "KMG.Feats.TurnUndead.PaladinExtra.MenuChild";
+
         private static readonly TurnUndeadSourceContract[] Sources =
         {
             new TurnUndeadSourceContract(TurnUndeadSourceKind.Cleric, "cleric", "Cleric",
@@ -145,6 +158,7 @@ namespace KingmakerGunslinger.TurnUndead
                 yield return source.DirectAbilitySymbol;
                 yield return source.MenuChildSymbol;
             }
+            yield return PaladinExtraMenuChildSymbol;
         }
     }
 }

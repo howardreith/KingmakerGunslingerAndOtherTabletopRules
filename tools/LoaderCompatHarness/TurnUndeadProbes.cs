@@ -98,15 +98,17 @@ namespace KmgLoaderCompatHarness
                     "restorable; contained to the disposable loader-compat launch";
             var releases = new List<KeyValuePair<string, Action>>
             {
-                // A nested probe (abandon modes) is released first, on every exit, and its cleanup failures fail ours.
-                new KeyValuePair<string, Action>("nested probe", () =>
+                // Children first, on every exit: still-active child probes and probe slots this probe owns.
+                // Every child's completed cleanup report (including those released during normal flow) is
+                // merged into ours below, so a child's cleanup failure always reaches the final verdict.
+                new KeyValuePair<string, Action>("child probes", () =>
                 {
-                    TurnUndeadProbe nested = abandonNested;
-                    abandonNested = null;
-                    if (nested == null) return;
-                    CleanupReport inner = nested.Release(testFailure);
-                    if (!inner.Restored) throw new InvalidOperationException("nested cleanup failed: " + string.Join("; ", inner.Failures.ToArray()));
+                    foreach (TurnUndeadProbe child in activeChildren.ToArray()) ReleaseChild(child, testFailure);
+                    foreach (ProbeSlot slot in childSlots.Where(value => value.IsActive).ToArray())
+                        RecordSlotOutcome(slot.Abandon(testFailure), "abandoned with its owner");
                 }),
+                new KeyValuePair<string, Action>("isolated CotW fixture", ReleaseIsolatedFixture),
+                new KeyValuePair<string, Action>("live CotW publication unchanged", VerifyLiveCotwUnchanged),
                 new KeyValuePair<string, Action>("pause flag", () => { if (pausedBefore.HasValue) Game.Instance.IsPaused = pausedBefore.Value; pausedBefore = null; }),
                 new KeyValuePair<string, Action>("rule trace", () => { if (subscription != null) subscription.Dispose(); subscription = null; }),
                 new KeyValuePair<string, Action>("area brains", () => { foreach (UnitEntityData u in silenced.Where(u => u != null && !u.Destroyed)) u.IsBrainActive = true; silenced.Clear(); }),
@@ -115,8 +117,52 @@ namespace KmgLoaderCompatHarness
                 new KeyValuePair<string, Action>("unit blueprint clones", () => { foreach (BlueprintUnit c in clones) UnityEngine.Object.DestroyImmediate(c); clones.Clear(); })
             };
             if (injectCleanupFailure)
-                releases.Add(new KeyValuePair<string, Action>("injected test failure", () => { throw new InvalidOperationException("injected by abandon-interrupt"); }));
-            return ProbeCleanup.RunAll(releases);
+                releases.Add(new KeyValuePair<string, Action>("injected test failure", () => { throw new InvalidOperationException(InjectedMarker); }));
+            CleanupReport report = ProbeCleanup.RunAll(releases);
+            foreach (KeyValuePair<string, string> failure in childFailures) report.Failures.Add("child " + failure.Key + ": " + failure.Value);
+            childFailures.Clear();
+            return report;
+        }
+
+        // ---------------------------------------------------------------- child ownership
+
+        internal const string InjectedMarker = "injected by abandon-interrupt";
+        private readonly List<TurnUndeadProbe> activeChildren = new List<TurnUndeadProbe>();
+        private readonly List<ProbeSlot> childSlots = new List<ProbeSlot>();
+        private readonly List<KeyValuePair<string, string>> childFailures = new List<KeyValuePair<string, string>>();
+        /// <summary>True for a driver whose children carry the harness's own injected failure on purpose.</summary>
+        private bool dropInjectedChildFailures;
+
+        /// <summary>The child probe currently owned (abandon modes), or null.</summary>
+        private TurnUndeadProbe CurrentChild => activeChildren.FirstOrDefault();
+
+        private TurnUndeadProbe AdoptChild(TurnUndeadProbe child)
+        {
+            activeChildren.Add(child);
+            return child;
+        }
+
+        /// <summary>Releases an owned child exactly once and keeps its completed cleanup report.</summary>
+        private CleanupReport ReleaseChild(TurnUndeadProbe child, string reason)
+        {
+            if (!activeChildren.Remove(child)) throw new InvalidOperationException("child probe " + child.mode + " is not owned or was already released");
+            CleanupReport report;
+            try { report = child.Release(reason) ?? new CleanupReport(); }
+            catch (Exception exception) { report = new CleanupReport(); report.Failures.Add("release threw: " + exception.GetType().Name + ": " + exception.Message); }
+            RecordChildFailures(child.mode, report.Failures);
+            return report;
+        }
+
+        private void RecordSlotOutcome(ProbeOutcome outcome, string how)
+        {
+            if (outcome != null) RecordChildFailures("slot " + outcome.Owner + " (" + how + ")", outcome.Cleanup.Failures);
+        }
+
+        private void RecordChildFailures(string child, IEnumerable<string> failures)
+        {
+            foreach (string failure in failures)
+                if (!(dropInjectedChildFailures && failure.IndexOf(InjectedMarker, StringComparison.Ordinal) >= 0))
+                    childFailures.Add(new KeyValuePair<string, string>(child, failure));
         }
 
         private IEnumerable<object> Run()
@@ -144,7 +190,9 @@ namespace KmgLoaderCompatHarness
                 mode == "contracts" ? Contracts() :
                 mode == "abandon" ? Abandon() :
                 mode == "abandon-interrupt" ? AbandonInterrupt() :
-                mode == "cotw-rollback" ? CotwRollback() : null;
+                mode == "cotw-rollback" ? CotwRollback() :
+                mode == "cotw-rollback-interrupt" ? CotwRollbackInterrupt() :
+                mode == "cotw-gameplay" ? CotwGameplay() : null;
             if (body == null) { problems.Add("unknown mode " + mode); yield break; }
             foreach (object step in body) yield return step;
         }
@@ -460,22 +508,27 @@ namespace KmgLoaderCompatHarness
             result["afterCast"] = after;
             foreach (UnitEntityData u in units) cast["saves." + u.UniqueId] = Saves(u, seqBefore);
             // AbilityData.CalculateParams() does not run ability calculators (ContextCalculateAbilityParamsBasedOnClass is
-            // applied to the execution context), so previewDc is the engine's calculator-less value and is recorded only;
-            // the native tooltip shows the LocalizedSavingThrow text, never a number. The DC asserted is the one rolled.
+            // applied to the execution context), so previewDc is the engine's calculator-less value and is recorded only.
+            // What a rendered tooltip shows is not observed here (pending UI evidence). The DC asserted is the one rolled.
             cast["previewDcNote"] = "AbilityData.CalculateParams without ability calculators; informational";
             float farDistance = Vector3.Distance(far.Position, cleric.Position);
             cast["farSkeletonDistanceAtCast"] = Math.Round(farDistance, 2);
             if (farDistance <= 9.6f) problems.Add("fixture: the beyond-30-feet skeleton stood " + Math.Round(farDistance, 2) + " m away at the cast");
-            if (((JArray)cast["clericSaves"]).Count != 0) problems.Add("the living channeler received a Turn save");
             if ((int)cast["poolAfter"] != (int)cast["poolBefore"] - 1) problems.Add("the channel pool went from " + cast["poolBefore"] + " to " + cast["poolAfter"] + ", not exactly one use");
-            ExpectInitialSave("skeleton", skeleton, seqBefore, expectedDc, false);
-            ExpectInitialSave("zombie lord", lord, seqBefore, expectedDc, false);
-            ExpectInitialSave("strong zombie lord", strong, seqBefore, expectedDc, true);
-            if (Saves(far, seqBefore).Count != 0 || FleeingOn(far) != null) problems.Add("the skeleton beyond 30 feet was affected");
-            if (Saves(living, seqBefore).Count != 0 || FleeingOn(living) != null) problems.Add("the living hostile was affected");
-            ExpectState("skeleton", skeleton, true, expectedDc, clericTurn.AssetGuid, "mindless-family");
-            ExpectState("zombie lord", lord, false, expectedDc, clericTurn.AssetGuid, "intelligent-identity-fact");
-            if (FleeingOn(strong) != null) problems.Add("the zombie lord that saved still received the effect");
+            // Every target is judged from the save it actually rolled; the Will adjustments only make the wanted
+            // outcome likely. A wanted outcome the dice did not produce is missing coverage, not a product defect.
+            string skeletonRoll = Judge("skeleton", skeleton, true, seqBefore, expectedDc);
+            string lordRoll = Judge("zombie lord", lord, true, seqBefore, expectedDc);
+            string strongRoll = Judge("strong zombie lord", strong, true, seqBefore, expectedDc);
+            Judge("the living channeler", cleric, false, seqBefore, expectedDc);
+            Judge("the skeleton beyond 30 feet", far, false, seqBefore, expectedDc);
+            Judge("the living hostile", living, false, seqBefore, expectedDc);
+            Gap("skeleton", "failed", skeletonRoll);
+            Gap("zombie lord", "failed", lordRoll);
+            Gap("strong zombie lord", "passed", strongRoll);
+            result["initialOutcomes"] = new JObject { ["skeleton"] = skeletonRoll, ["zombieLord"] = lordRoll, ["strongZombieLord"] = strongRoll };
+            if (skeletonRoll == "failed") ExpectState("skeleton", skeleton, true, expectedDc, clericTurn.AssetGuid, "mindless-family");
+            if (lordRoll == "failed") ExpectState("zombie lord", lord, false, expectedDc, clericTurn.AssetGuid, "intelligent-identity-fact");
             if (trace.Events.Any(e => (int)e["seq"] > seqBefore && ((string)e["what"] == "damage" || (string)e["what"] == "heal") && (string)e["initiator"] == cleric.UniqueId))
                 problems.Add("Turn Undead dealt damage or healing");
 
@@ -495,24 +548,44 @@ namespace KmgLoaderCompatHarness
                 ["skeleton"] = Unit(skeleton, cleric), ["lord"] = Unit(lord, cleric), ["strong"] = Unit(strong, cleric)
             };
             result["rounds"] = rounds;
-            if (Vector3.Distance(skeleton.Position, cleric.Position) - skeletonStart < 2f) problems.Add("the failed mindless skeleton did not move away (native flight not observed)");
-            if (Saves(skeleton, seqRounds).Count != 0) problems.Add("the mindless skeleton received repeat saves");
-            int lordRounds = Saves(lord, seqRounds).Count;
-            if (lordRounds < 1 || lordRounds > 3) problems.Add("the intelligent zombie lord made " + lordRounds + " repeat saves in about two rounds");
-            if (FleeingOn(lord) == null) problems.Add("the zombie lord's failed repeat saves did not keep the effect");
-
-            // ---- intelligent recovery
-            lord.Stats.SaveWill.BaseValue = 100;
-            int seqRecovery = Seq;
-            double recoveryStart = Now;
-            foreach (object step in Settle(0.0, 40f, () => FleeingOn(lord) == null)) yield return step;
-            result["recovery"] = new JObject
+            if (skeletonRoll == "failed")
             {
-                ["gameSeconds"] = Math.Round(Now - recoveryStart, 2), ["saves"] = Saves(lord, seqRecovery), ["lord"] = Unit(lord, cleric),
-                ["skeletonStillFleeing"] = FleeingOn(skeleton) != null
-            };
-            if (FleeingOn(lord) != null) problems.Add("a successful repeat save did not end the zombie lord's effect");
-            if (lord.Descriptor.State.HasCondition(UnitCondition.Frightened)) problems.Add("the zombie lord kept Frightened after recovery");
+                // Movement is sampled over this window only; the effect's lifetime is measured separately below.
+                if (Vector3.Distance(skeleton.Position, cleric.Position) - skeletonStart < 2f) problems.Add("the failed mindless skeleton did not move away during the sampled window (native flight not observed)");
+                bool unusedMindless;
+                problems.AddRange(TurnUndeadObserverRules.JudgeRepeats("the mindless skeleton", false, Records(Saves(skeleton, seqRounds)), FleeingOn(skeleton) != null, out unusedMindless));
+            }
+            bool lordRecoveredEarly = false;
+            if (lordRoll == "failed")
+            {
+                int lordRounds = Saves(lord, seqRounds).Count;
+                if (lordRounds < 1 || lordRounds > 3) problems.Add("the intelligent zombie lord made " + lordRounds + " repeat saves in about two rounds");
+                problems.AddRange(TurnUndeadObserverRules.JudgeRepeats("the zombie lord", true, Records(Saves(lord, seqRounds)), FleeingOn(lord) != null, out lordRecoveredEarly));
+            }
+            rounds["lordRecoveredEarly"] = lordRecoveredEarly;
+
+            // ---- intelligent recovery (already observed if a repeat save succeeded during the rounds)
+            if (lordRoll == "failed" && !lordRecoveredEarly)
+            {
+                lord.Stats.SaveWill.BaseValue = 100;
+                int seqRecovery = Seq;
+                double recoveryStart = Now;
+                foreach (object step in Settle(0.0, 40f, () => FleeingOn(lord) == null)) yield return step;
+                JArray recoverySaves = Saves(lord, seqRecovery);
+                result["recovery"] = new JObject
+                {
+                    ["gameSeconds"] = Math.Round(Now - recoveryStart, 2), ["saves"] = recoverySaves, ["lord"] = Unit(lord, cleric),
+                    ["skeletonStillFleeing"] = FleeingOn(skeleton) != null
+                };
+                bool recovered;
+                problems.AddRange(TurnUndeadObserverRules.JudgeRepeats("the zombie lord (raised Will)", true, Records(recoverySaves), FleeingOn(lord) != null, out recovered));
+                if (!recovered) problems.Add(TurnUndeadObserverRules.CoveragePrefix + "no successful repeat save within the recovery window");
+            }
+            else if (lordRecoveredEarly)
+                result["recovery"] = new JObject { ["observedDuringRounds"] = true, ["lord"] = Unit(lord, cleric), ["skeletonStillFleeing"] = FleeingOn(skeleton) != null };
+            if (lordRoll == "failed" && lord.Descriptor.State.HasCondition(UnitCondition.Frightened) && FleeingOn(lord) == null)
+                problems.Add("the zombie lord kept Frightened after recovery");
+            if (skeletonRoll != "failed") yield break;
             if (FleeingOn(skeleton) == null) problems.Add("the mindless skeleton's effect ended early");
 
             // ---- unrefreshed one-minute expiry of the mindless effect
@@ -536,18 +609,21 @@ namespace KmgLoaderCompatHarness
                     string.Join(", ", damaged.Select(e => e.ToString(Newtonsoft.Json.Formatting.None)).ToArray()));
         }
 
-        private void ExpectInitialSave(string label, UnitEntityData unit, int fromSeq, int dc, bool passed)
+        private static List<TurnSaveRecord> Records(JArray saves) =>
+            saves.Select(e => new TurnSaveRecord((string)e["type"], (int)e["dc"], (bool)e["passed"], (int?)e["natural"])).ToList();
+
+        /// <summary>Judges one unit's initial Turn result from its rolled save; returns the outcome.</summary>
+        private string Judge(string label, UnitEntityData unit, bool included, int fromSeq, int dc)
         {
-            JArray saves = Saves(unit, fromSeq);
-            if (saves.Count != 1) { problems.Add(label + " made " + saves.Count + " initial saves, expected one"); return; }
-            JToken save = saves[0];
-            if ((string)save["type"] != "Will" || (int)save["dc"] != dc) problems.Add(label + " save was " + save["type"] + " DC " + save["dc"] + ", expected Will DC " + dc);
-            if ((bool)save["passed"] != passed)
-            {
-                int natural = (int?)save["natural"] ?? 0;
-                problems.Add(label + " save passed=" + save["passed"] + " (natural " + natural + "), expected " + passed +
-                    (natural == 1 || natural == 20 ? " - a natural " + natural + " decides the fixture; rerun" : ""));
-            }
+            string outcome;
+            problems.AddRange(TurnUndeadObserverRules.JudgeInitial(label, included, Records(Saves(unit, fromSeq)), FleeingOn(unit) != null, dc, out outcome));
+            return outcome;
+        }
+
+        private void Gap(string label, string required, string observed)
+        {
+            string gap = TurnUndeadObserverRules.CoverageGap(label, required, observed);
+            if (gap != null) problems.Add(gap);
         }
 
         private void ExpectState(string label, UnitEntityData unit, bool mindless, int dc, string source, string rule)

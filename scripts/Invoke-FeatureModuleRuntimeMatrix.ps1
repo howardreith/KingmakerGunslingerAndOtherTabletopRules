@@ -3,10 +3,6 @@ param(
     [string]$ExpectedVersion = '0.0.126',
     [ValidateSet('observe-feature-module-settings', 'disposable-teleportation-disabled')]
     [string]$Scenario = 'observe-feature-module-settings',
-    # Turn Undead feat offer, independent of the thirteen modules: default writes
-    # OFF only in the all-off state; on/off write that value in every state.
-    [ValidateSet('default', 'on', 'off')]
-    [string]$TurnUndead = 'default',
     [ValidateRange(5, 1800)][int]$TimeoutSeconds = 300,
     [string]$Combination = 'all',
     [bool]$ExitAfterCompletion = $true,
@@ -16,7 +12,13 @@ param(
     [switch]$Boundary14,
     [switch]$ReuseInstalledArtifact,
     [string]$DeploymentManifestPath,
-    [string]$PackagePath
+    [string]$PackagePath,
+    # Turn Undead feat offer, independent of the thirteen modules: default writes
+    # OFF only in the all-off state; on/off write that value in every state.
+    # Declared last so every earlier positional argument keeps its position;
+    # ValidateSet accepts any letter case and the converter below honours it.
+    [ValidateSet('default', 'on', 'off')]
+    [string]$TurnUndead = 'default'
 )
 
 Set-StrictMode -Version Latest
@@ -87,7 +89,8 @@ try {
         # Every catalog key plus the explicit Turn Undead key; the runtime
         # parameters forwarded to the product stay the thirteen modules.
         $documentValues = @{} + $runtimeParameters
-        if ($TurnUndead -cne 'default') { $documentValues['turnUndead'] = ($TurnUndead -ceq 'on') }
+        $turnUndeadValue = ConvertTo-KmgTurnUndeadRuntimeValue -Value $TurnUndead
+        if ($null -ne $turnUndeadValue) { $documentValues['turnUndead'] = $turnUndeadValue }
         $configuration = New-KmgFeatureModuleSettingsDocument -RuntimeValues $documentValues
         $json = $configuration | ConvertTo-Json -Depth 4
         $temporary = $settings + '.kmg-module-matrix.tmp'
