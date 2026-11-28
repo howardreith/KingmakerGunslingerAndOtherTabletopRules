@@ -70,6 +70,7 @@ namespace KmgLoaderCompatHarness
         private object set;
         private Vector3 origin, forward, right;
         private int unitIndex;
+        private string turnSource;
 
         public TurnUndeadProbe(string mode) { this.mode = mode; result["mode"] = mode; script = Run().GetEnumerator(); }
         public object Result => result;
@@ -157,6 +158,19 @@ namespace KmgLoaderCompatHarness
 
         private Vector3 Spot(float forwardMeters, float rightMeters) =>
             ObstacleAnalyzer.TraceAlongNavmesh(origin, origin + forward * forwardMeters + right * rightMeters);
+
+        /// <summary>A reachable navmesh point at least <paramref name="minimum"/> metres from the origin, or null.</summary>
+        private Vector3? FarSpot(float minimum)
+        {
+            foreach (float meters in new[] { 16f, 14f, 12f })
+                for (int step = 0; step < 16; step++)
+                {
+                    Vector3 direction = Quaternion.Euler(0, step * 22.5f, 0) * forward;
+                    Vector3 point = ObstacleAnalyzer.TraceAlongNavmesh(origin, origin + direction * meters);
+                    if (Vector3.Distance(point, origin) >= minimum) return point;
+                }
+            return null;
+        }
 
         private UnitEntityData Track(UnitEntityData unit, string label)
         {
@@ -283,8 +297,10 @@ namespace KmgLoaderCompatHarness
             };
         }
 
+        /// <summary>Saves caused by the Turn action (its context or its flight buff); unrelated area saves are excluded.</summary>
         private JArray Saves(UnitEntityData unit, int fromSeq) => new JArray(trace.Events
-            .Where(e => (int)e["seq"] > fromSeq && (string)e["what"] == "save" && (string)e["unit"] == unit.UniqueId).Cast<object>().ToArray());
+            .Where(e => (int)e["seq"] > fromSeq && (string)e["what"] == "save" && (string)e["unit"] == unit.UniqueId &&
+                (string)e["sourceAbility"] == turnSource).Cast<object>().ToArray());
 
         private int Seq => trace.Events.Count == 0 ? 0 : (int)trace.Events.Last()["seq"];
 
@@ -293,11 +309,14 @@ namespace KmgLoaderCompatHarness
         private IEnumerable<object> FirstTurn()
         {
             BlueprintAbility clericTurn = Direct("Cleric");
+            turnSource = clericTurn.AssetGuid;
             result["blueprints"] = new JObject
             {
                 ["feat"] = new JObject { ["guid"] = Feat.AssetGuid, ["name"] = Feat.Name, ["icon"] = Feat.Icon == null ? null : Feat.Icon.name, ["groups"] = string.Join(",", Feat.Groups.Select(g => g.ToString()).ToArray()) },
                 ["clericAction"] = new JObject { ["guid"] = clericTurn.AssetGuid, ["name"] = clericTurn.Name, ["icon"] = clericTurn.Icon == null ? null : clericTurn.Icon.name,
                     ["type"] = clericTurn.Type.ToString(), ["actionType"] = clericTurn.ActionType.ToString(), ["metamagic"] = clericTurn.AvailableMetamagic.ToString(),
+                    ["savingThrowText"] = clericTurn.LocalizedSavingThrow == null ? null : (string)clericTurn.LocalizedSavingThrow,
+                    ["durationText"] = clericTurn.LocalizedDuration == null ? null : (string)clericTurn.LocalizedDuration,
                     ["components"] = new JArray(clericTurn.ComponentsArray.Select(c => (object)(c.GetType().Name + ":" + c.name)).ToArray()) },
                 ["fleeing"] = new JObject { ["guid"] = Fleeing.AssetGuid, ["name"] = Fleeing.Name, ["icon"] = Fleeing.Icon == null ? null : Fleeing.Icon.name,
                     ["stacking"] = Fleeing.Stacking.ToString(), ["descriptor"] = Fleeing.ComponentsArray.Length }
@@ -363,7 +382,9 @@ namespace KmgLoaderCompatHarness
             UnitEntityData skeleton = SpawnNative(Skeleton, "skeleton", Spot(4f, 0f));
             UnitEntityData lord = SpawnNative(ZombieLord, "zombie lord", Spot(3f, 2.5f));
             UnitEntityData strong = SpawnNative(ZombieLord, "strong zombie lord", Spot(3f, -2.5f));
-            UnitEntityData far = SpawnNative(Skeleton, "far skeleton", Spot(13f, 0f));
+            Vector3? farPoint = FarSpot(11f);
+            if (farPoint == null) { problems.Add("fixture: no reachable navmesh point at least 11 m from the cleric for the beyond-30-feet skeleton"); yield break; }
+            UnitEntityData far = SpawnNative(Skeleton, "far skeleton", farPoint.Value);
             UnitEntityData living = SpawnLivingHostile(cleric, Spot(-3f, 0f));
             skeleton.Stats.SaveWill.BaseValue = -100;
             lord.Stats.SaveWill.BaseValue = -100;
@@ -398,7 +419,13 @@ namespace KmgLoaderCompatHarness
             JArray after = new JArray(units.Select(u => (object)Unit(u, cleric)).ToArray());
             result["afterCast"] = after;
             foreach (UnitEntityData u in units) cast["saves." + u.UniqueId] = Saves(u, seqBefore);
-            if ((int)cast["previewDc"] != expectedDc) problems.Add("preview DC " + cast["previewDc"] + " is not 10 + cleric 5 / 2 + Charisma = " + expectedDc);
+            // AbilityData.CalculateParams() does not run ability calculators (ContextCalculateAbilityParamsBasedOnClass is
+            // applied to the execution context), so previewDc is the engine's calculator-less value and is recorded only;
+            // the native tooltip shows the LocalizedSavingThrow text, never a number. The DC asserted is the one rolled.
+            cast["previewDcNote"] = "AbilityData.CalculateParams without ability calculators; informational";
+            float farDistance = Vector3.Distance(far.Position, cleric.Position);
+            cast["farSkeletonDistanceAtCast"] = Math.Round(farDistance, 2);
+            if (farDistance <= 9.6f) problems.Add("fixture: the beyond-30-feet skeleton stood " + Math.Round(farDistance, 2) + " m away at the cast");
             if ((int)cast["poolAfter"] != (int)cast["poolBefore"] - 1) problems.Add("the channel pool went from " + cast["poolBefore"] + " to " + cast["poolAfter"] + ", not exactly one use");
             ExpectInitialSave("skeleton", skeleton, seqBefore, expectedDc, false);
             ExpectInitialSave("zombie lord", lord, seqBefore, expectedDc, false);
@@ -420,6 +447,7 @@ namespace KmgLoaderCompatHarness
             JObject rounds = new JObject
             {
                 ["gameSeconds"] = Math.Round(Now - roundsStart, 2),
+                ["otherSavesDuringRounds"] = trace.Events.Count(e => (int)e["seq"] > seqRounds && (string)e["what"] == "save" && (string)e["sourceAbility"] != turnSource),
                 ["skeletonDistance"] = new JArray(Math.Round(skeletonStart, 2), Math.Round(Vector3.Distance(skeleton.Position, cleric.Position), 2)),
                 ["lordDistance"] = new JArray(Math.Round(lordStart, 2), Math.Round(Vector3.Distance(lord.Position, cleric.Position), 2)),
                 ["skeletonRepeatSaves"] = Saves(skeleton, seqRounds), ["lordRepeatSaves"] = Saves(lord, seqRounds),
