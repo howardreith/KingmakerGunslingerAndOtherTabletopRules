@@ -1,0 +1,46 @@
+{
+  "name": "s7-ghaele-lifecycle",
+  "description": "Sprint 7 recovery C2 (parent R5-F1): the short affected Ghaele lifecycle check only, on whichever product package the session loads (the existing candidate-3 package), with the corrected external harness. Step lifecycle: the cast ownership boundaries, the pending verdict and its post-disposal late-result negative control, and the real-spawn detection witness; every correlated late unit is reconciled with the probe's destruction owner on release and its settlement observed, so a still-present, unreadable or unknown-ownership unit fails ProbeSlot isolation. No timeline, expiry, combat or visibility step (accepted at their own identities).",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "ghaele",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgGhaeleLifetime",
+            "label": "lifecycle",
+            "match": "lifecycle",
+            "timeoutSeconds": 240,
+            "continueOnFailure": true
+          }
+        ]
+      }
+    }
+  ]
+}

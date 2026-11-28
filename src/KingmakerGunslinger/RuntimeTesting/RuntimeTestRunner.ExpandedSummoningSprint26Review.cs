@@ -1214,7 +1214,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             private readonly UnitEntityData _victim;
             internal int DesiredRoll = 2; internal int Count; internal readonly JArray Rows = new JArray();
-            internal Sprint26Saves(UnitEntityData victim) { _victim = victim; EventBus.Subscribe(this); }
+            internal Sprint26Saves(UnitEntityData victim) : this(victim, true) { }
+            // Sprint 7 recovery C3 (R1-F9): a caller that must own the subscription constructs without subscribing, then subscribes.
+            internal Sprint26Saves(UnitEntityData victim, bool subscribe) { _victim = victim; if (subscribe) EventBus.Subscribe(this); }
+            internal void Subscribe() { EventBus.Subscribe(this); }
             public void OnEventAboutToTrigger(RuleSavingThrow evt)
             { if (ReferenceEquals(evt.Initiator, _victim)) UnityEngine.Random.InitState(FindNativeD20Seed(DesiredRoll)); }
             public void OnEventDidTrigger(RuleSavingThrow evt)

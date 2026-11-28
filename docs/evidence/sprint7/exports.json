@@ -1,0 +1,73 @@
+{
+ "schema": "kmg.sprint7.export-receipt.v1",
+ "date": "2026-11-24",
+ "toolchain": {
+  "blender": "4.5.10",
+  "blenderSha256": "8b15ef73f352173d7836c5adc266fc45b94d729712d5ddbbb38557e1f326313c",
+  "environment": "PYTHONHASHSEED=0, --factory-startup, background"
+ },
+ "inputs": {
+  "outsiderRigCapture": {
+   "path": "<lab>/private/visual-refinement/captures/sprint24-theropod-census.json",
+   "sha256": "6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d",
+   "committed": false
+  },
+  "salamanderBindCapture": {
+   "path": "<lab>/runtime-evidence/20261029T0406372930148Z-disposable-expanded-summoning-sprint32-native-review/sprint17-human-bind-palette.json",
+   "sha256": "eb0d5eaaf4bec8bf68506d42f299ded5d3d86cb676ff72e53f15d0cfbce9bfd2",
+   "committed": false
+  },
+  "salamanderAlbedoInput": {
+   "path": "assets/sprint17-serpents/salamander-albedo.png",
+   "note": "the generator reads its existing albedo as an input"
+  }
+ },
+ "baselineReproduction": {
+  "note": "Generators at base commit 35763430ac (git archive of assets-source/original-models) run on the same inputs reproduce the shipped baseline exports byte for byte.",
+  "nalfeshneeR7Mesh": {
+   "expected": "d34e6c194d5b6c8c798a1ead77b9248e48e44721fccb2491eccee79aa1199aaf",
+   "produced": "d34e6c194d5b6c8c798a1ead77b9248e48e44721fccb2491eccee79aa1199aaf"
+  },
+  "salamanderReleasedMesh": {
+   "expected": "b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19",
+   "produced": "b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19"
+  }
+ },
+ "sprint7Exports": {
+  "generators": {
+   "assets-source/original-models/sprint39-nalfeshnee/generate_sprint39_nalfeshnee.py": "497135fcdad7efbfa4b647d69395870a37947d89962d13b5911a165fc97ddb22",
+   "assets-source/original-models/sprint17-serpents/generate_human_salamander.py": "5b7cc9495f3732b83f34a707c4b088993b9287e5832e1278605f7afafa4cbbb9"
+  },
+  "runs": [
+   {
+    "run": "nalfeshnee-1",
+    "seconds": 24,
+    "mesh": "6ff85493150bf9bde964f3ca106afd1444a6c17e87d3524554bf67155b3fe802",
+    "albedo": "1e9f5303407d18af7a9af506791d29d29b8d2b68f869b7daba1ca0944b8bc193"
+   },
+   {
+    "run": "nalfeshnee-2",
+    "seconds": 11,
+    "mesh": "6ff85493150bf9bde964f3ca106afd1444a6c17e87d3524554bf67155b3fe802",
+    "albedo": "1e9f5303407d18af7a9af506791d29d29b8d2b68f869b7daba1ca0944b8bc193"
+   },
+   {
+    "run": "salamander-1",
+    "seconds": 2,
+    "mesh": "0837e7964404188a592d20f4cae77dc9b5a459d93360b9474174bc4f4c9ae30e"
+   },
+   {
+    "run": "salamander-2",
+    "seconds": 2,
+    "mesh": "0837e7964404188a592d20f4cae77dc9b5a459d93360b9474174bc4f4c9ae30e"
+   }
+  ],
+  "committed": {
+   "assets/sprint39-nalfeshnee/nalfeshnee-mesh.json": "6ff85493150bf9bde964f3ca106afd1444a6c17e87d3524554bf67155b3fe802",
+   "assets/sprint39-nalfeshnee/nalfeshnee-albedo.png": "1e9f5303407d18af7a9af506791d29d29b8d2b68f869b7daba1ca0944b8bc193",
+   "assets/sprint17-serpents/salamander-human-mesh.json": "0837e7964404188a592d20f4cae77dc9b5a459d93360b9474174bc4f4c9ae30e"
+  },
+  "result": "Two runs of each repaired generator on fixed inputs are byte-identical and equal the committed exports."
+ },
+ "rawOutputs": "<lab>/runtime-evidence/s7/exports-r3/ (blends, previews and reports stay in the lab)"
+}

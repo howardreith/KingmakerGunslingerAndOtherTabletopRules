@@ -314,6 +314,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonCastCueLifecycle.cs"><Link>Summoning\SummonCastCueLifecycle.cs</Link></Compile>
     <Compile Include="SummonPlaytestR6Tests.cs" />
     <Compile Include="SummonPlaytestR7Tests.cs" />
+    <Compile Include="Sprint7VisualRepairTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SalamanderTailGait.cs"><Link>Summoning\SalamanderTailGait.cs</Link></Compile>
     <Compile Include="SalamanderTailGaitTests.cs" />
     <Compile Include="RepairedBodyTests.cs" />
@@ -541,6 +542,7 @@
     <Compile Include="BoundaryObservationTests.cs" />
     <Compile Include="ExpandedSummoningNativeProfileTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\ExpandedSummoningNativeProfilePolicy.cs"><Link>RuntimeTesting\ExpandedSummoningNativeProfilePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\Sprint7ObserverPolicy.cs"><Link>RuntimeTesting\Sprint7ObserverPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\BoundaryObservationPolicy.cs"><Link>RuntimeTesting\BoundaryObservationPolicy.cs</Link></Compile>
     <Compile Include="BrownFurInventoryClassificationTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\BrownFur\BrownFurInventoryClassification.cs"><Link>BrownFur\BrownFurInventoryClassification.cs</Link></Compile>
@@ -606,6 +608,8 @@
     <Compile Include="MotionSessionLifecycleTests.cs" />
     <Compile Include="SummoningPublicationBoundaryTests.cs" />
     <Compile Include="..\..\tools\LoaderCompatHarness\ProbeLifecycle.cs"><Link>LoaderCompatHarness\ProbeLifecycle.cs</Link></Compile>
+    <Compile Include="..\..\tools\LoaderCompatHarness\TrumpetCueVerdict.cs"><Link>LoaderCompatHarness\TrumpetCueVerdict.cs</Link></Compile>
+    <Compile Include="..\..\tools\LoaderCompatHarness\GhaeleAttribution.cs"><Link>LoaderCompatHarness\GhaeleAttribution.cs</Link></Compile>
     <Compile Include="WeaponFindabilityTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\HeirloomNodachiIconObservation.cs"><Link>RuntimeTesting\HeirloomNodachiIconObservation.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\WeaponFindabilitySaveContract.cs"><Link>RuntimeTesting\WeaponFindabilitySaveContract.cs</Link></Compile>

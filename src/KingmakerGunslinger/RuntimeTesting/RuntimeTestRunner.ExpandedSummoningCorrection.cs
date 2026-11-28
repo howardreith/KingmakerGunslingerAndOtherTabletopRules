@@ -78,6 +78,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal object[] ExactStart;
             internal MethodInfo SummonRuleMethod;
             internal readonly List<UnitEntityData> Created = new List<UnitEntityData>();
+            // Sprint 7 recovery C3 (R1-F1): units whose retirement the Sprint 7 effects phase already requested (whether the
+            // request threw or returned); they stay owned and accounted for, and this teardown does not request them again.
+            internal readonly List<UnitEntityData> RetirementAttempted = new List<UnitEntityData>();
             internal readonly ExpandedSummoningMechanicalEvidence Evidence =
                 new ExpandedSummoningMechanicalEvidence();
             internal JObject CleanupReceipt;
@@ -266,7 +269,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (fixture == null) return;
             try
             {
-                foreach (UnitEntityData unit in fixture.Created.Distinct().ToArray())
+                foreach (UnitEntityData unit in Sprint7ObserverPolicy.FixtureTeardownCandidates(fixture.Created, fixture.RetirementAttempted))
                     CleanupExpandedSummoningUnit(unit);
                 if (fixture.Hostile != null && !fixture.Hostile.Destroyed)
                     fixture.Hostile.Destroy();
@@ -300,7 +303,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // to destroy it. Never infer ownership from a missing snapshot.
                 foreach (UnitEntityData unit in fixture.Created.Concat(
                     new[] { fixture.Caster, fixture.Hostile })
-                    .Where(value => value != null && !value.Destroyed &&
+                    .Where(value => value != null && !value.Destroyed && !fixture.RetirementAttempted.Contains(value) &&
                         !fixture.UnitsBefore.Any(prior => ReferenceEquals(prior, value)))
                     .Distinct().ToArray())
                 {
@@ -336,7 +339,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["partyAfter"] = partyAfter.Length,
                     ["partyExact"] = partyExact,
                     ["areaChanges"] = new JArray(areaChanges),
-                    ["casterAbsent"] = fixture.Caster == null || !ContainsReference(fixture.AllUnits, fixture.Caster)
+                    ["casterAbsent"] = fixture.Caster == null || !ContainsReference(fixture.AllUnits, fixture.Caster),
+                    // A unit whose retirement was already attempted elsewhere and that is still present is an extra unit above.
+                    ["retirementAttemptedElsewhere"] = new JArray(fixture.RetirementAttempted.Where(value => value != null)
+                        .Select(value => (object)(value.UniqueId + ":destroyed=" + value.Destroyed)).ToArray())
                 };
                 cleaned = cpuReleaseError == null && unitsExact && partyExact &&
                     areaChanges.Length == 0 &&

@@ -1,0 +1,21 @@
+{
+  "name": "s7-c3-fx",
+  "description": "Sprint 7 recovery C3 combined native qualification: the effects phase only (summon-s7-effects) on the combined candidate. Covers the Ankylosaurus impact cue, the callback-loss observer with the declared two-source overlap (constructed setup) judged in game by C1's revised evaluator, the callback-abandoned, callback-setup-failed and trace-setup-failed drivers, the Dust cell with its pre-delivery command release and the Dust abandonment driver, all over the one cumulative isolation result. No other mods. The R6 Trumpet/Vrock launch is not affected by C3 and is not repeated.",
+  "ownerMods": [],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "fx",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-expanded-summoning-sprint32-native-review",
+        "parameters": {
+          "reviewPhase": "summon-s7-effects"
+        },
+        "timeoutSeconds": 1500
+      }
+    }
+  ]
+}

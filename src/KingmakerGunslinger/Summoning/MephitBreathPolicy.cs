@@ -180,12 +180,114 @@ namespace KingmakerGunslinger.Summoning
             return items.Select(value => value != null && match(value) ? replacement : value).ToArray();
         }
 
+        /// <summary>
+        /// VIS-05: the owned Sprint 5 Dust Mephit unit. Its breath keeps the
+        /// shared native cold cone for delivery and geometry; only the cone
+        /// instance one of these units launches is presented as dust.
+        /// </summary>
+        internal const string DustMephitUnitGuid = "30f6615badf14d21b41d6468d5c93ac3";
+
+        /// <summary>The owned Dust Mephit breath ability (KMG.Summoning.Special.DustMephit.Breath).</summary>
+        internal const string DustMephitBreathGuid = "9bf56be04a0c452fa628136a7a454b22";
+
+        /// <summary>
+        /// The shared cold cone is dust only when the exact owned Dust Mephit
+        /// launches it while executing its own breath. Every other launcher of
+        /// the same native cone (Air, Earth, Salt and Ice Mephits, native spells
+        /// and monsters), any other ability the Dust Mephit executes and any
+        /// launch outside an ability execution keep the native look.
+        /// </summary>
+        internal static bool PresentsDustBreath(string launcherBlueprintGuid, string executingAbilityGuid, string projectileGuid)
+        {
+            return string.Equals(launcherBlueprintGuid, DustMephitUnitGuid, StringComparison.Ordinal) &&
+                string.Equals(executingAbilityGuid, DustMephitBreathGuid, StringComparison.Ordinal) &&
+                string.Equals(projectileGuid, ColdConeProjectileGuid, StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// The dust palette, linear RGB in [0, 1]: a pale sandy ochre and a
+        /// darker umber. Each original colour keeps its own alpha and its own
+        /// brightness, so the cone's opacity and glow structure are kept and
+        /// only the hue changes from ice to dust.
+        /// </summary>
+        internal static readonly float[] DustLight = { .78f, .66f, .46f };
+        internal static readonly float[] DustDark = { .46f, .36f, .24f };
+
+        /// <summary>
+        /// One original colour presented as dust: its luminance picks a point
+        /// between the dark and light dust tones and scales it back to the same
+        /// brightness; the alpha is unchanged. Non-finite input is returned as
+        /// the dark tone at the original alpha.
+        /// </summary>
+        internal static float[] DustTint(float r, float g, float b, float a)
+        {
+            return Tone(r, g, b, a, DustDark, DustLight);
+        }
+
+        /// <summary>
+        /// A subtractive layer darkens the scene by its colour, so the
+        /// complement of the dust tone is what leaves warm dust behind it. The
+        /// same luminance-preserving mapping with the complementary palette.
+        /// </summary>
+        internal static float[] DustTintSubtractive(float r, float g, float b, float a)
+        {
+            return Tone(r, g, b, a, new[] { 1f - DustDark[0], 1f - DustDark[1], 1f - DustDark[2] },
+                new[] { 1f - DustLight[0], 1f - DustLight[1], 1f - DustLight[2] });
+        }
+
+        /// <summary>Whether a material subtracts its colour from the scene (the native names say so).</summary>
+        internal static bool IsSubtractiveMaterial(string name)
+        {
+            return name != null && (name.IndexOf("Substract", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf("Subtract", StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
+        private static float[] Tone(float r, float g, float b, float a, float[] dark, float[] light)
+        {
+            float luminance = .2126f * r + .7152f * g + .0722f * b;
+            if (float.IsNaN(luminance) || float.IsInfinity(luminance) || luminance < 0f)
+                return new[] { dark[0], dark[1], dark[2], a };
+            float t = Math.Min(1f, luminance);
+            var tone = new float[3];
+            for (int k = 0; k < 3; k++) tone[k] = dark[k] + (light[k] - dark[k]) * t;
+            float toneLuminance = .2126f * tone[0] + .7152f * tone[1] + .0722f * tone[2];
+            float scale = luminance / toneLuminance;
+            return new[] { tone[0] * scale, tone[1] * scale, tone[2] * scale, a };
+        }
+
         internal static string NativeBackedDescription(MephitBreathRow row, int dice, int sides)
         {
             if (row == null || !row.NativeBacked) throw new ArgumentException("Native-backed breath row required.");
             if (dice <= 0 || sides <= 0) throw new ArgumentOutOfRangeException("dice");
             return row.Description + " Only the mephit's enemies in the cone are affected: " + dice + "d" + sides + " " +
                 DamageWord(row.Required) + " damage; a Reflex save halves it.";
+        }
+    }
+
+    /// <summary>
+    /// VIS-05: the cast-effect spawn native <c>ProjectileController.CreateView</c>
+    /// makes through its one transpiled call site. The native spawn runs first
+    /// and its exceptions propagate unchanged; then the instance it returned
+    /// is adopted only if this very creation owns it. Nothing outlives the
+    /// call: an interrupted creation leaves no pending identity, and a spawn
+    /// made by any other caller never reaches this method. An adoption failure
+    /// is reported and the native instance is returned untouched.
+    /// </summary>
+    internal static class CastEffectAdoption
+    {
+        internal static T Spawn<T>(Func<T> nativeSpawn, Func<bool> ownsThisCreation, Action<T> adopt, Action<Exception> report) where T : class
+        {
+            T instance = nativeSpawn();
+            if (instance == null) return null;
+            try
+            {
+                if (ownsThisCreation()) adopt(instance);
+            }
+            catch (Exception error)
+            {
+                if (report != null) report(error);
+            }
+            return instance;
         }
     }
 }

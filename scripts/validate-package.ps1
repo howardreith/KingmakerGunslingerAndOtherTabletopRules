@@ -327,8 +327,8 @@ try {
         }
     }
     $nalfeshnee39Exports = @{
-        'nalfeshnee-mesh.json'='d34e6c194d5b6c8c798a1ead77b9248e48e44721fccb2491eccee79aa1199aaf'
-        'nalfeshnee-albedo.png'='d9ab401ba01429ff64c8b05cdfaeac67b29b2d078a0f0c5d35e5002179868e7b'
+        'nalfeshnee-mesh.json'='6ff85493150bf9bde964f3ca106afd1444a6c17e87d3524554bf67155b3fe802'
+        'nalfeshnee-albedo.png'='1e9f5303407d18af7a9af506791d29d29b8d2b68f869b7daba1ca0944b8bc193'
     }
     foreach ($entry in $nalfeshnee39Exports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint39-nalfeshnee\'+$entry.Key))) -cne $entry.Value) {
@@ -345,7 +345,7 @@ try {
         }
     }
     $humanMesh = Join-Path $modDirectory 'assets\sprint17-serpents\salamander-human-mesh.json'
-    if ((Get-KmgSha256 -Path $humanMesh) -cne 'b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19') {
+    if ((Get-KmgSha256 -Path $humanMesh) -cne '0837e7964404188a592d20f4cae77dc9b5a459d93360b9474174bc4f4c9ae30e') {
         throw 'The separately packaged Salamander human/tail mesh differs from its reviewed original export.'
     }
     $iconNames = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',

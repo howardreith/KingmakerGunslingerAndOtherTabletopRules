@@ -1,0 +1,92 @@
+{
+  "audited_commit": "03a78d498749b499ac8c5f97617ca282311c7591",
+  "verdict": "corrections_required",
+  "verifications": [
+    {
+      "finding": "A1-F1",
+      "status": "not_verified",
+      "evidence": "Sprint7ObserverPolicy.cs:994 and :1752 preserve an unreadable retained context as a named uncertainty. Sprint7VisualRepairTests.cs:2082 checks refusal and :2096 checks that an independent positive match wins.",
+      "remaining": "The zero-live case at Sprint7VisualRepairTests.cs:2071 makes the ended process readable on the first capture, so the initial release can remove the condition before the census. The recovery at :2056 happens after a census that reported an unknown command. Neither case drives both missed notifications and recovery between the initial release and a zero-live census. Verify that immediate reconciliation performs the removal and that the production delivery observation stays false."
+    },
+    {
+      "finding": "A1-F2",
+      "status": "not_verified",
+      "evidence": "Sprint7VisualRepairTests.cs:1958 and :1969 verify the transferred unsubscribe error, retained obligation, terminal retry and named unresolved subscription. The ended-then-throwing case at :2035 verifies that terminal cleanup leaves settledAtCleanup false.",
+      "remaining": "Sprint7ObserverPolicy.cs:1465 still infers ledgerHeldUntilSettlement from incomplete reconciliation. A final unreadable condition read leaves that field true even when unsubscribe succeeded at :1406. Conversely, a late release that throws at :1392 followed by an empty read and successful unsubscribe satisfies :1411 and discharges the terminal action. Track the late sweep's completion and report the subscription from its own outcome."
+    },
+    {
+      "finding": "A1-F3",
+      "status": "verified",
+      "evidence": "RuntimeTestRunner.Sprint7Presentation.cs:3688 runs Dust reconciliation before fallback retirement. Sprint7VisualRepairTests.cs:2017 drives this production order with Sprint7OwnedRequests and checks the control while the target exists, one retirement request, and a named terminal failure for a persistently unsettled target. A2-F1 covers a different settlement timing.",
+      "remaining": ""
+    },
+    {
+      "finding": "A1-F4",
+      "status": "not_verified",
+      "evidence": "Sprint7ObserverPolicy.cs:1502 now executes the throwing presence read. Sprint7VisualRepairTests.cs:1953 verifies one read and release of the other handle, :1956 verifies the forwarded retirement, and :1991 verifies refusal for a missing required handle.",
+      "remaining": "The test still chooses the controls and wires retirement publication itself. Its stopped child requires the same-caster control and makes a fictitious third control optional at Sprint7VisualRepairTests.cs:1939. Removing the same-caster entry or publication from the Dust caller at RuntimeTestRunner.Sprint7Presentation.cs:3320 would leave both cases green. Exercise the ordinary and stopped same-caster declarations and the retirement destination through that caller."
+    },
+    {
+      "finding": "A1-F5",
+      "status": "not_verified",
+      "evidence": "RuntimeTestRunner.Sprint7Presentation.cs:2747 records the passive command for both owners before the callback returns to the single native Run at RuntimeTestRunner.SummonPlaytestR6Presentation.cs:235. The separate command at RuntimeTestRunner.Sprint7Presentation.cs:3219 bypasses the record.",
+      "remaining": "Sprint7VisualRepairTests.cs:2110 defines its own passive callback and :2111 appends the simulated run by hand. Deleting the phase registration at :2747 would leave the test green. Drive the production passive issue callback and inspect both owners when the single run occurs."
+    },
+    {
+      "finding": "A1-F6",
+      "status": "not_verified",
+      "evidence": "Sprint7ObserverPolicy.cs:1792 guards explicit queue maintenance. Sprint7VisualRepairTests.cs:2112 puts a foreign command in the actor's queue and :2120 checks that it remains there. The combat-exit delegate at :2117 only records the actor's name.",
+      "remaining": "RuntimeTestRunner.Sprint7Presentation.cs:3672 still calls native LeaveCombat. In 2.1.7b, a displaced actor with a return position and no active move can issue a return move through UnitCombatState.ReturnToStartingPositionIfNeeded. Its UnitCommands.Run clears the queue at IL_008f. The foreign command can therefore disappear before actor retirement even when explicit maintenance was withheld. Preserve the queue through combat exit and check it afterward."
+    },
+    {
+      "finding": "A1-F7",
+      "status": "verified",
+      "evidence": "RuntimeTestRunner.Sprint7Presentation.cs:3620 uses EffectsPhaseSetup for both subscriptions and baseline placement. Sprint7VisualRepairTests.cs:2133 throws at ground lookup. The assertions at :2141 check the production-published original error, position restoration, both unsubscriptions and incomplete required cells.",
+      "remaining": ""
+    },
+    {
+      "finding": "A1-F8",
+      "status": "verified",
+      "evidence": "Both Dust early-release sites use ReleaseAndPublish at RuntimeTestRunner.Sprint7Presentation.cs:2631 and :2744. Sprint7ObserverPolicy.cs:1734 supplies the instance identity and :1742 publishes the removal error. Sprint7VisualRepairTests.cs:2196 drives that operation, then forces the later read failure. The assertion at :2158 checks one named publication, one removal attempt and refused admission.",
+      "remaining": ""
+    },
+    {
+      "finding": "A1-F9",
+      "status": "not_verified",
+      "evidence": "S7-RECOVERY-MANIFEST.md:443 correctly distinguishes candidate 3 source 66b0ff3f14 and session 20261126T134425Z from reviewed head f0ca78cbab, records commit 80d224bd56, pending candidate 4 and the eventual archive. The supplied 25-test PASS at :648 brings the ledger to 60 min 46.5 s spent and 29 min 13.5 s remaining.",
+      "remaining": "The active rows at S7-RECOVERY-MANIFEST.md:540–549 still disagree with rounds/r03/result-1.json:39–174. R4-F1 binds R2-F7, R2-F8 and R1-F11. R7-F2 binds R3-F1, R3-F2, R2-F7, R3-F3, R3-F4 and R1-F11. R7-F4 binds R3-F3 and R1-F11. R7-F5 binds R3-F1 and R3-F4. R1-F9 belongs to C3 §5, R1-F13 to §8 and R3-F5 to §§6–8. The focused-coverage statement at :368 also needs to reflect the passive-callback and combat-exit gaps."
+    }
+  ],
+  "new_findings": [
+    {
+      "id": "A2-F1",
+      "severity": "blocking",
+      "relates_to": "A1-F3 / R3-F3",
+      "file": "src/KingmakerGunslinger/RuntimeTesting/Sprint7ObserverPolicy.cs",
+      "line": 1554,
+      "summary": "Phase teardown finalizes outstanding retirement observations before fallback retirement can settle them.",
+      "failure_scenario": "An already-requested target still reads present. The first TerminatePending records a sticky terminal failure and removes its readback. Retiring another owned unit then runs the existing destruction-controller ticks at RuntimeTestRunner.cs:22039, which can complete the first request. Publish skips the previously published target at Sprint7ObserverPolicy.cs:916, so the phase never records its final settlement.",
+      "required_correction": "Run the pending Dust control read and releases before fallback retirement. Keep retirement readbacks executable through fallback, then settle or name each remaining target. Cover a target that settles during another owned unit's fallback retirement and assert one request per unit."
+    },
+    {
+      "id": "A2-F2",
+      "severity": "blocking",
+      "relates_to": "A1-F1 / R3-F2",
+      "file": "src/KingmakerGunslinger/RuntimeTesting/Sprint7ObserverPolicy.cs",
+      "line": 1746,
+      "summary": "The exact-execution presence probe can report zero when a condition's attribution is unreadable.",
+      "failure_scenario": "At the post-settlement probe, the context read of a present, unacquired, post-baseline Sickened throws. Attribution returns null at :1731 and RemainingOwned filters it out. RuntimeTestRunner.Sprint7Presentation.cs:2467 consequently returns zero, which :3507 accepts as evidence of absence. The throwing buff-context read previously reached the driver's safety-readback handler.",
+      "required_correction": "Carry uncertainty through the exact-execution presence count consumed by the driver. Exercise that probe with a throwing condition-context read and verify that it cannot establish zero."
+    },
+    {
+      "id": "A2-F3",
+      "severity": "blocking",
+      "relates_to": "A1-F5 / R2-F7 / R3-F2",
+      "file": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.Sprint7Presentation.cs",
+      "line": 3670,
+      "summary": "The newly registered passive command can be interrupted on the phase retry before its recovered execution is retained.",
+      "failure_scenario": "The cell cannot read a passive command's process and its first interruption fails, leaving the command unfinished. On forced phase teardown the process becomes readable. The phase now selects the exact command, but interrupts it before PhaseTeardownSettlement at :3688 gives the transferred owner another capture. An interruption that clears the field loses the recoverable execution identity.",
+      "required_correction": "Give the owning Dust ledger the opportunity to retain the current process immediately before the phase retries that command. Drive the passive retry with a recovered process and a clearing interruption, then verify reconciliation uses the retained reference."
+    }
+  ]
+}

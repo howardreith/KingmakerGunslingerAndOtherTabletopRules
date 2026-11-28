@@ -1,0 +1,618 @@
+{
+ "schema": "kmg.sprint7.audio-context-r4.v2",
+ "packet": {
+  "location": "<lab>/private/s7-listening-packet-r5/ (index.html, playlist.m3u8, MANIFEST.json, README.txt, clips/) and <lab>/private/s7-listening-packet-r5.zip",
+  "zipSha256": "2b5f461050807c6593de62a397e0ac16606f6d952729d999e425c88ddfed2565",
+  "indexSha256": "ab050bf65a92f452920150623cac05f31750a2c824cd1495cb2adffb8c119048",
+  "manifestSha256": "6bd8b2bcf7104f7a316b0ffb9de82f2f5ead22bf992690e47d1f466445743070",
+  "playlistSha256": "a0c41a40f7d4036f6d6e5b0dc3c5cb7041548183d1ec5ac3577fb3281ae8792a",
+  "verification": "every clip copied with a matching SHA-256 (same excerpts as round 4); each decodes as 16-bit PCM WAV (Python wave) and loads in the Windows WAV decoder (System.Media.SoundPlayer.Load, no playback); every relative index and playlist link resolves inside the packet folder; the zip passes testzip and holds every clip. Browser playback was not exercised.",
+  "privacy": "game audio from the owner installation; lab only, not committed, not published, not attached."
+ },
+ "recording": {
+  "file": "<lab>/runtime-evidence/s7/audio-r4/r4e-fx-device-audio.wav",
+  "sha256": "f67b1d4f9294461f46f721cbc89b37c975ed94be650b312845fc25ae4b6ae37f",
+  "startedUtc": "2026-11-24T17:07:17.5817796Z",
+  "format": "48 kHz stereo 32-bit float, WASAPI loopback of the default output device (whole device mix)",
+  "session": "20261124T170720Z-owner-0.33.0-s7-fx (fx, r6)"
+ },
+ "statements": [
+  "Technical playback, timing and ownership: verified natively (one cue per resolved tail hit in its own frame, natural end; one cue per Trumpet Blast, natural end; retirement stops only its own playing ID).",
+  "Clip integrity and playback accessibility: every clip below was copied from the lab excerpt with a matching SHA-256, decodes as 16-bit PCM WAV (48 kHz stereo), and every link in this page and the playlist resolves to a file in this folder.",
+  "Actual listening: none. No agent in this workflow has supported audio perception, and no named reviewer has listened. Levels and event IDs do not show that anyone listened.",
+  "Subjective suitability and the final choice are yours. Sweetener_Low_06_Quake (impact) and InspireCourage (Trumpet) are kept provisionally; neither is acoustically accepted."
+ ],
+ "comparisons": [
+  "Impact: play the two in-play tail hits (actual), then the isolated current sample, then each isolated alternative; choose whether to keep Sweetener_Low_06_Quake or name another.",
+  "Impact: compare the in-play hits with the quiet baseline to judge whether the cue is audible over the scene at gameplay distance (about 37 m camera to emitter).",
+  "Trumpet: play the in-play Trumpet Blast (actual), then the isolated current sample and the six alternatives; choose whether to keep InspireCourage.",
+  "Trumpet: compare with the Vrock Screech neighbour (same shared cue helper) for distinctness."
+ ],
+ "notes": [
+  "Recording: WASAPI loopback of the default output device (whole device mix, not an isolated process), 48 kHz stereo 32-bit float, lab file runtime-evidence/s7/audio-r4/r4e-fx-device-audio.wav (SHA-256 f67b1d4f9294461f46f721cbc89b37c975ed94be650b312845fc25ae4b6ae37f), started 2026-11-24T17:07:17.5817796Z; excerpts are 16-bit PCM copies cut by UTC.",
+  "Listener: the Wwise listener follows the game camera; distances are camera to emitter. The two tail hits were measured in the resolving frame, the frame their cues posted. The Trumpet and Vrock in-play distances were observed one frame after posting (exact posting distance not available). Isolated sample distances were taken at the observer post.",
+  "Earlier excerpts (round 3, session 20261124T061437Z) remain in the lab at runtime-evidence/s7/review-r3/. Their tail-hit distance (37.45 m) was sampled after both strikes and a further 4 s wait, not at posting; the R6 Trumpet distance was not measured. They are not part of this packet.",
+  "Private: game audio from the owner installation. Do not commit, publish or attach it anywhere public."
+ ],
+ "clips": [
+  {
+   "name": "t5-strike-1-cue105.wav",
+   "group": "T5 / VIS-04 Ankylosaurus tail impact",
+   "role": "actual",
+   "label": "In play: resolved tail hit with the product cue (actual)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch fx",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:08:49.700Z",
+   "seconds": 3,
+   "event": "Sweetener_Low_06_Quake",
+   "playingId": 105,
+   "emitter": "Ankylosaurus (KMG_Summoning_Unit_Ankylosaurus)",
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": {
+    "atEventMetres": 37.45,
+    "measured": "game camera (Wwise listener) to emitter in the resolving frame, the same frame the cue posted"
+   },
+   "levels": {
+    "peakDbfs": -2.4,
+    "rmsDbfs": -20.9
+   },
+   "provisional": true,
+   "file": "clips/t5-strike-1-cue105.wav",
+   "sha256": "761de4c73d731897310d9a0e6112fb03e9f17a80fde8fb94ee5984c4236ef6c4",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t5-strike-1-cue105.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 3.0
+   }
+  },
+  {
+   "name": "t5-strike-2-cue175.wav",
+   "group": "T5 / VIS-04 Ankylosaurus tail impact",
+   "role": "actual",
+   "label": "In play: second resolved tail hit with the product cue (actual)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch fx",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:08:55.820Z",
+   "seconds": 3,
+   "event": "Sweetener_Low_06_Quake",
+   "playingId": 175,
+   "emitter": "Ankylosaurus (KMG_Summoning_Unit_Ankylosaurus)",
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": {
+    "atEventMetres": 37.45,
+    "measured": "in the resolving frame, the same frame the cue posted"
+   },
+   "levels": {
+    "peakDbfs": -2.7,
+    "rmsDbfs": -20.9
+   },
+   "provisional": true,
+   "file": "clips/t5-strike-2-cue175.wav",
+   "sha256": "929840daa92c42dc6b0a14df6a1efcc0eade26eccc15fce5855e4b4c0e89ac47",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t5-strike-2-cue175.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 3.0
+   }
+  },
+  {
+   "name": "t5-baseline-no-cue.wav",
+   "group": "T5 / VIS-04 Ankylosaurus tail impact",
+   "role": "baseline",
+   "label": "Quiet interval before the strikes (no cue)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch fx",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:08:44.000Z",
+   "seconds": 3,
+   "event": null,
+   "playingId": null,
+   "emitter": null,
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": null,
+   "levels": {
+    "peakDbfs": -23.9,
+    "rmsDbfs": -45.9
+   },
+   "provisional": false,
+   "file": "clips/t5-baseline-no-cue.wav",
+   "sha256": "11f92b671bcaae99ef8bff2ace3abbe7d6462e7802d68019c9b707478c83701c",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t5-baseline-no-cue.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 3.0
+   }
+  },
+  {
+   "name": "t5-sample-1-Sweetener_Low_06_Quake-current.wav",
+   "group": "T5 / VIS-04 Ankylosaurus tail impact",
+   "role": "alternative",
+   "label": "Isolated sample of the current cue: Sweetener_Low_06_Quake (observer-posted, not a product cue)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch fx",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:11:35.790Z",
+   "seconds": 4.5,
+   "event": "Sweetener_Low_06_Quake",
+   "playingId": 2091,
+   "emitter": "fixture caster (KMG_Runtime_Sprint32_Caster)",
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": {
+    "atPostMetres": 38.86,
+    "measured": "at the observer post"
+   },
+   "levels": {
+    "peakDbfs": -4.2,
+    "rmsDbfs": -22.4
+   },
+   "provisional": true,
+   "file": "clips/t5-sample-1-Sweetener_Low_06_Quake-current.wav",
+   "sha256": "a9d6155acf6e8e524ba488118473eb29a4addfad881d7df23b72ab2969b8a55b",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t5-sample-1-Sweetener_Low_06_Quake-current.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 4.5
+   }
+  },
+  {
+   "name": "t5-sample-2-Physical_Hit_03_Punch.wav",
+   "group": "T5 / VIS-04 Ankylosaurus tail impact",
+   "role": "alternative",
+   "label": "Isolated alternative: Physical_Hit_03_Punch (observer-posted, not a product cue)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch fx",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:11:40.400Z",
+   "seconds": 4.5,
+   "event": "Physical_Hit_03_Punch",
+   "playingId": 2143,
+   "emitter": "fixture caster (KMG_Runtime_Sprint32_Caster)",
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": {
+    "atPostMetres": 38.86,
+    "measured": "at the observer post"
+   },
+   "levels": {
+    "peakDbfs": -0.9,
+    "rmsDbfs": -25.0
+   },
+   "provisional": false,
+   "file": "clips/t5-sample-2-Physical_Hit_03_Punch.wav",
+   "sha256": "532ba9810c0498bfb9b22c905ec5ccc2629a3436828453d89568965c1f444498",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t5-sample-2-Physical_Hit_03_Punch.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 4.5
+   }
+  },
+  {
+   "name": "t5-sample-3-Earthblast_Hit.wav",
+   "group": "T5 / VIS-04 Ankylosaurus tail impact",
+   "role": "alternative",
+   "label": "Isolated alternative: Earthblast_Hit (observer-posted, not a product cue)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch fx",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:11:45.000Z",
+   "seconds": 4.5,
+   "event": "Earthblast_Hit",
+   "playingId": 2196,
+   "emitter": "fixture caster (KMG_Runtime_Sprint32_Caster)",
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": {
+    "atPostMetres": 38.86,
+    "measured": "at the observer post"
+   },
+   "levels": {
+    "peakDbfs": -3.2,
+    "rmsDbfs": -28.3
+   },
+   "provisional": false,
+   "file": "clips/t5-sample-3-Earthblast_Hit.wav",
+   "sha256": "7ba26e6fd525473fbc346b586e8bd1b5617b5c0223c935c0763b5a81313f0f6b",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t5-sample-3-Earthblast_Hit.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 4.5
+   }
+  },
+  {
+   "name": "t5-sample-4-DustCritHeavy.wav",
+   "group": "T5 / VIS-04 Ankylosaurus tail impact",
+   "role": "alternative",
+   "label": "Isolated alternative: DustCritHeavy (observer-posted, not a product cue)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch fx",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:11:49.600Z",
+   "seconds": 4.5,
+   "event": "DustCritHeavy",
+   "playingId": 2241,
+   "emitter": "fixture caster (KMG_Runtime_Sprint32_Caster)",
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": {
+    "atPostMetres": 38.86,
+    "measured": "at the observer post"
+   },
+   "levels": {
+    "peakDbfs": -11.5,
+    "rmsDbfs": -31.1
+   },
+   "provisional": false,
+   "file": "clips/t5-sample-4-DustCritHeavy.wav",
+   "sha256": "9b9ce3aafd4a9c840246f75c1774a03831917ec9a2c6593b0d84e12fcd18e09e",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t5-sample-4-DustCritHeavy.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 4.5
+   }
+  },
+  {
+   "name": "t5-sample-5-MediumBluntNatural_Flesh.wav",
+   "group": "T5 / VIS-04 Ankylosaurus tail impact",
+   "role": "alternative",
+   "label": "Isolated alternative: MediumBluntNatural_Flesh (observer-posted, not a product cue)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch fx",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:11:54.200Z",
+   "seconds": 4.5,
+   "event": "MediumBluntNatural_Flesh",
+   "playingId": 2327,
+   "emitter": "fixture caster (KMG_Runtime_Sprint32_Caster)",
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": {
+    "atPostMetres": 38.86,
+    "measured": "at the observer post"
+   },
+   "levels": {
+    "peakDbfs": -14.6,
+    "rmsDbfs": -35.5
+   },
+   "provisional": false,
+   "file": "clips/t5-sample-5-MediumBluntNatural_Flesh.wav",
+   "sha256": "6d484b556a7759ece2e14bcd9f4a4caa0b0592ed2200e155a0cc35c62c57e70c",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t5-sample-5-MediumBluntNatural_Flesh.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 4.5
+   }
+  },
+  {
+   "name": "t7-trumpet-blast-in-play-cue397.wav",
+   "group": "T7 / VIS-06 Trumpet Archon blast",
+   "role": "actual",
+   "label": "In play: Trumpet Blast with the product cue (actual)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch r6",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:14:13.200Z",
+   "seconds": 6,
+   "event": "InspireCourage",
+   "playingId": 397,
+   "emitter": "Trumpet Archon (KMG_Summoning_Unit_TrumpetArchon)",
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": {
+    "atPostingMetres": null,
+    "atPosting": "not available",
+    "observedFrameMetres": 37.09,
+    "postingFrame": 4975,
+    "observedFrame": 4976,
+    "measured": "game camera to emitter in frame 4976, one frame after the cue posted in frame 4975"
+   },
+   "levels": {
+    "peakDbfs": -5.5,
+    "rmsDbfs": -23.7
+   },
+   "provisional": true,
+   "file": "clips/t7-trumpet-blast-in-play-cue397.wav",
+   "sha256": "ecc95daaba21bf9badfd7f30e278838ecd1a67f849cef6c9acf0cd9d80ded292",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t7-trumpet-blast-in-play-cue397.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 6.0
+   }
+  },
+  {
+   "name": "t7-vrock-screech-neighbour.wav",
+   "group": "T7 / VIS-06 Trumpet Archon blast",
+   "role": "neighbour",
+   "label": "In play: Vrock Screech, neighbour cue on the same shared helper (EarPiercingScream)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch r6",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:14:04.900Z",
+   "seconds": 5,
+   "event": "EarPiercingScream",
+   "playingId": 308,
+   "emitter": "Vrock (KMG_Summoning_Unit_Vrock)",
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": {
+    "atPostingMetres": null,
+    "atPosting": "not available",
+    "observedFrameMetres": 40.05,
+    "postingFrame": 4638,
+    "observedFrame": 4639,
+    "measured": "game camera to emitter in frame 4639, one frame after the cue posted in frame 4638"
+   },
+   "levels": {
+    "peakDbfs": -3.5,
+    "rmsDbfs": -22.8
+   },
+   "provisional": false,
+   "file": "clips/t7-vrock-screech-neighbour.wav",
+   "sha256": "542df1de85397f10f51d8ecc1b0afe994d5b9986e49b9b1ab17e7c05076ab279",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t7-vrock-screech-neighbour.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 5.0
+   }
+  },
+  {
+   "name": "t7-baseline-no-cue.wav",
+   "group": "T7 / VIS-06 Trumpet Archon blast",
+   "role": "baseline",
+   "label": "Quiet interval before the casts (no cue)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch r6",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:13:58.000Z",
+   "seconds": 3,
+   "event": null,
+   "playingId": null,
+   "emitter": null,
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": null,
+   "levels": {
+    "peakDbfs": -30.4,
+    "rmsDbfs": -44.6
+   },
+   "provisional": false,
+   "file": "clips/t7-baseline-no-cue.wav",
+   "sha256": "b14fa836db912da127ab0e06c7de25bbd42f8f39ab54cd7aaca1fc7988adc079",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t7-baseline-no-cue.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 3.0
+   }
+  },
+  {
+   "name": "t7-sample-1-InspireCourage-current.wav",
+   "group": "T7 / VIS-06 Trumpet Archon blast",
+   "role": "alternative",
+   "label": "Isolated sample of the current cue: InspireCourage (observer-posted, not a product cue)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch fx",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:11:58.800Z",
+   "seconds": 4.5,
+   "event": "InspireCourage",
+   "playingId": 2378,
+   "emitter": "Trumpet Archon (KMG_Summoning_Unit_TrumpetArchon)",
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": {
+    "atPostMetres": 37.55,
+    "measured": "at the observer post"
+   },
+   "levels": {
+    "peakDbfs": -5.5,
+    "rmsDbfs": -22.5
+   },
+   "provisional": true,
+   "file": "clips/t7-sample-1-InspireCourage-current.wav",
+   "sha256": "56bc16d68e2b912555c12ab6127ff89cd0e119d39436827b3680fae62326406b",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t7-sample-1-InspireCourage-current.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 4.5
+   }
+  },
+  {
+   "name": "t7-sample-2-InspireGreatness.wav",
+   "group": "T7 / VIS-06 Trumpet Archon blast",
+   "role": "alternative",
+   "label": "Isolated alternative: InspireGreatness (observer-posted, not a product cue)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch fx",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:12:03.400Z",
+   "seconds": 4.5,
+   "event": "InspireGreatness",
+   "playingId": 2442,
+   "emitter": "Trumpet Archon (KMG_Summoning_Unit_TrumpetArchon)",
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": {
+    "atPostMetres": 37.55,
+    "measured": "at the observer post"
+   },
+   "levels": {
+    "peakDbfs": -5.4,
+    "rmsDbfs": -21.8
+   },
+   "provisional": false,
+   "file": "clips/t7-sample-2-InspireGreatness.wav",
+   "sha256": "72faf19fe092bcb331a40fb21acafb7b62c5bc860f97cc8ad34db396a3adcfb3",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t7-sample-2-InspireGreatness.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 4.5
+   }
+  },
+  {
+   "name": "t7-sample-3-CacophonousCall.wav",
+   "group": "T7 / VIS-06 Trumpet Archon blast",
+   "role": "alternative",
+   "label": "Isolated alternative: CacophonousCall (observer-posted, not a product cue)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch fx",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:12:08.000Z",
+   "seconds": 4.5,
+   "event": "CacophonousCall",
+   "playingId": 2492,
+   "emitter": "Trumpet Archon (KMG_Summoning_Unit_TrumpetArchon)",
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": {
+    "atPostMetres": 37.55,
+    "measured": "at the observer post"
+   },
+   "levels": {
+    "peakDbfs": -4.6,
+    "rmsDbfs": -25.5
+   },
+   "provisional": false,
+   "file": "clips/t7-sample-3-CacophonousCall.wav",
+   "sha256": "7faf74988ea1f9f8bc6d9203663eaf8e8551d8d1db88f1b1ad931ffc529c000d",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t7-sample-3-CacophonousCall.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 4.5
+   }
+  },
+  {
+   "name": "t7-sample-4-AoE_Sonic_Large.wav",
+   "group": "T7 / VIS-06 Trumpet Archon blast",
+   "role": "alternative",
+   "label": "Isolated alternative: AoE_Sonic_Large (observer-posted, not a product cue)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch fx",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:12:12.600Z",
+   "seconds": 4.5,
+   "event": "AoE_Sonic_Large",
+   "playingId": 2562,
+   "emitter": "Trumpet Archon (KMG_Summoning_Unit_TrumpetArchon)",
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": {
+    "atPostMetres": 37.55,
+    "measured": "at the observer post"
+   },
+   "levels": {
+    "peakDbfs": -3.9,
+    "rmsDbfs": -24.7
+   },
+   "provisional": false,
+   "file": "clips/t7-sample-4-AoE_Sonic_Large.wav",
+   "sha256": "7c900bccde4e73b7801b3db243069050df5a0762616c3a164821da5863213865",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t7-sample-4-AoE_Sonic_Large.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 4.5
+   }
+  },
+  {
+   "name": "t7-sample-5-Sweetener_High_04_Celestial.wav",
+   "group": "T7 / VIS-06 Trumpet Archon blast",
+   "role": "alternative",
+   "label": "Isolated alternative: Sweetener_High_04_Celestial (observer-posted, not a product cue)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch fx",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:12:17.200Z",
+   "seconds": 4.5,
+   "event": "Sweetener_High_04_Celestial",
+   "playingId": 2611,
+   "emitter": "Trumpet Archon (KMG_Summoning_Unit_TrumpetArchon)",
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": {
+    "atPostMetres": 37.55,
+    "measured": "at the observer post"
+   },
+   "levels": {
+    "peakDbfs": -16.2,
+    "rmsDbfs": -33.0
+   },
+   "provisional": false,
+   "file": "clips/t7-sample-5-Sweetener_High_04_Celestial.wav",
+   "sha256": "75bbcd92c85118b53fbf62b2e0130db8469b6f9d46f0c69e6ed85d447945e60a",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t7-sample-5-Sweetener_High_04_Celestial.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 4.5
+   }
+  },
+  {
+   "name": "t7-sample-6-HolyBomb.wav",
+   "group": "T7 / VIS-06 Trumpet Archon blast",
+   "role": "alternative",
+   "label": "Isolated alternative: HolyBomb (observer-posted, not a product cue)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch fx",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:12:21.800Z",
+   "seconds": 4.5,
+   "event": "HolyBomb",
+   "playingId": 2651,
+   "emitter": "Trumpet Archon (KMG_Summoning_Unit_TrumpetArchon)",
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": {
+    "atPostMetres": 37.55,
+    "measured": "at the observer post"
+   },
+   "levels": {
+    "peakDbfs": -3.2,
+    "rmsDbfs": -27.6
+   },
+   "provisional": false,
+   "file": "clips/t7-sample-6-HolyBomb.wav",
+   "sha256": "af95235d60b4379553f1f0c7566ff4d454d1ee7798f1c6f4ca85d20e7f05973a",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t7-sample-6-HolyBomb.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 4.5
+   }
+  },
+  {
+   "name": "t7-sample-7-Heroism.wav",
+   "group": "T7 / VIS-06 Trumpet Archon blast",
+   "role": "alternative",
+   "label": "Isolated alternative: Heroism (observer-posted, not a product cue)",
+   "session": "20261124T170720Z-owner-0.33.0-s7-fx launch fx",
+   "package": "candidate bc67438f3b, package 7adde59cce585da3543a849c010ba186dbbca3407c8a67bfb27df6c5f0d2d894 (product code outside RuntimeTesting identical to 1ac4324617 and the reviewed head)",
+   "intervalStartUtc": "2026-11-24T17:12:26.440Z",
+   "seconds": 4.5,
+   "event": "Heroism",
+   "playingId": 2697,
+   "emitter": "Trumpet Archon (KMG_Summoning_Unit_TrumpetArchon)",
+   "volumes": "SoundVolumeMaster/Music/Ambience/Voices/MagicChants = 100 (session game-settings snapshot); endpoint volume not recorded",
+   "listener": {
+    "atPostMetres": 37.55,
+    "measured": "at the observer post"
+   },
+   "levels": {
+    "peakDbfs": -3.9,
+    "rmsDbfs": -27.4
+   },
+   "provisional": false,
+   "file": "clips/t7-sample-7-Heroism.wav",
+   "sha256": "aa075a19cbddd42c5e6561daa0826780294549d54057e0720635c2342701911b",
+   "labSource": "<lab>/runtime-evidence/s7/review-r4-audio/t7-sample-7-Heroism.wav",
+   "decoded": {
+    "channels": 2,
+    "sampleWidthBytes": 2,
+    "rate": 48000,
+    "seconds": 4.5
+   }
+  }
+ ],
+ "revision": "Round 5 (review R1-F1): packet rebuilt as s7-listening-packet-r5 with the isolated samples' playing IDs filled from the native rows and the R6 Trumpet/Vrock distances labelled as observed one frame after posting (exact posting distance not available). The round-4 packet s7-listening-packet-r4 is superseded and kept in the lab."
+}

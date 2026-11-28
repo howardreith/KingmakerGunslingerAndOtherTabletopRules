@@ -1,0 +1,34 @@
+{
+  "name": "s7-fx",
+  "description": "Sprint 7 review round 4 selection: the effects phase (Ankylosaurus impact cue with event-time listener distance; Dust Mephit breath with the call-site bound tint, the nested interrupted-creation case (R1-F9), the cell condition ledger and early exit (R3-F3) and the trace release verdict (R3-F4); listening samples) and the R6 Trumpet Archon/Vrock cue checks on the shared cue helper. Run with loopback audio capture. No other mods. Round 5: the ledger owns only the commands the cell issues (a separate unregistered same-caster execution keeps its Sickened); the s7-dust-abandoned cell disposes the enclosing runner right after an owned application with an injected failed release; the Ankylosaurus retirement records native playback state and product tracking of both cues. Round 6: R4-F1 early-exit cast owned by the cell ledger with abandonment inside it and an injected owned removal failure; R4-F5 per-ID playback verdict on the concurrent retirement and a synthetic callback-loss characterization. Round 7 (owner amendment 3: R4-F1, R6-F2, R6-F3, R6-F4): the phase runs its cells as one sequence over one cumulative isolation result that each cell publishes from its own finally and that admits the next cell and decides the final restoration; the Dust cell retains its exact execution processes; both abandonment drivers dispose the same sequence over a child isolation with a next cell, with an injected failure (owned removal; callback unpatch), then repair their own intervention; the callback-loss verdict is the one settled evaluator over the emitted row, including the terminal playback reads.",
+  "ownerMods": [],
+  "fixtureSaves": [],
+  "launches": [
+    {
+      "label": "fx",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-expanded-summoning-sprint32-native-review",
+        "parameters": {
+          "reviewPhase": "summon-s7-effects"
+        },
+        "timeoutSeconds": 1500
+      }
+    },
+    {
+      "label": "r6",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "product": {
+        "scenario": "disposable-expanded-summoning-sprint32-native-review",
+        "parameters": {
+          "reviewPhase": "summon-playtest-r6-presentation"
+        },
+        "timeoutSeconds": 1200
+      }
+    }
+  ]
+}

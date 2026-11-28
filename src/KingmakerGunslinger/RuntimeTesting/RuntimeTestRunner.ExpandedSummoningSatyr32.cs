@@ -57,7 +57,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestPresentationPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestModelsPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint32PerformancePhase ||
-                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32FascinatePhase)
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32FascinatePhase ||
+                    ExpandedSummoningNativeProfilePolicy.Sprint7OutdoorPhase(phase))
                 {
                     // One exact disposable anchor owns the grouped cells. Do
                     // not re-enable its AI between a restored cell and the next
@@ -190,6 +191,43 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 CreateSprint32TurnHostile(fixture);
                 foreach (int frame in ReviewSpiderSummonerCompletion(fixture, phase)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39S7ModelsPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                using (var mode = Cleanup2EnterNativeDefault(fixture, phase))
+                    foreach (int frame in ReviewSprint7Models(fixture, phase, mode)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39S7ModelsInteriorPhase)
+            {
+                foreach (int frame in ReviewSprint7Models(fixture, phase, null)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39S7GhaelePhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                using (var mode = Cleanup2EnterNativeDefault(fixture, phase))
+                    foreach (int frame in ReviewSprint7Ghaele(fixture, phase, mode)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39S7GhaeleInteriorPhase)
+            {
+                foreach (int frame in ReviewSprint7Ghaele(fixture, phase, null)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39S7UiPhase)
+            {
+                using (var mode = Cleanup2EnterNativeDefault(fixture, phase))
+                    foreach (int frame in ReviewSprint7Ui(fixture, phase, mode)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39S7EffectsPhase || phase == ExpandedSummoningNativeProfilePolicy.Sprint39S7EffectsMechanicsPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                using (var mode = Cleanup2EnterNativeDefault(fixture, phase))
+                    foreach (int frame in ReviewSprint7Effects(fixture, phase, mode)) yield return frame;
                 yield break;
             }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint39PlaytestModelsInteriorPhase)
