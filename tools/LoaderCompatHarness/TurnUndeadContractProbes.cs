@@ -192,6 +192,7 @@ namespace KmgLoaderCompatHarness
                 ["frightenedUndeadDonor"] = DumpFact(nativeFear),
                 ["wizardTurnUndead"] = DumpFact(ResourcesLibrary.TryGetBlueprint<BlueprintAbility>("71b8898b1d26d654b9a3eeac87e3e2f8")),
                 ["undeadType"] = DumpFact(Blueprint<BlueprintUnitFact>(UndeadType)),
+                ["undeadImmunities"] = DumpFact(Blueprint<BlueprintUnitFact>("8a75eb16bfff86949a4ddcb3dd2f83ae")),
                 ["channelResistance4"] = DumpFact(resistance),
                 ["turnFlight"] = DumpFact(fleeing)
             };
@@ -311,13 +312,30 @@ namespace KmgLoaderCompatHarness
             var holders = new JObject();
             foreach (string field in new[] { "improved_channel", "sacred_conduit", "consecrate_buff" })
                 holders[field] = DumpFact(engineType == null ? null : engineType.GetField(field, Any)?.GetValue(null) as BlueprintScriptableObject);
+            var membership = new JObject();
+            foreach (string field in new[] { "improved_channel", "sacred_conduit", "consecrate_buff" })
+            {
+                var holder = engineType == null ? null : engineType.GetField(field, Any)?.GetValue(null) as BlueprintUnitFact;
+                if (holder == null) { membership[field] = "absent"; continue; }
+                int count = holder.ComponentsArray.Where(c => c != null && c.GetType().Name == "IncreaseSpecifiedSpellsDC")
+                    .Sum(c => ((IEnumerable)c.GetType().GetField("spells", Any).GetValue(c)).Cast<object>().OfType<BlueprintAbility>().Count(a => turnGuids.Contains(a.AssetGuid)));
+                membership[field] = count;
+                if (count != turnGuids.Count) problems.Add("CotW " + field + " lists " + count + " Turn identities, expected " + turnGuids.Count);
+            }
+            foreach (BlueprintUnitFact fact in ((engineType == null ? null : engineType.GetField("channel_resistances", Any)?.GetValue(null)) as IEnumerable<BlueprintUnitFact> ?? new BlueprintUnitFact[0]))
+            {
+                int count = fact.ComponentsArray.Where(c => c != null && (c.GetType().Name == "SavingThrowBonusAgainstSpecificSpells" || c.GetType().Name == "ContextSavingThrowBonusAgainstSpecificSpells"))
+                    .Sum(c => ((IEnumerable)c.GetType().GetField("Spells", Any).GetValue(c)).Cast<object>().OfType<BlueprintAbility>().Count(a => turnGuids.Contains(a.AssetGuid)));
+                membership["resistance:" + fact.AssetGuid + ":" + fact.name] = count;
+                if (count != turnGuids.Count) problems.Add("CotW resistance " + fact.name + " lists " + count + " Turn identities, expected " + turnGuids.Count);
+            }
             var resistances = new JArray(((engineType == null ? null : engineType.GetField("channel_resistances", Any)?.GetValue(null)) as IEnumerable<BlueprintUnitFact> ?? new BlueprintUnitFact[0])
                 .Select(f => (object)DumpFact(f)).ToArray());
             return new JObject
             {
                 ["assemblyVersion"] = cotw.GetName().Version.ToString(), ["sha256"] = Sha256File(cotw.Location),
                 ["channelEntries"] = allEntries, ["channelEntriesByType"] = byType, ["channelEntriesThatAreTurn"] = turnEntries,
-                ["positiveHarmEntries"] = entries, ["turnMenu"] = menu, ["dcHolders"] = holders, ["channelResistances"] = resistances
+                ["positiveHarmEntries"] = entries, ["turnMenu"] = menu, ["dcHolders"] = holders, ["channelResistances"] = resistances, ["turnMembership"] = membership
             };
         }
 

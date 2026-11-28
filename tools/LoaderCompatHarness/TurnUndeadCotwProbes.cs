@@ -309,7 +309,7 @@ namespace KmgLoaderCompatHarness
             if (value is Kingmaker.Utility.Feet) return ((Kingmaker.Utility.Feet)value).Value + " ft";
             if (depth <= 0) return value.GetType().Name;
             var list = value as IEnumerable;
-            if (list != null) return new JArray(list.Cast<object>().Take(80).Select(v => (object)Dump(v, depth - 1)).ToArray());
+            if (list != null) return new JArray(list.Cast<object>().Select(v => (object)Dump(v, depth - 1)).ToArray());
             var obj = new JObject { ["$type"] = value.GetType().Name };
             var component = value as BlueprintComponent;
             if (component != null) obj["$name"] = component.name;
@@ -330,7 +330,9 @@ namespace KmgLoaderCompatHarness
             return new JObject
             {
                 ["guid"] = fact.AssetGuid, ["name"] = fact.name,
-                ["components"] = new JArray(fact.ComponentsArray.Where(c => c != null).Select(c => (object)Dump(c, 5)).ToArray())
+                ["spellDescriptors"] = new JArray(fact.ComponentsArray.OfType<Kingmaker.Blueprints.Classes.Spells.SpellDescriptorComponent>()
+                    .Select(d => (object)d.Descriptor.Value.ToString()).ToArray()),
+                ["components"] = new JArray(fact.ComponentsArray.Where(c => c != null).Select(c => (object)Dump(c, 10)).ToArray())
             };
         }
     }
