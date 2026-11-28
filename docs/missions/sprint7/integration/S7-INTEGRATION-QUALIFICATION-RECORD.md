@@ -1,7 +1,7 @@
 # Sprint 7 integration: packaged/native qualification record (owner amendment 1)
 
-**Status: dated pre-submission snapshot, 2026-11-28.** This page records the selected qualification as executed. It does
-not predict a review outcome. Final-head gate receipts and timings are cited in the developer report, so that recording them
+**Status: dated pre-submission snapshot, 2026-11-28, corrected for review 2 (R2-F1 to R2-F5; records only).** This page
+records the selected qualification as executed. It does not predict a review outcome. Final-head gate receipts and timings are cited in the developer report, so that recording them
 needs no further commit.
 
 - **Mission:** [`S7-MASTER-INTEGRATION-MISSION.md`](S7-MASTER-INTEGRATION-MISSION.md), plus owner amendment 1. The
@@ -23,7 +23,7 @@ needs no further commit.
 | `master` at the start and at this snapshot (no drift) | `52755b617c79328a972ae5b74bc05784422e332d` |
 | Accepted development archive (starting branch head) | `22143dcebccfd090d2cf207235c9b9b8bb049d45` |
 | **Package-producing commit** | `66a0b9c724e7a16e425b5e21ac962cd441eaced6`. It only adds the status-page entry for this amendment (`planning/`). Source, scripts, sessions, harness and tests equal the accepted reviewed head `5460aff0a4` |
-| Documentation/evidence head | the commit that adds this record and `docs/evidence/sprint7/integration-native/` (docs only, so the candidate stays current) |
+| Documentation/evidence heads | `9011aaddb2` added this record and `docs/evidence/sprint7/integration-native/` (review 2). The correction commit for review 2 is the submitted head. Both change only `docs/`, so the candidate stays current |
 | Reviewed head and archive head | named by the controller at review and finalization. They are not predicted here |
 
 No material correction was needed, so there is one candidate. Nothing was changed outside `docs/` after the build, and
@@ -47,7 +47,7 @@ Built once by `Build-Local.ps1 -DevelopmentPurpose s7-integration-native -Develo
 | Compiler output | the same SHA-256 and MVID (`exact-build/bin/KingmakerGunslinger.dll`, measured independently) |
 | Embedded producing commit | `66a0b9c724e7a16e425b5e21ac962cd441eaced6` (`AssemblyMetadata` `GitCommit`) |
 | Source-state SHA-256 | `4ff837e1c02013df8753957929fc58a08b8767add99b8ba7c8ebb0e52305d3b6` |
-| Loader references | pinned UMM `UnityModManager.dll` 0.31.1.0 `2e038ff2…c2c4` and `0Harmony12.dll` 1.2.0.1 `aa1cd483…1292`, pins `b13bed40…8534`. The game references come from the private bundle and the installation (16 files) |
+| References | 16 files in total: 14 game and Unity assemblies (role `installed-game`, from the private bundle and checked against the installation, for example `Assembly-CSharp.dll` `3b6450ff…5afb`), plus 2 pinned UMM loader files (role `pinned-loader`): `UnityModManager/UnityModManager.dll` 0.31.1.0 `2e038ff2…c2c4` and `UnityModManager/0Harmony12.dll` 1.2.0.1 `aa1cd483…1292`, with pins `b13bed40…8534`. Every role, relative filename and digest is listed in `docs/evidence/sprint7/integration-native/development-receipt-66a0b9c724e7-projection.json`, a sanitized projection of the receipt that also carries its package and compiler-DLL identity fields |
 | Receipt | `…66a0b9c724e7.zip.development-receipt.json`, SHA-256 `60a2a581a4d311a484a649ab07fe78d29333647daeaf7157bc3e7a52844f3c0b` |
 | Validation | development validator against `v0.0.197` (`329ad1b073`): 7,935 identities, none appended |
 | Selected tests | `sprint7-visual` 25 of 3,218, 0 failures, none not applicable. Build-Local's own `loader.production-dll-references-pinned-loader` check on the exact compiler output: 1/1 PASS |
@@ -82,7 +82,10 @@ rebuilt.
 Both sessions used the repository runner, the disposable game copy and `-LoaderProfile owner-0.33.0` (UMM 0.33.0.0
 `63e5baf7…2691`). They used the exact package above with `-CandidateDevelopmentPurpose s7-integration-native` and the
 harness above, and ran in sequence. Each ran its own admission subprocess and its own transaction. Extracts with lab paths
-removed are in `docs/evidence/sprint7/integration-native/`.
+removed are in `docs/evidence/sprint7/integration-native/`: the session and launch extracts, the receipt projection, and
+`lease-readbacks.json`. The last holds each lease readback's report identity (output file SHA-256 and creation and
+last-write times), session-summary SHA-256, status, `recoveryRequired`, `sharedLockHeldBy`, registry restoration and
+integrity.
 
 | | `20261128T144025Z-owner-0.33.0-s7-c3-mechanics` | `20261128T144642Z-owner-0.33.0-s7-ghaele-lifecycle` |
 |---|---|---|
@@ -92,7 +95,7 @@ removed are in `docs/evidence/sprint7/integration-native/`.
 | Transaction | lease `runtime-20261128T144034Z-f8a4…`, transaction `e974e7fe…`; ownership completed | lease `runtime-20261128T144651Z-6638…`, transaction `a9e2e856…`; ownership completed |
 | Integrity | verified: owner saves (95) and installation unchanged | the same |
 | Registry | restored, and the readback was verified equal to the backup (`5ffd5922…6b38`) | the same |
-| Lease journal and lock (read-only `-Report`) | Completed, `recoveryRequired` false, shared lock free | the same |
+| Lease readback (read-only `-Report`, taken at 2026-11-28T14:51:46Z, after both transactions had completed) | lease `runtime-20261128T144034Z-f8a48233baee456493332ffa05609c4b`: status Completed, `recoveryRequired` false, `sharedLockHeldBy` `<free>` | lease `runtime-20261128T144651Z-66384ddafdc54aec9bbc81cefbed1f0f`: the same three values |
 | Outer duration | 355.2 s | 127.9 s |
 | Extract SHA-256 | session `92c956c3…15aa`, launch `dc9d74fa…07da` | session `59e59207…a9bf2`, launch `f0c6b8ed…2098` |
 
@@ -113,8 +116,28 @@ removed are in `docs/evidence/sprint7/integration-native/`.
 - **Commands and hooks.**
   - `commandCleanupWithheld` is empty.
   - Retirements: 19 requested, 8 retired at teardown, no failures.
-  - Dust owned hooks went from 4 before disposal to 0 after. No owned command or live execution was left.
+  - **Ordinary Dust cleanup only:** owned hooks went from 4 before disposal to 0 after, with 0 owned commands and 0 owned
+    live executions left (`dust.ownedHooksAfterDispose`, `ownedCommandsLeft`, `ownedExecutionsLive`).
   - The foreign Sickened and the unowned execution were kept.
+- **Temporary residuals during the Dust controls**, distinct from the final restoration:
+  - **`s7-dust-pre-delivery-disposed`.** Right after the inner cell was disposed, `childAfterDisposal.pending` still named
+    owned execution `KMG_Summoning_Special_DustMephit_Breath#-1371907456` and the owned-conditions reconciliation, with
+    `restored` false. After resume, `childAfterResume.recoveries` records both as "observed settled", `restored` is true,
+    and the declared next cell was admitted and completed. `afterSettlement` shows the execution delivered and ended, with
+    1 condition acquired from it and 0 still present.
+  - **`s7-dust-abandoned`.** Right after disposal, the injected failure of an owned Sickened removal left one owned
+    condition (`Sickened#-1099260288`), and `childAfterDisposal.pending` named owned execution `#-449460224` and the
+    owned-conditions reconciliation. After resume, `childAfterResume.recoveries` records both as observed settled. The
+    child is still `restored` false with the expected failures, and it refused `s7-dust-abandoned-next` as declared. The
+    repair after the guard then removed the leftover: `injectedLeftovers` 1, `leftoverGone` true; one live execution at
+    cleanup, `executionsSettledBeforeReuse` true.
+  - **Callback-loss survivor, playing ID 517.** At the window end (`survivorAtWindowEnd`) its playback was inactive while
+    the product still tracked it (`tracked` true, one callback withheld). It stayed tracked until its own source was
+    disposed. `survivorAfterDisposal` shows the view and playback component destroyed and a stop requested
+    (`view-destroyed`, `stop-requested`, one attempt). `endUtc` is unset because a stop request is not completion, and no
+    unrelated record changed.
+  - **Final state.** After all of this, isolation is restored (`s7-effects-owned-state-restored`: no errors, 0 live
+    recolours) and the fixture is restored (`fixture-restored`, party exact).
 - **Expected failure controls.** These are the injected unpatch, rollback and condition-removal failures in the
   callback-abandoned, callback-setup-failed, trace-setup-failed and dust-abandoned cells. Each recorded its injected failure,
   refused the next cell as declared and was repaired after the guard. Hooks went back to 0 where measured. The unexpected,
@@ -126,11 +149,19 @@ removed are in `docs/evidence/sprint7/integration-native/`.
 **Ghaele lifecycle.**
 - **Verdict.** `problems`, `unsettledAtEnd` and `unsettledAtFinalRelease` are empty, `pauseRestored` is true, and the
   terminal step passed with no cleanup failures and isolation restored.
-- **Late units.**
-  - `abandonedAfterSpawn`: the real spawn's own early summon and one late summon were destroyed.
-  - `abandonedPendingLateResult`: a **controlled notification injection** (labelled, parent amendment 3 §4) delivered a
-    late result. The witness reconciliation requested destruction of the late unit and destroyed it (verdict
-    `late-owned-summon`, ordered).
+- **Late units, two separate observations:**
+  - **`abandonedAfterSpawn` (real cast).** The cast produced **one** owned Ghaele, seen before ordinary registration
+    (`spawnSeenBeforeRegistration` true). The witness identified exactly that unit through the cast's own execution. Disposing
+    the abandoned cast destroyed it once. `earlySummonDestroyed` true and `lateSummonsDestroyed` 1 describe the **same unit**:
+    the counter is incremented by the held release (`OwnedCastRelease.Hold` in `GhaeleLifetimeProbes.cs`), which destroys
+    the cast's own `Summoned` unit only when it was never registered.
+  - **`abandonedPendingLateResult` (separate, injected).** A **controlled notification injection** (labelled, parent
+    amendment 3 §4) delivered a late result for a real disposable unit, which had been registered with the probe's
+    destruction owner before delivery. The witness reconciliation requested its destruction and destroyed it (verdict
+    `late-owned-summon`, ordered). `lateSummonsDestroyed` is 0 here because the cast's own release had no summon to
+    destroy.
+  - **C2's accepted row (`20261126T033419Z`)** has the same outcomes in both cases. The frame values are run-specific: all
+    five ordering steps ran at frame 4673 here and at frame 4771 in C2.
 - **Foreign controls.** Foreign Ghaeles were preserved and unrequested, and bystander commands survived.
 - **Borrowed and replaced grants.** They finished with their loans released. `borrowedMissing` was refused.
 - **Comparison with C2.** Field by field, the lifecycle data matches C2's accepted `20261126T033419Z` row, apart from the
@@ -142,14 +173,19 @@ removed are in `docs/evidence/sprint7/integration-native/`.
 | Item | Outer time |
 |---|---|
 | Development stage (accepted, carried separately) | 38.1 s |
-| `Build-Local -PlanOnly` inspection | under 1 s |
-| Build-Local | 304.3 s |
-| Dry admission | 8.4 s |
-| `s7-c3-mechanics` | 355.2 s |
-| `s7-ghaele-lifecycle` | 127.9 s |
-| Two read-only `-Report` reads | seconds each, not timed separately |
-| **Qualification so far** | **795.8 s (13 min 15.8 s)** |
-| **Cumulative integration** | **833.9 s (13 min 53.9 s)**, plus the final-head gates in the developer report |
+| Build-Local | 304.3 s (timed wrapper) |
+| Dry admission | 8.4 s (timed) |
+| `s7-c3-mechanics` | 355.2 s (timed wrapper) |
+| `s7-ghaele-lifecycle` | 127.9 s (timed wrapper) |
+| **Measured subtotal** | **795.8 s (13 min 15.8 s)** |
+| `Build-Local -PlanOnly` inspection | at most 1.0 s. Its integer-second wrapper read 0 s, so it began and ended within one wall-clock second; its output file was created at 14:32:11.118Z and last written at 14:32:11.451Z |
+| `-Report` for the mechanics session | at most 0.38 s: output file created 14:51:46.057Z, and the next command's output file was created at 14:51:46.436Z |
+| `-Report` for the Ghaele session | 0.34 s from output creation (14:51:46.436Z) to its last write (14:51:46.776Z). The process-exit tail after that write was **not measured** |
+| **Qualification account before the final gates** | **at most 797.2 s (13 min 17.2 s), plus the unmeasured exit tail of the second report** |
+| **Cumulative integration before the final gates** | **at most 835.3 s (13 min 55.3 s), plus that tail.** The developer report adds the final-head gate times |
+
+The timestamps for these three short commands come from file-system creation and last-write times of their retained
+output files.
 
 The parent's 71 min 40.3 s ledger and C3's ledger are separate and unchanged.
 
