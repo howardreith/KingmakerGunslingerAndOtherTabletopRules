@@ -850,6 +850,7 @@
     <Compile Include="TurnUndead\TurnUndeadRules.cs" />
     <Compile Include="TurnUndead\TurnUndeadFleeingState.cs" />
     <Compile Include="TurnUndead\TurnUndeadBlueprints.cs" />
+    <Compile Include="TurnUndead\TurnUndeadCotwPublication.cs" />
     <Compile Include="TurnUndead\TurnUndeadModule.cs" />
     <Compile Include="BodyguardFeats\BodyguardEligibilityPolicy.cs" />
     <Compile Include="BodyguardFeats\BodyguardAidPolicy.cs" />

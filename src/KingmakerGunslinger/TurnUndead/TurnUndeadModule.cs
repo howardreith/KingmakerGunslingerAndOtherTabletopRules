@@ -37,11 +37,13 @@ namespace KingmakerGunslinger.TurnUndead
         private static TurnUndeadBlueprintSet _blueprints;
         private static BodyguardFeatPublicationTransaction<BlueprintFeature> _publication;
         private static TurnUndeadResistancePublication _resistance;
+        private static TurnUndeadCotwPublication _cotw;
         private static string _status = "pending";
 
         internal static TurnUndeadBlueprintSet Blueprints { get { lock (Gate) return _blueprints; } }
         internal static bool FeatPublished { get { lock (Gate) return _publication != null; } }
         internal static string Status { get { lock (Gate) return _status; } }
+        internal static TurnUndeadCotwPublication CotwPublication { get { lock (Gate) return _cotw; } }
         internal static IReadOnlyList<string> ResistanceEvidence
         {
             get
@@ -118,6 +120,7 @@ namespace KingmakerGunslinger.TurnUndead
             var registry = new BlueprintRegistry(library, manifest, context.Logger);
             TurnUndeadBlueprintSet set = null;
             TurnUndeadResistancePublication resistance = null;
+            TurnUndeadCotwPublication cotw = null;
             BodyguardFeatPublicationTransaction<BlueprintFeature> publication = null;
             try
             {
@@ -125,28 +128,48 @@ namespace KingmakerGunslinger.TurnUndead
                 OwnedIconAssignments.ApplyTurnUndead(library, manifest);
                 resistance = TurnUndeadResistancePublication.Publish(library,
                     set.AllAbilities.ToArray());
+                string cotwFailure = null;
+                try
+                {
+                    cotw = TurnUndeadCotwPublication.Publish(set, context.ModEntry);
+                }
+                catch (Exception exception)
+                {
+                    // Publish rolled back its own changes; the directly granted
+                    // actions stay visible and every other Turn Undead change stands.
+                    cotw = null;
+                    cotwFailure = exception.GetType().Name + ": " + exception.Message;
+                    TurnUndeadDiagnostics.Warning("cotw.unavailable",
+                        "Call of the Wild integration was not applied; direct actions remain. " + cotwFailure);
+                }
                 bool publish = context.FeatureModules.ActiveTurnUndead;
                 if (publish) publication = PublishFeat(library, set.Feat);
                 lock (Gate)
                 {
                     _blueprints = set;
                     _resistance = resistance;
+                    _cotw = cotw;
                     _publication = publication;
                 }
                 Finish(context, publish ? "published" : "registered; module off (not offered)");
                 TurnUndeadDiagnostics.Info("initialize.complete",
                     "registered=" + registry.RegisteredCount + ";featPublished=" + publish +
-                    ";resistance=" + string.Join(",", resistance.Evidence.ToArray()));
+                    ";resistance=" + string.Join(",", resistance.Evidence.ToArray()) +
+                    (cotw == null ? ";cotw=failed" : ";cotw=" + cotw.Availability + ";menuChildren=" +
+                        cotw.MenuChildren + (cotw.Evidence.Count == 0 ? string.Empty :
+                            ";" + string.Join(",", cotw.Evidence.ToArray()))));
             }
             catch
             {
                 if (publication != null) publication.Rollback();
+                if (cotw != null) cotw.Rollback();
                 if (resistance != null) resistance.Rollback();
                 registry.RollbackAll();
                 lock (Gate)
                 {
                     _blueprints = null;
                     _resistance = null;
+                    _cotw = null;
                     _publication = null;
                 }
                 throw;

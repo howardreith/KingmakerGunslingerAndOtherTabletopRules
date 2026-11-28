@@ -14,12 +14,14 @@
       "expectLog": {
         "present": [
           "[blueprints][initialize.complete]",
-          "[turn-undead][initialize.complete]"
+          "[turn-undead][initialize.complete]",
+          ";cotw=absent;menuChildren=0"
         ],
         "absent": [
           "[initialize.root-cause]",
           "[initialize.failed]",
-          "[turn-undead][initialize.failed]"
+          "[turn-undead][initialize.failed]",
+          "[turn-undead][cotw.unavailable]"
         ]
       },
       "harness": {
