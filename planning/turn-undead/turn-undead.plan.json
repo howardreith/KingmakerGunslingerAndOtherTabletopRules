@@ -1,0 +1,38 @@
+{
+  "schema_version": "agent-review.plan.v1",
+  "mission_id": "turn-undead",
+  "title": "Turn Undead feat",
+  "notes": "Turn Undead only. The main mission and its referenced acceptance contract govern scope. This is one focused feature PR with an intermediate review and final review; checkpoints do not create separate PRs. Historical 2.1.4 native findings require confirmation against actual 2.1.7b references. Native behavior and icon presentation require candidate-bound observations. Preserve current installed game state and protected saves, use guarded runtime transactions, and finish at owner review without merge or release.",
+  "checkpoints": [
+    {
+      "id": "native-contract-and-first-turn",
+      "type": "intermediate",
+      "scope": "Verified native contracts, explicit intelligent/mindless classification approach, channel/resource and submenu integration design, and a small working Turn Undead path with one native victim and the intended resource expenditure.",
+      "exit_conditions": [
+        "The exact engine/reference and installed-mod identities, relevant blueprint contracts, original resource costs, DC calculation route, and immunity/resistance seams are recorded with evidence.",
+        "The design preserves the mission's tabletop rules and explicitly identifies native panic adaptation and any remaining ambiguity; no Command Undead functionality or unrelated framework work is included.",
+        "A private feature ability and effect demonstrate one meaningful native save/flee path with resource accounting in an authorized disposable fixture; later acceptance cases remain clearly pending.",
+        "The planned icon destinations and action-submenu strategy use the supplied assets and preserve existing channel consumers and saved identities.",
+        "Focused validation is meaningful and nonzero; runtime transactions are restored. This intermediate decision is not final feature completion."
+      ],
+      "required_gates": [
+        "focused"
+      ]
+    },
+    {
+      "id": "final",
+      "type": "final",
+      "scope": "The complete Turn Undead feature, both supplied icons, supported channel integration, acceptance evidence, and reviewable handoff.",
+      "exit_conditions": [
+        "Every required main-mission acceptance item passes with appropriate evidence. Any required FAIL, BLOCKED, or NOT RUN item prevents ready_for_owner_review; reporting it accurately supports a blocked handoff, not feature completion. Optional deferrals do not hide missing required behavior.",
+        "Native observations cover intended channel-source costs and DCs, friendly and hostile undead targeting, intelligent/mindless repeat saves, actual fleeing and expiry, both combat modes, save/load, protections and channel resistance, and user-visible feat/submenu/icon presentation.",
+        "The supplied art is integrated with stable identities, correct runtime formatting, source provenance, and visible in-game evidence; subjective owner approval remains distinct.",
+        "Required focused gates, accepted review dispositions, exact candidate provenance, and runtime restoration satisfy the controller's current handoff rules.",
+        "The final PR stays draft; no merge, tag, release publication, normal-play installation replacement, or controller bypass is performed."
+      ],
+      "required_gates": [
+        "focused"
+      ]
+    }
+  ]
+}

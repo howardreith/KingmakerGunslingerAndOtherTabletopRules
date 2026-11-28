@@ -1,0 +1,144 @@
+{
+  "schema_version": "turn-undead.mission-package.v1",
+  "title": "Turn Undead — Claude Implementation Mission",
+  "preparedFor": "Howie Reith",
+  "preparedDate": "2026-11-27",
+  "status": "Assistant-prepared mission and original artwork; feature not implemented or enrolled",
+  "entryPoint": "START_HERE.txt",
+  "mainMission": "MISSION.md",
+  "targetRepository": "howardreith/KingmakerGunslingerAndOtherTabletopRules",
+  "targetGame": "Pathfinder: Kingmaker",
+  "scope": "Base Turn Undead general feat only; no Command/Control Undead, rebuke or mythic variant",
+  "researchBaselines": {
+    "treMaster": "52755b617c79328a972ae5b74bc05784422e332d",
+    "developmentProcessMain": "a6aa2b1fcfa0f946d94183acca36b2b5ddd04c0b",
+    "cotwSource": "1332fb0db844b7863f484ca978bea2349fe49769",
+    "nativeBlueprintArchive": "Kingmaker 2.1.4; historical discovery leads requiring actual supported-engine confirmation",
+    "expectedGameVersion": "2.1.7b; verify actual installation and references"
+  },
+  "workflow": {
+    "mode": "foreground",
+    "developer": "Claude Opus / high, genuine interactive session",
+    "reviewer": "Codex gpt-6.2-astra / max, independent accepted controller review",
+    "plan": "turn-undead.plan.json",
+    "enrollmentCount": 0,
+    "proposedDraftPrCount": 1,
+    "proposedCheckpointCount": 2,
+    "completionState": "AWAITING_OWNER_REVIEW after actual finalize and remote status verification",
+    "mergeOrReleaseAuthorizedByPacket": false
+  },
+  "validation": {
+    "packageTextAndJson": "PASS",
+    "internalMarkdownLinks": "PASS",
+    "planShapeAgainstInspectedLoader": "PASS",
+    "acceptanceIds": "TU-01 through TU-36, unique and contiguous",
+    "runtimePngFormatsAndAlpha": "PASS",
+    "sourceAndRuntimeHashes": "PASS",
+    "smallSizeVisualReview": "PASS with minor parchment contrast note documented in asset provenance",
+    "independentMissionConsistencyReview": "PASS after corrections",
+    "featureImplementation": "NOT DONE",
+    "featureRuntimeTests": "NOT RUN",
+    "canonicalWindowsImageExport": "NOT RUN",
+    "ownerPixelApproval": "NOT ASSERTED"
+  },
+  "assetManifest": "assets/asset-manifest.json",
+  "integrity": "SHA256SUMS.txt covers every other packaged file, including this manifest; this manifest inventories payload files excluding itself and SHA256SUMS.txt",
+  "files": [
+    {
+      "path": "ACCEPTANCE_MATRIX.md",
+      "role": "mission_document",
+      "bytes": 12918,
+      "sha256": "78d936e17077fa554319a35ab317492f35be51b05dd550c177972689da974a3c"
+    },
+    {
+      "path": "DEVELOPMENT_PROCESS.md",
+      "role": "mission_document",
+      "bytes": 17030,
+      "sha256": "11f50cc485f344dde71ba60ae00558f6eafa3fde093cf824bff0e5412f239520"
+    },
+    {
+      "path": "ICON_INTEGRATION_NOTES.md",
+      "role": "mission_document",
+      "bytes": 17900,
+      "sha256": "d9b1ab78600c53fe1a1d0de5fa0d8d17ba93a9c0036e271c01cd249e29399a9b"
+    },
+    {
+      "path": "MISSION.md",
+      "role": "mission_document",
+      "bytes": 16310,
+      "sha256": "ed5226780dad0676b04595ac447add4a1e98a472d687c7cd09a805b2b5aaf083"
+    },
+    {
+      "path": "SOURCES.md",
+      "role": "mission_document",
+      "bytes": 12971,
+      "sha256": "60cbf035603c004b8f1b6c3bf02253e1b24d285f4160ae7516fe5dd57cbd7ab2"
+    },
+    {
+      "path": "START_HERE.txt",
+      "role": "mission_document",
+      "bytes": 3148,
+      "sha256": "972d149392b5bb8fc10680e7ec0c172d6c5bc16b507ed3f6f04426a3b8f4c2cb"
+    },
+    {
+      "path": "TECHNICAL_CONTRACT.md",
+      "role": "mission_document",
+      "bytes": 23711,
+      "sha256": "d79660b49681c5772b6bf20cdc062f9221a5f98d7449dfe2f2709c0f48fe1d0b"
+    },
+    {
+      "path": "assets/GENERATION_PROMPTS.md",
+      "role": "asset_provenance",
+      "bytes": 6867,
+      "sha256": "39b2c07ff61967f0d877416ab4ddcf52f7037a545f91e696b1e2574734109778"
+    },
+    {
+      "path": "assets/asset-manifest.json",
+      "role": "asset_provenance",
+      "bytes": 7855,
+      "sha256": "be70b8251d1c6da8755f7d012dd11555d495b0dc50b241c99c051b9d8ac65ff3"
+    },
+    {
+      "path": "assets/icons/turn-undead-action.png",
+      "role": "runtime_icon",
+      "bytes": 35503,
+      "sha256": "868d10444544d97d8f47f0e9d4946f75ad74579d19068dddcf57def7ba007079"
+    },
+    {
+      "path": "assets/icons/turn-undead-feat.png",
+      "role": "runtime_icon",
+      "bytes": 5534,
+      "sha256": "3b69de4048dc398f14e5ff159072f4f4dbb75b00edfdd66eaa6fb2be74b8bda4"
+    },
+    {
+      "path": "assets/source/turn-undead-action-original.png",
+      "role": "original_master",
+      "bytes": 2551222,
+      "sha256": "6f5d93530399d81b7ab81c69873921bfc6f0b2e3486c8eab457a19da8adca69d"
+    },
+    {
+      "path": "assets/source/turn-undead-feat-original.png",
+      "role": "original_master",
+      "bytes": 905073,
+      "sha256": "9805f019db30b0722834ba1ef2f8431b248f1f3dcacac89804e348613b0a98e8"
+    },
+    {
+      "path": "previews/icon-review.png",
+      "role": "review_preview",
+      "bytes": 147735,
+      "sha256": "17de77c3b923dc432dfad5b49e2e0ccac3f15e2b9b97b5a2d0067d9b1dcf2afa"
+    },
+    {
+      "path": "resources/IMPLEMENTATION_RECORD_TEMPLATE.md",
+      "role": "implementation_record_template",
+      "bytes": 4623,
+      "sha256": "af6135d8e918d655e4af4ccca4b2fc77f48e4459d8b89448ca3a6c925ab90139"
+    },
+    {
+      "path": "turn-undead.plan.json",
+      "role": "controller_plan",
+      "bytes": 3397,
+      "sha256": "7880dd60fd658be1e06ef2d91a868bd4aec05071bf094342c9fe9e16276368c8"
+    }
+  ]
+}
