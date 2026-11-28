@@ -237,9 +237,20 @@ from RISK-01).
 
 ## Sprint 7 master integration (started 2026-11-28; separate enrollment, development checkpoint)
 
-- **Scope.** The accepted parent source `3ebdda17da` (PR #219, archive `d682b6bd4e`) merged into `master` `52755b617c`
-  on branch `codex/s7-master-integration`, with compilation and focused validation. At most four formal reviews.
-  Packaging, native qualification, merging and release are later boundaries.
+- **Scope.** The accepted parent source `3ebdda17da` (PR #219, archive `d682b6bd4e`) was merged into the branch
+  `codex/s7-master-integration`, which started at `master` `52755b617c`. `master` itself has not received PR #231.
+  The checkpoint covers compilation and focused validation, with at most four formal reviews. Merging and release are
+  later boundaries.
+- **Development checkpoint accepted by the owner (2026-11-28):** reviewed head `5460aff0a4`, archive `22143dcebc`
+  (review 1 of 4, ready).
+- **Owner amendment 1 (2026-11-28), packaged/native qualification in the same enrollment.** Recorded as amendments
+  revision 1, `f1de1c83e9acfa398274f61f2af78f0df5ce089821912e9ded16e5a28102d458`. It selects:
+  - one fresh development candidate (purpose `s7-integration-native`), built from the producing commit that adds this
+    entry;
+  - the existing `s7-c3-mechanics` and `s7-ghaele-lifecycle` loader-compat sessions on owner UMM 0.33.0, with the
+    retained C2 harness `d77754ba…b4f1`.
+  Identities, results and restoration go in
+  `docs/missions/sprint7/integration/S7-INTEGRATION-QUALIFICATION-RECORD.md`; this entry does not state them.
 - **Record.** `docs/missions/sprint7/integration/S7-MASTER-INTEGRATION-RECORD.md`, a dated pre-submission snapshot.
   The completed parent section below is unchanged and stays the parent's own record.
 - **Still pending with the owner:** the T2/T3/T6 visual decisions and the T5/T7 listening decisions.
