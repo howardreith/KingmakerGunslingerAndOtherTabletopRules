@@ -1,0 +1,170 @@
+{
+  "B": "52755b617c79328a972ae5b74bc05784422e332d",
+  "H": "3ebdda17dac096156974a118474649070b68521c",
+  "M": "35763430acc9eefc306b861045526a444690bc77",
+  "amendment_revision": 5,
+  "amendment_sha256": "9fbfc53b89b5f9110f847f24ac19e3023c623f97a6f4757bbadd296699c617c5",
+  "checkpoint_id": "final",
+  "checkpoint_type": "final",
+  "fatal": false,
+  "guidance_revision": null,
+  "guidance_sha256": "none",
+  "invocation": {
+    "completed": true,
+    "duration_s": 442.3,
+    "errors": [],
+    "exit_code": 0,
+    "failed": false,
+    "observed": {
+      "approval_policy": "never",
+      "cli_version": "0.170.0",
+      "network": "restricted",
+      "observed_effort": "max",
+      "observed_model": "gpt-6.2-astra",
+      "plan_type": "pro",
+      "rollout_found": true,
+      "sandbox": "read-only",
+      "source": "Codex session rollout (CLI-recorded thread settings; not model-authored)",
+      "subagent_suspected": false,
+      "turn_efforts": [
+        "max"
+      ],
+      "turn_models": [
+        "gpt-6.2-astra"
+      ],
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 1326464,
+        "input_tokens": 1441936,
+        "output_tokens": 17129,
+        "reasoning_output_tokens": 7333,
+        "total_tokens": 1459065
+      }
+    },
+    "requested": {
+      "effort": "max",
+      "model": "gpt-6.2-astra",
+      "sandbox": "read-only"
+    },
+    "thread_id": "01a22196-8613-7b72-9d6c-1b91b61e81e5",
+    "timed_out": false
+  },
+  "mission": {
+    "id": "sprint7-autonomous-mission",
+    "sha256": "c232f135ef60d630428efb0f1870223883bff5bc05bb1fc0fc5dfc7d42af56f0"
+  },
+  "ok": true,
+  "path": "C:\\Dev\\KingmakerGunslingerLab\\agent-review-state\\kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1\\rounds\\r09\\envelope-1.json",
+  "pr": 219,
+  "project_sha256": "286ea7d8a605775ee05eea7ddb50630d9710b9ddb69d1711b9dadb9b084a879e",
+  "protocol": "agent-review.v1",
+  "publication": "r09-review",
+  "published": [
+    {
+      "comment_id": 7237656469,
+      "of": 1,
+      "part": 1,
+      "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/219#issuecomment-7237656469"
+    }
+  ],
+  "raw_result_if_rejected": null,
+  "reasons": [],
+  "repository": "howardreith/KingmakerGunslingerAndOtherTabletopRules",
+  "request_id": "kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1-r09-85c0c1",
+  "response_sha256": "ba2e1c8b0e2fa99be6b42d56ec194883b47af7f72145c57b26fd3918addeca34",
+  "result": {
+    "candidate_commit": "3ebdda17dac096156974a118474649070b68521c",
+    "checkpoint_id": "final",
+    "checkpoint_type": "final",
+    "decision": "ready_for_owner_review",
+    "decision_rationale": "All four round-8 findings are fixed. The correction changes only the two authorized parent records. The required focused gate compiled production code and passed all 25 selected tests on the submitted commit. The historical presentation and mechanics evidence remains traceable to its producing sessions. One wording clarification would help the owner locate the supplementary Ghaele captures.",
+    "evidence_assessment": {
+      "executed_verification": [
+        "The controller receipt and matching log confirm that focused -Filter sprint7-visual ran on 3ebdda17dac096156974a118474649070b68521c. Production compilation passed, 25 of 3,213 tests ran, failures were zero, and the worktree stayed unchanged. The receipt records 3.1 seconds. The developer charged 4.4 seconds of outer command time, bringing the parent ledger to 71 min 40.3 s of 85 min.",
+        "The original 170720Z and 180635Z Dust extracts both record the interrupted inner creation, zero tints on the foreign spawn, one tint on the enclosing owned creation and restoration on release.",
+        "The retained 20261127T133020Z mechanics extract records 43 passing checks, seven completed required cells and physical restoration. Its session receipt identifies candidate 6 and records successful installation, save and registry verification.",
+        "All 94 committed review stills matched their indexed SHA-256 hashes."
+      ],
+      "inspected": [
+        "The pinned mission and five owner amendments, repository instructions, developer report, controller transcript notice, prior findings ledger, feature diff, changed-file inventory and complete round-9 correction.",
+        "The original session receipts, Dust observations, visual index, private audio packet manifest, accepted child archive trees and candidate-bound gate receipt and log."
+      ],
+      "limitations": [
+        "The snapshot supplies the current gate receipt and log. The four earlier receipts, outer-time log and peer exchanges have traceable identifiers in the report. Their contents were outside this snapshot, and the controller withheld the mixed foreground transcript.",
+        "C2's Ghaele lifecycle observation remains on parent candidate 3 with its accepted harness. Candidate 6 covers mechanics. Its callback overlap was constructed, one cancellation was observed natively, and the future cancellation guarantee comes from source inspection. Pending-command, uncertainty-recovery and ownership-transfer failure cases have focused-test coverage.",
+        "Controller finalization, the parent archive identity and remote handoff status follow this verdict. Eventual integration with master requires its own version reconciliation, compilation and affected qualification."
+      ],
+      "required_gaps": [],
+      "source_inspection_only": [
+        "Compared each presentation session's source and assets with build source 962bf27694. Traced the four-argument OwnedDisposables constructor and the methods used by TrumpetCueProbes.",
+        "Confirmed that the accepted child heads and archives are ancestors of H. The parent removed 25, 24 and 36 inherited transcript copies respectively, preserved the 51 pr-195 files and has an empty merge-base-to-H delta under docs/agent-reviews.",
+        "Confirmed that all 18 private packet entries identify the 170720Z recording. Listening remains with the owner."
+      ]
+    },
+    "findings": [
+      {
+        "acceptance_ids": [
+          "REP-04",
+          "OWNER AMENDMENT 4 \u00a74"
+        ],
+        "actual": "Section 3 says 050957Z stands for T2 through T4 only. The T1 row and section 4.1 also cite its gh and ghd phases, and the visual index identifies six Ghaele stills from that session.",
+        "blocking_rationale": "The original extracts and indexed stills identify the Ghaele observations. The accepted T1 disposition and the corrected Dust ownership evidence both stand.",
+        "blocks_readiness": false,
+        "category": "optional_polish",
+        "expected": "The scope statement distinguishes the model, tooltip and Dust comparison from the Ghaele observations made in the same session.",
+        "id": "R9-F1",
+        "location": {
+          "file": "docs/GUNSLINGER-SPRINT7-RECORD.md",
+          "line": 325
+        },
+        "priority": "P3",
+        "requested_correction": "In the owner handoff, qualify \u201conly\u201d as applying to the model, tooltip and Dust comparison. Keep the supplementary Ghaele observations attached to 050957Z.",
+        "requested_evidence": "The existing 050957Z gh and ghd extracts and the six T1 entries in evidence/sprint7-review/INDEX.json suffice.",
+        "title": "Clarify the Ghaele evidence from session 050957Z",
+        "trigger": "The owner follows the session summary to locate the bright and dim Ghaele captures."
+      }
+    ],
+    "prior_finding_assessments": [
+      {
+        "assessment": "fix_verified",
+        "finding_id": "R8-F1",
+        "rationale": "Git confirms that the two round-3 sources differ from 962bf27694 in the two Dust production files. The model assets and tooltip implementation match. The record uses 061437Z for Dust appearance and the later 170720Z and 180635Z observations for repaired spawn ownership. The Trumpet constructor delegates with a null settlement reader and preserves the behavior exercised by the probe."
+      },
+      {
+        "assessment": "fix_verified",
+        "finding_id": "R8-F2",
+        "rationale": "The active citations and report pin both manifests to C3 archive 3bfc570090. The recovery manifest, evidence manifest and referenced 133020Z callback row resolve there to blobs 303d5390, 45926009 and 50e195d7 respectively. Their parent copies match, and the three child transcript links retain their accepted archive identities."
+      },
+      {
+        "assessment": "fix_verified",
+        "finding_id": "R8-F3",
+        "rationale": "The report identifies all four receipts on 84d2636e01 by filename, SHA-256 and filter, with selections of 25, 11, 9 and 5. It cites the outer-time log separately and identifies the peer pause and 09:34:45Z clearance preceding the 09:36:08Z gate. This supplies the requested historical references."
+      },
+      {
+        "assessment": "fix_verified",
+        "finding_id": "R8-F4",
+        "rationale": "Against target 52755b617c, Git returned 60/100 at integration head 3bfc570090, 60/101 at 84d2636e01, 60/102 at b91eabcb3a and 60/103 at H. The record now labels the historical count with the correct head."
+      }
+    ],
+    "request_id": "kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1-r09-85c0c1",
+    "round": 9,
+    "schema_version": "agent-review.review.v1",
+    "summary": {
+      "delivered_behavior": "T1 retains the accepted Ghaele disposition for the observed packages and conditions. T2 repairs the Nalfeshnee wing roots, and T3 repairs the Salamander waist and finger geometry. T4 corrects the owned desktop Trample and Overrun tooltips, with controller rendering recorded as unexecuted. T5 adds one owned cue per qualifying Ankylosaurus impact. T6 recolours the owned Dust cone and preserves the released Sickened mechanics. T7 retains the provisional Trumpet cue with playback and reload evidence.",
+      "pending_later_phase_work": [],
+      "remaining_owner_review": [
+        "Judge the Nalfeshnee wing roots, Salamander waist and fingers, and Dust cone using the curated set in evidence/sprint7-review/.",
+        "Listen to the gameplay excerpts and alternatives in C:/Dev/KingmakerGunslingerLab/private/s7-listening-packet-r5/ and decide whether to retain Sweetener_Low_06_Quake and InspireCourage.",
+        "Any subsequent merge or release requires the owner's decision."
+      ],
+      "scope_reviewed": "Final Sprint 7 parent review for draft PR #219 under owner amendment revision 5. The comparison uses target 52755b617c79328a972ae5b74bc05784422e332d and merge base 35763430acc9eefc306b861045526a444690bc77. Round 8 verified the nine earlier parent findings. Round 9 resolves its four records findings.",
+      "unresolved_questions": [
+        "The October Ghaele incident remains unattributed. The released outdoor bright condition remains unobserved.",
+        "The cause of the historical missing callback in 164749Z remains unknown. The accepted bounded callback-loss disposition is preserved."
+      ]
+    }
+  },
+  "round": 9,
+  "validated_at": "2026-11-28T10:04:45Z",
+  "workflow_fingerprint": "6d613defe7bfe2f01a5818a2cd41b281965f438c45a0ca37ce15957e4dcffe19"
+}
