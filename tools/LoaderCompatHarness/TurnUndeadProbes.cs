@@ -64,6 +64,7 @@ namespace KmgLoaderCompatHarness
         private readonly List<UnitEntityData> created = new List<UnitEntityData>();
         private readonly List<UnitEntityData> awakeAdded = new List<UnitEntityData>();
         private readonly List<BlueprintUnit> clones = new List<BlueprintUnit>();
+        private readonly List<UnitEntityData> silenced = new List<UnitEntityData>();
         private readonly Trace trace = new Trace();
         private IDisposable subscription;
         private string verdict;
@@ -93,6 +94,7 @@ namespace KmgLoaderCompatHarness
             return ProbeCleanup.RunAll(new[]
             {
                 new KeyValuePair<string, Action>("rule trace", () => { if (subscription != null) subscription.Dispose(); subscription = null; }),
+                new KeyValuePair<string, Action>("area brains", () => { foreach (UnitEntityData u in silenced.Where(u => u != null && !u.Destroyed)) u.IsBrainActive = true; silenced.Clear(); }),
                 new KeyValuePair<string, Action>("awake registrations", () => { foreach (UnitEntityData u in awakeAdded) Game.Instance.State.AwakeUnits.Remove(u); awakeAdded.Clear(); }),
                 new KeyValuePair<string, Action>("disposable units", () => { foreach (UnitEntityData u in created.Where(u => u != null && !u.Destroyed).ToArray()) u.Destroy(); created.Clear(); }),
                 new KeyValuePair<string, Action>("unit blueprint clones", () => { foreach (BlueprintUnit c in clones) UnityEngine.Object.DestroyImmediate(c); clones.Clear(); })
@@ -323,6 +325,18 @@ namespace KmgLoaderCompatHarness
             };
             Game.Instance.IsPaused = true;
             BlueprintAbilityResource pool = Blueprint<BlueprintAbilityResource>(ChannelResource);
+            // Fixture: the loaded area's own units (not the party) are silenced for the observation and restored on
+            // release, so native NPCs do not fight the spawned undead (run 20261128T095145Z: an area unit damaged the
+            // fleeing skeleton and its effect ended early).
+            var party = new HashSet<UnitEntityData>(Game.Instance.Player.ControllableCharacters);
+            foreach (UnitEntityData unit in Game.Instance.State.Units.ToArray())
+            {
+                if (unit == null || unit.Destroyed || party.Contains(unit) || !unit.IsBrainActive) continue;
+                unit.IsBrainActive = false;
+                unit.Commands.InterruptAll(true);
+                silenced.Add(unit);
+            }
+            result["silencedAreaUnits"] = silenced.Count;
 
             // ---- cleric 5 / fighter 2, Charisma 16
             UnitEntityData cleric = SpawnFriendly("Cleric", origin);
@@ -488,6 +502,11 @@ namespace KmgLoaderCompatHarness
             else if (total < 57 || total > 70) problems.Add("the mindless effect lasted " + Math.Round(total, 1) + " s instead of about one minute");
             if (skeleton.Descriptor.State.HasCondition(UnitCondition.Frightened)) problems.Add("the skeleton kept Frightened after expiry");
             if (trace.Events.Any(e => (string)e["what"] == "damage" && (string)e["initiator"] == cleric.UniqueId)) problems.Add("the cleric dealt damage");
+            JObject[] damaged = trace.Events.Where(e => (string)e["what"] == "damage" && (int?)e["damage"] > 0 &&
+                units.Any(u => u.UniqueId == (string)e["target"])).ToArray();
+            if (damaged.Length != 0)
+                problems.Add("fixture: tracked units took damage during the observation, so durations are not attributable: " +
+                    string.Join(", ", damaged.Select(e => e.ToString(Newtonsoft.Json.Formatting.None)).ToArray()));
         }
 
         private void ExpectInitialSave(string label, UnitEntityData unit, int fromSeq, int dc, bool passed)
