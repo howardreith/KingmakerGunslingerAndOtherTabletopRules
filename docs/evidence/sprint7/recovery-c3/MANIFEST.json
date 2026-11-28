@@ -1,0 +1,134 @@
+[
+ {
+  "file": "20261126T051633Z-owner-0.33.0-s7-c3-fx-session.json",
+  "session": "20261126T051633Z-owner-0.33.0-s7-c3-fx",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "a7560a2eefb6699f17e26df6a7d6d90013223c2b78ea53159a9fd297a860e3c0"
+  }
+ },
+ {
+  "file": "20261126T051633Z-owner-0.33.0-s7-c3-fx-01-fx.json",
+  "session": "20261126T051633Z-owner-0.33.0-s7-c3-fx",
+  "launch": "01-fx",
+  "checks": 40,
+  "passed": 37,
+  "sources": {
+   "sprint32-review.json": "bbfdebb15fb20c02197d9787945cface997ba4b7cc0eeb15d68889e0db822063",
+   "summon-s7-effects.json": "f34c698e899e472cbaa7fde02f39db68b203f58332317987d18310d9c0a9c941",
+   "harness-result.json": "b039c51568c32820d879f4bce29b8a5ca7cc2d5b7db46adb4d52994d4ebdf73b"
+  }
+ },
+ {
+  "file": "20261126T054228Z-owner-0.33.0-s7-c3-fx-session.json",
+  "session": "20261126T054228Z-owner-0.33.0-s7-c3-fx",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "a1402f2f97a81705a3668092c3c5d5904d963e4f8e07da5b971e81d6184e8ef7"
+  }
+ },
+ {
+  "file": "20261126T054228Z-owner-0.33.0-s7-c3-fx-01-fx.json",
+  "session": "20261126T054228Z-owner-0.33.0-s7-c3-fx",
+  "launch": "01-fx",
+  "checks": 41,
+  "passed": 41,
+  "sources": {
+   "sprint32-review.json": "bedac044c21897ad7bcc78c902871d22f1d0096cfd099edbf8f95f864a9ad5c0",
+   "summon-s7-effects.json": "05d72b490f7e3552c50feee53fdf53aef8e5c799976bbb4a68d9db2b5e2e486d",
+   "harness-result.json": "faece32364cd28a9649a9a6ec91e82517eb9b2e289c029fb0ca150ad7fb321c8"
+  }
+ },
+ {
+  "file": "20261126T134425Z-owner-0.33.0-s7-c3-mechanics-session.json",
+  "session": "20261126T134425Z-owner-0.33.0-s7-c3-mechanics",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "78a0f767cb674fa18409a6b6232cfcc9ade670b5e4415740710bc3aab6d24298"
+  }
+ },
+ {
+  "file": "20261126T134425Z-owner-0.33.0-s7-c3-mechanics-01-mechanics.json",
+  "session": "20261126T134425Z-owner-0.33.0-s7-c3-mechanics",
+  "launch": "01-mechanics",
+  "checks": 43,
+  "passed": 43,
+  "sources": {
+   "sprint32-review.json": "12559f6a36adffb9454bc2cc246aba85933a0520a1eef0c67d975a3f1be6df71",
+   "summon-s7-effects-mechanics.json": "c06595c0d1017739386cce12e0fb0995474e4c34b2c7a17fb5beac88db925206",
+   "harness-result.json": "899c24706db2552bfe7a0bf3ecc133bea4a90e2c470f4ed15ee9814bf7a5beba"
+  }
+ },
+ {
+  "file": "20261126T232851Z-owner-0.33.0-s7-c3-mechanics-session.json",
+  "session": "20261126T232851Z-owner-0.33.0-s7-c3-mechanics",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "5ba6700863e659fe0c46b4097ddedaea53ea724ee684e66fe5b55147b41456a6"
+  }
+ },
+ {
+  "file": "20261126T232851Z-owner-0.33.0-s7-c3-mechanics-01-mechanics.json",
+  "session": "20261126T232851Z-owner-0.33.0-s7-c3-mechanics",
+  "launch": "01-mechanics",
+  "checks": 43,
+  "passed": 43,
+  "sources": {
+   "sprint32-review.json": "aa557183f677141ddaaec2ba39c3c4847216ab3502cac2921e95e5c6f8d69f29",
+   "summon-s7-effects-mechanics.json": "220396e639024335833cf6694e02a5ff8c11f2b3a18ea29eeadb1c8f2f5bbcbd",
+   "harness-result.json": "a138f10103421106eeac8260bcf1b4d8d0e816c485375f0cd518ea33375c853a"
+  }
+ },
+ {
+  "file": "20261127T022022Z-owner-0.33.0-s7-c3-mechanics-session.json",
+  "session": "20261127T022022Z-owner-0.33.0-s7-c3-mechanics",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "02ec3f65a91a2e03b31f7dd0387b9d05146edac7774d177922eebc2b99b69cbd"
+  }
+ },
+ {
+  "file": "20261127T022022Z-owner-0.33.0-s7-c3-mechanics-01-mechanics.json",
+  "session": "20261127T022022Z-owner-0.33.0-s7-c3-mechanics",
+  "launch": "01-mechanics",
+  "checks": 43,
+  "passed": 43,
+  "sources": {
+   "sprint32-review.json": "237c4c50277e562bc54a3e0408e9adf7e2190066b0c2e19b8dc68017590804e8",
+   "summon-s7-effects-mechanics.json": "56f42596b1dfc022697b7173d239e4140eb34b375739478bb3894435e4cf31bd",
+   "harness-result.json": "de63b0ec97e07967c465725fde3bf72e43377b31df7a3c7ae3cd3783a271870c"
+  }
+ },
+ {
+  "file": "20261127T133020Z-owner-0.33.0-s7-c3-mechanics-session.json",
+  "session": "20261127T133020Z-owner-0.33.0-s7-c3-mechanics",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "ad16e298ec7df0a16c53c206efb36086bebb45eefbcd59a8c97a29f8f62f14dd"
+  }
+ },
+ {
+  "file": "20261127T133020Z-owner-0.33.0-s7-c3-mechanics-01-mechanics.json",
+  "session": "20261127T133020Z-owner-0.33.0-s7-c3-mechanics",
+  "launch": "01-mechanics",
+  "checks": 43,
+  "passed": 43,
+  "sources": {
+   "sprint32-review.json": "35ac617e5139dfed954d10ca8da1a00a95bd1c33865a33e94fb430cfd4561260",
+   "summon-s7-effects-mechanics.json": "ab456698f93f1b62e3b52ea5f5c0d131c93c6d87b375f5827dfae4ee03c3de2d",
+   "harness-result.json": "baf21c8cde1c2efaddbfb9dedc14dcd77f01d1aef8b6a96dfed006e1c9fde1c6"
+  }
+ }
+]

@@ -1,0 +1,96 @@
+{
+ "purpose": "One-off extraction and cross-check of the round-5 acceptance_ids (C3 amendment 5 section 4: the current pending-finding map is mapped to the actual acceptance IDs of the accepted structured round-5 result); not a mapping framework.",
+ "published_review": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/223#issuecomment-7208946436",
+ "published_request_id": "kmg-codex-s7-recovery-c3-effects-ownership-20261125235239-ba5d-r05-e19c0d",
+ "published_candidate_commit": "ed02905b7f544071bc0f13b19601762717d0c28e",
+ "controller_result": "agent-review-state/<enrollment>/rounds/r05/result-1.json",
+ "controller_result_sha256": "e7fb7e1a5bd32b8737f85809f5ed6f49f8cc9a2aa135ed8f2a7a6d0433f5b254",
+ "controller_request_id": "kmg-codex-s7-recovery-c3-effects-ownership-20261125235239-ba5d-r05-e19c0d",
+ "controller_candidate_commit": "ed02905b7f544071bc0f13b19601762717d0c28e",
+ "decision": "changes_required",
+ "acceptance_ids_identical": true,
+ "pending_controller_ids": [
+  "R5-F1",
+  "R5-F2",
+  "R5-F3",
+  "R1-F13",
+  "R5-F4"
+ ],
+ "findings": {
+  "R5-F1": {
+   "priority": "P1",
+   "category": "defect",
+   "blocks_readiness": true,
+   "acceptance_ids": [
+    "R7-F2",
+    "C3 §5",
+    "OWNER AMENDMENT 4 §2A"
+   ],
+   "location": {
+    "file": "src/KingmakerGunslinger/RuntimeTesting/Sprint7ObserverPolicy.cs",
+    "line": 1509
+   },
+   "title": "A process discovered during the final settlement scan can lose its cleanup"
+  },
+  "R5-F2": {
+   "priority": "P2",
+   "category": "defect",
+   "blocks_readiness": true,
+   "acceptance_ids": [
+    "R7-F2",
+    "C3 §5",
+    "OWNER AMENDMENT 4 §§2A,2C"
+   ],
+   "location": {
+    "file": "src/KingmakerGunslinger/RuntimeTesting/Sprint7ObserverPolicy.cs",
+    "line": 1088
+   },
+   "title": "A transient process-read failure can make proven cancellation permanently unreadable"
+  },
+  "R5-F3": {
+   "priority": "P2",
+   "category": "evidence_gap",
+   "blocks_readiness": true,
+   "acceptance_ids": [
+    "C3 §5",
+    "OWNER AMENDMENT 4 §2C"
+   ],
+   "location": {
+    "file": "tests/KingmakerGunslinger.DomainTests/Sprint7VisualRepairTests.cs",
+    "line": 2392
+   },
+   "title": "The new handoff test does not identify what failed the enclosing phase"
+  },
+  "R1-F13": {
+   "priority": "P2",
+   "category": "required_gap",
+   "blocks_readiness": true,
+   "acceptance_ids": [
+    "C3 §8",
+    "OWNER AMENDMENT 2 §4",
+    "OWNER AMENDMENT 3 §4",
+    "OWNER AMENDMENT 4 §3"
+   ],
+   "location": {
+    "file": "docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md",
+    "line": 596
+   },
+   "title": "The current handoff still misbinds a finding and a native run"
+  },
+  "R5-F4": {
+   "priority": "P2",
+   "category": "evidence_gap",
+   "blocks_readiness": true,
+   "acceptance_ids": [
+    "C3 §6",
+    "OWNER AMENDMENT 3 §4",
+    "OWNER AMENDMENT 4 §§2B,4"
+   ],
+   "location": {
+    "file": "docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md",
+    "line": 650
+   },
+   "title": "The native coverage statement includes the deliberately unowned Dust cast"
+  }
+ }
+}

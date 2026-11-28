@@ -1,0 +1,90 @@
+[
+ {
+  "file": "20261124T223809Z-owner-0.33.0-s7-fx-session.json",
+  "session": "20261124T223809Z-owner-0.33.0-s7-fx",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "f76f6cc2de78c74d1c9bb5a584d3acc5f221b9be19750e937fe28394de2f850c"
+  }
+ },
+ {
+  "file": "20261124T223809Z-owner-0.33.0-s7-fx-01-fx.json",
+  "session": "20261124T223809Z-owner-0.33.0-s7-fx",
+  "launch": "01-fx",
+  "checks": 36,
+  "passed": 35,
+  "sources": {
+   "sprint32-review.json": "ed0676b3d38351ffade5c161cff39177ba2ea20d03ed89da14566b3de06462ff",
+   "summon-s7-effects.json": "61c08dcc841fed5a443ba7fa9b60c3c120e4d9c45626d5ee3e6c0e497d9e7fe6",
+   "harness-result.json": "5b2e7f7cf9b0e3cabf94c4cf732c5164f61d14524b0580b56dfabe67a443fde8"
+  }
+ },
+ {
+  "file": "20261124T223809Z-owner-0.33.0-s7-fx-02-r6.json",
+  "session": "20261124T223809Z-owner-0.33.0-s7-fx",
+  "launch": "02-r6",
+  "checks": 16,
+  "passed": 16,
+  "sources": {
+   "sprint32-review.json": "f947dc1434fef467a42f4dff7fecc10657a4887e49f48aa802eb792bf408e9ac",
+   "summon-playtest-r6-presentation.json": "2bd4bfa6fb70e06a699744de25b3e914e1cace1d54c6d17c701b67be8a5e6e55",
+   "harness-result.json": "c0e6c3b609d5b7b8cb7449a1135b9313660747f4c58930d616af5a9b40ca2f56"
+  }
+ },
+ {
+  "file": "20261124T224649Z-owner-0.33.0-s7-ghaele-session.json",
+  "session": "20261124T224649Z-owner-0.33.0-s7-ghaele",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "b7bdedebda4a02aaceb158dfc91afb1e55b9a984f6ff070c095df3a2277158f6"
+  }
+ },
+ {
+  "file": "20261124T224649Z-owner-0.33.0-s7-ghaele-01-ghaele.json",
+  "session": "20261124T224649Z-owner-0.33.0-s7-ghaele",
+  "launch": "01-ghaele",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "harness-result.json": "39e6790309666236b37ea66bade6caea5b5a2903f2ced24c18533852da82ac32"
+  }
+ },
+ {
+  "file": "20261124T224949Z-owner-0.33.0-s7-fx-session.json",
+  "session": "20261124T224949Z-owner-0.33.0-s7-fx",
+  "launch": "session",
+  "checks": 0,
+  "passed": 0,
+  "sources": {
+   "session-summary.json": "0cb05b52cff02f54e97f7fe729fd10df7411e6cdb60f872d59bfb6382acf6401"
+  }
+ },
+ {
+  "file": "20261124T224949Z-owner-0.33.0-s7-fx-01-fx.json",
+  "session": "20261124T224949Z-owner-0.33.0-s7-fx",
+  "launch": "01-fx",
+  "checks": 36,
+  "passed": 35,
+  "sources": {
+   "sprint32-review.json": "79bb10e8ce90780754f099f8cf3fc5819d0426dda5a1a87f808a55c98aacd0d7",
+   "summon-s7-effects.json": "b6d954e0295ea51cd6a9a6e926df2ec66efb94002b0a2922142edeb421c8b1e0",
+   "harness-result.json": "5e54dc22c3d20d3af0560413ad7eab3594893cf913890d4a65adb62d784a1cf1"
+  }
+ },
+ {
+  "file": "20261124T224949Z-owner-0.33.0-s7-fx-02-r6.json",
+  "session": "20261124T224949Z-owner-0.33.0-s7-fx",
+  "launch": "02-r6",
+  "checks": 16,
+  "passed": 16,
+  "sources": {
+   "sprint32-review.json": "628432d345bddfff54c9d1331980829b50ab8742e859197ab17761154accf83d",
+   "summon-playtest-r6-presentation.json": "efa1b5f7c1eb92adae8dc0b2f475385b0fa6345da5a88fc982a8e591abe4a944",
+   "harness-result.json": "28bc0e585ed1585e39b4ec5eb69095e2bcd50443f289989a6664704c38f72fe1"
+  }
+ }
+]

@@ -1,0 +1,1911 @@
+{
+ "harness": {
+  "conditions": {},
+  "exitRequested": true,
+  "failure": null,
+  "finishedUtc": "2026-11-24T05:33:23.5189470Z",
+  "isolation": "saves=<lab>/Saved Games; areas=<lab>/Areas",
+  "isolationRestored": true,
+  "kmgGhaeleLifetime_timeline": {
+   "area": "JamandisMansionThroneroom",
+   "cast": {
+    "ability": "KMG_Summoning_Ability_SM_Tier9_GhaeleAzata_One",
+    "borrowed": false,
+    "finished": true,
+    "granted": true,
+    "result": "Success",
+    "spawned": "KMG_Summoning_Unit_GhaeleAzata"
+   },
+   "controllers": [
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.9090983,
+         "Delay": 0.0,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 3.0,
+         "LoopAnimation": false,
+         "PlayBackwards": false
+        },
+        {
+         "CurrentDissolve": 0.0,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": true,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        },
+        {
+         "CurrentDissolve": 1.0,
+         "Delay": 0.0,
+         "DissolveCutout": true,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 3.0,
+         "LoopAnimation": false,
+         "PlayBackwards": false
+        },
+        {
+         "CurrentDissolve": 0.0,
+         "Delay": 2.75,
+         "DissolveCutout": false,
+         "IsDelayed": true,
+         "IsStarted": true,
+         "Lifetime": 2.0,
+         "LoopAnimation": false,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -263380,
+       "driven": [
+        {
+         "dissolve": 1.0,
+         "material": -265762
+        },
+        {
+         "dissolve": 1.0,
+         "material": -265764
+        },
+        {
+         "dissolve": 1.0,
+         "material": -265032
+        }
+       ]
+      }
+     ],
+     "t": 0.0
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.112954408,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -263380,
+       "driven": [
+        {
+         "dissolve": 0.112954408,
+         "material": -265762
+        },
+        {
+         "dissolve": 0.112954408,
+         "material": -265764
+        },
+        {
+         "dissolve": 0.112954408,
+         "material": -265032
+        }
+       ]
+      }
+     ],
+     "t": 10.0
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.121490255,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -263380,
+       "driven": [
+        {
+         "dissolve": 0.121490255,
+         "material": -265762
+        },
+        {
+         "dissolve": 0.121490255,
+         "material": -265764
+        },
+        {
+         "dissolve": 0.121490255,
+         "material": -265032
+        }
+       ]
+      }
+     ],
+     "t": 20.0
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.12929444,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -263380,
+       "driven": [
+        {
+         "dissolve": 0.12929444,
+         "material": -265762
+        },
+        {
+         "dissolve": 0.12929444,
+         "material": -265764
+        },
+        {
+         "dissolve": 0.12929444,
+         "material": -265032
+        }
+       ]
+      }
+     ],
+     "t": 30.1
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.137054846,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -263380,
+       "driven": [
+        {
+         "dissolve": 0.137054846,
+         "material": -265762
+        },
+        {
+         "dissolve": 0.137054846,
+         "material": -265764
+        },
+        {
+         "dissolve": 0.137054846,
+         "material": -265032
+        }
+       ]
+      }
+     ],
+     "t": 40.1
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.1452105,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -263380,
+       "driven": [
+        {
+         "dissolve": 0.1452105,
+         "material": -265762
+        },
+        {
+         "dissolve": 0.1452105,
+         "material": -265764
+        },
+        {
+         "dissolve": 0.1452105,
+         "material": -265032
+        }
+       ]
+      }
+     ],
+     "t": 50.1
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.1452712,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -263380,
+       "driven": [
+        {
+         "dissolve": 0.1452712,
+         "material": -265762
+        },
+        {
+         "dissolve": 0.1452712,
+         "material": -265764
+        },
+        {
+         "dissolve": 0.1452712,
+         "material": -265032
+        }
+       ]
+      }
+     ],
+     "t": 60.1
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.1530889,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -263380,
+       "driven": [
+        {
+         "dissolve": 0.1530889,
+         "material": -265762
+        },
+        {
+         "dissolve": 0.1530889,
+         "material": -265764
+        },
+        {
+         "dissolve": 0.1530889,
+         "material": -265032
+        }
+       ]
+      }
+     ],
+     "t": 70.1
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.16143024,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -263380,
+       "driven": [
+        {
+         "dissolve": 0.16143024,
+         "material": -265762
+        },
+        {
+         "dissolve": 0.16143024,
+         "material": -265764
+        },
+        {
+         "dissolve": 0.16143024,
+         "material": -265032
+        }
+       ]
+      }
+     ],
+     "t": 80.2
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.161701933,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -263380,
+       "driven": [
+        {
+         "dissolve": 0.161701933,
+         "material": -265762
+        },
+        {
+         "dissolve": 0.161701933,
+         "material": -265764
+        },
+        {
+         "dissolve": 0.161701933,
+         "material": -265032
+        }
+       ]
+      }
+     ],
+     "t": 90.2
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.161883846,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -263380,
+       "driven": [
+        {
+         "dissolve": 0.161883846,
+         "material": -265762
+        },
+        {
+         "dissolve": 0.161883846,
+         "material": -265764
+        },
+        {
+         "dissolve": 0.161883846,
+         "material": -265032
+        }
+       ]
+      }
+     ],
+     "t": 100.2
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.1699004,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -263380,
+       "driven": [
+        {
+         "dissolve": 0.1699004,
+         "material": -265762
+        },
+        {
+         "dissolve": 0.1699004,
+         "material": -265764
+        },
+        {
+         "dissolve": 0.1699004,
+         "material": -265032
+        }
+       ]
+      }
+     ],
+     "t": 110.2
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.170035288,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        },
+        {
+         "CurrentDissolve": 0.403005,
+         "Delay": 0.0,
+         "DissolveCutout": true,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 1.8,
+         "LoopAnimation": false,
+         "PlayBackwards": false
+        },
+        {
+         "CurrentDissolve": 0.0,
+         "Delay": 1.8,
+         "DissolveCutout": true,
+         "IsDelayed": true,
+         "IsStarted": true,
+         "Lifetime": 1.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -263380,
+       "driven": [
+        {
+         "dissolve": 0.403005,
+         "material": -265762
+        },
+        {
+         "dissolve": 0.403005,
+         "material": -265764
+        },
+        {
+         "dissolve": 0.403005,
+         "material": -265032
+        }
+       ]
+      }
+     ],
+     "t": 120.2
+    }
+   ],
+   "donorControllers": [
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 1.0,
+         "Delay": 0.0,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 3.0,
+         "LoopAnimation": false,
+         "PlayBackwards": false
+        },
+        {
+         "CurrentDissolve": 0.0,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": true,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -265920,
+       "driven": [
+        {
+         "dissolve": 1.0,
+         "material": -267572
+        }
+       ]
+      }
+     ],
+     "t": 0.0
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.0445999019,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -265920,
+       "driven": [
+        {
+         "dissolve": 0.0445999019,
+         "material": -268440
+        },
+        {
+         "dissolve": 0.0445999019,
+         "material": -268442
+        },
+        {
+         "dissolve": 0.0445999019,
+         "material": -267572
+        }
+       ]
+      }
+     ],
+     "t": 10.0
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.0525471121,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -265920,
+       "driven": [
+        {
+         "dissolve": 0.0525471121,
+         "material": -268440
+        },
+        {
+         "dissolve": 0.0525471121,
+         "material": -268442
+        },
+        {
+         "dissolve": 0.0525471121,
+         "material": -267572
+        }
+       ]
+      }
+     ],
+     "t": 20.0
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.05983179,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -265920,
+       "driven": [
+        {
+         "dissolve": 0.05983179,
+         "material": -268440
+        },
+        {
+         "dissolve": 0.05983179,
+         "material": -268442
+        },
+        {
+         "dissolve": 0.05983179,
+         "material": -267572
+        }
+       ]
+      }
+     ],
+     "t": 30.1
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.06709237,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -265920,
+       "driven": [
+        {
+         "dissolve": 0.06709237,
+         "material": -268440
+        },
+        {
+         "dissolve": 0.06709237,
+         "material": -268442
+        },
+        {
+         "dissolve": 0.06709237,
+         "material": -267572
+        }
+       ]
+      }
+     ],
+     "t": 40.1
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.07474058,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -265920,
+       "driven": [
+        {
+         "dissolve": 0.07474058,
+         "material": -268440
+        },
+        {
+         "dissolve": 0.07474058,
+         "material": -268442
+        },
+        {
+         "dissolve": 0.07474058,
+         "material": -267572
+        }
+       ]
+      }
+     ],
+     "t": 50.1
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.07479757,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -265920,
+       "driven": [
+        {
+         "dissolve": 0.07479757,
+         "material": -268440
+        },
+        {
+         "dissolve": 0.07479757,
+         "material": -268442
+        },
+        {
+         "dissolve": 0.07479757,
+         "material": -267572
+        }
+       ]
+      }
+     ],
+     "t": 60.1
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.08214575,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -265920,
+       "driven": [
+        {
+         "dissolve": 0.08214575,
+         "material": -268440
+        },
+        {
+         "dissolve": 0.08214575,
+         "material": -268442
+        },
+        {
+         "dissolve": 0.08214575,
+         "material": -267572
+        }
+       ]
+      }
+     ],
+     "t": 70.1
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.0900037959,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -265920,
+       "driven": [
+        {
+         "dissolve": 0.0900037959,
+         "material": -268440
+        },
+        {
+         "dissolve": 0.0900037959,
+         "material": -268442
+        },
+        {
+         "dissolve": 0.0900037959,
+         "material": -267572
+        }
+       ]
+      }
+     ],
+     "t": 80.2
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.09026113,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -265920,
+       "driven": [
+        {
+         "dissolve": 0.09026113,
+         "material": -268440
+        },
+        {
+         "dissolve": 0.09026113,
+         "material": -268442
+        },
+        {
+         "dissolve": 0.09026113,
+         "material": -267572
+        }
+       ]
+      }
+     ],
+     "t": 90.2
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.09043272,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -265920,
+       "driven": [
+        {
+         "dissolve": 0.09043272,
+         "material": -268440
+        },
+        {
+         "dissolve": 0.09043272,
+         "material": -268442
+        },
+        {
+         "dissolve": 0.09043272,
+         "material": -267572
+        }
+       ]
+      }
+     ],
+     "t": 100.2
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.0980004147,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -265920,
+       "driven": [
+        {
+         "dissolve": 0.0980004147,
+         "material": -268440
+        },
+        {
+         "dissolve": 0.0980004147,
+         "material": -268442
+        },
+        {
+         "dissolve": 0.0980004147,
+         "material": -267572
+        }
+       ]
+      }
+     ],
+     "t": 110.2
+    },
+    {
+     "controllers": [
+      {
+       "animations": [
+        {
+         "CurrentDissolve": 0.09812791,
+         "Delay": 4.75,
+         "DissolveCutout": false,
+         "IsDelayed": false,
+         "IsStarted": true,
+         "Lifetime": 5.0,
+         "LoopAnimation": true,
+         "PlayBackwards": false
+        }
+       ],
+       "controller": -265920,
+       "driven": [
+        {
+         "dissolve": 0.09812791,
+         "material": -268440
+        },
+        {
+         "dissolve": 0.09812791,
+         "material": -268442
+        },
+        {
+         "dissolve": 0.09812791,
+         "material": -267572
+        }
+       ]
+      }
+     ],
+     "t": 120.2
+    }
+   ],
+   "mode": "timeline",
+   "pauseRestored": true,
+   "problems": [],
+   "productVersion": "0.0.195",
+   "samples": [
+    {
+     "appear": true,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 1.0,
+     "dissolveCutout": 1.0,
+     "remaining": 119.73,
+     "t": 0.0,
+     "visible": true
+    },
+    {
+     "appear": true,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 1.0,
+     "dissolveCutout": 1.0,
+     "remaining": 119.22,
+     "t": 0.5,
+     "visible": true
+    },
+    {
+     "appear": true,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.917,
+     "dissolveCutout": 1.0,
+     "remaining": 118.72,
+     "t": 1.0,
+     "visible": true
+    },
+    {
+     "appear": true,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.66,
+     "dissolveCutout": 1.0,
+     "remaining": 118.19,
+     "t": 1.54,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.345,
+     "dissolveCutout": 1.0,
+     "remaining": 117.66,
+     "t": 2.07,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.777,
+     "dissolveCutout": 0.0,
+     "remaining": 117.16,
+     "t": 2.57,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.562,
+     "dissolveCutout": 0.0,
+     "remaining": 116.65,
+     "t": 3.07,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.272,
+     "dissolveCutout": 0.0,
+     "remaining": 116.12,
+     "t": 3.61,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.056,
+     "dissolveCutout": 0.0,
+     "remaining": 115.62,
+     "t": 4.11,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.032,
+     "dissolveCutout": 0.0,
+     "remaining": 115.09,
+     "t": 4.64,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.144,
+     "dissolveCutout": 0.0,
+     "remaining": 114.59,
+     "t": 5.14,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.266,
+     "dissolveCutout": 0.0,
+     "remaining": 114.09,
+     "t": 5.64,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.402,
+     "dissolveCutout": 0.0,
+     "remaining": 113.56,
+     "t": 6.17,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.529,
+     "dissolveCutout": 0.0,
+     "remaining": 113.06,
+     "t": 6.67,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.651,
+     "dissolveCutout": 0.0,
+     "remaining": 112.56,
+     "t": 7.17,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.762,
+     "dissolveCutout": 0.0,
+     "remaining": 112.06,
+     "t": 7.67,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.858,
+     "dissolveCutout": 0.0,
+     "remaining": 111.55,
+     "t": 8.17,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.938,
+     "dissolveCutout": 0.0,
+     "remaining": 111.02,
+     "t": 8.7,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.986,
+     "dissolveCutout": 0.0,
+     "remaining": 110.52,
+     "t": 9.2,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.053,
+     "dissolveCutout": 0.0,
+     "remaining": 109.99,
+     "t": 9.74,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.176,
+     "dissolveCutout": 0.0,
+     "remaining": 109.46,
+     "t": 10.27,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.308,
+     "dissolveCutout": 0.0,
+     "remaining": 108.93,
+     "t": 10.8,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.444,
+     "dissolveCutout": 0.0,
+     "remaining": 108.4,
+     "t": 11.33,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.57,
+     "dissolveCutout": 0.0,
+     "remaining": 107.89,
+     "t": 11.83,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.689,
+     "dissolveCutout": 0.0,
+     "remaining": 107.39,
+     "t": 12.33,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.796,
+     "dissolveCutout": 0.0,
+     "remaining": 106.89,
+     "t": 12.83,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.891,
+     "dissolveCutout": 0.0,
+     "remaining": 106.36,
+     "t": 13.36,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.961,
+     "dissolveCutout": 0.0,
+     "remaining": 105.83,
+     "t": 13.9,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.997,
+     "dissolveCutout": 0.0,
+     "remaining": 105.33,
+     "t": 14.4,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.098,
+     "dissolveCutout": 0.0,
+     "remaining": 104.8,
+     "t": 14.93,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.217,
+     "dissolveCutout": 0.0,
+     "remaining": 104.3,
+     "t": 15.43,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.343,
+     "dissolveCutout": 0.0,
+     "remaining": 103.79,
+     "t": 15.93,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.479,
+     "dissolveCutout": 0.0,
+     "remaining": 103.26,
+     "t": 16.46,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.612,
+     "dissolveCutout": 0.0,
+     "remaining": 102.73,
+     "t": 17.0,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.734,
+     "dissolveCutout": 0.0,
+     "remaining": 102.2,
+     "t": 17.53,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.835,
+     "dissolveCutout": 0.0,
+     "remaining": 101.7,
+     "t": 18.03,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.921,
+     "dissolveCutout": 0.0,
+     "remaining": 101.16,
+     "t": 18.56,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.976,
+     "dissolveCutout": 0.0,
+     "remaining": 100.66,
+     "t": 19.06,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.019,
+     "dissolveCutout": 0.0,
+     "remaining": 100.16,
+     "t": 19.56,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.129,
+     "dissolveCutout": 0.0,
+     "remaining": 99.66,
+     "t": 20.06,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.25,
+     "dissolveCutout": 0.0,
+     "remaining": 99.16,
+     "t": 20.56,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.386,
+     "dissolveCutout": 0.0,
+     "remaining": 98.63,
+     "t": 21.1,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.513,
+     "dissolveCutout": 0.0,
+     "remaining": 98.13,
+     "t": 21.6,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.644,
+     "dissolveCutout": 0.0,
+     "remaining": 97.6,
+     "t": 22.13,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.763,
+     "dissolveCutout": 0.0,
+     "remaining": 97.07,
+     "t": 22.66,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.859,
+     "dissolveCutout": 0.0,
+     "remaining": 96.57,
+     "t": 23.16,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.934,
+     "dissolveCutout": 0.0,
+     "remaining": 96.07,
+     "t": 23.66,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.986,
+     "dissolveCutout": 0.0,
+     "remaining": 95.54,
+     "t": 24.19,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.047,
+     "dissolveCutout": 0.0,
+     "remaining": 95.03,
+     "t": 24.69,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.169,
+     "dissolveCutout": 0.0,
+     "remaining": 94.5,
+     "t": 25.22,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.3,
+     "dissolveCutout": 0.0,
+     "remaining": 93.97,
+     "t": 25.76,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.428,
+     "dissolveCutout": 0.0,
+     "remaining": 93.47,
+     "t": 26.26,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.555,
+     "dissolveCutout": 0.0,
+     "remaining": 92.97,
+     "t": 26.76,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.682,
+     "dissolveCutout": 0.0,
+     "remaining": 92.44,
+     "t": 27.29,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.797,
+     "dissolveCutout": 0.0,
+     "remaining": 91.9,
+     "t": 27.82,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.886,
+     "dissolveCutout": 0.0,
+     "remaining": 91.4,
+     "t": 28.32,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.958,
+     "dissolveCutout": 0.0,
+     "remaining": 90.87,
+     "t": 28.86,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.997,
+     "dissolveCutout": 0.0,
+     "remaining": 90.34,
+     "t": 29.39,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.091,
+     "dissolveCutout": 0.0,
+     "remaining": 89.84,
+     "t": 29.89,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.217,
+     "dissolveCutout": 0.0,
+     "remaining": 89.31,
+     "t": 30.42,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.343,
+     "dissolveCutout": 0.0,
+     "remaining": 88.8,
+     "t": 30.92,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.479,
+     "dissolveCutout": 0.0,
+     "remaining": 88.27,
+     "t": 31.45,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.604,
+     "dissolveCutout": 0.0,
+     "remaining": 87.77,
+     "t": 31.96,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.727,
+     "dissolveCutout": 0.0,
+     "remaining": 87.24,
+     "t": 32.49,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.829,
+     "dissolveCutout": 0.0,
+     "remaining": 86.74,
+     "t": 32.99,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.916,
+     "dissolveCutout": 0.0,
+     "remaining": 86.21,
+     "t": 33.52,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.976,
+     "dissolveCutout": 0.0,
+     "remaining": 85.68,
+     "t": 34.05,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.019,
+     "dissolveCutout": 0.0,
+     "remaining": 85.18,
+     "t": 34.55,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.129,
+     "dissolveCutout": 0.0,
+     "remaining": 84.68,
+     "t": 35.05,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.25,
+     "dissolveCutout": 0.0,
+     "remaining": 84.18,
+     "t": 35.55,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.377,
+     "dissolveCutout": 0.0,
+     "remaining": 83.68,
+     "t": 36.05,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.504,
+     "dissolveCutout": 0.0,
+     "remaining": 83.18,
+     "t": 36.55,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.628,
+     "dissolveCutout": 0.0,
+     "remaining": 82.67,
+     "t": 37.05,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.749,
+     "dissolveCutout": 0.0,
+     "remaining": 82.14,
+     "t": 37.58,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.853,
+     "dissolveCutout": 0.0,
+     "remaining": 81.61,
+     "t": 38.12,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.934,
+     "dissolveCutout": 0.0,
+     "remaining": 81.08,
+     "t": 38.65,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.984,
+     "dissolveCutout": 0.0,
+     "remaining": 80.58,
+     "t": 39.15,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.04,
+     "dissolveCutout": 0.0,
+     "remaining": 80.08,
+     "t": 39.65,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.161,
+     "dissolveCutout": 0.0,
+     "remaining": 79.54,
+     "t": 40.18,
+     "visible": true
+    },
+    {
+     "appear": false,
+     "body": "Renderer_Character_Diffuse_Cutout",
+     "dissolve": 0.292,
+     "dissolveCutout": 0.0,
+     "remaining": 79.01,
+     "t": 40.71,
+     "visible": true
+    },
+    {
+     "truncated": 157
+    }
+   ],
+   "termination": {
+    "cleanupAttempted": [
+     "probe iterator",
+     "held state",
+     "disposable units"
+    ],
+    "cleanupFailures": [],
+    "isolationRestored": true,
+    "passed": true,
+    "step": "2|kmgGhaeleLifetime_timeline",
+    "testFailure": ""
+   },
+   "timeline": {
+    "appearanceEndedAt": 1.74,
+    "consistentSnapshots": 11,
+    "donorSignatures": [
+     "delay=0.00 lifetime=3.00 loop=False cutout=False backwards=False",
+     "delay=4.75 lifetime=5.00 loop=True cutout=False backwards=False"
+    ],
+    "lifetimeEndsAt": 119.73,
+    "maxBodyDissolveCutoutInLife": 0.0,
+    "maxBodyDissolveInLife": 0.999970018863678,
+    "moveTravel": 3.73,
+    "removedAt": 121.56,
+    "snapshotsInLife": 11
+   }
+  },
+  "kmgInitialization_create": {
+   "blueprintsFailed": false,
+   "blueprintsInitialized": true,
+   "contextFailed": false,
+   "environment": {
+    "conditions": {
+     "blankResolutions": 0,
+     "events": [],
+     "gritUiPass": {
+      "firstPassStillOpen": false,
+      "firstPassStoppedOnDescriptionOf": null,
+      "installed": false,
+      "passesCompleted": 0,
+      "passesOpened": 0,
+      "projectAbilitiesRead": 0,
+      "projectAbilityDescriptionReads": 0,
+      "substituted": [],
+      "thrown": []
+     },
+     "libraryPrepared": false,
+     "nativeDescriptions": [],
+     "nullResolutions": 0
+    },
+    "currentLocale": "enGB",
+    "currentPackLocale": "enGB",
+    "currentPackStrings": 41552,
+    "emptyKeyResolvesTo": "",
+    "unassignedStringResolvesTo": "<null>",
+    "unknownKeyResolvesTo": "[unknown key: KmgLoaderCompatHarness.UnknownKeyProbe]"
+   },
+   "failureChain": [],
+   "loaderEntryActive": true,
+   "mainState": "Loaded"
+  },
+  "kmgModules_all-on": {
+   "active": {
+    "AcadamaeGraduate": true,
+    "BodyguardFeats": true,
+    "BrownFurTransmuter": true,
+    "EasternWeapons": true,
+    "ElementalRaces": true,
+    "ElvenBranchedSpears": true,
+    "ExpandedSummoning": true,
+    "Gunslinger": true,
+    "MagicCircleSpells": true,
+    "ProtectionFromAlignmentControlImmunity": true,
+    "ShieldOther": true,
+    "TeleportationSpells": true,
+    "UrbanBarbarian": true
+   },
+   "file": null,
+   "fileSha256": null,
+   "pending": {
+    "AcadamaeGraduate": true,
+    "BodyguardFeats": true,
+    "BrownFurTransmuter": true,
+    "EasternWeapons": true,
+    "ElementalRaces": true,
+    "ElvenBranchedSpears": true,
+    "ExpandedSummoning": true,
+    "Gunslinger": true,
+    "MagicCircleSpells": true,
+    "ProtectionFromAlignmentControlImmunity": true,
+    "ShieldOther": true,
+    "TeleportationSpells": true,
+    "UrbanBarbarian": true
+   },
+   "restartRequired": false
+  },
+  "loggerExceptionHooks": 4,
+  "requestPath": "<lab>/harness-request.json",
+  "runId": "20261124T052954Z-owner-0.33.0-s7-ghaele-01-ghaele",
+  "startedUtc": "2026-11-24T05:30:10.3526788Z",
+  "status": "passed",
+  "steps": [
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgModules[all-on]()"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgInitialization[create]"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgGhaeleLifetime[timeline](timeline)"
+   }
+  ]
+ },
+ "harnessEvents": [
+  {
+   "detail": {
+    "ummWindowOpen": true
+   },
+   "event": "mainMenu",
+   "t": 59.54385,
+   "utc": "2026-11-24T05:31:06.2097435Z"
+  },
+  {
+   "detail": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+   "event": "loadSave",
+   "t": 59.550148,
+   "utc": "2026-11-24T05:31:06.2162519Z"
+  },
+  {
+   "detail": "JamandisMansionThroneroom",
+   "event": "saveLoaded",
+   "t": 66.7684555,
+   "utc": "2026-11-24T05:31:13.4340794Z"
+  },
+  {
+   "detail": "kmgModules[all-on]()",
+   "event": "stepBegin",
+   "t": 68.81202,
+   "utc": "2026-11-24T05:31:15.4779234Z"
+  },
+  {
+   "detail": "kmgModules[all-on]()",
+   "event": "stepDone",
+   "t": 68.82477,
+   "utc": "2026-11-24T05:31:15.4904315Z"
+  },
+  {
+   "detail": "kmgInitialization[create]",
+   "event": "stepBegin",
+   "t": 68.84491,
+   "utc": "2026-11-24T05:31:15.5108909Z"
+  },
+  {
+   "detail": "kmgInitialization[create]",
+   "event": "stepDone",
+   "t": 68.85227,
+   "utc": "2026-11-24T05:31:15.5184038Z"
+  },
+  {
+   "detail": "kmgGhaeleLifetime[timeline](timeline)",
+   "event": "stepBegin",
+   "t": 68.87767,
+   "utc": "2026-11-24T05:31:15.5434428Z"
+  },
+  {
+   "detail": "kmgGhaeleLifetime[timeline](timeline)",
+   "event": "stepDone",
+   "t": 196.824951,
+   "utc": "2026-11-24T05:33:23.4908262Z"
+  }
+ ],
+ "launch": "01-ghaele",
+ "launchSummary": {
+  "conditions": {},
+  "gameArguments": [
+   "locale=enGB"
+  ],
+  "harness": "passed",
+  "identity": {
+   "activeMods": [
+    "KingmakerGunslinger 0.0.195",
+    "KmgLoaderCompatHarness 0.1.0"
+   ],
+   "harmony12Sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+   "harmony2": [
+    "2.3.6.0 df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80"
+   ],
+   "productSha256": "d7088878c3deda8f9d3d37f5cf2bb97be79c48b4bea66c4aa66f0cd9e72d5976",
+   "umm": "0.33.0.0",
+   "ummReported": "0.33.0.0",
+   "ummSha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
+  },
+  "label": "01-ghaele",
+  "log": {
+   "absent": [
+    "[initialize.failed] x0"
+   ],
+   "once": [],
+   "present": [
+    "[blueprints][initialize.complete] x1"
+   ]
+  },
+  "pid": 34040,
+  "problems": [],
+  "seconds": 202,
+  "verdict": "PASS"
+ },
+ "session": "20261124T052954Z-owner-0.33.0-s7-ghaele",
+ "sources": {
+  "harness-result.json": "31effda9fb8a42d344d1a3c31ca2fac6ec2dcfc68320add9126ae57c56b24b9e"
+ }
+}

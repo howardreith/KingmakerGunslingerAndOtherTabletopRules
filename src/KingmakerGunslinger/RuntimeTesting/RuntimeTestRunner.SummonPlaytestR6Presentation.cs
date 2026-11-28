@@ -181,18 +181,27 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         // One failed cell records its failure and the later clips still run.
+        // The cell's enumerator is disposed on every exit, including when the
+        // enclosing runner is itself disposed while this cell is yielded (Sprint 7
+        // R4-F1): the cell's own finally blocks then run before fixture teardown.
         private IEnumerable<int> R6Cell(string name, Func<IEnumerable<int>> body)
         {
             IEnumerator<int> steps = null; Exception failure = null;
-            try { steps = body().GetEnumerator(); } catch (Exception error) { failure = error; }
-            while (failure == null)
+            try
             {
-                bool more = false;
-                try { more = steps.MoveNext(); } catch (Exception error) { failure = error; }
-                if (!more) break;
-                yield return steps.Current;
+                try { steps = body().GetEnumerator(); } catch (Exception error) { failure = error; }
+                while (failure == null)
+                {
+                    bool more = false;
+                    try { more = steps.MoveNext(); } catch (Exception error) { failure = error; }
+                    if (!more) break;
+                    yield return steps.Current;
+                }
             }
-            if (steps != null) steps.Dispose();
+            finally
+            {
+                if (steps != null) steps.Dispose();
+            }
             Sprint25Check("r6-" + name + "-completed", failure == null,
                 new JObject { ["error"] = failure == null ? null : failure.ToString() },
                 "The cell ran to its end without an exception.");
@@ -212,18 +221,31 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         // Submit one native command and observe it: no direct ticking.
-        private IEnumerable<int> R6RunPassive(UnitEntityData owner, AbilityData data, TargetWrapper target, JObject row, R6Clip clip)
+        private IEnumerable<int> R6RunPassive(UnitEntityData owner, AbilityData data, TargetWrapper target, JObject row, R6Clip clip,
+            Action<UnitUseAbility> submit = null)
         {
             row["blueprint"] = data.Blueprint.AssetGuid; row["blueprintName"] = data.Blueprint.name;
             row["actionType"] = data.Blueprint.ActionType.ToString();
             row["availableBefore"] = data.IsAvailable; row["canTarget"] = data.CanTarget(target);
             if (!data.IsAvailable || !data.CanTarget(target)) throw new InvalidOperationException("Native ability unavailable: " + data.Blueprint.name);
             var command = new UnitUseAbility(data, target);
-            owner.Commands.Run(command);
+            int cuesSeen = SummonAbilityCastCueRuntime.Snapshot().Length;
+            var cuePosts = new JArray(); row["cuePostsListener"] = cuePosts;
+            // Owner amendment 4 §2B (C3 review R2-F7): a caller that owns its submission (the Sprint 7 Dust cell) performs the
+            // single native run itself; every other caller keeps the plain native run.
+            if (submit != null) submit(command);
+            else owner.Commands.Run(command);
             DateTime deadline = DateTime.UtcNow.AddSeconds(30);
             int actedAt = -1, shots = 0;
             while (DateTime.UtcNow < deadline)
             {
+                // Sprint 7 R1-F1: the game camera (Wwise listener) to emitter
+                // distance in the frame a new cue record appears.
+                SummonCastCueRecord[] cues = SummonAbilityCastCueRuntime.Snapshot();
+                for (int index = cuesSeen; index < cues.Length; index++)
+                    cuePosts.Add(new JObject { ["playingId"] = cues[index].PlayingId, ["cueFrame"] = cues[index].Frame, ["observedFrame"] = Time.frameCount,
+                        ["listenerDistance"] = S7ListenerDistance(owner), ["emitter"] = owner.Blueprint.name });
+                cuesSeen = cues.Length;
                 if (actedAt < 0 && command.IsActed) actedAt = shots;
                 if (clip != null) clip.Shot(R6AnimationState(owner, command));
                 shots++;

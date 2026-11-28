@@ -235,6 +235,57 @@ DEF-06 is worked on `codex/def06-controller-launcher-consolidation`, stacked on 
 identities. The inherited complete-suite result stays 3,147 of 3,148 (the pre-existing `model-d` firearm-source pin
 from RISK-01).
 
+## Sprint 7 (started 2026-11-23; agent-review controller, foreground)
+
+**Current state (pre-submission snapshot for formal review 9, 2026-11-28T09:54Z UTC): ACTIVE in `develop` under owner amendment 5; 8 of 9 authorized reviews completed.**
+- **Review 8** (`b91eabcb3a`): changes_required. It found all nine earlier parent findings fix_verified and raised four
+  records findings (R8-F1 to R8-F3 blocking, R8-F4 optional). This submission is the one authorized review-9 correction:
+  - per-session evidence basis;
+  - manifest citations pinned at the C3 archive;
+  - receipt and coordination references;
+  - the divergence-count label.
+- **Pre-review stop:** the first review-8 submission (`84d2636e01`, 2026-11-28T03:07Z–04:25Z) stopped BLOCKED before any
+  reviewer launched: the controller admits no `docs/agent-reviews/` change outside its own records, and the integration
+  had brought in the child transcripts. No round, finding or reviewer was recorded. Its 77 min 44 s was controller wall
+  time, not review or validation time.
+- **Amendment 5:** revision 5, sha256 `9fbfc53b…17c5`, applied through `resume --amend-mission`. It authorizes removing
+  the 85 inherited child transcript copies (`docs/agent-reviews/pr-221/` 25, `pr-222/` 24, `pr-223/` 36) and requires
+  one fresh `focused` gate, `-Filter sprint7-visual`, on the new head.
+- **Evidence location:** the child review records stay in the accepted archives C1 `2c67a049ee`, C2 `eab90a5ac8` and C3
+  `3bfc570090`, which remain ancestors of this branch. They are cited by immutable links in the record (§7).
+- **Amendment 4 (earlier):** revision 4, sha256 `5442d02a…245d`, applied through `resume --amend-mission`, then `resume --max-rounds 9`.
+- **Integration:** the owner accepted the fast-forward integration of the accepted recovery onto this branch at C3's
+  archive `3bfc570090`. C1 #221, C2 #222 and C3 #223 are accepted at their reviewed and archive identities. #221 shows
+  "merged" because the parent advanced.
+- **The nine parent findings** (R4-F1, R5-F1, R6-F5 and R7-F1 to R7-F6), addressed by accepted successor work, were
+  assessed fix_verified by review 8. Matrix: `docs/GUNSLINGER-SPRINT7-RECORD.md` §7. Recovery map, at the accepted C3
+  archive: https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/3bfc570090b9772cac4b92e79983d31455510bca/docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md
+- **Candidate 6 is reused, not rebuilt:** package `6c71d928…d55a`, DLL `6af754eb…1411`, session `20261127T133020Z`
+  PASS 43/43, mechanics only. Earlier presentation evidence stays on its original candidates.
+- **Validation:** 71 min 35.9 s of 85 spent, including the four amendment-4 gates on `84d2636e01` (349.0 s) and the review-8
+  gate on `b91eabcb3a` (4.9 s). One `sprint7-visual` focused gate is required on the corrected head.
+- **Allowances stay separate.** The recovery's own 345 min 5.6 s, six candidates and eight C3 reviews are kept apart
+  from the parent's.
+- **Not authorized:** review 10, a new package or a native session. Nothing is merged or released. Visual (T2, T3, T6)
+  and listening (T5, T7) choices stay with the owner.
+
+Earlier state (2026-11-24, historical): **BLOCKED at the review cap after round 7 of 7 on `3e2baea4b4` (changes_required; mandatory stop under owner amendment 3).** Verified in round 7: R5-F3, R6-F1, R6-F2, R6-F3, R6-F4. Open: R4-F1, R5-F1, R6-F5 (corrected in the records) and R7-F1 to R7-F6, all verification code or records; continuing needs a new owner decision. Round 7 ran under owner amendment 3 (revision 3, `3321dd31…44e0`; one resumption after the round-6 no-progress stop, a third candidate, a 75-minute ceiling). Candidate 3 `9c39b1ff7f` (package `49f8b88c…6413`) ran `…223809Z` and `…224949Z` effects (35/36 each; every new isolation path passed; the callback-loss predicate is a retained FAIL in both, the second from an evaluator null-typing defect whose fix would need a fourth candidate) and `…224649Z` Ghaele lifecycle/visibility (PASS). Validation used 65 min 42 s of 75 (including the round-7 controller gates). Round 6 (historical) stopped on R4-F1 after verifying seven findings and accepting the R4-F5 conditional disposition. Earlier in round 6: The owner extended the review cap from five to seven. Round 6 corrects the eleven findings open after round 5 (matrix in the record, §7). Validation used 38 min 25 s of the 60-minute exception and both authorized candidates, before the controller gates. The owner resumed the round-3 BLOCKED enrollment through owner
+amendment 1 (revision 1, sha256 `59be8e3f…31e0`). The round-3 no-progress stop on `511160dc6e` and every earlier failure
+remain recorded. Draft PR #219; record `docs/GUNSLINGER-SPRINT7-RECORD.md`; enrollment
+`kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1`; base post-release master `35763430ac` (v0.0.195). Nothing is
+merged or released. Every visual and listening judgment is the owner's. The private listening packet is at
+`<lab>/private/s7-listening-packet-r5/`.
+
+| Story / record | Category | Result | Evidence | Delivery state | Owner decision |
+|---|---|---|---|---|---|
+| S7 T1 / REP-04 | historical incident | Released v0.0.195 and candidate: no premature dissolve (native looping non-cutout loop, also on an unsummoned donor; 11/11 positive samples); ordinary move, combat and expiry; no product change. October incident not attributed | harness `…162819Z` (released) / `…163235Z` (candidate); round-3 `gh`/`ghd` | Bounded disposition, draft PR; released outdoor/bright case has no admitted route; historical scope open | Bounded scope accepted (owner amendment 2) |
+| S7 T2 / VIS-01 | asset defect | Generator repair: 48 zero-area triangles and inside-out welded membranes removed | `ed88ad994e`; models `…162110Z` (body-bound party views) | Implemented, draft PR | Visual acceptance |
+| S7 T3 / VIS-02 | asset defect | Exact-source repair: 16 opposing normal corners to 0 | `d864e7b01f`; models `…162110Z` | Implemented, draft PR | Visual acceptance |
+| S7 T4 / VIS-03 | presentation | Scoped override: "within twice this creature's speed" (owner-approved wording), no school | `2614ea3bd6`; round-3 `ui` PASS | Implemented, draft PR; controller mode unexecuted (no admitted route creates or selects a summon in the console UI) | None pending for wording |
+| S7 T5 / VIS-04 | audio | One owned cue per resolved tail hit on the roll's own in-game target (`Sweetener_Low_06_Quake`, provisional) | fx `…180635Z` and `…170720Z` PASS; private packet | Implemented, draft PR; R4-F5 conditional disposition accepted by the round-6 review (one run lost a surviving cue's native end callback, cause unknown; under synthetic loss playback ends normally and the residual tracking ends with its own source) | Listening and choice |
+| S7 T6 / VIS-05 | presentation | Owned per-instance dust recolour bound to CreateView's own cast-effect call; released Sickened mechanics kept | `9733a0c9b7`; fx `…170720Z` PASS | Implemented, draft PR | Visual acceptance |
+| S7 T7 / VIS-06 | audio decision | `InspireCourage` kept provisionally; six alternatives sampled | r6 and Trumpet reload `…162605Z` PASS; private packet | Disposition, draft PR | Listening and choice |
+
 ## Sprint 6 (started 2026-11-22; manual review workflow)
 
 **Current state (2026-11-23): Sprint 6 disposition accepted; merged and released in v0.0.195** (`docs/GUNSLINGER-SPRINT6-DISPOSITION.md`).

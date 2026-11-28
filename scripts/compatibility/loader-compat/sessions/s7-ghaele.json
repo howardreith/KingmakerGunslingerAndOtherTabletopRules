@@ -1,0 +1,52 @@
+{
+  "name": "s7-ghaele",
+  "description": "Sprint 7 T1 / REP-04 (reviews R1-F2, R2-F4, R3-F1, R3-F5, R3-F6): harness-observed Ghaele (kmgGhaeleLifetime) on whichever product package the session loads - the released v0.0.195 package (baseline) and the candidate - in the disposable fixture save (Jamandi mansion throne room, interior). Step lifecycle: the cast ownership boundaries (borrowed ability with non-default parameters, replaced temporary grant, abandonment with the command pending, abandonment after spawn before registration, an unrelated unit's command preserved). Step timeline: the published summon cast as one owned native command (caster level 20 for that cast only; the loan ends when the cast settles), arrival and appearance kept, native donor AzataGhaelSummoned spawned without a summon, an ordinary move, an ordinary combat against a disposable hostile target (a DefaultPlayerCharacter copy under a loaded faction hostile to the Ghaele, brain off) with attack rolls, the lighting context idle and in combat (ambient, light probe, nearby lights, the game camera party view through the product capture helper), time unpaused through the native expiry, and positive-only attribution of the body value to the donor loop. The product runs alone with the harness. Round 5: the cast's summon is the unit its own execution summoned (native RuleSummonUnit context); lifecycle adds a borrowed CL20 override, an injected incorrect restoration, a vanished borrowed ability and a foreign same-caster Ghaele from another execution in both abandonment cases; combat teardown releases only the probe's attacks, its target and the combat state it introduced, with an independent command on the main character; lighting rows are judged on their readbacks. Round 6 (R4-F2, R5-F1, R5-F4, R5-F5): one destruction-request owner per disposable unit and final releases built after the iterator cleanup; combat teardown releases only the probe attacks and target, never calls LeaveCombat, preserves an independent engagement control acquired after intake, settles the separately owned witness move and requires native combat exit; the pending abandonment prepares the foreign summon first, verifies the exact command and loan right before disposal and keeps a separately subscribed execution-correlated summon witness through the window, with a real owned spawn as its negative control. Round 7 (owner amendment 3: R5-F1, R5-F3, R6-F1): every destruction request and the witness settlement go to the probe's one cumulative cleanup outcome; lifecycle adds the pending verdict's genuinely post-disposal negative control (a labelled controlled notification injection of a result correlated to the abandoned cast's own AbilityData, delivered to the witness handler after the cast owner's disposal, for a disposable unit registered first); step visibility replaces the full timeline: a short current capture of the subject's own fader readback (present-visible on the Ghaele, present-hidden on the disposable donor) through the producer and verdict. The full released/current 120-second lifetimes are not repeated.",
+  "ownerMods": [],
+  "fixtureSaves": [
+    "KMCS_AFTER_NORMAL_012_MODONLY.zks"
+  ],
+  "launches": [
+    {
+      "label": "ghaele",
+      "gameArguments": [
+        "locale=enGB"
+      ],
+      "expectLog": {
+        "present": [
+          "[blueprints][initialize.complete]"
+        ],
+        "absent": [
+          "[initialize.failed]"
+        ]
+      },
+      "harness": {
+        "save": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+        "steps": [
+          {
+            "op": "kmgModules",
+            "label": "all-on",
+            "match": ""
+          },
+          {
+            "op": "kmgInitialization",
+            "label": "create",
+            "expect": "completed"
+          },
+          {
+            "op": "kmgGhaeleLifetime",
+            "label": "lifecycle",
+            "match": "lifecycle",
+            "timeoutSeconds": 240,
+            "continueOnFailure": true
+          },
+          {
+            "op": "kmgGhaeleLifetime",
+            "label": "visibility",
+            "match": "visibility",
+            "timeoutSeconds": 120
+          }
+        ]
+      }
+    }
+  ]
+}

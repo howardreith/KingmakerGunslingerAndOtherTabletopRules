@@ -1,5 +1,29 @@
 # Known issues and conservative adaptations
 
+- Sprint 7 presentation and audio (development candidate on draft PR #219; not released; record
+  `docs/GUNSLINGER-SPRINT7-RECORD.md`).
+  - The Ghaele's body shows a native coloured dissolve band that loops about every 5 seconds. It is native to the
+    azata body (also on an unsummoned native Ghaele), removes no surface and does not shorten the summon, on the
+    released v0.0.195 and current builds. No change. The October "progressive dissolve" observation itself is not
+    attributed (its run's evidence is unavailable).
+  - The owned Trample/Overrun target row now reads "within twice this creature's speed" in the description and HUD
+    windows. The controller (gamepad) window shares the same text code but was not rendered. The two admitted console
+    review routes neither create a summon with these actions nor select one, and the console only selects
+    directly controllable units.
+  - The Ankylosaurus impact cue and the Trumpet Archon blast cue are provisional choices pending the owner's listening.
+    In one native run a surviving impact cue's end-of-event callback did not arrive (cause unknown). The check passed in
+    the two runs before it and the two after it, the last with a native playback readback.
+    - Round 6 withheld that callback synthetically from the product. The sound still ended normally and no other source
+      was affected.
+    - The product kept the cue tracked on its own source until that source was destroyed; the tracking went with it, and
+      the source's own retirement requested a stop for the already ended playing ID.
+    - This development limitation is documented under the owner's conditional disposition (amendment 2), accepted by the
+      round-6 independent review. The original missing callback's cause stays unknown.
+  - The Dust Mephit's breath is a recoloured native cold cone, not a separately authored dust effect. Repeated breaths
+    from one spot each show their cone (the game skips a cone only for a second launch from the same point within one
+    frame).
+  - Mephit breaths roll their Reflex save for every creature in the cone, allies included; allies take no damage and no
+    condition, but the save appears in the combat log. Released behavior, not changed in Sprint 7.
 - A creature that died inside a summoned Purple Worm or Giant Flytrap stayed "swallowed" and kept that mouth shut
   (S6 VER-02 G3, D1; the repair is accepted for the demonstrated Purple Worm/Giant Flytrap scope on branch
   `codex/s6-ver02-c3a-swallow-engulf`; released in v0.0.195).

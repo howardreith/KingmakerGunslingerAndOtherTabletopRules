@@ -23,6 +23,9 @@ namespace KingmakerGunslinger.Summoning
     public sealed class AnkylosaurusTailControl : RuleInitiatorLogicComponent<RuleAttackWithWeapon>
     {
         private static readonly ReferenceEventGate Events = new ReferenceEventGate();
+        // VIS-04: the impact cue's own claim per resolved attack roll, separate
+        // from the strike-rider stamp, taken only for a valid struck target.
+        private static readonly ReferenceEventGate CueEvents = new ReferenceEventGate();
         public BlueprintUnit OwningBlueprint;
         public BlueprintCharacterClass AnimalClass;
         public BlueprintItemWeapon Tail;
@@ -47,6 +50,22 @@ namespace KingmakerGunslinger.Summoning
             // A duplicate wrapper around the same native strike is also stale.
             bool first=Events.TryMark(attack);
             if(first) AnkylosaurusTailImpactVisual.Observe(owner,victim);
+            // VIS-04: one owned cue per resolved strike, before the save.
+            if (AnkylosaurusTailImpactPolicy.QualifiesForCue(exactOwner, exactTail, hit,
+                    victim != null && !victim.Destroyed && victim.IsInGame, ReferenceEquals(attack.Target, victim),
+                    () => CueEvents.TryMark(attack)))
+            {
+                try
+                {
+                    SummonAbilityCastCueRuntime.PlayImpact(AnkylosaurusTailImpactPolicy.ImpactCue, owner,
+                        AnkylosaurusTailImpactPolicy.ImpactCueLabel);
+                }
+                catch (Exception error)
+                {
+                    // A sound never interrupts the strike it decorates.
+                    UnityEngine.Debug.LogException(error);
+                }
+            }
             var control = AnkylosaurusRulesPolicy.Decide(exactOwner, exactTail, hit,
                 available, first, attack.IsCriticalConfirmed, attack.ImmuneToCriticalHit);
             if (control == AnkylosaurusControl.None) return;

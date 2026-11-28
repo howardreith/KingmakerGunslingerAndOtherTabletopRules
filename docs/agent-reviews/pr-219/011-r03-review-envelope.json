@@ -1,0 +1,447 @@
+{
+  "B": "35763430acc9eefc306b861045526a444690bc77",
+  "H": "511160dc6ebc07d06c54bcbad3449b4d40a85b85",
+  "M": "35763430acc9eefc306b861045526a444690bc77",
+  "amendment_revision": null,
+  "amendment_sha256": "none",
+  "checkpoint_id": "final",
+  "checkpoint_type": "final",
+  "fatal": false,
+  "guidance_revision": null,
+  "guidance_sha256": "none",
+  "invocation": {
+    "completed": true,
+    "duration_s": 1377.5,
+    "errors": [],
+    "exit_code": 0,
+    "failed": false,
+    "observed": {
+      "approval_policy": "never",
+      "cli_version": "0.170.0",
+      "network": "restricted",
+      "observed_effort": "max",
+      "observed_model": "gpt-6.2-astra",
+      "plan_type": "pro",
+      "rollout_found": true,
+      "sandbox": "read-only",
+      "source": "Codex session rollout (CLI-recorded thread settings; not model-authored)",
+      "subagent_suspected": false,
+      "turn_efforts": [
+        "max"
+      ],
+      "turn_models": [
+        "gpt-6.2-astra"
+      ],
+      "usage": {
+        "cache_write_input_tokens": 0,
+        "cached_input_tokens": 8041088,
+        "input_tokens": 8325603,
+        "output_tokens": 40655,
+        "reasoning_output_tokens": 16277,
+        "total_tokens": 8366258
+      }
+    },
+    "requested": {
+      "effort": "max",
+      "model": "gpt-6.2-astra",
+      "sandbox": "read-only"
+    },
+    "thread_id": "01a20c40-50c0-76d0-a541-79e197e81b98",
+    "timed_out": false
+  },
+  "mission": {
+    "id": "sprint7-autonomous-mission",
+    "sha256": "c232f135ef60d630428efb0f1870223883bff5bc05bb1fc0fc5dfc7d42af56f0"
+  },
+  "ok": true,
+  "path": "C:\\Dev\\KingmakerGunslingerLab\\agent-review-state\\kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1\\rounds\\r03\\envelope-1.json",
+  "pr": 219,
+  "project_sha256": "286ea7d8a605775ee05eea7ddb50630d9710b9ddb69d1711b9dadb9b084a879e",
+  "protocol": "agent-review.v1",
+  "publication": "r03-review",
+  "published": [
+    {
+      "comment_id": 7124407867,
+      "of": 1,
+      "part": 1,
+      "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/219#issuecomment-7124407867"
+    }
+  ],
+  "raw_result_if_rejected": null,
+  "reasons": [],
+  "repository": "howardreith/KingmakerGunslingerAndOtherTabletopRules",
+  "request_id": "kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1-r03-82bdda",
+  "response_sha256": "12dc4f0c4d8d84d51127a18d236c30178ffc782926affb0d0f0c36e45004d9ad",
+  "result": {
+    "candidate_commit": "511160dc6ebc07d06c54bcbad3449b4d40a85b85",
+    "checkpoint_id": "final",
+    "checkpoint_type": "final",
+    "decision": "changes_required",
+    "decision_rationale": "Eight of the fourteen pending findings are resolved. The repaired exports, desktop tooltips, ordinary impact-cue controls and concurrent Dust comparison have supporting evidence. The final checkpoint still lacks reviewable listening evidence, released-baseline Ghaele coverage and a supported controller-window disposition. The Dust ownership and probe cleanup paths also have concrete failure cases.\n\nContinuation for Claude\n\nKeep the verified exports, gameplay behavior and successful native records. Trace the existing cleanup2 console fixtures to the exact selection and Inspect operation. Complete the missing released-baseline observations where existing admission permits, and identify the precise boundary for any unavailable case. Use the existing private review mechanism for playable audio, correct the distance metadata and ground the cue recommendation in listening.\n\nCorrect Dust effect ownership across interrupted creation, bind party-camera measurements to the rendered body, and make the affected observers account for every owned command, condition, hook and borrowed setting. Exercise the failure paths identified in the findings and propagate failed restoration to the actual verdict. Reuse the successful evidence wherever its dependencies still match. Run the affected Focused filters on the next candidate and use only bounded, admitted native checks within the existing enrollment and budgets. Fixture admissions, released mechanics, historical records and release authority remain governed by the mission.",
+    "evidence_assessment": {
+      "executed_verification": [
+        "The eleven controller receipts and their logs bind to H. The named Focused filters passed 108 test executions in 25.1 seconds in total, including production compilation. The sprint7-visual filter passed all 12 cases.",
+        "The 6f2f16ca88 core session records 14 desktop UI checks, bright and dim model checks, and bright and dim candidate Ghaele checks. The separate reload session records saved cue 159 ending naturally, no replay after load and fresh cue 327.",
+        "The released v0.0.195 and candidate harness runs record ordinary Ghaele movement of 3.62 m and 3.73 m, eleven in-life controller samples each and removal after native expiry. Both used the mansion fixture.",
+        "The f564cbb844 effects session records 27 passing FX checks and a passing R6 launch. Its package SHA-256 is d4ded9a868753cd0766f7ebf8a0f710e21786740a5808785277c558202d46619. The eight round-three outer receipts include the three earlier FX failures and record transaction completion and owner-file restoration.",
+        "I checked the committed hashes for all 82 indexed stills and the three repaired exports. The retained Blender receipt records reproduction of both baseline meshes and byte-identical repeat exports. I inspected representative wing-root, waist, grip, party-camera, HUD and Dust comparisons."
+      ],
+      "inspected": [
+        "Controller mission, developer report, transcript notice, prior ledger, feature diff and changed-file list against merge base 35763430acc9eefc306b861045526a444690bc77.",
+        "Repository validation and review policy, round-three source changes and their direct consumers, including the console fixtures, production Dust and impact hooks, model camera helper, probe lifecycle and Focused tests.",
+        "Sprint 7 outcome record, remediation state, known issues, release and export identities, native launch extracts, session receipts, image index and audio context."
+      ],
+      "limitations": [
+        "This was a read-only review. The controller withheld the mixed foreground shell transcript. Native execution and Blender results were assessed from retained structured records. The independently supplied controller receipts cover the Focused gates.",
+        "Native evidence binds to the recorded release, 6f2f16ca88 and f564cbb844 packages. The relevant product, harness and asset sources match H from f564cbb844. The earlier core run used the observer version identified in its receipt.",
+        "All 18 WAV entries point outside the assigned snapshot. I could inspect their metadata and signal measurements. Listening and comparison of the recordings remain unverified."
+      ],
+      "required_gaps": [
+        "Playable authorized audio comparisons, accurate gameplay distance context and a listening-based recommendation.",
+        "Released-baseline Ghaele combat and representative lighting observations, plus populated controller windows or a source-grounded account of the unavailable operation.",
+        "Body-bound party-camera evidence and focused evidence for interrupted ownership, failed cleanup and inconclusive writer samples."
+      ],
+      "source_inspection_only": [
+        "The cleanup2 fixtures reach the real console action bar. Their guards constrain the selected actor and the actions the observer can drive.",
+        "The same-frame Dust adoption, unrelated saving throw, late Sickened, pending summon and cleanup-report failure paths follow from the candidate source. The recorded successful launches do not exercise those failures."
+      ]
+    },
+    "findings": [
+      {
+        "acceptance_ids": [
+          "VIS-04",
+          "VIS-06"
+        ],
+        "actual": "The index exposes 82 stills but all 18 WAV entries have a null committed path and a private lab reference. The record explicitly says no judgment came from listening. Both tail-hit distances are sampled after both strikes and a further four-second wait, although the manifest describes distance at posting. The in-play R6 Trumpet distance is absent.",
+        "blocking_rationale": "The owner cannot evaluate the proposed cue choices from the supplied review set, and the recorded distances do not establish comparable gameplay conditions.",
+        "blocks_readiness": true,
+        "category": "evidence_gap",
+        "expected": "The intended reviewer can play comparable excerpts and trace each to its source interval, volume and listener position. The recommendation reflects the audible result.",
+        "id": "R1-F1",
+        "location": {
+          "file": "docs/GUNSLINGER-SPRINT7-RECORD.md",
+          "line": 85
+        },
+        "priority": "P1",
+        "requested_correction": "Provide the excerpts through the approved private review channel. Correct the timing description, attach event-time distance where available and identify any missing measurement. Record a concrete listening recommendation for the candidate cues.",
+        "requested_evidence": "Accessible hashed excerpts for the actual impact and blast alongside their alternatives, with event, emitter, capture interval, volume, distance context and listening observations. Keep proprietary audio in its authorized location.",
+        "title": "Make the cue comparisons playable and correct their distance context",
+        "trigger": "Follow the impact and Trumpet recommendations from the final record to the recordings and their gameplay conditions."
+      },
+      {
+        "acceptance_ids": [
+          "VIS-01",
+          "VIS-02"
+        ],
+        "actual": "Natural appearance and separate body measurements are now recorded. The party capture still omits the renderer argument, and both Nalfeshnee lighting runs identify disabled _ammunition04 in that capture. The framing predicate explicitly excludes party, so even an empty capture can pass. The dim front chandelier and dim rear gallery also obstruct parts of the whole-body views despite clear centre rays.",
+        "blocking_rationale": "The observer can award the required gameplay-distance view while measuring an accessory or failing to produce the image.",
+        "blocks_readiness": true,
+        "category": "evidence_gap",
+        "expected": "The party-camera verdict requires a lit, in-frame image tied to the enabled comparison body. A view counted for an anatomical feature shows that feature clearly.",
+        "id": "R1-F3",
+        "location": {
+          "file": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.Sprint7Presentation.cs",
+          "line": 377
+        },
+        "priority": "P2",
+        "requested_correction": "Pass the actual body renderer to the existing camera helper and include the party capture in the verdict. Use the clear matched detail views already available and identify or replace obstructed views where they support a required claim.",
+        "requested_evidence": "Before/after party rows with the correct enabled mesh, a successful lit image and in-frame status, plus a check showing that an absent capture fails. Retain the existing post-fade detail and motion evidence.",
+        "title": "Bind the party-camera verdict to the repaired body",
+        "trigger": "Capture a normal-distance model view when the first skinned renderer is a disabled accessory or the camera helper returns an empty-image result."
+      },
+      {
+        "acceptance_ids": [
+          "VIS-03"
+        ],
+        "actual": "The record identifies only teleportation and firearm routes. IsCleanup2ConsoleReview also admits elementals-console and alternate-console in a fresh world. The elemental observer obtains InGameUiStaticPartContext and the native ActionBarVM, selects fixture.Caster and drives console input. Its actor and selector guards are relevant to whether an owned dinosaur or Inspect can be exercised.",
+        "blocking_rationale": "The stated need for new scene admission overlooks an existing guarded route that reaches the live console UI. The current blocker therefore does not establish why the required window is unavailable.",
+        "blocks_readiness": true,
+        "category": "evidence_gap",
+        "expected": "The handoff includes populated controller windows or identifies the exact operation unavailable after tracing the applicable guarded routes.",
+        "id": "R1-F5",
+        "location": {
+          "file": "docs/GUNSLINGER-SPRINT7-RECORD.md",
+          "line": 161
+        },
+        "priority": "P1",
+        "requested_correction": "Trace both cleanup2 console phases through selected-unit ownership, action-bar binding and Inspect dispatch. Use only operations allowed by their existing contracts. If a necessary operation is unavailable, correct the blocker to name that operation and its guard.",
+        "requested_evidence": "Populated released/current controller readbacks for the owned actions, native Overrun and unrelated spell where admitted, or source locations establishing the first unavailable selection or Inspect prerequisite.",
+        "title": "Trace the existing in-game console fixture before declaring a blocker",
+        "trigger": "Evaluate the assertion that reaching the console in-game UI and sending controller input require new admission."
+      },
+      {
+        "acceptance_ids": [
+          "VIS-05"
+        ],
+        "actual": "CreateView removes its tracker entry in an ordinary postfix. If an owned inner creation throws, its entry remains innermost until the enclosing creation or Tick ends. A matching SpawnFxOnPoint during that interval passes the prefab and position checks and consumes the stale entry. The interruption tests end the outer creation or scope before attempting adoption.",
+        "blocking_rationale": "A foreign instance of the shared effect can receive the Dust tint and consume the owned cast's one opportunity.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "Only the spawn belonging to the actual owned CreateView call can acquire the tint, including while nested calls unwind.",
+        "id": "R1-F9",
+        "location": {
+          "file": "src/KingmakerGunslinger/Summoning/DustMephitBreathPresentation.cs",
+          "line": 106
+        },
+        "priority": "P2",
+        "requested_correction": "Bind adoption to the specific native spawn call or give the creation an exception-safe ownership interval using the installed Harmony12 surface. Preserve enclosing ownership and the native shared effect.",
+        "requested_evidence": "A focused case that interrupts an inner owned creation and performs a foreign same-prefab, same-position spawn before the outer call exits. Show zero foreign tints and one tint for a subsequent valid owned spawn.",
+        "title": "Prevent an interrupted Dust creation from claiming a foreign spawn",
+        "trigger": "An enclosing call handles an interrupted owned CreateView and spawns the same prefab at the same point before that enclosing call returns."
+      },
+      {
+        "acceptance_ids": [
+          "VIS-06"
+        ],
+        "actual": "The global saving-throw handler seeds every non-Trumpet initiator while seeding is true. That window spans command queueing through completion across yielded frames. Restoring the saved Unity RNG state after the whole command also rewinds unrelated draws made during those frames.",
+        "blocking_rationale": "The fixture can force another effect's saving throw and alter the subsequent random sequence while reporting successful seeding cleanup.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "Forced saves belong to the exact observed blast execution. Unrelated saves and random draws retain their ordinary outcomes.",
+        "id": "R2-F2",
+        "location": {
+          "file": "tools/LoaderCompatHarness/TrumpetCueProbes.cs",
+          "line": 103
+        },
+        "priority": "P2",
+        "requested_correction": "Correlate the rule to the observed command's execution context and confine any shared RNG change to the owned roll. Preserve the iterator-disposal and pause-restoration correction.",
+        "requested_evidence": "An interleaved unrelated save and RNG draw during a yielded blast, compared with a control, plus abandonment showing that the owned subscription and generator intervention have ended.",
+        "title": "Restrict Trumpet save seeding to the actual blast execution",
+        "trigger": "Another ability rolls a save or consumes Unity randomness while the observed Trumpet command is queued or executing."
+      },
+      {
+        "acceptance_ids": [
+          "REP-04"
+        ],
+        "actual": "The product observer now restores the exact ability immediately after casting. The new released-baseline harness registers restoration in the outer resource list, which is drained after the full lifetime observation. A borrowed ability retains CL20 and spell level 9, or a temporary grant remains available, for roughly another 120 seconds of unpaused game time.",
+        "blocking_rationale": "The baseline observation changes the main character's usable ability state beyond the observed cast.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "The caster regains its prior parameters or loses the observer's exact temporary grant as soon as the observed cast settles, including on failure.",
+        "id": "R2-F4",
+        "location": {
+          "file": "tools/LoaderCompatHarness/GhaeleLifetimeProbes.cs",
+          "line": 173
+        },
+        "priority": "P2",
+        "requested_correction": "Give the harness ability loan the same cast-bounded lifetime as the product observer. Preserve exact-instance release, replacement ownership and fallback cleanup on interruption.",
+        "requested_evidence": "Exercise a borrowed ability with non-default parameters and a replaced temporary grant. Check the ability state at the first post-cast observation and on an interrupted cast. Both retained native runs used a newly granted ability.",
+        "title": "Release the baseline harness's Ghaele ability immediately after casting",
+        "trigger": "The main character already knows the summon or receives its temporary grant before the harness follows the Ghaele to expiry."
+      },
+      {
+        "acceptance_ids": [
+          "REP-04"
+        ],
+        "actual": "The released v0.0.195 run used JamandisMansionThroneroom with no hostile. It establishes an interior idle, movement and expiry timeline. The bright/dim observations and three sword attacks cited in the outcome came from the candidate product observer.",
+        "blocking_rationale": "Mission section 5 explicitly calls for combat and representative bright and dim presentation on the actual baseline. The new timeline establishes only part of that coverage.",
+        "blocks_readiness": true,
+        "category": "evidence_gap",
+        "expected": "The released package has an ordinary combat observation and representative lighting coverage, or the record precisely bounds the unavailable baseline cases.",
+        "id": "R3-F1",
+        "location": {
+          "file": "docs/GUNSLINGER-SPRINT7-RECORD.md",
+          "line": 102
+        },
+        "priority": "P1",
+        "requested_correction": "Check existing authorized baseline fixtures and supply the missing observations where supported. Otherwise identify the specific fixture limitation and carry the missing released-baseline conditions into the seven-story outcome.",
+        "requested_evidence": "Released-package identity, actual attack and lighting context with body, time and lifetime readbacks, or a documented boundary after checking the applicable admitted fixtures. Retain the existing mansion timeline.",
+        "title": "Account for missing combat and lighting on the released Ghaele baseline",
+        "trigger": "Attribute the outcome table's attack and lighting coverage to a specific package."
+      },
+      {
+        "acceptance_ids": [
+          "REP-04",
+          "VIS-06"
+        ],
+        "actual": "Disposing either iterator runs a finally block that drains OwnedProbeResources and copies failures into the probe's local problems list. Release then drains the empty list and returns a successful CleanupReport for that step. ProbeSlot sets unrestoredOwner only from the returned report. On abandonment, Poll never publishes the newly added problems.",
+        "blocking_rationale": "The slot can mark isolation restored and permit a subsequent step after an owned restoration failed.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "The first cleanup result reaches ProbeSlot with every restore failure, while each release still runs exactly once.",
+        "id": "R3-F2",
+        "location": {
+          "file": "tools/LoaderCompatHarness/TrumpetCueProbes.cs",
+          "line": 147
+        },
+        "priority": "P2",
+        "requested_correction": "Preserve the cleanup result across iterator disposal and merge it into the report returned by Release in both the Trumpet and Ghaele probes. Keep the original test failure and attempt the remaining releases.",
+        "requested_evidence": "Terminate a yielded probe through ProbeSlot with a failing restore. Verify the named failure, remaining cleanup attempts, IsolationRestored=false and refusal to advance.",
+        "title": "Propagate iterator cleanup failures to the probe slot",
+        "trigger": "Terminate a yielded Trumpet or Ghaele probe while one held restore, such as unsubscribe or pause restoration, fails."
+      },
+      {
+        "acceptance_ids": [
+          "VIS-05"
+        ],
+        "actual": "breathSickened receives instances only after the first three mechanics casts. Later concurrent, paired and native-look Dust casts never add theirs. The final native-look command targets the shared hostile with its save forced low, and the final clearSickened call can remove only instances already in the list.",
+        "blocking_rationale": "A later breath-owned condition can survive into the following cell even while the foreign-condition preservation check passes.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "Cleanup releases conditions introduced by every observed Dust cast while preserving conditions from other contexts.",
+        "id": "R3-F3",
+        "location": {
+          "file": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.Sprint7Presentation.cs",
+          "line": 1694
+        },
+        "priority": "P2",
+        "requested_correction": "Track condition ownership for every Dust command in the cell, including casts interrupted before their normal readback. Remove only acquired instances during cleanup.",
+        "requested_evidence": "After a later cast applies Sickened, show zero surviving cell-owned instances and the foreign control still present at cleanup. Cover an early exit after application.",
+        "title": "Release Sickened from the later Dust comparison casts",
+        "trigger": "A concurrent or final comparison cast applies Sickened after the three mechanics casts have finished."
+      },
+      {
+        "acceptance_ids": [
+          "VIS-05"
+        ],
+        "actual": "Normal teardown writes DisposeFailures and ownedHooksAfterDispose into JSON. Neither value enters a failing check. The outer s7-effects-owned-state-restored verdict examines its own errors list and the live tint count, so an unsuccessful unpatch can coexist with PASS.",
+        "blocking_rationale": "A retained observer hook can affect later work in the same process while the session declares restoration complete.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "A failed unpatch or remaining owned hook fails the restoration verdict after the other independent releases run.",
+        "id": "R3-F4",
+        "location": {
+          "file": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.Sprint7Presentation.cs",
+          "line": 1962
+        },
+        "priority": "P2",
+        "requested_correction": "Feed the normal trace-disposal failures and remaining hook count into the cell or outer restoration verdict. Preserve the individual failure details.",
+        "requested_evidence": "A bounded failed normal-disposal case that produces a failing verdict and still attempts other releases, alongside the existing successful four-to-zero hook result.",
+        "title": "Fail the effects verdict when normal trace removal fails",
+        "trigger": "An owned Harmony hook survives normal disposal of a successfully constructed projectile trace."
+      },
+      {
+        "acceptance_ids": [
+          "REP-04"
+        ],
+        "actual": "The baseline probe queues UnitUseAbility on the main character and yields. Release has no entry for that command. The probe adds the summon to created only after its success check. A timeout or abandonment can therefore leave the command pending or an already-created Ghaele untracked.",
+        "blocking_rationale": "The command can complete after the probe has released its other state and reported isolation restored.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "The probe owns the queued command and its resulting summon from submission through settlement, including termination while yielded.",
+        "id": "R3-F5",
+        "location": {
+          "file": "tools/LoaderCompatHarness/GhaeleLifetimeProbes.cs",
+          "line": 185
+        },
+        "priority": "P2",
+        "requested_correction": "Retain and settle or cancel the exact command on timeout or abandonment. Account for any summon it already produced before reporting restoration, while preserving unrelated queued work and units.",
+        "requested_evidence": "Interrupt while the command is pending and after spawn but before normal registration. Verify no late owned summon or runnable owned command remains and an unrelated command survives.",
+        "title": "Own the baseline Ghaele summon command across interruption",
+        "trigger": "The harness times out or is abandoned after main.Commands.Run and before created.Add."
+      },
+      {
+        "acceptance_ids": [
+          "REP-04"
+        ],
+        "actual": "Each in-life snapshot starts with ok=true. Empty summon controllers or animations, delayed-only animations and a controller with no readable driven material can all increment consistent. A populated donor signature set and five such rows can pass the final writer check without a single positive material comparison.",
+        "blocking_rationale": "The harness can attribute the body value to a native donor loop when the sample contains no evidence of the writer.",
+        "blocks_readiness": true,
+        "category": "defect",
+        "expected": "A snapshot counted toward attribution contains a qualifying active non-cutout loop and an actual comparison against a driven body material.",
+        "id": "R3-F6",
+        "location": {
+          "file": "tools/LoaderCompatHarness/GhaeleLifetimeProbes.cs",
+          "line": 250
+        },
+        "priority": "P2",
+        "requested_correction": "Count positive animation and readable material matches explicitly. Treat missing or inactive writer observations as inconclusive and require sufficient positive samples for attribution.",
+        "requested_evidence": "Focused cases for an empty controller set, inactive animation and missing driven value must fail attribution. The retained released/current rows with an active loop and matching materials should still qualify.",
+        "title": "Require a positive material comparison for Ghaele writer attribution",
+        "trigger": "The body and donor remain readable while the summon controller supplies no active animation or readable driven material."
+      }
+    ],
+    "prior_finding_assessments": [
+      {
+        "assessment": "fix_rejected",
+        "finding_id": "R1-F1",
+        "rationale": "The stills, export comparisons, expenditure reconciliation and outer receipts now support review. Playable audio and reliable event-time distance context remain missing."
+      },
+      {
+        "assessment": "fix_verified",
+        "finding_id": "R1-F11",
+        "rationale": "The comparison restores its traced instance. The donor kept its native signature in 26 samples over 265 overlapping frames, including the Dust release frame. A second owned Dust instance retained its tint until its own release."
+      },
+      {
+        "assessment": "fix_verified",
+        "finding_id": "R1-F13",
+        "rationale": "NativeIconScreenEvidence directly consumes Sprint32ScreenCaptureAdmitted. The Focused suite exercises the UI phase, the five rejected phases, malformed names, wrong arity and another scenario."
+      },
+      {
+        "assessment": "fix_verified",
+        "finding_id": "R1-F14",
+        "rationale": "Injected constructor failures preserved the original error, restored the comparison renderer, destroyed its temporary mesh and reduced two partially installed hooks to zero. R3-F4 concerns verdict propagation during normal disposal."
+      },
+      {
+        "assessment": "fix_verified",
+        "finding_id": "R1-F2",
+        "rationale": "The released-package timeline now establishes movement, a donor-matched in-life writer and genuine expiry in the mansion. The outcome and issue records leave the October writer unresolved. R3-F1 addresses the separate missing baseline conditions."
+      },
+      {
+        "assessment": "fix_rejected",
+        "finding_id": "R1-F3",
+        "rationale": "The models now finish appearance naturally and the separate enabled-body rows match the exports. The party capture still selects the disabled accessory and is excluded from the required framing check."
+      },
+      {
+        "assessment": "fix_verified",
+        "finding_id": "R1-F4",
+        "rationale": "The UI observer borrows an existing ability, retains each actual new grant and removes it only while the same instance is held. Focused replacement cases and the 14-check desktop run support the correction."
+      },
+      {
+        "assessment": "fix_rejected",
+        "finding_id": "R1-F5",
+        "rationale": "The blocker omits the admitted cleanup2 phases that reach the native console action bar. The exact boundary for selecting the relevant unit and opening Inspect remains untraced."
+      },
+      {
+        "assessment": "fix_verified",
+        "finding_id": "R1-F6",
+        "rationale": "The cue takes its own per-roll claim after validating the in-game roll target. The production-handler controls record zero posts for the foreign weapon, removed target and mismatched wrapper, followed by one for a valid wrapper on the same roll. Duplicate, miss and cancellation controls remain intact."
+      },
+      {
+        "assessment": "fix_rejected",
+        "finding_id": "R1-F9",
+        "rationale": "Nested normal calls preserve their enclosing state. The interruption cases clear the enclosing creation or scope before attempting the foreign spawn, leaving the same-frame interval in R1-F9 exposed."
+      },
+      {
+        "assessment": "fix_verified",
+        "finding_id": "R2-F1",
+        "rationale": "SavedCue uses the product's recorded stop-result value, matching playing ID and ordered timestamps. Focused cases distinguish successful retirement from failed stop and missing callback. The actual reload exercised natural completion."
+      },
+      {
+        "assessment": "fix_rejected",
+        "finding_id": "R2-F2",
+        "rationale": "Release now disposes the suspended iterator. The RNG intervention still spans unrelated activity throughout a yielded command, and the handler does not identify the blast that caused the save. R3-F2 covers the shared failure-reporting path."
+      },
+      {
+        "assessment": "fix_verified",
+        "finding_id": "R2-F3",
+        "rationale": "The prior removal of foreign Sickened instances is fixed. Cleanup selects retained instances, and the native foreign control survived every reset and final cleanup. R3-F3 addresses the separate omission of later owned instances."
+      },
+      {
+        "assessment": "fix_rejected",
+        "finding_id": "R2-F4",
+        "rationale": "S7NaturalSummon now restores the exact borrowed state at cast completion. The new baseline lifetime probe applies the same override through expiry, so the cast-scoping requirement remains open."
+      }
+    ],
+    "request_id": "kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1-r03-82bdda",
+    "round": 3,
+    "schema_version": "agent-review.review.v1",
+    "summary": {
+      "delivered_behavior": "The candidate repairs the Nalfeshnee wing roots and Salamander waist and fingers, corrects the owned desktop Trample/Overrun text, adds a deduplicated Ankylosaurus impact cue and recolours the ordinary owned Dust cone. It retains InspireCourage for Trumpet Blast and documents a bounded Ghaele non-reproduction.",
+      "pending_later_phase_work": [],
+      "remaining_owner_review": [
+        "Judge the wing roots, Salamander anatomy and grip, Dust cone readability and final tooltip wording.",
+        "Choose the impact and Trumpet cues after hearing the comparable recordings.",
+        "Decide separately whether the released Dust Sickened behavior or harmless ally save warrants a future rules change. Sprint 7 publication remains an owner decision."
+      ],
+      "scope_reviewed": "Final correction review of all seven enrolled Sprint 7 stories, all fourteen pending findings, the round-three changes and their directly affected consumers in draft PR #219.",
+      "unresolved_questions": [
+        "The October Ghaele observations lack contemporaneous evidence identifying their writer. The released and candidate timelines establish behavior under their recorded conditions.",
+        "The exact controller Inspect prerequisite for the owned actions remains open, as do the released-baseline combat and lighting coverage and the audible basis for the proposed cues."
+      ]
+    }
+  },
+  "round": 3,
+  "validated_at": "2026-11-24T06:54:09Z",
+  "workflow_fingerprint": "6d613defe7bfe2f01a5818a2cd41b281965f438c45a0ca37ce15957e4dcffe19"
+}

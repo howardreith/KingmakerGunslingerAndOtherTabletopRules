@@ -8,7 +8,7 @@ namespace KingmakerGunslinger.Summoning
     internal static class SalamanderHumanBindingPolicy
     {
         internal const string BodyName = "Renderer_Character_Diffuse_Cutout";
-        internal const string AssetHash = "b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19";
+        internal const string AssetHash = "0837e7964404188a592d20f4cae77dc9b5a459d93360b9474174bc4f4c9ae30e";
         internal static bool IsReviewedAuxiliary(string renderer, string mesh, int bones)
         {
             return renderer == "Cape_Red_M(Clone)" && mesh == "CP_Cape2Sided_M_Any" && bones == 0;

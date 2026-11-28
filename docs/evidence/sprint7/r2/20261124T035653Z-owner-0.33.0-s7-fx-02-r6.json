@@ -1,0 +1,803 @@
+{
+ "checks": [
+  {
+   "observed": {
+    "actorBlueprintExact": true,
+    "actorNameExact": true,
+    "actorPresent": true,
+    "anchorCommandsEmpty": true,
+    "casterBrainDisabled": true,
+    "casterCommandsEmpty": true,
+    "originalDistinct": true,
+    "ownedPartyExact": true,
+    "presetExact": true,
+    "saveGuardOwned": true,
+    "scenesOwned": true
+   },
+   "passed": true,
+   "predicate": "summon-playtest-r6-presentation-group-quiet-anchor"
+  },
+  {
+   "observed": {
+    "alwaysEnemy": false,
+    "attackFaction": "Player",
+    "casterIsEnemy": true,
+    "intakeNonPlayerRelations": [],
+    "privateFaction": "KMG_Runtime_Sprint32Turn_HostileFaction",
+    "target": "8bee216a-b62a-4349-88e7-5dc679db8484",
+    "targetIsEnemy": true
+   },
+   "passed": true,
+   "predicate": "sprint32-turn-hostile-faction"
+  },
+  {
+   "observed": {
+    "controller": "Mouse",
+    "exactReview": true,
+    "frame": 3856,
+    "gameSeconds": 43200.642,
+    "immediateBoundary": true,
+    "inputModeAdmitted": true,
+    "mode": "Default",
+    "narrativeAbsent": true,
+    "nativeModeAdmitted": true,
+    "noSelectedAbility": true,
+    "ownedFixture": true,
+    "saveFree": true,
+    "utc": "2026-11-24T04:02:24.7267442Z"
+   },
+   "passed": true,
+   "predicate": "cleanup2-native-default-admission-summon-playtest-r6-presentation"
+  },
+  {
+   "observed": {
+    "activeModeCounts": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "closed": false,
+    "controllerReferences": [
+     {
+      "actualInstance": 1082956032,
+      "expectedInstance": 1082956032,
+      "name": "ClickEventsController",
+      "same": true
+     },
+     {
+      "actualInstance": -652690432,
+      "expectedInstance": -652690432,
+      "name": "SelectedAbilityHandler",
+      "same": true
+     },
+     {
+      "actualInstance": 1313697792,
+      "expectedInstance": 1313697792,
+      "name": "PlaceRestMarkerHandler",
+      "same": true
+     },
+     {
+      "actualInstance": 1070347008,
+      "expectedInstance": 1070347008,
+      "name": "InteractionHighlightController",
+      "same": true
+     },
+     {
+      "actualInstance": 1655618048,
+      "expectedInstance": 1655618048,
+      "name": "CombatEngagementController",
+      "same": true
+     },
+     {
+      "actualInstance": -1608894464,
+      "expectedInstance": -1608894464,
+      "name": "HandsEquipmentController",
+      "same": true
+     },
+     {
+      "actualInstance": 1433433856,
+      "expectedInstance": 1433433856,
+      "name": "CameraController",
+      "same": true
+     }
+    ],
+    "current": true,
+    "existingNativeDefaultBorrowed": true,
+    "expectedActiveModeCounts": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "frame": 3856,
+    "gameSeconds": 43200.642,
+    "manualClockSuspended": true,
+    "manualPulsesBefore": 0,
+    "manualPulsesCurrent": 0,
+    "mode": "Default",
+    "nativeFactoryModeOwned": false,
+    "originalStackCount": 1,
+    "ownershipPredicates": {
+     "exactActiveModeCounts": true,
+     "exactControllerReferences": true,
+     "exactModeStackReferences": true,
+     "factoryDefaultPointerExact": true,
+     "gameModeTicking": false,
+     "immediateBoundary": true,
+     "modeIsNativeDefault": true,
+     "notClosed": true,
+     "pendingBeforeTickActions": 0,
+     "selectedAbility": null,
+     "selectedAbilityAbsent": true,
+     "switchingModes": false
+    },
+    "pointerController": "Kingmaker.Controllers.Clicks.PointerController",
+    "purpose": "summon-playtest-r6-presentation",
+    "selectedAbilityHandler": "Kingmaker.Controllers.Clicks.Handlers.ClickWithSelectedAbilityHandler",
+    "stackCount": 1,
+    "tickGateBefore": {
+     "allowedAbilityExecutionTicks": 0,
+     "allowedActionTicks": 0,
+     "allowedCooldownTicks": 0,
+     "blockedAmbientActionTicks": 0,
+     "blockedAmbientCooldownTicks": 0,
+     "blockedDuplicateAbilityExecutionTicks": 0,
+     "brainTicks": 0,
+     "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+     "maximumActionTicksPerUnitPerUnityFrame": 0,
+     "nativeDefaultActions": 0,
+     "nativeDefaultCooldowns": 0,
+     "nativeDefaultExecutions": 0,
+     "nativeDefaultLeaseActive": false,
+     "refusedStaleNativeTicks": 0,
+     "scope": "exact request fixture/turn-clock actor set"
+    },
+    "tickGateCurrent": {
+     "allowedAbilityExecutionTicks": 0,
+     "allowedActionTicks": 0,
+     "allowedCooldownTicks": 0,
+     "blockedAmbientActionTicks": 0,
+     "blockedAmbientCooldownTicks": 0,
+     "blockedDuplicateAbilityExecutionTicks": 0,
+     "brainTicks": 0,
+     "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+     "maximumActionTicksPerUnitPerUnityFrame": 0,
+     "nativeDefaultActions": 0,
+     "nativeDefaultCooldowns": 0,
+     "nativeDefaultExecutions": 0,
+     "nativeDefaultLeaseActive": true,
+     "refusedStaleNativeTicks": 0,
+     "scope": "exact request fixture/turn-clock actor set"
+    },
+    "utc": "2026-11-24T04:02:24.7397686Z"
+   },
+   "passed": true,
+   "predicate": "cleanup2-native-default-enter-summon-playtest-r6-presentation"
+  },
+  {
+   "observed": {
+    "aidStyle": "Omni",
+    "blastCues": [
+     "InspireCourage"
+    ],
+    "castStyles": [
+     "Touch:Touching",
+     "Directional:Area_casting_01",
+     "Point:Lauching_Projectiles",
+     "Self:Omni_casting",
+     "Omni:Omni_casting",
+     "Potion:Drinking_Potion",
+     "Special:Attack_01_3"
+    ],
+    "r5Dance": "provider-absent",
+    "r5Mist": "provider-absent",
+    "r5Provider": "provider-absent",
+    "screechCues": [
+     "EarPiercingScream"
+    ],
+    "set": "Lizardfolk_FreeHands_AnimationSet"
+   },
+   "passed": true,
+   "predicate": "r6-loaded-configuration"
+  },
+  {
+   "observed": {
+    "error": null
+   },
+   "passed": true,
+   "predicate": "r6-config-completed"
+  },
+  {
+   "observed": {
+    "acted": true,
+    "attacks": [
+     {
+      "frame": 4017,
+      "hit": true,
+      "result": "CriticalHit",
+      "weapon": "StandardScythe"
+     },
+     {
+      "frame": 4116,
+      "hit": true,
+      "result": "CriticalHit",
+      "weapon": "RedcapKick1d4"
+     }
+    ],
+    "binding": "native-scythe-clips-bound:AxeTwoHanded",
+    "bindingLive": true,
+    "clips": [
+     "Attack_with_scythe_02",
+     "LegAttack_01"
+    ],
+    "finished": true,
+    "frames": 202,
+    "nativeSetName": "KMG_RedcapSummoned_PrivateAnimationSet",
+    "occluders": 0,
+    "outOfFrame": 0,
+    "primaryHand": "StandardScythe",
+    "result": "Success",
+    "style": "AxeTwoHanded",
+    "unit": "RedcapSummoned"
+   },
+   "passed": true,
+   "predicate": "r6-redcap-scythe"
+  },
+  {
+   "observed": {
+    "error": null
+   },
+   "passed": true,
+   "predicate": "r6-redcap-scythe-completed"
+  },
+  {
+   "observed": {
+    "cuesAfter": 0,
+    "cuesBefore": 0
+   },
+   "passed": true,
+   "predicate": "r6-cancelled-cast-no-cue"
+  },
+  {
+   "observed": {
+    "actedAtShot": 40,
+    "actionType": "Standard",
+    "availableBefore": true,
+    "blueprint": "3055310c41ff4e76ae191d13f3df48a1",
+    "blueprintName": "KMG_Summoning_Demon_Vrock_Screech",
+    "canTarget": true,
+    "cancelled": false,
+    "cues": 1,
+    "delivered": 7,
+    "executionEnded": true,
+    "finished": true,
+    "naturalSeconds": 2.4619352,
+    "result": "Success"
+   },
+   "passed": true,
+   "predicate": "r6-vrock-one-cue"
+  },
+  {
+   "observed": {
+    "actedAtShot": 61,
+    "actionType": "Standard",
+    "availableBefore": true,
+    "blueprint": "3bc15285b09d4b4bb9c4cb0d5c2009fb",
+    "blueprintName": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+    "canTarget": true,
+    "cancelled": false,
+    "cues": 1,
+    "delivered": 7,
+    "executionEnded": true,
+    "finished": true,
+    "naturalSeconds": 3.2629444,
+    "result": "Success"
+   },
+   "passed": true,
+   "predicate": "r6-trumpet-one-cue"
+  },
+  {
+   "observed": {
+    "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+    "commandFinishedBeforeRetirement": true,
+    "commandResult": "Success",
+    "creature": "Trumpet Archon",
+    "endUtc": "2026-11-24T04:03:03.4283319Z",
+    "naturalControlSeconds": 3.2629444,
+    "playingId": 486,
+    "retiredUtc": "2026-11-24T04:03:03.3928050Z",
+    "secondsFromRetirementToEnd": 0.0355269,
+    "stillPlayingAtRetirement": true,
+    "stopAttempts": 1,
+    "stopReason": "view-destroyed",
+    "stopRequestedUtc": "2026-11-24T04:03:03.4133311Z",
+    "stopResult": "stop-requested",
+    "totalSeconds": 0.5004527
+   },
+   "passed": true,
+   "predicate": "r6-cue-early-retirement"
+  },
+  {
+   "observed": {
+    "error": null
+   },
+   "passed": true,
+   "predicate": "r6-audio-completed"
+  },
+  {
+   "observed": {
+    "errors": []
+   },
+   "passed": true,
+   "predicate": "r6-owned-state-restored"
+  },
+  {
+   "observed": {
+    "activeModeCounts": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "closed": true,
+    "controllerReferences": [
+     {
+      "actualInstance": 1082956032,
+      "expectedInstance": 1082956032,
+      "name": "ClickEventsController",
+      "same": true
+     },
+     {
+      "actualInstance": -652690432,
+      "expectedInstance": -652690432,
+      "name": "SelectedAbilityHandler",
+      "same": true
+     },
+     {
+      "actualInstance": 1313697792,
+      "expectedInstance": 1313697792,
+      "name": "PlaceRestMarkerHandler",
+      "same": true
+     },
+     {
+      "actualInstance": 1070347008,
+      "expectedInstance": 1070347008,
+      "name": "InteractionHighlightController",
+      "same": true
+     },
+     {
+      "actualInstance": 1655618048,
+      "expectedInstance": 1655618048,
+      "name": "CombatEngagementController",
+      "same": true
+     },
+     {
+      "actualInstance": -1608894464,
+      "expectedInstance": -1608894464,
+      "name": "HandsEquipmentController",
+      "same": true
+     },
+     {
+      "actualInstance": 1433433856,
+      "expectedInstance": 1433433856,
+      "name": "CameraController",
+      "same": true
+     }
+    ],
+    "current": false,
+    "existingNativeDefaultBorrowed": true,
+    "expectedActiveModeCounts": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "frame": 5488,
+    "gameSeconds": 43245.371999999996,
+    "manualClockSuspended": false,
+    "manualPulsesBefore": 0,
+    "manualPulsesCurrent": 0,
+    "mode": "Default",
+    "nativeFactoryModeOwned": false,
+    "originalStackCount": 1,
+    "ownershipPredicates": {
+     "exactActiveModeCounts": true,
+     "exactControllerReferences": true,
+     "exactModeStackReferences": true,
+     "factoryDefaultPointerExact": true,
+     "gameModeTicking": false,
+     "immediateBoundary": true,
+     "modeIsNativeDefault": true,
+     "notClosed": false,
+     "pendingBeforeTickActions": 0,
+     "selectedAbility": null,
+     "selectedAbilityAbsent": true,
+     "switchingModes": false
+    },
+    "pointerController": "Kingmaker.Controllers.Clicks.PointerController",
+    "purpose": "summon-playtest-r6-presentation",
+    "selectedAbilityHandler": "Kingmaker.Controllers.Clicks.Handlers.ClickWithSelectedAbilityHandler",
+    "stackCount": 1,
+    "tickGateBefore": {
+     "allowedAbilityExecutionTicks": 0,
+     "allowedActionTicks": 0,
+     "allowedCooldownTicks": 0,
+     "blockedAmbientActionTicks": 0,
+     "blockedAmbientCooldownTicks": 0,
+     "blockedDuplicateAbilityExecutionTicks": 0,
+     "brainTicks": 0,
+     "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+     "maximumActionTicksPerUnitPerUnityFrame": 0,
+     "nativeDefaultActions": 0,
+     "nativeDefaultCooldowns": 0,
+     "nativeDefaultExecutions": 0,
+     "nativeDefaultLeaseActive": false,
+     "refusedStaleNativeTicks": 0,
+     "scope": "exact request fixture/turn-clock actor set"
+    },
+    "tickGateCurrent": {
+     "allowedAbilityExecutionTicks": 0,
+     "allowedActionTicks": 0,
+     "allowedCooldownTicks": 0,
+     "blockedAmbientActionTicks": 0,
+     "blockedAmbientCooldownTicks": 0,
+     "blockedDuplicateAbilityExecutionTicks": 0,
+     "brainTicks": 0,
+     "maximumAbilityExecutionTicksPerProcessPerUnityFrame": 0,
+     "maximumActionTicksPerUnitPerUnityFrame": 0,
+     "nativeDefaultActions": 10175,
+     "nativeDefaultCooldowns": 10173,
+     "nativeDefaultExecutions": 11,
+     "nativeDefaultLeaseActive": false,
+     "refusedStaleNativeTicks": 0,
+     "scope": "exact request fixture/turn-clock actor set"
+    },
+    "utc": "2026-11-24T04:03:09.4833869Z"
+   },
+   "passed": true,
+   "predicate": "cleanup2-native-default-restored-summon-playtest-r6-presentation"
+  },
+  {
+   "observed": {
+    "cleanup": {
+     "areaChanges": [],
+     "casterAbsent": true,
+     "extraUnits": "",
+     "missingUnits": "",
+     "partyAfter": 1,
+     "partyBefore": 1,
+     "partyExact": true,
+     "unitsAfter": 1,
+     "unitsBefore": 1,
+     "unitsExact": true
+    },
+    "clockRestored": true,
+    "referencesRestored": true
+   },
+   "passed": true,
+   "predicate": "fixture-restored"
+  }
+ ],
+ "harness": {
+  "conditions": {},
+  "exitRequested": false,
+  "failure": null,
+  "finishedUtc": "2026-11-24T04:02:18.3802927Z",
+  "isolation": "saves=<lab>/Saved Games; areas=<lab>/Areas",
+  "isolationRestored": true,
+  "loggerExceptionHooks": 4,
+  "requestPath": "<lab>/harness-request.json",
+  "runId": "20261124T035653Z-owner-0.33.0-s7-fx-02-r6",
+  "startedUtc": "2026-11-24T04:01:24.3957193Z",
+  "status": "passed",
+  "steps": []
+ },
+ "harnessEvents": [
+  {
+   "detail": {
+    "ummWindowOpen": true
+   },
+   "event": "mainMenu",
+   "t": 56.9758949,
+   "utc": "2026-11-24T04:02:18.2202608Z"
+  }
+ ],
+ "launch": "02-r6",
+ "launchSummary": {
+  "conditions": {},
+  "gameArguments": [
+   "locale=enGB"
+  ],
+  "harness": "passed",
+  "identity": {
+   "activeMods": [
+    "KingmakerGunslinger 0.0.195",
+    "KmgLoaderCompatHarness 0.1.0"
+   ],
+   "harmony12Sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+   "harmony2": [
+    "2.3.6.0 df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80"
+   ],
+   "productSha256": "cc00fcf7266f5bd667aceb1b301468feecf1b3db4e56532acbad8310f9211f57",
+   "umm": "0.33.0.0",
+   "ummReported": "0.33.0.0",
+   "ummSha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
+  },
+  "label": "02-r6",
+  "pid": 34032,
+  "problems": [],
+  "product": {
+   "failed": [],
+   "scenario": "disposable-expanded-summoning-sprint32-native-review",
+   "status": "PASS"
+  },
+  "seconds": 115,
+  "verdict": "PASS"
+ },
+ "records": {
+  "summon-playtest-r6-presentation.json": {
+   "audio": {
+    "earlyRetirement": {
+     "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+     "commandFinishedBeforeRetirement": true,
+     "commandResult": "Success",
+     "creature": "Trumpet Archon",
+     "endUtc": "2026-11-24T04:03:03.4283319Z",
+     "naturalControlSeconds": 3.2629444,
+     "playingId": 486,
+     "retiredUtc": "2026-11-24T04:03:03.3928050Z",
+     "secondsFromRetirementToEnd": 0.0355269,
+     "stillPlayingAtRetirement": true,
+     "stopAttempts": 1,
+     "stopReason": "view-destroyed",
+     "stopRequestedUtc": "2026-11-24T04:03:03.4133311Z",
+     "stopResult": "stop-requested",
+     "totalSeconds": 0.5004527
+    },
+    "trumpet": {
+     "actedAtShot": 61,
+     "actionType": "Standard",
+     "availableBefore": true,
+     "blueprint": "3bc15285b09d4b4bb9c4cb0d5c2009fb",
+     "blueprintName": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+     "canTarget": true,
+     "cancelled": false,
+     "cues": 1,
+     "delivered": 7,
+     "executionEnded": true,
+     "finished": true,
+     "naturalSeconds": 3.2629444,
+     "result": "Success"
+    },
+    "vrock": {
+     "actedAtShot": 40,
+     "actionType": "Standard",
+     "availableBefore": true,
+     "blueprint": "3055310c41ff4e76ae191d13f3df48a1",
+     "blueprintName": "KMG_Summoning_Demon_Vrock_Screech",
+     "canTarget": true,
+     "cancelled": false,
+     "cues": 1,
+     "delivered": 7,
+     "executionEnded": true,
+     "finished": true,
+     "naturalSeconds": 2.4619352,
+     "result": "Success"
+    }
+   },
+   "config": {
+    "aidStyle": "Omni",
+    "blastCues": [
+     "InspireCourage"
+    ],
+    "castStyles": [
+     "Touch:Touching",
+     "Directional:Area_casting_01",
+     "Point:Lauching_Projectiles",
+     "Self:Omni_casting",
+     "Omni:Omni_casting",
+     "Potion:Drinking_Potion",
+     "Special:Attack_01_3"
+    ],
+    "r5Dance": "provider-absent",
+    "r5Mist": "provider-absent",
+    "r5Provider": "provider-absent",
+    "screechCues": [
+     "EarPiercingScream"
+    ],
+    "set": "Lizardfolk_FreeHands_AnimationSet"
+   },
+   "cues": [
+    {
+     "ability": "KMG_Summoning_Demon_Vrock_Screech",
+     "caster": "cbdddf38-7f58-4070-aaed-49691560e36c",
+     "endFrame": 4703,
+     "endUtc": "2026-11-24T04:02:49.0266043Z",
+     "event": "EarPiercingScream",
+     "frame": 4619,
+     "playingId": 287,
+     "stopAttempts": 0,
+     "stopReason": null,
+     "stopRequestedUtc": null,
+     "stopResult": null,
+     "utc": "2026-11-24T04:02:46.5646691Z"
+    },
+    {
+     "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+     "caster": "eed67f20-d0b2-4e21-8e07-3c97412a43a8",
+     "endFrame": 5042,
+     "endUtc": "2026-11-24T04:02:58.0270696Z",
+     "event": "InspireCourage",
+     "frame": 4912,
+     "playingId": 403,
+     "stopAttempts": 0,
+     "stopReason": null,
+     "stopRequestedUtc": null,
+     "stopResult": null,
+     "utc": "2026-11-24T04:02:54.7641252Z"
+    },
+    {
+     "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+     "caster": "8788cc41-0add-4441-8aa7-af3f0592ad24",
+     "endFrame": 5247,
+     "endUtc": "2026-11-24T04:03:03.4283319Z",
+     "event": "InspireCourage",
+     "frame": 5229,
+     "playingId": 486,
+     "stopAttempts": 1,
+     "stopReason": "view-destroyed",
+     "stopRequestedUtc": "2026-11-24T04:03:03.4133311Z",
+     "stopResult": "stop-requested",
+     "utc": "2026-11-24T04:03:02.9278792Z"
+    }
+   ],
+   "fixture": "established non-DLC Oleg outdoor native Default; save-free",
+   "limits": "Commanded executions with brains inactive; no autonomous AI is observed. Audibility is established only by listening. Cue retirement is judged from native end-of-event records.",
+   "phase": "summon-playtest-r6-presentation",
+   "redcap": {
+    "acted": true,
+    "attacks": [
+     {
+      "frame": 4017,
+      "hit": true,
+      "result": "CriticalHit",
+      "weapon": "StandardScythe"
+     },
+     {
+      "frame": 4116,
+      "hit": true,
+      "result": "CriticalHit",
+      "weapon": "RedcapKick1d4"
+     }
+    ],
+    "binding": "native-scythe-clips-bound:AxeTwoHanded",
+    "bindingLive": true,
+    "clips": [
+     "Attack_with_scythe_02",
+     "LegAttack_01"
+    ],
+    "finished": true,
+    "frames": 202,
+    "nativeSetName": "KMG_RedcapSummoned_PrivateAnimationSet",
+    "occluders": 0,
+    "outOfFrame": 0,
+    "primaryHand": "StandardScythe",
+    "result": "Success",
+    "style": "AxeTwoHanded",
+    "unit": "RedcapSummoned"
+   },
+   "restoreErrors": [],
+   "runId": "lc-20261124T035653Z-owner-0.33.0-s7-fx-02-r6",
+   "timeline": [
+    {
+     "frame": 4339,
+     "mark": "baseline-start",
+     "utc": "2026-11-24T04:02:39.4313120Z"
+    },
+    {
+     "frame": 4459,
+     "mark": "baseline-end",
+     "utc": "2026-11-24T04:02:42.4593633Z"
+    },
+    {
+     "frame": 4459,
+     "mark": "cancel-start",
+     "utc": "2026-11-24T04:02:42.4593633Z"
+    },
+    {
+     "frame": 4580,
+     "mark": "cancel-end",
+     "utc": "2026-11-24T04:02:45.4968406Z"
+    },
+    {
+     "frame": 4580,
+     "mark": "vrock-cast-start",
+     "utc": "2026-11-24T04:02:45.5103461Z"
+    },
+    {
+     "frame": 4640,
+     "mark": "vrock-cast-end",
+     "utc": "2026-11-24T04:02:47.1579377Z"
+    },
+    {
+     "frame": 4852,
+     "mark": "trumpet-cast-start",
+     "utc": "2026-11-24T04:02:53.2308584Z"
+    },
+    {
+     "frame": 4931,
+     "mark": "trumpet-cast-end",
+     "utc": "2026-11-24T04:02:55.2927498Z"
+    },
+    {
+     "frame": 5246,
+     "mark": "despawn",
+     "utc": "2026-11-24T04:03:03.3928050Z"
+    },
+    {
+     "frame": 5488,
+     "mark": "despawn-window-end",
+     "utc": "2026-11-24T04:03:09.4243797Z"
+    }
+   ]
+  }
+ },
+ "session": "20261124T035653Z-owner-0.33.0-s7-fx",
+ "sources": {
+  "harness-result.json": "1789f9cf9f03a341f9c972c6b78a2a83b287fd581a182ab7600fd2cc6f24f790",
+  "sprint32-review.json": "5acd00fe11ce1748fd679adb1ea624946091ca87a57a17af19491b887293aa8c",
+  "summon-playtest-r6-presentation.json": "1423ce9fed0000455309581e7763bbdc30c60dd3d37e5218c0e94c8452e9ccdb"
+ },
+ "summary": [
+  "Kingmaker Gunslinger runtime test",
+  "Run ID: lc-20261124T035653Z-owner-0.33.0-s7-fx-02-r6",
+  "Scenario: disposable-expanded-summoning-sprint32-native-review",
+  "Status: PASS",
+  "Loaded mod: 0.0.195",
+  "Runtime: KingmakerGunslinger, Version=0.0.195.0, Culture=neutral, PublicKeyToken=null",
+  "Started UTC: 2026-11-24T04:01:24.2735812Z",
+  "Ended UTC: 2026-11-24T04:03:13.0039394Z",
+  "Duration ms: 108729"
+ ]
+}

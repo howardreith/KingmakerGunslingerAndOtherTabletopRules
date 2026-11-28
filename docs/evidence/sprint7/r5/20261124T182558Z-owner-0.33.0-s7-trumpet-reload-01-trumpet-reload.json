@@ -1,0 +1,1100 @@
+{
+ "harness": {
+  "conditions": {},
+  "exitRequested": true,
+  "failure": null,
+  "finishedUtc": "2026-11-24T18:27:51.0891961Z",
+  "isolation": "saves=<lab>/Saved Games; areas=<lab>/Areas",
+  "isolationRestored": true,
+  "kmgInitialization_create": {
+   "blueprintsFailed": false,
+   "blueprintsInitialized": true,
+   "contextFailed": false,
+   "environment": {
+    "conditions": {
+     "blankResolutions": 0,
+     "events": [],
+     "gritUiPass": {
+      "firstPassStillOpen": false,
+      "firstPassStoppedOnDescriptionOf": null,
+      "installed": false,
+      "passesCompleted": 0,
+      "passesOpened": 0,
+      "projectAbilitiesRead": 0,
+      "projectAbilityDescriptionReads": 0,
+      "substituted": [],
+      "thrown": []
+     },
+     "libraryPrepared": false,
+     "nativeDescriptions": [],
+     "nullResolutions": 0
+    },
+    "currentLocale": "enGB",
+    "currentPackLocale": "enGB",
+    "currentPackStrings": 41552,
+    "emptyKeyResolvesTo": "",
+    "unassignedStringResolvesTo": "<null>",
+    "unknownKeyResolvesTo": "[unknown key: KmgLoaderCompatHarness.UnknownKeyProbe]"
+   },
+   "failureChain": [],
+   "loaderEntryActive": true,
+   "mainState": "Loaded"
+  },
+  "kmgModules_all-on": {
+   "active": {
+    "AcadamaeGraduate": true,
+    "BodyguardFeats": true,
+    "BrownFurTransmuter": true,
+    "EasternWeapons": true,
+    "ElementalRaces": true,
+    "ElvenBranchedSpears": true,
+    "ExpandedSummoning": true,
+    "Gunslinger": true,
+    "MagicCircleSpells": true,
+    "ProtectionFromAlignmentControlImmunity": true,
+    "ShieldOther": true,
+    "TeleportationSpells": true,
+    "UrbanBarbarian": true
+   },
+   "file": null,
+   "fileSha256": null,
+   "pending": {
+    "AcadamaeGraduate": true,
+    "BodyguardFeats": true,
+    "BrownFurTransmuter": true,
+    "EasternWeapons": true,
+    "ElementalRaces": true,
+    "ElvenBranchedSpears": true,
+    "ExpandedSummoning": true,
+    "Gunslinger": true,
+    "MagicCircleSpells": true,
+    "ProtectionFromAlignmentControlImmunity": true,
+    "ShieldOther": true,
+    "TeleportationSpells": true,
+    "UrbanBarbarian": true
+   },
+   "restartRequired": false
+  },
+  "kmgTrumpetCue_abandon": {
+   "abandonedCommandRunning": true,
+   "area": "JamandisMansionThroneroom",
+   "mode": "abandon",
+   "ownedSaves": [
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "67c5e348-b830-4cda-9c28-785af8b842d4",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "2b598792-7809-410c-89e8-744f469eb297",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "a50dc2a0-5fb7-42f7-ac76-7b7f209d660a",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "ab52a69e-fa55-4544-a970-0e3016308a66",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "a84e4c0c-1ec6-400e-8f1a-9780d922a825",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "ac535472-8ab5-49d4-a8bb-a2bd8fa0d61d",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "b35b0816-aac7-41d0-bc45-9deb98ac8c7a",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "3d117688-e4e1-41f8-a8e4-4efd4aa30153",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "2cc13d5c-3100-4a38-a74c-318d77942470",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "ef7b9104-8442-48f0-8b29-d67017010a2d",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "2a7077a4-287f-4015-bee3-b9f31b5b5ca7",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "f869d445-bed1-41ef-b781-8955c117ec0f",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "b3639f7f-9dc0-49bc-89eb-36eb952e5922",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "b474163d-1ddf-4fd5-b840-846f2b42b74b",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "0d0d88d9-d86f-4de7-8c9c-1b21bdfffce3",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "1d2b2f6c-9a68-42e4-9a5c-29af9c5467a0",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "720effbb-230d-44ed-9bc7-085a84adfe27",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "3a6cfb6a-b62f-4587-a621-36bf19d3b7c0",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "6179d8d7-4290-4718-a1d6-15051d173217",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "c2fc6213-46d6-4d48-a986-d71cc741b604",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "530efe6a-c273-49a6-9c7a-cf5687e9b6aa",
+     "stat": "SaveFortitude"
+    }
+   ],
+   "pauseRestored": true,
+   "problems": [],
+   "termination": {
+    "cleanupAttempted": [
+     "probe iterator",
+     "observed blast",
+     "save seeding subscription",
+     "pause",
+     "awake registration 73975ffd-6248-4600-8077-38b5b58b893f",
+     "disposable unit 73975ffd-6248-4600-8077-38b5b58b893f"
+    ],
+    "cleanupFailures": [],
+    "isolationRestored": true,
+    "passed": false,
+    "step": "6|kmgTrumpetCue_abandon",
+    "testFailure": "step timeout after 4s"
+   }
+  },
+  "kmgTrumpetCue_abandon-check": {
+   "abandoned": {
+    "heldLeft": 0,
+    "interventionOpen": false,
+    "observedCleared": true,
+    "releaseFailures": [],
+    "releasesAttempted": [
+     "observed blast",
+     "save seeding subscription",
+     "pause"
+    ],
+    "subscribed": false,
+    "trumpetDestroyed": true
+   },
+   "mode": "abandon-check",
+   "ownedSaves": [],
+   "problems": [],
+   "termination": {
+    "cleanupAttempted": [
+     "probe iterator"
+    ],
+    "cleanupFailures": [],
+    "isolationRestored": true,
+    "passed": true,
+    "step": "7|kmgTrumpetCue_abandon-check",
+    "testFailure": ""
+   }
+  },
+  "kmgTrumpetCue_after": {
+   "afterStartedUtc": "2026-11-24T18:27:35.7231758Z",
+   "area": "JamandisMansionThroneroom",
+   "fresh": {
+    "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+    "available": true,
+    "canTarget": true,
+    "cues": [
+     {
+      "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+      "caster": "3d7e2e69-0a8d-4f5a-8723-ff869b8b73c0",
+      "endUtc": "2026-11-24T18:27:46.9570496Z",
+      "event": "InspireCourage",
+      "frame": 4496,
+      "playingId": 327,
+      "seconds": 3.8966122999999997,
+      "stopReason": null,
+      "stopRequestedUtc": null,
+      "stopResult": null,
+      "utc": "2026-11-24T18:27:43.0604373Z"
+     }
+    ],
+    "executionEnded": true,
+    "finished": true,
+    "interventionOpenAfter": false,
+    "ownedSavesSeeded": 23,
+    "result": "Success"
+   },
+   "mode": "after",
+   "ownedSaves": [
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "67c5e348-b830-4cda-9c28-785af8b842d4",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "2b598792-7809-410c-89e8-744f469eb297",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "a50dc2a0-5fb7-42f7-ac76-7b7f209d660a",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "ab52a69e-fa55-4544-a970-0e3016308a66",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "a84e4c0c-1ec6-400e-8f1a-9780d922a825",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "ac535472-8ab5-49d4-a8bb-a2bd8fa0d61d",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "b35b0816-aac7-41d0-bc45-9deb98ac8c7a",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "3d117688-e4e1-41f8-a8e4-4efd4aa30153",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "2cc13d5c-3100-4a38-a74c-318d77942470",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "ef7b9104-8442-48f0-8b29-d67017010a2d",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "2a7077a4-287f-4015-bee3-b9f31b5b5ca7",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "d02f9fbb-cc1f-4d5e-abe3-9f55502c19d0",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "f869d445-bed1-41ef-b781-8955c117ec0f",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "b3639f7f-9dc0-49bc-89eb-36eb952e5922",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "b474163d-1ddf-4fd5-b840-846f2b42b74b",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "0d0d88d9-d86f-4de7-8c9c-1b21bdfffce3",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "1d2b2f6c-9a68-42e4-9a5c-29af9c5467a0",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "720effbb-230d-44ed-9bc7-085a84adfe27",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "3a6cfb6a-b62f-4587-a621-36bf19d3b7c0",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "6179d8d7-4290-4718-a1d6-15051d173217",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "c2fc6213-46d6-4d48-a986-d71cc741b604",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "530efe6a-c273-49a6-9c7a-cf5687e9b6aa",
+     "stat": "SaveFortitude"
+    }
+   ],
+   "pauseRestored": true,
+   "postLoadCuesBeforeFreshBlast": [],
+   "problems": [],
+   "savedCue": {
+    "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+    "caster": "3d7e2e69-0a8d-4f5a-8723-ff869b8b73c0",
+    "endUtc": "2026-11-24T18:27:31.5393274Z",
+    "endedBeforeAfterStep": true,
+    "endedBy": "natural",
+    "event": "InspireCourage",
+    "frame": 4183,
+    "playingId": 159,
+    "productStopRequested": "stop-requested",
+    "seconds": 3.9845303999999997,
+    "stopReason": null,
+    "stopRequestedUtc": null,
+    "stopResult": null,
+    "utc": "2026-11-24T18:27:27.5547970Z"
+   },
+   "termination": {
+    "cleanupAttempted": [
+     "probe iterator",
+     "observed blast",
+     "save seeding subscription",
+     "pause",
+     "disposable unit 3d7e2e69-0a8d-4f5a-8723-ff869b8b73c0"
+    ],
+    "cleanupFailures": [],
+    "isolationRestored": true,
+    "passed": true,
+    "step": "5|kmgTrumpetCue_after",
+    "testFailure": ""
+   },
+   "trumpetLoaded": true
+  },
+  "kmgTrumpetCue_before": {
+   "area": "JamandisMansionThroneroom",
+   "beforeEndedUtc": "2026-11-24T18:27:28.0546902Z",
+   "first": {
+    "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+    "available": true,
+    "canTarget": true,
+    "cues": [
+     {
+      "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+      "caster": "3d7e2e69-0a8d-4f5a-8723-ff869b8b73c0",
+      "endUtc": "2026-11-24T18:27:25.2249958Z",
+      "event": "InspireCourage",
+      "frame": 3996,
+      "playingId": 68,
+      "seconds": 3.9000790999999997,
+      "stopReason": null,
+      "stopRequestedUtc": null,
+      "stopResult": null,
+      "utc": "2026-11-24T18:27:21.3249167Z"
+     }
+    ],
+    "executionEnded": true,
+    "finished": true,
+    "generatorRewoundToBlastStart": false,
+    "interleaved": {
+     "blastExecuting": false,
+     "claimsDuringUnrelated": 0,
+     "controlD20": 8,
+     "controlDraw": 0.123619214,
+     "draw": 0.123619214,
+     "drawMatchesControl": true,
+     "interventionOpenAfter": false,
+     "saveD20": 8,
+     "saveMatchesControl": true
+    },
+    "interventionOpenAfter": false,
+    "nestedForeign": {
+     "claimsDuringForeign": 0,
+     "controlD20": 11,
+     "controlDraw": 0.122910991,
+     "draw": 0.122910991,
+     "drawMatchesControl": true,
+     "followingControl": 0.542161047,
+     "followingDraw": 0.542161047,
+     "followingMatchesControl": true,
+     "foreignSaveD20": 11,
+     "foreignSaveMatchesControl": true,
+     "insideOwnedSave": true,
+     "ownedSaveD20": 20
+    },
+    "ownedSavesSeeded": 25,
+    "result": "Success"
+   },
+   "mode": "before",
+   "ownedSaves": [
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "67c5e348-b830-4cda-9c28-785af8b842d4",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "2b598792-7809-410c-89e8-744f469eb297",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "a50dc2a0-5fb7-42f7-ac76-7b7f209d660a",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "ab52a69e-fa55-4544-a970-0e3016308a66",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "a84e4c0c-1ec6-400e-8f1a-9780d922a825",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "ac535472-8ab5-49d4-a8bb-a2bd8fa0d61d",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "b35b0816-aac7-41d0-bc45-9deb98ac8c7a",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "3d117688-e4e1-41f8-a8e4-4efd4aa30153",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "2cc13d5c-3100-4a38-a74c-318d77942470",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "ef7b9104-8442-48f0-8b29-d67017010a2d",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "2a7077a4-287f-4015-bee3-b9f31b5b5ca7",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "d02f9fbb-cc1f-4d5e-abe3-9f55502c19d0",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "f869d445-bed1-41ef-b781-8955c117ec0f",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "b3639f7f-9dc0-49bc-89eb-36eb952e5922",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "3a6d13c9-5554-436c-9422-833bd44292bc",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "b474163d-1ddf-4fd5-b840-846f2b42b74b",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "0d0d88d9-d86f-4de7-8c9c-1b21bdfffce3",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "1d2b2f6c-9a68-42e4-9a5c-29af9c5467a0",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "720effbb-230d-44ed-9bc7-085a84adfe27",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "bb765a07-bccc-46ae-92a9-4dd78fad7812",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "3a6cfb6a-b62f-4587-a621-36bf19d3b7c0",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "6179d8d7-4290-4718-a1d6-15051d173217",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "c2fc6213-46d6-4d48-a986-d71cc741b604",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "530efe6a-c273-49a6-9c7a-cf5687e9b6aa",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "535ba77c-6fe4-4e1d-a12c-8bd6abb402ae",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "67c5e348-b830-4cda-9c28-785af8b842d4",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "2b598792-7809-410c-89e8-744f469eb297",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "a50dc2a0-5fb7-42f7-ac76-7b7f209d660a",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "ab52a69e-fa55-4544-a970-0e3016308a66",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "a84e4c0c-1ec6-400e-8f1a-9780d922a825",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "ac535472-8ab5-49d4-a8bb-a2bd8fa0d61d",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "b35b0816-aac7-41d0-bc45-9deb98ac8c7a",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "3d117688-e4e1-41f8-a8e4-4efd4aa30153",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "2cc13d5c-3100-4a38-a74c-318d77942470",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "ef7b9104-8442-48f0-8b29-d67017010a2d",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "2a7077a4-287f-4015-bee3-b9f31b5b5ca7",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "d02f9fbb-cc1f-4d5e-abe3-9f55502c19d0",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "f869d445-bed1-41ef-b781-8955c117ec0f",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "b3639f7f-9dc0-49bc-89eb-36eb952e5922",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "b474163d-1ddf-4fd5-b840-846f2b42b74b",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "0d0d88d9-d86f-4de7-8c9c-1b21bdfffce3",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "1d2b2f6c-9a68-42e4-9a5c-29af9c5467a0",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "720effbb-230d-44ed-9bc7-085a84adfe27",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "bb765a07-bccc-46ae-92a9-4dd78fad7812",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "3a6cfb6a-b62f-4587-a621-36bf19d3b7c0",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "6179d8d7-4290-4718-a1d6-15051d173217",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "c2fc6213-46d6-4d48-a986-d71cc741b604",
+     "stat": "SaveFortitude"
+    },
+    {
+     "d20": 20,
+     "passed": true,
+     "saver": "530efe6a-c273-49a6-9c7a-cf5687e9b6aa",
+     "stat": "SaveFortitude"
+    }
+   ],
+   "pauseRestored": true,
+   "problems": [],
+   "second": {
+    "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+    "available": true,
+    "canTarget": true,
+    "cues": [
+     {
+      "ability": "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlast",
+      "caster": "3d7e2e69-0a8d-4f5a-8723-ff869b8b73c0",
+      "endUtc": null,
+      "event": "InspireCourage",
+      "frame": 4183,
+      "playingId": 159,
+      "seconds": null,
+      "stopReason": null,
+      "stopRequestedUtc": null,
+      "stopResult": null,
+      "utc": "2026-11-24T18:27:27.5547970Z"
+     }
+    ],
+    "executionEnded": true,
+    "finished": true,
+    "interventionOpenAfter": false,
+    "ownedSavesSeeded": 24,
+    "playingAtStepEnd": true,
+    "result": "Success"
+   },
+   "termination": {
+    "cleanupAttempted": [
+     "probe iterator",
+     "observed blast",
+     "observed blast",
+     "save seeding subscription",
+     "pause",
+     "awake registration 3d7e2e69-0a8d-4f5a-8723-ff869b8b73c0"
+    ],
+    "cleanupFailures": [],
+    "isolationRestored": true,
+    "passed": true,
+    "step": "2|kmgTrumpetCue_before",
+    "testFailure": ""
+   },
+   "trumpet": {
+    "blueprint": "KMG_Summoning_Unit_TrumpetArchon",
+    "id": "3d7e2e69-0a8d-4f5a-8723-ff869b8b73c0"
+   }
+  },
+  "load_4": {
+   "began": true,
+   "money": 0,
+   "playerReplaced": true,
+   "verdict": "Complete"
+  },
+  "loggerExceptionHooks": 4,
+  "requestPath": "<lab>/harness-request.json",
+  "runId": "20261124T182558Z-owner-0.33.0-s7-trumpet-reload-01-trumpet-reload",
+  "savedGame": null,
+  "startedUtc": "2026-11-24T18:26:14.7064106Z",
+  "status": "passed",
+  "steps": [
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgModules[all-on]()"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgInitialization[create]"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgTrumpetCue[before](before)"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "saveGame[s7trumpet]"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "loadLastSave[same-process-load]"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgTrumpetCue[after](after)"
+   },
+   {
+    "expectedFailure": "step timeout after 4s",
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgTrumpetCue[abandon](abandon)"
+   },
+   {
+    "expectedFailure": null,
+    "failure": null,
+    "isolationRestored": true,
+    "status": "Done",
+    "step": "kmgTrumpetCue[abandon-check](abandon-check)"
+   }
+  ]
+ },
+ "harnessEvents": [
+  {
+   "detail": {
+    "ummWindowOpen": true
+   },
+   "event": "mainMenu",
+   "t": 56.3258171,
+   "utc": "2026-11-24T18:27:07.9999274Z"
+  },
+  {
+   "detail": "KMCS_AFTER_NORMAL_012_MODONLY.zks",
+   "event": "loadSave",
+   "t": 56.33221,
+   "utc": "2026-11-24T18:27:08.0069302Z"
+  },
+  {
+   "detail": "JamandisMansionThroneroom",
+   "event": "saveLoaded",
+   "t": 63.0655937,
+   "utc": "2026-11-24T18:27:14.7404165Z"
+  },
+  {
+   "detail": "kmgModules[all-on]()",
+   "event": "stepBegin",
+   "t": 65.11313,
+   "utc": "2026-11-24T18:27:16.7876888Z"
+  },
+  {
+   "detail": "kmgModules[all-on]()",
+   "event": "stepDone",
+   "t": 65.1254959,
+   "utc": "2026-11-24T18:27:16.7996846Z"
+  },
+  {
+   "detail": "kmgInitialization[create]",
+   "event": "stepBegin",
+   "t": 65.1459656,
+   "utc": "2026-11-24T18:27:16.8207826Z"
+  },
+  {
+   "detail": "kmgInitialization[create]",
+   "event": "stepDone",
+   "t": 65.15226,
+   "utc": "2026-11-24T18:27:16.8267814Z"
+  },
+  {
+   "detail": "kmgTrumpetCue[before](before)",
+   "event": "stepBegin",
+   "t": 65.17867,
+   "utc": "2026-11-24T18:27:16.8528401Z"
+  },
+  {
+   "detail": "kmgTrumpetCue[before](before)",
+   "event": "stepDone",
+   "t": 76.38447,
+   "utc": "2026-11-24T18:27:28.0586901Z"
+  },
+  {
+   "detail": "saveGame[s7trumpet]",
+   "event": "stepBegin",
+   "t": 76.41276,
+   "utc": "2026-11-24T18:27:28.0872587Z"
+  },
+  {
+   "detail": "saveGame[s7trumpet]",
+   "event": "stepDone",
+   "t": 78.45839,
+   "utc": "2026-11-24T18:27:30.1328418Z"
+  },
+  {
+   "detail": "loadLastSave[same-process-load]",
+   "event": "stepBegin",
+   "t": 78.47956,
+   "utc": "2026-11-24T18:27:30.1543579Z"
+  },
+  {
+   "detail": "Manual_1_s7trumpet.zks",
+   "event": "loadLastSave",
+   "t": 78.48248,
+   "utc": "2026-11-24T18:27:30.1573532Z"
+  },
+  {
+   "detail": "loadLastSave[same-process-load]",
+   "event": "stepDone",
+   "t": 84.01243,
+   "utc": "2026-11-24T18:27:35.6870501Z"
+  },
+  {
+   "detail": "kmgTrumpetCue[after](after)",
+   "event": "stepBegin",
+   "t": 84.04629,
+   "utc": "2026-11-24T18:27:35.7206610Z"
+  },
+  {
+   "detail": "kmgTrumpetCue[after](after)",
+   "event": "stepDone",
+   "t": 95.31392,
+   "utc": "2026-11-24T18:27:46.9883815Z"
+  },
+  {
+   "detail": "kmgTrumpetCue[abandon](abandon)",
+   "event": "stepBegin",
+   "t": 95.34674,
+   "utc": "2026-11-24T18:27:47.0209415Z"
+  },
+  {
+   "detail": "kmgTrumpetCue[abandon](abandon)",
+   "event": "stepDone",
+   "t": 99.34893,
+   "utc": "2026-11-24T18:27:51.0233117Z"
+  },
+  {
+   "detail": "kmgTrumpetCue[abandon-check](abandon-check)",
+   "event": "stepBegin",
+   "t": 99.3811646,
+   "utc": "2026-11-24T18:27:51.0551463Z"
+  },
+  {
+   "detail": "kmgTrumpetCue[abandon-check](abandon-check)",
+   "event": "stepDone",
+   "t": 99.38244,
+   "utc": "2026-11-24T18:27:51.0571470Z"
+  }
+ ],
+ "launch": "01-trumpet-reload",
+ "launchSummary": {
+  "conditions": {},
+  "gameArguments": [
+   "locale=enGB"
+  ],
+  "harness": "passed",
+  "identity": {
+   "activeMods": [
+    "KingmakerGunslinger 0.0.195",
+    "KmgLoaderCompatHarness 0.1.0"
+   ],
+   "harmony12Sha256": "aa1cd48317254985d8b700cc74953477d1b40c3022ce9aa4c95ed2b8327e1292",
+   "harmony2": [
+    "2.3.6.0 df043f05c6e43602fa8e8f38f52a3a2cf962aab7a65a9d85573ea25f01a63e80"
+   ],
+   "productSha256": "f8fd7251925fe3a5ad5c90ac2de37373e6b74d6f67f5090cba9f88d962423545",
+   "umm": "0.33.0.0",
+   "ummReported": "0.33.0.0",
+   "ummSha256": "63e5baf7b1738e4091b5fd17ccb738ecdb4d1dbf246061dfd55dc52835d52691"
+  },
+  "label": "01-trumpet-reload",
+  "log": {
+   "absent": [
+    "[initialize.failed] x0"
+   ],
+   "once": [],
+   "present": [
+    "[blueprints][initialize.complete] x1"
+   ]
+  },
+  "pid": 30448,
+  "problems": [],
+  "seconds": 104,
+  "verdict": "PASS"
+ },
+ "session": "20261124T182558Z-owner-0.33.0-s7-trumpet-reload",
+ "sources": {
+  "harness-result.json": "3ebaaf9ed1dacfd57b3419e3c5ba3dc7ba870e8cbe139776d1d6f560047b923d"
+ }
+}

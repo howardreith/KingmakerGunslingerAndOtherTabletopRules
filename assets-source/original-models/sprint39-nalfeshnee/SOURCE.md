@@ -1,4 +1,53 @@
+## Sprint 7 VIS-01 wing-root topology repair (current export)
+
+Each wing membrane strip is a grid whose first chord row starts at the wing wrist for every column, so the shared
+`continuous_body.sheet` collapsed that row: 11 coincident vertices per layer, a zero-width leading rim and one
+zero-area triangle per apex quad. The R7 export therefore had 48 zero-area triangles at the wing roots (24 per side).
+On welded positions the three strips of each wing also fused at the wrist into one 1,176-triangle part with negative
+signed volume (inside out), 28 same-direction shared edges and 137 to 139 vertex normals against their winding.
+
+The generator now builds the membranes with a local `membrane_shell`: the same grid, layers, vertex order, fixed fan
+triangulation and outward orientation as the shared helper, except that a row whose points all coincide becomes one
+apex vertex per layer, offset along the mean normal of its first real row, with a triangle fan and no leading rim.
+The shared helper, which nine other generators use, is unchanged. Grid points, membrane weights (`Torso_Upper` only),
+the material region, anatomy, colour function, bones and every payload flag are unchanged; `articulatedWings` stays
+`false`.
+
+Measured on the decoded exports, after first regenerating the R7 export from the unchanged generator byte for byte:
+
+| | R7 (before) | VIS-01 (after) |
+| --- | --- | --- |
+| Vertices / triangles | 12402 / 14392 | 11593 / 14152 |
+| Zero-area triangles | 48 | 0 |
+| Welded directed edges used twice | 52 (56 counting collapsed self-edges) | 0 |
+| Closed welded parts, outward / inward | 35 / 2 | 41 / 0 |
+| Seam positions with differing normals | 4 | 0 |
+| Triangles spanning atlas regions; seam weight mismatches | 0; 0 | 0; 0 |
+
+Geometry differs only at the six membrane shells: 76 wrist positions became 12 apexes and 384 apex-incident triangles
+became 144. Every other welded position and its bone weights are unchanged. The bake re-packs the atlas when any
+part's topology changes, so every UV and the albedo bytes change; the colour is the same closed-form function.
+Membrane normals now face outward, and their shading is the only difference visible in the offline preview.
+
+| Input or export | SHA-256 |
+| --- | --- |
+| `generate_sprint39_nalfeshnee.py` | `497135fcdad7efbfa4b647d69395870a37947d89962d13b5911a165fc97ddb22` |
+| `continuous-bodies/continuous_body.py` (unchanged) | `aaec74cb0931b2733e335d1a47794eadb94f7d072832027ba328b0e119336a0e` |
+| `continuous-bodies/outsider_bake.py` (unchanged) | `ff799dc82b8c4b17df56e9a76cfc202911763676b54483b1f52394638fce74ec` |
+| `continuous-bodies/outsider_surface.py` (unchanged) | `870e4bf1cc7c21cc618c6dc346917fdcf7f345ab67860d3a28308df3f2aa0280` |
+| Private geometry-free rig capture | `6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d` |
+| Blender 4.5.10 `blender.exe` (`PYTHONHASHSEED=0`) | `8b15ef73f352173d7836c5adc266fc45b94d729712d5ddbbb38557e1f326313c` |
+| `nalfeshnee-mesh.json` | `6ff85493150bf9bde964f3ca106afd1444a6c17e87d3524554bf67155b3fe802` |
+| `nalfeshnee-albedo.png` (1024 x 1024) | `1e9f5303407d18af7a9af506791d29d29b8d2b68f869b7daba1ca0944b8bc193` |
+
+Two clean runs produced byte-identical exports. The domain case `sprint7-visual.vis01-nalfeshnee-wing-roots-sound`
+decodes the shipped bytes; it fails on the R7 export (48 zero-area triangles) and passes on this one, with the
+Glabrezu and Ice Devil exports as controls. Native presentation and owner visual acceptance are recorded separately
+in `docs/GUNSLINGER-SPRINT7-RECORD.md`.
+
 ## R7 owner-playtest revision (Nalfeshnee)
+
+Superseded as the shipped export by the VIS-01 repair above. Its exports remain at commit `35763430ac`.
 
 The rounded figure and slab wings are replaced on the same joints: a hunched boar-headed ape with a scapular hump, ribcage and pectoral shelf over one sagging gut, a wedge skull with flat rooting disc, underslung jaw, four tusks and a bristled mane, and wings grown from scapular mounds with three fingers and scalloped membranes. Width stays within the prior silhouette apart from the wing tips; the tallest point rises from 1.875 to 1.990 through ears and mane, with no scale change. The wings still follow the chest.
 
