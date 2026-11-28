@@ -1,8 +1,8 @@
 # Sprint 7 integration: packaged/native qualification record (owner amendment 1)
 
-**Status: dated pre-submission snapshot, 2026-11-28, corrected for review 2 (R2-F1 to R2-F5; records only).** This page
-records the selected qualification as executed. It does not predict a review outcome. Final-head gate receipts and timings are cited in the developer report, so that recording them
-needs no further commit.
+**Status: dated pre-submission snapshot, 2026-11-28, corrected for review 2 (R2-F1 to R2-F5) and review 3 (R2-F1, R2-F5,
+R3-F1); records only.** This page records the selected qualification as executed. It does not predict a review outcome.
+Final-head gate receipts and timings are cited in the developer report, so that recording them needs no further commit.
 
 - **Mission:** [`S7-MASTER-INTEGRATION-MISSION.md`](S7-MASTER-INTEGRATION-MISSION.md), plus owner amendment 1. The
   amendment is controller amendments revision 1, SHA-256
@@ -23,7 +23,7 @@ needs no further commit.
 | `master` at the start and at this snapshot (no drift) | `52755b617c79328a972ae5b74bc05784422e332d` |
 | Accepted development archive (starting branch head) | `22143dcebccfd090d2cf207235c9b9b8bb049d45` |
 | **Package-producing commit** | `66a0b9c724e7a16e425b5e21ac962cd441eaced6`. It only adds the status-page entry for this amendment (`planning/`). Source, scripts, sessions, harness and tests equal the accepted reviewed head `5460aff0a4` |
-| Documentation/evidence heads | `9011aaddb2` added this record and `docs/evidence/sprint7/integration-native/` (review 2). The correction commit for review 2 is the submitted head. Both change only `docs/`, so the candidate stays current |
+| Documentation/evidence heads | `9011aaddb2` added this record and `docs/evidence/sprint7/integration-native/` (submitted to review 2). `ca539a7d57` corrected it (review 3). The commit carrying this version corrects it again and is the submitted head. All three change only `docs/`, so the candidate stays current |
 | Reviewed head and archive head | named by the controller at review and finalization. They are not predicted here |
 
 No material correction was needed, so there is one candidate. Nothing was changed outside `docs/` after the build, and
@@ -160,36 +160,56 @@ integrity.
     destruction owner before delivery. The witness reconciliation requested its destruction and destroyed it (verdict
     `late-owned-summon`, ordered). `lateSummonsDestroyed` is 0 here because the cast's own release had no summon to
     destroy.
-  - **C2's accepted row (`20261126T033419Z`)** has the same outcomes in both cases. The frame values are run-specific: all
-    five ordering steps ran at frame 4673 here and at frame 4771 in C2.
+  - In C2's accepted row (`20261126T033419Z`) both cases have the same outcome values (see the comparison below). The
+    five `abandonedPendingLateResult.order` entries (queued, before-disposal, cast-owner-disposed, late-unit-registered,
+    late-result-delivered) ran at frame 4673 here and at frame 4771 in C2. The step order and `witnessOwned` values
+    (0, 0, 0, 0, 1) are identical.
 - **Foreign controls.** Foreign Ghaeles were preserved and unrequested, and bystander commands survived.
 - **Borrowed and replaced grants.** They finished with their loans released. `borrowedMissing` was refused.
-- **Comparison with C2.** Field by field, the lifecycle data matches C2's accepted `20261126T033419Z` row, apart from the
-  product version (0.0.197 instead of 0.0.195) and newly created unit IDs.
+- **Comparison with C2's accepted `20261126T033419Z` row (the whole `kmgGhaeleLifetime_lifecycle` block).**
+  - Both runs have the same 249 leaf fields, list lengths included.
+  - 222 values are identical, including every case's verdict, boolean and count, and the empty problem and unsettled
+    lists.
+  - The 27 that differ are all run-specific: 21 unit-ID values (in case fields and the termination cleanup list), the five
+    order-entry frames above, and `productVersion` (0.0.197 here, 0.0.195 in C2).
 - **Not covered.** No lifetime or visibility campaign was selected. The October Ghaele incident remains unexplained.
 
 ## 5. Ledger (integration only)
 
-| Item | Outer time |
-|---|---|
-| Development stage (accepted, carried separately) | 38.1 s |
-| Build-Local | 304.3 s (timed wrapper) |
-| Dry admission | 8.4 s (timed) |
-| `s7-c3-mechanics` | 355.2 s (timed wrapper) |
-| `s7-ghaele-lifecycle` | 127.9 s (timed wrapper) |
-| **Measured subtotal** | **795.8 s (13 min 15.8 s)** |
-| `Build-Local -PlanOnly` inspection | at most 1.0 s. Its integer-second wrapper read 0 s, so it began and ended within one wall-clock second; its output file was created at 14:32:11.118Z and last written at 14:32:11.451Z |
-| `-Report` for the mechanics session | at most 0.38 s: output file created 14:51:46.057Z, and the next command's output file was created at 14:51:46.436Z |
-| `-Report` for the Ghaele session | 0.34 s from output creation (14:51:46.436Z) to its last write (14:51:46.776Z). The process-exit tail after that write was **not measured** |
-| **Qualification account before the final gates** | **at most 797.2 s (13 min 17.2 s), plus the unmeasured exit tail of the second report** |
-| **Cumulative integration before the final gates** | **at most 835.3 s (13 min 55.3 s), plus that tail.** The developer report adds the final-head gate times |
+All figures are outer elapsed times. Unless marked otherwise, each comes from a wrapper that read `date +%s%N` before and
+after the command. They are shown to the millisecond, and each stated upper bound is rounded **up**.
 
-The timestamps for these three short commands come from file-system creation and last-write times of their retained
-output files.
+| Row | Command | Outer time | Basis |
+|---|---|---|---|
+| D | Development stage (accepted, carried separately): the gate pairs on `28f2408e6f` (23.226 + 4.429) and `5460aff0a4` (6.287 + 4.141) | 38.083 s | timed wrappers |
+| Q1 | Build-Local | 304.297 s | timed wrapper |
+| Q2 | Dry admission | 8.412 s | timed wrapper |
+| Q3 | `s7-c3-mechanics` | 355.172 s | timed wrapper |
+| Q4 | `s7-ghaele-lifecycle` | 127.887 s | timed wrapper |
+| Q5 | `-Report` for the Ghaele session, measured portion | 0.340 s (0.3394 s, rounded up) | Bash creates the redirect file before it starts the command: created 14:51:46.436Z, last write 14:51:46.776Z. The process-exit tail after the last write is **unmeasured** (U) |
+| B1 | `Build-Local -PlanOnly` | at most 1.000 s | integer-second wrapper (`date +%s` before and after) read 0, so start and end fell in the same second. File times: 14:32:11.118Z to 14:32:11.451Z |
+| B2 | `-Report` for the mechanics session | at most 0.379 s | its redirect file was created 14:51:46.057Z, and Bash created the next command's redirect file at 14:51:46.436Z, after this process had exited (0.3788 s, rounded up) |
+| G2 | Gate pair on `9011aaddb2` (submitted to review 2): `sprint7-visual` 5.825 + pinned-loader 4.480 | 10.305 s | timed wrappers |
+| G3 | Gate pair on `ca539a7d57` (submitted to review 3): `sprint7-visual` 5.435 + pinned-loader 3.878 | 9.313 s | timed wrappers |
+| G4 | Gate pair on the submitted head | in the developer report, added there once | timed wrappers |
+
+Arithmetic:
+- **Measured qualification through G3:** Q1 + Q2 + Q3 + Q4 + Q5 + G2 + G3
+  = 304.297 + 8.412 + 355.172 + 127.887 + 0.340 + 10.305 + 9.313 = **815.726 s**.
+- **Truncation allowance.** The wrappers report whole milliseconds, truncated, so each of the 12 timed values (four in D,
+  Q1 to Q4, and four in G2 and G3) may be up to 1 ms short. The bounds below include 0.012 s for this.
+- **Qualification account through G3:** 815.726 s + (B1 + B2 ≤ 1.379 s) + truncation (≤ 0.008 s for the eight timed
+  values in Q1 to Q4, G2 and G3) = **at most 817.113 s, stated as at most 817.2 s (13 min 37.2 s)**, plus U.
+- **Cumulative integration through G3:** D (38.083 s, plus ≤ 0.004 s truncation) + 817.113 s = **at most 855.200 s,
+  stated as at most 855.2 s (14 min 15.2 s)**, plus U.
+- **G4** is added once in the developer report. No gate pair is counted twice: D holds only the two development-stage
+  pairs, and G2, G3 and G4 are one pair per submitted head.
+- **Not charged:** evidence extraction, hashing, git and push commands. These are record preparation, not validation
+  commands.
 
 The parent's 71 min 40.3 s ledger and C3's ledger are separate and unchanged.
 
-## 6. Clarifications carried forward (controller findings stay open)
+## 6. Clarifications carried forward
 
 - **R1-F1.** The parent source was merged into `codex/s7-master-integration`, which started at `master` `52755b617c`.
   `master` itself has not received PR #231.
