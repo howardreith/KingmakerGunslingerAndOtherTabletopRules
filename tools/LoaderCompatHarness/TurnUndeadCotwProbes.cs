@@ -607,9 +607,12 @@ namespace KmgLoaderCompatHarness
                     stoppedOnCleanupFailure = true;
                     problems.Add(owner + ": genuine cleanup failure; no further case runs: " + string.Join("; ", genuine));
                 }
+                // The window in which an earlier driver lost a closed child's outcome: it always lasts at least one
+                // frame (and until deferred unit destruction completes), so an interruption can land in it.
                 awaitingDestruction = true;
                 int frames = 0;
-                while (frames < 30 && lastSpawned.Any(u => u != null && !u.Destroyed)) { frames++; yield return null; }
+                do { frames++; yield return null; }
+                while (frames < 30 && lastSpawned.Any(u => u != null && !u.Destroyed));
                 awaitingDestruction = false;
                 string nextRefusal = null;
                 try
