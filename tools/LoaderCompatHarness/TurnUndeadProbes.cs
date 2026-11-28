@@ -325,13 +325,12 @@ namespace KmgLoaderCompatHarness
             };
             Game.Instance.IsPaused = true;
             BlueprintAbilityResource pool = Blueprint<BlueprintAbilityResource>(ChannelResource);
-            // Fixture: the loaded area's own units (not the party) are silenced for the observation and restored on
-            // release, so native NPCs do not fight the spawned undead (run 20261128T095145Z: an area unit damaged the
-            // fleeing skeleton and its effect ended early).
-            var party = new HashSet<UnitEntityData>(Game.Instance.Player.ControllableCharacters);
+            // Fixture: every pre-existing unit (area NPCs and the fixture party) is silenced for the observation and
+            // restored on release, so nothing fights the spawned undead (run 20261128T095145Z: an area unit damaged the
+            // fleeing skeleton, ending its effect early; run 20261128T095946Z: the party character auto-attacked).
             foreach (UnitEntityData unit in Game.Instance.State.Units.ToArray())
             {
-                if (unit == null || unit.Destroyed || party.Contains(unit) || !unit.IsBrainActive) continue;
+                if (unit == null || unit.Destroyed || !unit.IsBrainActive) continue;
                 unit.IsBrainActive = false;
                 unit.Commands.InterruptAll(true);
                 silenced.Add(unit);
