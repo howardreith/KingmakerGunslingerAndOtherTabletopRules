@@ -1,9 +1,16 @@
 # Sprint 7 record: presentation and audio remediation (S7 T1–T7)
 
-Status (pre-submission snapshot for formal review 8, 2026-11-28T09:11Z UTC): **ACTIVE in `develop` under owner amendment 5;
-seven of nine authorized reviews completed; formal review 8 not yet run.** The parent's nine findings (R4-F1, R5-F1, R6-F5
-and R7-F1 to R7-F6) remain **addressed by accepted successor work, pending parent reconciliation** (matrix in §7). The
-parent reviewer has not assessed them. Nothing is merged or released, and no visual or listening choice has been accepted.
+Status (pre-submission snapshot for formal review 9, 2026-11-28T09:54Z UTC): **ACTIVE in `develop` under owner amendment 5;
+eight of nine authorized reviews completed; formal review 9 not yet run.**
+- **Review 8** (on `b91eabcb3a`, 2026-11-28T09:36:38Z–09:49:42Z) returned changes_required.
+  - It assessed all nine earlier parent findings (R4-F1, R5-F1, R6-F5 and R7-F1 to R7-F6) as fix_verified (matrix in §7).
+  - It raised four records findings: R8-F1 to R8-F3 block readiness, and R8-F4 is optional polish (§7).
+- **This submission** is the one records-only correction that owner amendment 5 authorizes for review 9. There is no
+  review 10.
+- Nothing is merged or released, and no visual or listening choice has been accepted.
+
+Snapshot before review 8 (2026-11-28T09:11Z UTC, historical): ACTIVE in `develop` under owner amendment 5; seven of nine
+authorized reviews completed; the nine findings addressed by accepted successor work, pending parent reconciliation.
 
 **Pre-review stop (2026-11-28T03:07:27Z–04:25:11Z UTC).** The first review-8 submission, on `84d2636e01`, never reached a
 reviewer.
@@ -35,9 +42,13 @@ session. Counters, findings, models, permissions and thresholds were not changed
   archive record was written by hand.
 - The parent tree's `docs/agent-reviews/` holds only the older `pr-195/` records and whatever this enrollment's own
   controller archives under `pr-219/` at finalization.
-- The recovery manifest `docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md` (unchanged) and the child evidence under
-  `docs/evidence/` stay in the parent tree. None of their relative links point into the removed folders, so they still
-  resolve here.
+- The recovery manifest and the C3 evidence manifest are cited at the accepted C3 archive, so their repository- and
+  manifest-relative evidence references keep their original context:
+  - https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/3bfc570090b9772cac4b92e79983d31455510bca/docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md
+  - https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/3bfc570090b9772cac4b92e79983d31455510bca/docs/evidence/sprint7/recovery-c3/MANIFEST.json
+- Their parent-tree copies (`docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md`, blob `303d5390…`;
+  `docs/evidence/sprint7/recovery-c3/MANIFEST.json`, blob `45926009…`) are byte-identical to those archive blobs, as are
+  the `20261127T133020Z` members they name, for example `20261127T133020Z-callback-loss-row.json` (blob `50e195d7…`).
 
 Earlier snapshot (pre-review-8, 2026-11-28T02:43Z UTC, historical): ACTIVE in `develop` under owner amendment 4; seven of
 nine authorized reviews completed; review 8 not yet run.
@@ -74,8 +85,8 @@ describes. That stop and its verdict stay recorded.
 **Recovery (owner instruction of 2026-11-25; historical).** The remaining findings were repaired in three scoped,
 dependent PRs against the frozen branch. Throughout the recovery this enrollment stayed BLOCKED at 7/7, with its findings
 historically open until reconciled.
-- The map, the dependencies and the recovery's own ledger are in
-  `docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md`, kept unchanged.
+- The map, the dependencies and the recovery's own ledger are in the recovery manifest, kept unchanged and cited at the
+  accepted C3 archive: https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/3bfc570090b9772cac4b92e79983d31455510bca/docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md
 - The ledger began as a shared 45-minute allowance. The recovery finally spent 345 min 5.6 s of 360, across six
   candidates, eight C3 reviews and 22 failed validation attempts, plus separately classified mutation failures. That
   allowance is separate and nothing unused moves to the parent.
@@ -268,8 +279,8 @@ under owner amendment 5.
 | S7 T3 / VIS-02 | 19/12,924 normal corners at a waist pleat and the left-hand fingers | **Repaired from the exact private input.** 16 → 0 opposing corners. | `d864e7b01f`; capture `eb0d5eaa…` → `0837e796…`; `…162110Z`, `…050957Z`; stills `evidence/sprint7-review/T3-VIS-02/` | Implemented and verified. The assets are unchanged through `3bfc570090`. | **Visual acceptance** |
 | S7 T4 / VIS-03 | Owned Trample/Overrun windows: "Target point within 0 ft. feet." and school "None" | **Scoped presentation override:** "Target point within twice this creature's speed." (owner-approved wording), no school. | `2614ea3bd6`; `…050957Z` `ui` | Implemented and verified for the desktop fact and HUD. **Controller mode unexecuted** (§4.4), not a controller PASS. | None for the wording. Controller-admission disposition accepted (owner amendment 2). |
 | S7 T5 / VIS-04 | No added impact sound on the Ankylosaurus tail strike | **One owned cue per resolved tail roll on the roll's own in-game target** (`Sweetener_Low_06_Quake`, provisional). | `90bc2ae7eb`; fx `…180635Z` (`ac96bab4c2`), `…170720Z` (`bc67438f3b`) and `…061437Z`. Callback-loss evaluator (C1): candidate 6 `20261127T133020Z` callback row (constructed same-frame overlap, verdict null), earlier `…054228Z`. Private packet `2b5f4610…2565`. | Cue ownership and timing verified, and private packet delivered. **R4-F5 disposition accepted** by the round-6 review (amendment 2 §4). The evaluator findings (R7-F1, R7-F6) are addressed by C1, with native fulfilment through C3, pending parent reconciliation. In-run FAILs `…200320Z`, `…202648Z`, `…223809Z` and `…224949Z` are retained. The `…164749Z` cause is unknown. | **Listening and choice** |
-| S7 T6 / VIS-05 | The Dust Mephit breath shows the ice cone | **Owned per-instance dust recolour** of the one cone CreateView spawns for the executing owned Dust breath, bound to that native spawn call and restored on release. Released mechanics (Sickened, damage, save, enemies only, action) are unchanged. | `9733a0c9b7`; fx `…180635Z` and `…170720Z`; stills `evidence/sprint7-review/T6-VIS-05/` (round 3 `…061437Z`). Dust observer ownership: candidate 6 `20261127T133020Z`. | Implemented and verified. The observer ownership findings (R4-F1, R7-F2, R7-F5) are addressed by C3, pending parent reconciliation. | **Visual acceptance.** Allies' harmless saves stay documented. |
-| S7 T7 / VIS-06 | Provisional `InspireCourage` cue on the Trumpet Blast | **Kept provisionally** (no code change). Six alternatives were sampled. The cue was verified across an in-process save and load. The probe (`…201133Z`) marks only the observed blast's own save passed, through its `AutoPass` field; all dice roll natively. | `r6` in `…180635Z` and `…170720Z`; Trumpet reload `…201133Z` (candidate `f3bfab1303`, harness `9240a3d6…`), earlier `…182558Z` and `…162605Z`; private packet | Cue technically verified, and private packet delivered. The Trumpet probe's harness use is unchanged in behaviour since `…201133Z` (§3): round 7 added destruction-request recording, which the parent accepted for reuse in round 7. The recovery's `TrumpetCueVerdict.cs` changes are additive and are not used by the Trumpet probe. | **Listening and choice** |
+| S7 T6 / VIS-05 | The Dust Mephit breath shows the ice cone | **Owned per-instance dust recolour** of the one cone CreateView spawns for the executing owned Dust breath, bound to that native spawn call and restored on release. Released mechanics (Sickened, damage, save, enemies only, action) are unchanged. | `9733a0c9b7`; repaired spawn ownership: fx `…170720Z` (`bc67438f3b`, nested-interruption observation, §4.6) and `…180635Z` (`ac96bab4c2`); stills `evidence/sprint7-review/T6-VIS-05/` (round 3 `…061437Z` on `f564cbb844`, before `9733a0c9b7`: appearance only). Dust observer ownership: candidate 6 `20261127T133020Z`. | Implemented and verified. The observer ownership findings (R4-F1, R7-F2, R7-F5) are addressed by C3, pending parent reconciliation. | **Visual acceptance.** Allies' harmless saves stay documented. |
+| S7 T7 / VIS-06 | Provisional `InspireCourage` cue on the Trumpet Blast | **Kept provisionally** (no code change). Six alternatives were sampled. The cue was verified across an in-process save and load. The probe (`…201133Z`) marks only the observed blast's own save passed, through its `AutoPass` field; all dice roll natively. | `r6` in `…180635Z` and `…170720Z`; Trumpet reload `…201133Z` (candidate `f3bfab1303`, harness `9240a3d6…`), earlier `…182558Z` and `…162605Z`; private packet | Cue technically verified, and private packet delivered. The Trumpet probe's harness use is unchanged in behaviour since `…201133Z` (§3): round 7 added destruction-request recording, which the parent accepted for reuse in round 7. The recovery's `TrumpetCueVerdict.cs` changes add members; the four-argument constructor the probe calls delegates with no settlement reader and keeps its behaviour (§3). | **Listening and choice** |
 
 ## 3. Candidates, sessions and identities
 
@@ -296,12 +307,30 @@ this checkpoint.
   `…133020Z` row to the same-run agreement test. Candidate 6's package, DLL and qualification are therefore reused under
   validation-policy rule 4.
 - **Unchanged basis for carrying earlier evidence forward.**
-  - **Product code and assets:** product code outside `RuntimeTesting/` and everything under `assets-source/` are
-    byte-identical from the round-5 head `091446a079` to `3bfc570090` (`git diff` empty). So models (`…162110Z`,
-    `…050957Z`), desktop UI (`…050957Z`) and audio (`…170720Z`, `…180635Z` and the private packet) keep their product
-    basis.
-    - Each of those DLLs differs from candidate 6 only in compiled `RuntimeTesting/`, which is validation-policy rule 5.
-    - That evidence is therefore cited as execution on its original candidate and recording, never as execution on
+  - **Product code and assets, per producing session.** Each session is compared with candidate 6's build source
+    `962bf27694`. Product code means `src/` outside `RuntimeTesting/`. From the round-5 head `091446a079` to `3bfc570090`,
+    product code and `assets-source/` are byte-identical (`git diff` empty).
+    - **Round 4–5 sessions: models `…162110Z` (`a07716e3ab`), fx and audio `…170720Z` (`bc67438f3b`) and `…180635Z`
+      (`ac96bab4c2`), and the private packet, whose clips are excerpts of the `…170720Z` recording.**
+      - Product code and `assets-source/` are byte-identical to `962bf27694` (`git diff` empty).
+      - All three sources contain the Dust call-site repair `9733a0c9b7`.
+      - Only for these do the DLLs differ from candidate 6 solely in compiled `RuntimeTesting/` (validation-policy rule 5).
+    - **Round 3 `…050957Z` (`6f2f16ca88`, DLL `d7088878…`) is not observer-only.**
+      - Its product code also differs from `962bf27694` in `Summoning/DustMephitBreathPresentation.cs` and
+        `Summoning/MephitBreathPolicy.cs`: the later call-site repair `9733a0c9b7`.
+      - What it is cited for still matches `962bf27694`:
+        - `assets-source/` (the model meshes and textures);
+        - the T4 tooltip implementation from `2614ea3bd6`: `SummonActionTooltipPolicy.cs`,
+          `SummonMovementTargetTooltipPatch.cs` and `ExpandedSummoningSpecialBuilder.cs`.
+      - It therefore stands for the T2/T3 model views and the T4 desktop UI only, not for Dust.
+    - **Round 3 `…061437Z` (`f564cbb844`, DLL `192c9726…`)** differs in the same two Dust files and predates `9733a0c9b7`.
+      - Its Dust stills (`evidence/sprint7-review/T6-VIS-05/`) are appearance evidence of the recoloured cone only.
+      - They do not demonstrate the repaired spawn ownership.
+    - **The repaired Dust spawn ownership** is demonstrated by later sessions on sources containing `9733a0c9b7`:
+      - `…170720Z` (`bc67438f3b`): its nested-interruption observation (§4.6, R1-F9) left a foreign same-point spawn
+        native (signature `fee8e469…`), while the enclosing owned creation was tinted once and restored on release;
+      - and `…180635Z` (`ac96bab4c2`).
+    - All of this evidence is cited as execution on its original candidate and recording, never as execution on
       candidate 6.
   - **Shared compiled changes since the parent's round 7:**
     - `RuntimeTestRunner.ExpandedSummoningCorrection.cs`: the fixture teardown skips units whose retirement the Sprint 7
@@ -312,11 +341,18 @@ this checkpoint.
       native run is unchanged.
     - `ExpandedSummoningNativeProfilePolicy.cs` and `RuntimeTestRunner.ExpandedSummoningSatyr32.cs`: admit and route the
       new `summon-s7-effects-mechanics` phase.
-  - **Harness, Trumpet probe:** since the parent's round 7, `TrumpetCueProbes.cs` is unchanged. In
-    `TrumpetCueVerdict.cs`, the recovery added new members, plus an optional settlement-reader constructor for
-    `OwnedDisposables`. The Trumpet probe still uses the original four-argument constructor, and no existing member
-    changed. So `…201133Z` (harness `9240a3d6…`) stays applicable at its identity. Round 7's earlier
-    destruction-request change was already accepted for that reuse.
+  - **Harness, Trumpet probe.** Since the parent's round 7 (`3e2baea4b4`), `TrumpetCueProbes.cs` is unchanged.
+    - In `TrumpetCueVerdict.cs`, the recovery added members and a five-argument `OwnedDisposables` constructor with an
+      optional settlement reader (`gone`).
+    - The four-argument constructor that the probe calls now delegates to it with `gone = null`.
+      - It assigns the same `name`, `identity`, `destroy` and `outcome` fields as the round-7 constructor did, and
+        leaves the reader unset.
+      - Only the new settlement members (`ReadSettlement`, `Unsettled`, `RecordUnsettled`) read the reader, and the probe
+        never calls them.
+    - The probe uses only `Add`, `Destroy`, `WasRequested`, `Remaining` and `ReleaseRemaining`. Their code is
+      byte-identical between `3e2baea4b4` and `962bf27694`; the file's only removed line is a doc comment.
+    - So `…201133Z` (harness `9240a3d6…`) stays applicable at its identity. Round 7's earlier destruction-request change
+      was already accepted for that reuse.
   - **Harness, Ghaele:** `GhaeleLifetimeProbes.cs` changed in C2. C2's lifecycle evidence stays bound to candidate 3
     (`9c39b1ff7f`) and harness `d77754ba…b4f1`. The owner directed that it is not rerun, even though C3 later changed the
     shared teardown above. The full Ghaele lifetimes (`…182757Z`, `…183206Z`, `…201333Z`) stay at their own harnesses.
@@ -937,7 +973,17 @@ Reload (`…162605Z`, R2-F2, R3-F2):
 
 ## 5. Validation
 
-**Owner amendment 5 (this checkpoint).**
+**Owner amendment 5, review-9 correction (this checkpoint, pre-submission snapshot 2026-11-28T09:54Z UTC).**
+- **Ceiling:** 85 minutes. Spent before this submission's gate: 71 min 35.9 s. That is 71 min 31.0 s before review 8, plus
+  the review-8 gate on `b91eabcb3a` (outer 4.9 s). Remaining: 13 min 24.1 s.
+- **Review-8 gate (historical, on `b91eabcb3a6d608a383bb6024a09a7a72575285b`):** `focused -Filter sprint7-visual`,
+  2026-11-28T09:36:08Z–09:36:13Z. It selected 25 of 3213 registered tests, all passing. The receipt
+  `gate-focused-b91eabcb3a6d-d88e49a1250-a10f9d5aef1-20261128T093613641821Z.json` (sha256 `197ebbb3…dfdf9`) records 3.6 s;
+  the outer command took 4.9 s.
+- **Required for review 9:** the same single gate on the corrected head. Its actual result goes in the review-9 developer
+  report and the controller's records, and no commit follows it.
+
+**Owner amendment 5, review-8 submission (`b91eabcb3a`, historical).**
 - **Ceiling:** 85 minutes. Spent 71 min 31.0 s: 65 min 42 s through round 7 plus 349.0 s of outer time for the four
   amendment-4 gates on `84d2636e01`. Remaining: 13 min 29.0 s. The C3 ledger stays separate and unchanged.
 - **Required:** one controller `focused` gate with `-Filter sprint7-visual` (25 tests at selection time) on the new
@@ -949,6 +995,23 @@ Reload (`…162605Z`, R2-F2, R3-F2):
   `sprint7-visual` 25 tests passed (receipt 58.8 s, outer 99.3 s), `summon-playtest-r6` 11 (40.1 s, 80.5 s),
   `native-profile` 9 (46.1 s, 86.3 s) and `loader-compat-probe` 5 (40.9 s, 81.8 s). Batch outer time was 349.0 s, run
   2026-11-28T03:00:36Z–03:06:25Z with the worktree unchanged.
+  - The receipts are under `<lab>/agent-review-state/kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1/evidence/`.
+    Each has a log of the same name recording "selected N of 3213" and "failures=0":
+    - `sprint7-visual`: `gate-focused-84d2636e0105-d88e49a1250-a10f9d5aef1-20261128T030215486929Z.json` (sha256
+      `ce7118f2…82fcc`);
+    - `summon-playtest-r6`: `gate-focused-84d2636e0105-d88e49a1250-aa231d60233-20261128T030336240484Z.json` (sha256
+      `649fe9ba…c66f3`);
+    - `native-profile`: `gate-focused-84d2636e0105-d88e49a1250-a00db325ebf-20261128T030502700908Z.json` (sha256
+      `c8afad3f…e24cf2`);
+    - `loader-compat-probe`: `gate-focused-84d2636e0105-d88e49a1250-a2d890207db-20261128T030624875332Z.json` (sha256
+      `5171246d…bea2`).
+  - The outer times come from `<lab>/runtime-evidence/s7/recovery/parent-r8-gates.log`. They are measured around each
+    `verify` command and are distinct from the receipt durations.
+- **Coordination:** `<lab>/runtime-evidence/s7/recovery/parent-a5-coordination.md` gives the dated peer exchanges from
+  the enrolled session's transcript.
+  - For the four gates: clearance at 02:57:12Z (`kingmakermountedcombat-0f`) and 02:58:21Z (`kingmakergunslinger-49`).
+  - For the review-8 gate: the repack pause from 09:15:38Z (outbound `e9c465f1-…`), then the peer's clearance at
+    09:34:45Z, before the 09:36:08Z gate.
 - **Estimate:** the same gate took 99.3 s of outer time at 03:02Z. Allowing for current peer load, about 2–4 minutes, which
   fits within 13 min 29.0 s.
 - **Where the result goes:** the new gate's receipt and outer time go in the amendment-5 developer report and the
@@ -1018,8 +1081,9 @@ records the required gate receipts on the reviewed head.
 6. Merge and release remain the owner's; this sprint authorizes neither.
 7. Later integration with `master`, not part of this checkpoint.
    - **Comparison inputs at this snapshot:** `origin/master` `52755b617c79328a972ae5b74bc05784422e332d` (v0.0.197) and
-     merge base `35763430acc9eefc306b861045526a444690bc77`, fetched 2026-11-28T02:44Z. `master` is 60 commits ahead of
-     the merge base and this branch 100.
+     merge base `35763430acc9eefc306b861045526a444690bc77`, fetched 2026-11-28T02:44Z. At the integration head `3bfc570090`,
+     `git rev-list --left-right --count origin/master...3bfc570090` gave 60/100 (`master` 60 ahead of the merge base, the
+     branch 100). The same count is 60/101 at `84d2636e01` and 60/102 at `b91eabcb3a`.
    - **A clean textual merge would not qualify the merged build.** A read-only `git merge-tree` on 2026-11-28 found no
      conflicts.
    - **Still owed later:**
@@ -1034,8 +1098,9 @@ records the required gate receipts on the reviewed head.
 
 **Parent reconciliation matrix, owner amendment 4 (pre-review-8 snapshot, carried unchanged under owner amendment 5).**
 These are the nine findings open after round 7.
-- Each is **addressed by accepted successor work, pending parent reconciliation**. The parent reviewer has not assessed
-  any of them, and none is claimed verified at the parent level.
+- When this matrix was written, each was **addressed by accepted successor work, pending parent reconciliation**.
+- **Review 8 (on `b91eabcb3a`) assessed all nine as fix_verified.** It raised R8-F1 to R8-F4, which are records
+  corrections (table after the matrix).
 - A child PASS is not a retrospective parent PASS.
 - The parent's original findings and every historical FAIL stay as recorded below.
 
@@ -1051,11 +1116,24 @@ Child identities:
   - Eight formal reviews; review 8 returned `ready_for_owner_review` with no open findings.
   - Owner-accepted (owner amendment 4).
 
-The histories are in `docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md`, kept unchanged. The archived child review
-records are cited at their accepted archive commits (owner amendment 5; this branch's tree no longer carries copies):
+The histories are in the recovery manifest, kept unchanged and cited at the accepted C3 archive: https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/3bfc570090b9772cac4b92e79983d31455510bca/docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md
+
+The C3 evidence manifest, at the same archive: https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/3bfc570090b9772cac4b92e79983d31455510bca/docs/evidence/sprint7/recovery-c3/MANIFEST.json
+
+The archived child review records are cited at their accepted archive commits (owner amendment 5; this branch's tree no
+longer carries copies):
 - C1 #221: https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/tree/2c67a049ee33e0b29621fd29a8b25608ed31e956/docs/agent-reviews/pr-221
 - C2 #222: https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/tree/eab90a5ac82f661ecb903c5456d951a57a085eb9/docs/agent-reviews/pr-222
 - C3 #223: https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/tree/3bfc570090b9772cac4b92e79983d31455510bca/docs/agent-reviews/pr-223
+
+**Review 8 findings (on `b91eabcb3a`) and their review-9 corrections (records only):**
+
+| Finding | Correction in this submission |
+|---|---|
+| R8-F1 (P2) the observer-only DLL claim covered round-3 sessions | §3: dependency basis per producing session. `…050957Z` (`6f2f16ca88`) is limited to models and the T4 UI (assets and tooltip files match `962bf27694`; the two Dust product files do not). `…061437Z` is Dust appearance only. Repaired spawn ownership is from `…170720Z` (nested interruption) and `…180635Z`. The Trumpet constructor's preserved behaviour is shown through delegation. |
+| R8-F2 (P2) child manifests cited by parent-tree path | The recovery manifest and the C3 evidence manifest are cited by blob URL at `3bfc570090`, in the status block, the recovery paragraph, this section and the status page. The transcript directory links are kept. |
+| R8-F3 (P2) supporting receipts not identified | §5: the four `84d2636e01` receipt files and hashes, the outer-time log, and the dated coordination record. The review-9 developer report carries the same references. |
+| R8-F4 (P3, optional) divergence count head | §6 item 7: 60/100 is labelled as the count at `3bfc570090`; 60/101 at `84d2636e01` and 60/102 at `b91eabcb3a`. |
 
 | Parent finding | Accepted successor | Implementation | Behavioural evidence | Native evidence and scope | Child review disposition |
 |---|---|---|---|---|---|

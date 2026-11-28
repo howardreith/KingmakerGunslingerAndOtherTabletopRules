@@ -237,7 +237,13 @@ from RISK-01).
 
 ## Sprint 7 (started 2026-11-23; agent-review controller, foreground)
 
-**Current state (pre-submission snapshot for formal review 8, 2026-11-28T09:11Z UTC): ACTIVE in `develop` under owner amendment 5; 7 of 9 authorized reviews completed.**
+**Current state (pre-submission snapshot for formal review 9, 2026-11-28T09:54Z UTC): ACTIVE in `develop` under owner amendment 5; 8 of 9 authorized reviews completed.**
+- **Review 8** (`b91eabcb3a`): changes_required. It found all nine earlier parent findings fix_verified and raised four
+  records findings (R8-F1 to R8-F3 blocking, R8-F4 optional). This submission is the one authorized review-9 correction:
+  - per-session evidence basis;
+  - manifest citations pinned at the C3 archive;
+  - receipt and coordination references;
+  - the divergence-count label.
 - **Pre-review stop:** the first review-8 submission (`84d2636e01`, 2026-11-28T03:07Z–04:25Z) stopped BLOCKED before any
   reviewer launched: the controller admits no `docs/agent-reviews/` change outside its own records, and the integration
   had brought in the child transcripts. No round, finding or reviewer was recorded. Its 77 min 44 s was controller wall
@@ -251,13 +257,13 @@ from RISK-01).
 - **Integration:** the owner accepted the fast-forward integration of the accepted recovery onto this branch at C3's
   archive `3bfc570090`. C1 #221, C2 #222 and C3 #223 are accepted at their reviewed and archive identities. #221 shows
   "merged" because the parent advanced.
-- **The nine parent findings** (R4-F1, R5-F1, R6-F5 and R7-F1 to R7-F6) are addressed by accepted successor work,
-  pending parent reconciliation in review 8. Matrix: `docs/GUNSLINGER-SPRINT7-RECORD.md` §7. Recovery map:
-  `docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md`.
+- **The nine parent findings** (R4-F1, R5-F1, R6-F5 and R7-F1 to R7-F6), addressed by accepted successor work, were
+  assessed fix_verified by review 8. Matrix: `docs/GUNSLINGER-SPRINT7-RECORD.md` §7. Recovery map, at the accepted C3
+  archive: https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/3bfc570090b9772cac4b92e79983d31455510bca/docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md
 - **Candidate 6 is reused, not rebuilt:** package `6c71d928…d55a`, DLL `6af754eb…1411`, session `20261127T133020Z`
   PASS 43/43, mechanics only. Earlier presentation evidence stays on its original candidates.
-- **Validation:** 71 min 31.0 s of 85 spent (including the four amendment-4 gates on `84d2636e01`, 349.0 s); one
-  `sprint7-visual` focused gate required on the new head.
+- **Validation:** 71 min 35.9 s of 85 spent, including the four amendment-4 gates on `84d2636e01` (349.0 s) and the review-8
+  gate on `b91eabcb3a` (4.9 s). One `sprint7-visual` focused gate is required on the corrected head.
 - **Allowances stay separate.** The recovery's own 345 min 5.6 s, six candidates and eight C3 reviews are kept apart
   from the parent's.
 - **Not authorized:** review 10, a new package or a native session. Nothing is merged or released. Visual (T2, T3, T6)
