@@ -1,20 +1,20 @@
 {
  "schema": "kmg.turn-undead.contracts.v2",
- "run": "20261128T140857Z-umm-0.31.1-turn-undead-first",
+ "run": "20261128T150437Z-umm-0.31.1-turn-undead-first",
  "loaderProfile": "umm-0.31.1",
  "candidate": {
-  "producerCommit": "fb504c2af273f98498251a9f0724d274b58ed9f6",
-  "packageSha256": "a1292998095a2cf23d5b5cb84b00ab069402d492e19ce67a92c09082e444fb5b",
-  "dllSha256": "7bb6ba510b94fd3a3b3f5b48df261f9a46a027e68a1691a7bd7d4a0b9b10944d"
+  "producerCommit": "51aa86771626cbab8a63382d612688875b398d49",
+  "packageSha256": "b2044d41e141680d73b5d50f5b43063b7ff92a10ba020ba0b5f4658c0abe76dd",
+  "dllSha256": "6218cc57be97be3e1f168bf7e1166c295c7d1d971cb6f394638e824db3c46e4c"
  },
  "activeMods": [
   "KingmakerGunslinger 0.0.197",
   "KmgLoaderCompatHarness 0.1.0"
  ],
  "sourceRecords": {
-  "session-summary.json": "a085a33716481c8b45e89fb5b71d46b55935857d9d63962bf25baf8a4a455b8e",
-  "01-first-turn/launch-summary.json": "769f5f0765043391d1de72644b04b063b77160deca9dea3ab7f38a527238fff2",
-  "01-first-turn/harness/harness-result.json": "16fd85b8e07a278b0b0253ac927e6de8a3663439e26046bf77431df2bd12c848"
+  "session-summary.json": "8b2d5901eb8413385c67842300abf993cc384f86a5973cc2ba69649e124e5942",
+  "01-first-turn/launch-summary.json": "5d4ab64c7d9a106d4391a5feccaee155cb310631bdafd1b8bad54afb804ab78c",
+  "01-first-turn/harness/harness-result.json": "6a9748fbf9d7265f609d050a42203a3004febf2c67d390e49f31211e0b3fb8f2"
  },
  "mode": "contracts",
  "problems": [],
@@ -164,6 +164,7 @@
       ]
      }
     ],
+    "buffApplications": [],
     "calculators": [],
     "alignment": [],
     "descriptors": [],
@@ -261,6 +262,7 @@
       ]
      }
     ],
+    "buffApplications": [],
     "calculators": [],
     "alignment": [
      "LawfulGood"
@@ -364,6 +366,7 @@
       ]
      }
     ],
+    "buffApplications": [],
     "calculators": [],
     "alignment": [
      "LawfulGood"
@@ -466,6 +469,7 @@
       ]
      }
     ],
+    "buffApplications": [],
     "calculators": [],
     "alignment": [],
     "descriptors": [],
@@ -590,6 +594,7 @@
       ]
      }
     ],
+    "buffApplications": [],
     "calculators": [],
     "alignment": [],
     "descriptors": [],
@@ -635,6 +640,7 @@
       ]
      }
     ],
+    "buffApplications": [],
     "calculators": [],
     "alignment": [
      "LawfulGood"
@@ -683,6 +689,7 @@
       ]
      }
     ],
+    "buffApplications": [],
     "calculators": [],
     "alignment": [
      "LawfulGood"
@@ -731,6 +738,7 @@
       ]
      }
     ],
+    "buffApplications": [],
     "calculators": [],
     "alignment": [],
     "descriptors": [],
@@ -862,6 +870,40 @@
    },
    "effectSave": "Will",
    "saves": [],
+   "buffApplications": [
+    {
+     "path": "on failure",
+     "buff": "1265c0b27ef559c4e980a900dfc68d1e:FrightenedUndead",
+     "permanent": false,
+     "duration": {
+      "$type": "ContextDurationValue",
+      "Rate": "Minutes",
+      "DiceType": "Zero",
+      "DiceCountValue": {
+       "$type": "ContextValue",
+       "ValueType": "Simple",
+       "Value": 0,
+       "ValueRank": "Default",
+       "ValueShared": "Damage",
+       "Property": "None",
+       "CustomProperty": null
+      },
+      "BonusValue": {
+       "$type": "ContextValue",
+       "ValueType": "Simple",
+       "Value": 1,
+       "ValueRank": "Default",
+       "ValueShared": "Damage",
+       "Property": "None",
+       "CustomProperty": null
+      },
+      "m_IsExtendable": true
+     },
+     "asChild": true,
+     "notDispelable": false,
+     "fromSpell": false
+    }
+   ],
    "calculators": [],
    "alignment": [],
    "descriptors": [],
@@ -907,14 +949,20 @@
     },
     {
      "$type": "BuffDescriptorImmunity",
-     "Descriptor": "SpellDescriptorWrapper",
+     "Descriptor": {
+      "mask": 6597704040704,
+      "flags": "Poison, Disease, Sickened, Shaken, Fatigue, Frightened, Exhausted, Stun, Confusion, Death, Bleed, VilderavnBleed"
+     },
      "IgnoreFeature": null,
      "CheckFact": false,
      "FactToCheck": null
     },
     {
      "$type": "BuffDescriptorImmunity",
-     "Descriptor": "SpellDescriptorWrapper",
+     "Descriptor": {
+      "mask": 4366631152,
+      "flags": "MindAffecting, Fear, Compulsion, Emotion, Charm, Daze, Shaken, Frightened, Confusion, Sleep"
+     },
      "IgnoreFeature": "1a5e7191279e7cd479b17a6ca438498c:BloodlineUndeadArcana",
      "CheckFact": false,
      "FactToCheck": null
@@ -927,12 +975,18 @@
     },
     {
      "$type": "SpellImmunityToSpellDescriptor",
-     "Descriptor": "SpellDescriptorWrapper",
+     "Descriptor": {
+      "mask": 2199657529600,
+      "flags": "Poison, Disease, Sickened, Shaken, Fatigue, Frightened, Exhausted, Stun, Confusion, Death, Bleed"
+     },
      "CasterIgnoreImmunityFact": null
     },
     {
      "$type": "SpellImmunityToSpellDescriptor",
-     "Descriptor": "SpellDescriptorWrapper",
+     "Descriptor": {
+      "mask": 4366631152,
+      "flags": "MindAffecting, Fear, Compulsion, Emotion, Charm, Daze, Shaken, Frightened, Confusion, Sleep"
+     },
      "CasterIgnoreImmunityFact": "1a5e7191279e7cd479b17a6ca438498c:BloodlineUndeadArcana"
     },
     {

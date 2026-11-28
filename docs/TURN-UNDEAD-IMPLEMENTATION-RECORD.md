@@ -25,9 +25,9 @@ In-game extract: the harness `contracts` mode, run inside the game on the
 candidate, hashes each named method's IL from the loaded assembly and reads
 every blueprint value Turn depends on:
 [`docs/evidence/turn-undead/contracts-vanilla.json`](evidence/turn-undead/contracts-vanilla.json)
-(run `20261128T140857Z`) and
+(run `20261128T150437Z`) and
 [`contracts-cotw.json`](evidence/turn-undead/contracts-cotw.json) (run
-`20261128T141137Z`; identical method IL with CotW loaded). Each extract names
+`20261128T150715Z`; identical method IL with CotW loaded). Each extract names
 the SHA-256 of the lab records it came from.
 
 | Seam | Installed behavior (reference inspection) | Consequence | In-game extract (method IL sha256) |
@@ -208,7 +208,7 @@ derives the icon set from the catalog's runtime exports).
 | --- | --- | --- | --- |
 | DC bonus matching | `IncreaseSpecifiedSpellsDC` matches the executed ability or its parent | the Turn identities themselves are appended (the menu child's parent is a CotW wrapper not in the list) | CotW read; native PENDING |
 | Resistance matching | `ContextSavingThrowBonusAgainstSpecificSpells` matches `Reason.Context.SourceAbility` exactly and reads the caster from that context for bypass features | initial save `Reason` = the Turn ability context; repeat save `Reason` = the flight buff, whose context `SourceAbility` is the Turn ability and whose caster is the channeler | engine/CotW read; native initial and repeat resistance PENDING |
-| Timing | CotW builds its channel engine and later its new spells (Consecrate) inside its `LoadDictionary` postfix | the adapter runs in publication, on the first UMM update after core bootstrap reports ready (no update cap), i.e. after the whole synchronous `LoadDictionary` postfix chain has returned, so every CotW field is final | CotW run `20261128T141137Z`: completion line `extraRoute=present;cotw=present 1.14.4c-2.1`, five menu children placed (four sources and the paladin extra-channel child), no startup drift |
+| Timing | CotW builds its channel engine and later its new spells (Consecrate) inside its `LoadDictionary` postfix | the adapter runs in publication, on the first UMM update after core bootstrap reports ready (no update cap), i.e. after the whole synchronous `LoadDictionary` postfix chain has returned, so every CotW field is final | CotW run `20261128T150715Z`: completion line `dc=cleric:progression,paladin:progression,hospitaler:progression,empyreal:progression;extraRoute=present;cotw=present 1.14.4c-2.1`, five menu children placed (four sources and the paladin extra-channel child), no startup drift |
 | Registration lifecycle | | registration of the saved identities (ten, plus the CotW extra child when the route exists) waits for the core ready or terminal-failure state and is a separate phase: a publication failure (resistance, CotW, feat offer) rolls back only its own foreign changes, keeps the identities resolvable and logs `[turn-undead][publication.failed]` (`TurnUndeadLifecyclePolicy`) | `turn-undead.lifecycle` |
 | Seam shape | each reflected member is required contract, its value optional | a missing or mistyped member, a missing `ChannelEnergyEngine`, a present holder without `IncreaseSpecifiedSpellsDC`, or a resistance fact without an ability-specific list is drift; a member whose value CotW never created is `=absent` (`TurnUndeadCotwSeamPolicy`) | `turn-undead.cotw-seams` |
 | Failure boundary and reporting | drift throws inside the adapter | the adapter restores every recorded change (variants, parent links, direct visibility, every list); `TurnUndeadModule.PublishCotw`, the one boundary Install uses, turns the exception into `[turn-undead][cotw.unavailable]` naming the missing behavior, `cotw=failed;directVisible=N` and every direct action visible: baseline Turn Undead with reduced CotW compatibility, never reported as full compatibility | `cotw-rollback` on an isolated copy of the publication surface (fresh features, wrappers, harm stand-ins, actions; substitute holders built from CotW's own component types) driven through `PublishCotwWithEngine`; the live publication and the module's rollback handle are only observed (see Native evidence) |
@@ -250,6 +250,18 @@ not contain); its four harness steps all passed with no problems. The session
 definition is a candidate material input, so the candidate was rebuilt and both
 sessions rerun unchanged otherwise.
 
+Round 5 (round-4 corrections), measured: focused gate under 20 s; harness compile
+under 1 min; parameter checks unchanged. `Build-Local`: `67032b492` 14:49:15-14:54:06
+(4 min 51 s), `51aa86771` 14:59:47-15:04:26 (4 min 39 s). Native sessions: vanilla
+142-143 s, CotW 112-114 s. The vanilla session at `67032b492` (`20261128T145423Z`)
+failed one assertion of the new driver-recording check: the earlier abandon step had
+already destroyed the units, so the driver's post-outcome window lasted zero frames
+and could not be interrupted; every other assertion of that check and every other step
+passed. The driver now always holds that window for at least one frame; the candidate
+was rebuilt and both sessions rerun. The CotW session at `67032b492` (`145702Z`)
+passed and is retained. The game copy was shared with the S7 integration session by
+agreed, non-overlapping windows.
+
 ## Native evidence (intermediate checkpoint)
 
 Machine-generated projection of every admitted Turn Undead run, with source-record
@@ -258,6 +270,29 @@ hashes, restoration receipts and probe results:
 produced by `docs/evidence/turn-undead/extract_native_evidence.py` from the
 lab's retained session and harness records. Raw logs, saves and profiles stay
 in the lab.
+
+### Round 5 (round-4 corrections), candidate `51aa86771`
+
+| Field | Value |
+| --- | --- |
+| Runs | vanilla `20261128T150437Z-umm-0.31.1-turn-undead-first` (contracts, first-turn, undead-caster, selective, abandon, abandon-interrupt, abandon-interrupt-recording; PASS 142 s) and Call of the Wild alone `20261128T150715Z-umm-0.31.1-turn-undead-cotw-contracts` (contracts, cotw-rollback, cotw-rollback-interrupt, cotw-gameplay, cotw-registration-boundary; PASS 112 s) |
+| Candidate | producer commit `51aa86771`, package `b2044d41e141680d73b5d50f5b43063b7ff92a10ba020ba0b5f4658c0abe76dd`, DLL `6218cc57be97be3e1f168bf7e1166c295c7d1d971cb6f394638e824db3c46e4c`; product sources identical to `67032b492` |
+| Observer | `tools/LoaderCompatHarness` at the producer commit; harness DLL `d875c1b05b7ddb408f1e434a57226547b41b4b157e5c736a17cf1012b410997b` |
+| Restoration | vanilla: lease `runtime-20261128T150445Z-807f...`, transaction `4bc922b9...`; CotW: lease `runtime-20261128T150723Z-a383...`, transaction `271e43c4...`. Both: transaction succeeded, registry restored and verified, owner integrity verified; every harness step `isolationRestored` |
+| Earlier round-5 runs | `20261128T145423Z` (vanilla, FAIL: the driver-recording check's interruption window was empty, see Validation time) and `20261128T145702Z` (CotW, PASS) on `67032b492`; retained with their verdicts |
+
+Observed in the round-5 vanilla run (`150437Z`):
+
+- Completion line `...;dc=cleric:native,paladin:native,hospitaler:native,empyreal:native;extraRoute=absent;cotw=absent;menuChildren=0`; contracts without problems. The compact projection now carries the vanilla `UndeadImmunities` descriptor masks with flag names (`BuffDescriptorImmunity` 6597704040704: Poison, Disease, Sickened, Shaken, Fatigue, Frightened, Exhausted, Stun, Confusion, Death, Bleed, VilderavnBleed; 4366631152: MindAffecting, Fear, Compulsion, Emotion, Charm, Daze, Shaken, Frightened, Confusion, Sleep, bypassed by `BloodlineUndeadArcana`; the matching `SpellImmunityToSpellDescriptor` masks) and the wizard donor's failed-save application: `FrightenedUndead`, `ContextDurationValue` Minutes, dice Zero, bonus 1 (`Simple`), as child.
+- First turn, undead caster, selective, abandon and abandon-interrupt as in round 4 (rolled DC 15; pool 6 -> 5; 14/14 brains; injected cases unrestored with the next probe refused; selective ally excluded with the feat).
+- Abandon-interrupt-recording, through a further probe slot, with a cleanup failure the driver does not expect: interrupted while the driver held its post-outcome window -> the outer outcome carried that failure, isolation not restored, next probe refused; continued -> the driver stopped after its first case (`driverCasesStarted` 1) with the same verdict and reported "genuine cleanup failure; no further case runs". In both, the pause flag, 14/14 brains and every spawned unit were restored.
+
+Observed in the round-5 CotW run (`150715Z`):
+
+- Completion line `...;dc=cleric:progression,paladin:progression,hospitaler:progression,empyreal:progression;extraRoute=present;cotw=present 1.14.4c-2.1;menuChildren=5`. Contracts: CotW `UndeadImmunities` masks 1152928102272876800 (a CotW-defined descriptor value outside the native flag names) and 16 (MindAffecting, bypassed by CotW's `BypassUndeadImmunity`); native harm saves under CotW reached through `ContextConditionHasNegativeEnergyAffinity`, conditional DC adjustment count 0; `IncreaseSpecifiedSpellsDC.BonusDC` `ContextValue` `Simple` 2 (Improved Channel), 1 (Sacred Conduit), 3 (Consecrate); every Turn identity exactly once on every list.
+- `cotw-registration-boundary` (product `PlanDcCalculator` and `BuildPaladinExtra`, isolated donors): healthy cleric donor -> `progression` (cleric, Holy Vindicator, Dawnflower Anchorite; Charisma); the same donor with a second DC calculator -> `fallback: 2 DC calculators` with the cleric-only native calculator and a `cotw.dc-progression-unavailable` report; strict mode refused it. Healthy extra donor -> `present`, child built with the progression calculator and `PaladinExtraChannelResource` x1; extra donor with two calculators -> `drift: ... 2 DC calculators`, nothing built or attached, no exception, `cotw.extra-route-unavailable` reported; a failing registration delegate -> `drift: ... isolated registration failure`, contained. The live registration stayed intact: module `published`, feat `fd2d5083...` and flight buff resolvable, all eight source actions resolvable, live `dc=` all `progression`, extra route `present`.
+- `cotw-rollback`, `cotw-rollback-interrupt` as in round 4 (drift reported `cotw=failed;directVisible=4`, zero differences; live handle 20 undo actions unchanged; interruption restored, no fixture left).
+- `cotw-gameplay`: cleric 5 / Holy Vindicator 2 rolled DC 16; cleric 5 / fighter 2 rolled DC 15 (10 + half of 7 or 5, rounded down, + 3, as the action text states). Paladin: extra-channel cast -> 1 tracked undead rolled (DC 15), extra 2 -> 1, lay on hands unchanged; lay on hands cast -> 2 tracked undead rolled (the earlier skeleton still in range and the new one), lay on hands 5 -> 3, extra unchanged; without the feat, extra 0 and the extra child unavailable.
 
 ### Round 4 (owner amendment 1), candidate `fb504c2af`
 
@@ -321,9 +356,9 @@ contracts extracts.
 | TU-01 | PASS | intake commit `5236e51a`; INTAKE.md; enrollment above | |
 | TU-02 | PARTIAL | reference inspection + in-game contracts extract (method IL; compact donor, immunity, override, resistance and save projection incl. conditional DC adjustments) | full 2.1.7b undead census PENDING |
 | TU-03 | PARTIAL | source table incl. the CotW paladin extra-channel route and the CotW channel progression; contracts extract asserts all constructed sources in both profiles | Hospitaler/Empyreal gameplay PENDING |
-| TU-04 | PARTIAL | policy and reviewed historical (2.1.4) inventory; native 2.1.7b skeleton and level-1 zombie lord classification | installed-2.1.7b census PENDING |
+| TU-04 | PARTIAL | policy and reviewed historical (2.1.4) inventory; native 2.1.7b skeleton and level-1 zombie lord classification; `SkeletonSummoned` resolved by its installed Animate Dead references | seven provisional owner-review defaults (classification inventory); installed-2.1.7b census PENDING |
 | TU-06 | PARTIAL | `115645Z` negative control: positive channel without the feat has no Turn action and fails caster checks | negative-only cleric, non-channel class and permission-only fixtures through normal acquisition PENDING |
-| TU-08 | PARTIAL | `140857Z`: one cleric activation affecting several undead spent one use (6 -> 5); `141137Z`: paladin lay on hands route spent two uses (5 -> 3), extra-channel route one extra use (2 -> 1), each against one target | multi-target paladin, Hospitaler, Empyreal PENDING |
+| TU-08 | PARTIAL | cleric: one activation affecting several undead spent one use (6 -> 5; `140857Z`, `150437Z`). Paladin, one debit per cast regardless of recipients: `141137Z` extra-channel cast -> 2 tracked undead rolled initial saves, extra 2 -> 1; lay on hands cast -> 3 rolled, lay on hands 5 -> 3; `150715Z` -> 1 and 2 rolled with the same debits (`cotw-gameplay.turnSaves`, `paladinPayment.*.recipients`) | the effect was checked individually only on the one newly spawned skeleton per paladin cast; Hospitaler and Empyreal PENDING |
 | TU-13 | PARTIAL | `115645Z`: one real-time `UnitUseAbility` command succeeded once | standard-action spending, attack-of-opportunity behavior and turn-based PENDING |
 | TU-14 | PARTIAL | `115645Z`: in-range undead affected; an undead 16.0 m away and an in-range living hostile unaffected; `undead-caster`: an undead channeler targeted, a living one never | the 30-foot boundary itself not probed |
 | TU-16 | PASS (cleric, real time) | `115645Z`, `140857Z` selective (judged from the rolls): without Selective Channel allied and enemy undead are turned; with it only enemy undead, allies roll nothing (the native harm rule) | turn-based PENDING |
@@ -331,12 +366,12 @@ contracts extracts.
 | TU-18 | PASS | `115645Z`: the mindless skeleton moved away (2.40 -> 18.57 m over the 13 s movement sample) and made no repeat save over the whole effect, whose lifetime was measured separately (ended 61.88 s after the cast, TU-20) | movement sampled over 13 s only, not the whole minute |
 | TU-19 | PARTIAL | `115645Z`, `140857Z`: round saves 6 s apart, failure retains, success ends; the reader accepts an early success as recovery | resource after recovery not measured; turn-based PENDING |
 | TU-20 | PASS | `115645Z`: unrefreshed end 61.88 s after the cast; `140857Z`: 61.88 s | |
-| TU-21 | PARTIAL | `115645Z`: cleric 5 + fighter 2, Cha +3 -> rolled DC 15 (unrelated levels excluded); constructed calculator classes/statistic asserted for all sources in both profiles; `141137Z`: CotW progression cleric 5 / Holy Vindicator 2 rolled DC 16, cleric 5 / fighter 2 rolled DC 15 | odd/even levels and other statistics PENDING; what a rendered tooltip shows is not observed (PENDING); the probe read only the localized save text and the calculator-less preview value |
+| TU-21 | PARTIAL | `115645Z`: cleric 5 + fighter 2, Cha +3 -> rolled DC 15 (unrelated levels excluded); constructed calculator classes/statistic asserted for all sources in both profiles; `141137Z`, `150715Z`: CotW progression cleric 5 / Holy Vindicator 2 rolled DC 16, cleric 5 / fighter 2 rolled DC 15 (half the summed qualifying levels, rounded down, as the action text states) | odd/even levels and other statistics PENDING; what a rendered tooltip shows is not observed (PENDING); the probe read only the localized save text and the calculator-less preview value |
 | TU-24 | PARTIAL | `115645Z`: no Turn damage or healing | allegiance and altered-HP group PENDING |
 | TU-28 | PARTIAL | vanilla direct action, source and icon identity; blueprint save/duration strings recorded separately from the preview DC 16 and the rolled DC 15 | rendered tooltip, UI and hotbar presentation PENDING |
-| TU-22 | PARTIAL | contracts: exact per-identity membership on ChannelResistance4 and every CotW DC and resistance list; native harm saves carry no conditional DC adjustment to inherit | native resistance and DC-bonus save observations PENDING |
+| TU-22 | PARTIAL | contracts (`150437Z`, `150715Z`): exact per-identity membership on ChannelResistance4 and every CotW DC and resistance list; CotW `BonusDC` values +2/+1/+3; native harm saves carry no conditional DC adjustment to inherit | native resistance and DC-bonus save observations PENDING |
 | TU-27 | PARTIAL | `141137Z`: each source's child under its own wrapper, direct hidden, paladin extra child beside CotW's extra harm; cleric and paladin children cast through the variant conversion | rendered submenu, icon presentation and preexisting-variant use PENDING |
 | TU-32 | PARTIAL | vanilla run (no dependency) and CotW run: menu placement checked against the grant graph, exact DC/resistance membership, the reported failure boundary on an isolated surface, CotW progression DC and paladin payment routes observed | CotW DC-bonus and resistance save observations PENDING |
 | TU-33 | PARTIAL | CotW run `141137Z`: of the 533 registry entries of every form read, no entry's ability or that ability's parent is a Turn identity (the identities and parents inspected) | existing heal/harm action behavior and the CotW negative-affinity rewrite PENDING |
-| TU-34 | PARTIAL | `141137Z` cotw-rollback: an already-populated publication appends nothing; re-publication equals the first; the live publication's handle and graph unchanged | load-order and repeated-startup observations PENDING |
+| TU-34 | PARTIAL | `141137Z`, `150715Z` cotw-rollback: an already-populated publication appends nothing; re-publication equals the first; the live publication's handle and graph unchanged | load-order and repeated-startup observations PENDING |
 | others | NOT RUN | | |

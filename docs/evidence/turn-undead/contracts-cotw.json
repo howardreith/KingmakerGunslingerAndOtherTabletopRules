@@ -1,11 +1,11 @@
 {
  "schema": "kmg.turn-undead.contracts.v2",
- "run": "20261128T141137Z-umm-0.31.1-turn-undead-cotw-contracts",
+ "run": "20261128T150715Z-umm-0.31.1-turn-undead-cotw-contracts",
  "loaderProfile": "umm-0.31.1",
  "candidate": {
-  "producerCommit": "fb504c2af273f98498251a9f0724d274b58ed9f6",
-  "packageSha256": "a1292998095a2cf23d5b5cb84b00ab069402d492e19ce67a92c09082e444fb5b",
-  "dllSha256": "7bb6ba510b94fd3a3b3f5b48df261f9a46a027e68a1691a7bd7d4a0b9b10944d"
+  "producerCommit": "51aa86771626cbab8a63382d612688875b398d49",
+  "packageSha256": "b2044d41e141680d73b5d50f5b43063b7ff92a10ba020ba0b5f4658c0abe76dd",
+  "dllSha256": "6218cc57be97be3e1f168bf7e1166c295c7d1d971cb6f394638e824db3c46e4c"
  },
  "activeMods": [
   "CallOfTheWild 1.14.4c-2.1",
@@ -13,9 +13,9 @@
   "KmgLoaderCompatHarness 0.1.0"
  ],
  "sourceRecords": {
-  "session-summary.json": "006c0d12b6ab35a7060d0aa4bf78a55b94a3c56da5f2ca1c4946fc544d270d8d",
-  "01-cotw-contracts/launch-summary.json": "e12ee8e4cef89e6ec85dd3329c360a1887a4324151f2067cc39dabf4e0f219d4",
-  "01-cotw-contracts/harness/harness-result.json": "fa91a06bbe7d8abbb3c255b6675feaaa4bbb5c3a9e9c6cde56821129fbe6b1bc"
+  "session-summary.json": "25322b67d028c72733fbbaf173507cd6001d6b5566f8c7da1e069c5b1eb35a59",
+  "01-cotw-contracts/launch-summary.json": "9c26a97f6902741f41120ee38bb70631cb82719641fc7427efd393d10fadfd28",
+  "01-cotw-contracts/harness/harness-result.json": "aeb8ed4595459a0edbb786926f2669ee7fc8d6c4a8be80d4ce844b35f1cf32f4"
  },
  "mode": "contracts",
  "problems": [],
@@ -166,6 +166,72 @@
       ]
      }
     ],
+    "buffApplications": [
+     {
+      "path": "if And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionIsEnemy, ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
+     },
+     {
+      "path": "unless And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
+     }
+    ],
     "calculators": [
      {
       "$type": "ContextCalculateAbilityParamsBasedOnClasses",
@@ -279,6 +345,72 @@
        "ContextActionDealDamage",
        "Conditional"
       ]
+     }
+    ],
+    "buffApplications": [
+     {
+      "path": "if And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionIsEnemy, ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
+     },
+     {
+      "path": "unless And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
      }
     ],
     "calculators": [
@@ -415,6 +547,72 @@
       ]
      }
     ],
+    "buffApplications": [
+     {
+      "path": "if And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionIsEnemy, ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
+     },
+     {
+      "path": "unless And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
+     }
+    ],
     "calculators": [
      {
       "$type": "ContextCalculateAbilityParamsBasedOnClasses",
@@ -487,6 +685,72 @@
        "ContextActionDealDamage",
        "Conditional"
       ]
+     }
+    ],
+    "buffApplications": [
+     {
+      "path": "if And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionIsEnemy, ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
+     },
+     {
+      "path": "unless And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
      }
     ],
     "calculators": [
@@ -605,6 +869,72 @@
        "ContextActionDealDamage",
        "Conditional"
       ]
+     }
+    ],
+    "buffApplications": [
+     {
+      "path": "if And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionIsEnemy, ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
+     },
+     {
+      "path": "unless And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
      }
     ],
     "calculators": [
@@ -747,6 +1077,72 @@
       ]
      }
     ],
+    "buffApplications": [
+     {
+      "path": "if And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionIsEnemy, ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
+     },
+     {
+      "path": "unless And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
+     }
+    ],
     "calculators": [
      {
       "$type": "ContextCalculateAbilityParamsBasedOnClasses",
@@ -808,6 +1204,72 @@
        "ContextActionDealDamage",
        "Conditional"
       ]
+     }
+    ],
+    "buffApplications": [
+     {
+      "path": "if And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionIsEnemy, ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
+     },
+     {
+      "path": "unless And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
      }
     ],
     "calculators": [
@@ -874,6 +1336,72 @@
       ]
      }
     ],
+    "buffApplications": [
+     {
+      "path": "if And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionIsEnemy, ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
+     },
+     {
+      "path": "unless And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
+     }
+    ],
     "calculators": [
      {
       "$type": "ContextCalculateAbilityParamsBasedOnClasses",
@@ -936,6 +1464,72 @@
        "ContextActionDealDamage",
        "Conditional"
       ]
+     }
+    ],
+    "buffApplications": [
+     {
+      "path": "if And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionIsEnemy, ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
+     },
+     {
+      "path": "unless And[ContextConditionCasterHasFact(fd30c69417b434d47b6b03b9c1f568ff)] / if And[ContextConditionHasNegativeEnergyAffinity] / after save / if And[ContextConditionCasterHasFact(be460cc5e4a84c88b8893484c40c6d6b)] / on failure",
+      "buff": "bd1a188b77794320aabeb88edcd98d43:HolyVindicatorBloodBuff",
+      "permanent": true,
+      "duration": {
+       "$type": "ContextDurationValue",
+       "Rate": "Rounds",
+       "DiceType": "Zero",
+       "DiceCountValue": {
+        "$type": "ContextValue",
+        "ValueType": "Simple",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "BonusValue": {
+        "$type": "ContextValue",
+        "ValueType": "Rank",
+        "Value": 0,
+        "ValueRank": "Default",
+        "ValueShared": "Damage",
+        "Property": "None",
+        "CustomProperty": null
+       },
+       "m_IsExtendable": true
+      },
+      "asChild": false,
+      "notDispelable": true,
+      "fromSpell": true
      }
     ],
     "calculators": [
@@ -1096,6 +1690,40 @@
    },
    "effectSave": "Will",
    "saves": [],
+   "buffApplications": [
+    {
+     "path": "on failure",
+     "buff": "1265c0b27ef559c4e980a900dfc68d1e:FrightenedUndead",
+     "permanent": false,
+     "duration": {
+      "$type": "ContextDurationValue",
+      "Rate": "Minutes",
+      "DiceType": "Zero",
+      "DiceCountValue": {
+       "$type": "ContextValue",
+       "ValueType": "Simple",
+       "Value": 0,
+       "ValueRank": "Default",
+       "ValueShared": "Damage",
+       "Property": "None",
+       "CustomProperty": null
+      },
+      "BonusValue": {
+       "$type": "ContextValue",
+       "ValueType": "Simple",
+       "Value": 1,
+       "ValueRank": "Default",
+       "ValueShared": "Damage",
+       "Property": "None",
+       "CustomProperty": null
+      },
+      "m_IsExtendable": true
+     },
+     "asChild": true,
+     "notDispelable": false,
+     "fromSpell": false
+    }
+   ],
    "calculators": [],
    "alignment": [],
    "descriptors": [],
@@ -1155,26 +1783,38 @@
     },
     {
      "$type": "BuffDescriptorImmunity",
-     "Descriptor": "SpellDescriptorWrapper",
+     "Descriptor": {
+      "mask": 1152928102272876800,
+      "flags": "1152928102272876800"
+     },
      "IgnoreFeature": null,
      "CheckFact": false,
      "FactToCheck": null
     },
     {
      "$type": "BuffDescriptorImmunity",
-     "Descriptor": "SpellDescriptorWrapper",
+     "Descriptor": {
+      "mask": 16,
+      "flags": "MindAffecting"
+     },
      "IgnoreFeature": "51a1981a214f4373b9a583338ac8a377:BypassUndeadImmunity",
      "CheckFact": false,
      "FactToCheck": null
     },
     {
      "$type": "SpellImmunityToSpellDescriptor",
-     "Descriptor": "SpellDescriptorWrapper",
+     "Descriptor": {
+      "mask": 1152928102272876800,
+      "flags": "1152928102272876800"
+     },
      "CasterIgnoreImmunityFact": null
     },
     {
      "$type": "SpellImmunityToSpellDescriptor",
-     "Descriptor": "SpellDescriptorWrapper",
+     "Descriptor": {
+      "mask": 16,
+      "flags": "MindAffecting"
+     },
      "CasterIgnoreImmunityFact": "51a1981a214f4373b9a583338ac8a377:BypassUndeadImmunity"
     },
     {
@@ -1489,7 +2129,15 @@
        "count": 548,
        "guidListSha256": "b58e499d5c169bc94b7e77eaf7bef912f7c5cb2eff065a1263bcba8a2510dcf0"
       },
-      "BonusDC": "ContextValue"
+      "BonusDC": {
+       "$type": "ContextValue",
+       "ValueType": "Simple",
+       "Value": 2,
+       "ValueRank": "Default",
+       "ValueShared": "Damage",
+       "Property": "None",
+       "CustomProperty": null
+      }
      }
     ],
     "membershipProblems": []
@@ -1503,7 +2151,15 @@
        "count": 548,
        "guidListSha256": "b58e499d5c169bc94b7e77eaf7bef912f7c5cb2eff065a1263bcba8a2510dcf0"
       },
-      "BonusDC": "ContextValue"
+      "BonusDC": {
+       "$type": "ContextValue",
+       "ValueType": "Simple",
+       "Value": 1,
+       "ValueRank": "Default",
+       "ValueShared": "Damage",
+       "Property": "None",
+       "CustomProperty": null
+      }
      }
     ],
     "membershipProblems": []
@@ -1517,7 +2173,15 @@
        "count": 486,
        "guidListSha256": "226707922d3abc0c4214a0a248f64c1aa6af11838326b7dbac05f5e0755277a8"
       },
-      "BonusDC": "ContextValue"
+      "BonusDC": {
+       "$type": "ContextValue",
+       "ValueType": "Simple",
+       "Value": 3,
+       "ValueRank": "Default",
+       "ValueShared": "Damage",
+       "Property": "None",
+       "CustomProperty": null
+      }
      }
     ],
     "membershipProblems": []
@@ -1606,7 +2270,15 @@
        "guidListSha256": "a92da4f0cbd92764562e65c59b08a4e07ec3fb1c738771abe1889412d4004044"
       },
       "ModifierDescriptor": "None",
-      "Value": "ContextValue",
+      "Value": {
+       "$type": "ContextValue",
+       "ValueType": "Rank",
+       "Value": 0,
+       "ValueRank": "Default",
+       "ValueShared": "Damage",
+       "Property": "None",
+       "CustomProperty": null
+      },
       "BypassFeatures": [
        "3d8e38c9ed54931469281ab0cec506e9:SunDomainBaseFeature"
       ]
@@ -1642,7 +2314,15 @@
        "guidListSha256": "a92da4f0cbd92764562e65c59b08a4e07ec3fb1c738771abe1889412d4004044"
       },
       "ModifierDescriptor": "None",
-      "Value": "ContextValue",
+      "Value": {
+       "$type": "ContextValue",
+       "ValueType": "Rank",
+       "Value": 0,
+       "ValueRank": "StatBonus",
+       "ValueShared": "Damage",
+       "Property": "None",
+       "CustomProperty": null
+      },
       "BypassFeatures": [
        "3d8e38c9ed54931469281ab0cec506e9:SunDomainBaseFeature"
       ]
@@ -1678,7 +2358,15 @@
        "guidListSha256": "c958152090070687c62b3a371977a4e2a1eb76df7a64fc3ebf1e9ed25bab82db"
       },
       "ModifierDescriptor": "None",
-      "Value": "ContextValue",
+      "Value": {
+       "$type": "ContextValue",
+       "ValueType": "Rank",
+       "Value": 0,
+       "ValueRank": "StatBonus",
+       "ValueShared": "Damage",
+       "Property": "None",
+       "CustomProperty": null
+      },
       "BypassFeatures": [
        "3d8e38c9ed54931469281ab0cec506e9:SunDomainBaseFeature"
       ]
@@ -1714,7 +2402,15 @@
        "guidListSha256": "f5efd8f861dd204c8cb6ca2f4f45871d4ff349bdb32e19c0379bcb530aca9444"
       },
       "ModifierDescriptor": "None",
-      "Value": "ContextValue",
+      "Value": {
+       "$type": "ContextValue",
+       "ValueType": "Rank",
+       "Value": 0,
+       "ValueRank": "StatBonus",
+       "ValueShared": "Damage",
+       "Property": "None",
+       "CustomProperty": null
+      },
       "BypassFeatures": [
        "3d8e38c9ed54931469281ab0cec506e9:SunDomainBaseFeature"
       ]
@@ -1750,7 +2446,15 @@
        "guidListSha256": "1af923faf7e075a6592fe14c5d989eb54dedc34d2bdb38cff0a1414ba5d3b002"
       },
       "ModifierDescriptor": "None",
-      "Value": "ContextValue",
+      "Value": {
+       "$type": "ContextValue",
+       "ValueType": "Rank",
+       "Value": 0,
+       "ValueRank": "StatBonus",
+       "ValueShared": "Damage",
+       "Property": "None",
+       "CustomProperty": null
+      },
       "BypassFeatures": [
        "3d8e38c9ed54931469281ab0cec506e9:SunDomainBaseFeature"
       ]
