@@ -1,20 +1,20 @@
 {
  "schema": "kmg.turn-undead.contracts.v1",
- "run": "20261128T113902Z-umm-0.31.1-turn-undead-first",
+ "run": "20261128T115645Z-umm-0.31.1-turn-undead-first",
  "loaderProfile": "umm-0.31.1",
  "candidate": {
-  "producerCommit": "39012ab43d758933adc35e0bec9f31715419939b",
-  "packageSha256": "be702ef32a639c72c8722d59e126000a94f9cd939011dc21ec2af78e72f1723e",
-  "dllSha256": "6c83e77d43f1ba9c0ff438cceddbcd12169c675e7fa6f67eae4956ddabb783a6"
+  "producerCommit": "e06386e19d7d1b42b61d341a9ff9f5db96c7f4d2",
+  "packageSha256": "6e692d4e119658866b5e4aaf0d74c19deb9533ebb01dd9a1072b5f19b1b25f4f",
+  "dllSha256": "a2c0f2191815cad61964ca4500a95ccd545c32338c42dd9d136ca5bec10636ab"
  },
  "activeMods": [
   "KingmakerGunslinger 0.0.197",
   "KmgLoaderCompatHarness 0.1.0"
  ],
  "sourceRecords": {
-  "session-summary.json": "c376c2d39001debd317c0dbf02eae196b72077232973623861e84ac861231e2e",
-  "01-first-turn/launch-summary.json": "c89df7241f5dd6241fc6839d507b80c152b5a6ccf6e52a860a9e0a71885bf692",
-  "01-first-turn/harness/harness-result.json": "9c9d94622cf2b3b7cdbaa3e51dd7a6fbf06edf83be67d4111f963c2ca8077b4d"
+  "session-summary.json": "42feb85b57e71ef07d6c34b8ac9dabd8e60d0af9a2444fef48e5773863f5b721",
+  "01-first-turn/launch-summary.json": "1aa802cfa22c26f04a19f50d9d188cd2f245d5cc5a983ccd4d0c2ad0e2e4ecd0",
+  "01-first-turn/harness/harness-result.json": "34927189e4afec9289c7da2ef9a67ae3513dd0b2edddbfecc02a07f89d14b139"
  },
  "problems": [],
  "moduleStatus": "published",

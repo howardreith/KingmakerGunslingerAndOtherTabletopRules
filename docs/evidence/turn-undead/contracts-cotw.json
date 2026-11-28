@@ -1,11 +1,11 @@
 {
  "schema": "kmg.turn-undead.contracts.v1",
- "run": "20261128T114135Z-umm-0.31.1-turn-undead-cotw-contracts",
+ "run": "20261128T115425Z-umm-0.31.1-turn-undead-cotw-contracts",
  "loaderProfile": "umm-0.31.1",
  "candidate": {
-  "producerCommit": "39012ab43d758933adc35e0bec9f31715419939b",
-  "packageSha256": "be702ef32a639c72c8722d59e126000a94f9cd939011dc21ec2af78e72f1723e",
-  "dllSha256": "6c83e77d43f1ba9c0ff438cceddbcd12169c675e7fa6f67eae4956ddabb783a6"
+  "producerCommit": "e06386e19d7d1b42b61d341a9ff9f5db96c7f4d2",
+  "packageSha256": "6e692d4e119658866b5e4aaf0d74c19deb9533ebb01dd9a1072b5f19b1b25f4f",
+  "dllSha256": "a2c0f2191815cad61964ca4500a95ccd545c32338c42dd9d136ca5bec10636ab"
  },
  "activeMods": [
   "CallOfTheWild 1.14.4c-2.1",
@@ -13,9 +13,9 @@
   "KmgLoaderCompatHarness 0.1.0"
  ],
  "sourceRecords": {
-  "session-summary.json": "f3b78aa4baad745f6159c695fe5563306386b2b65e874528b611f1dca151ef4a",
-  "01-cotw-contracts/launch-summary.json": "303b61a3c4f7e6cad525fe69939c5c586eb6d32292f14ec31f07a7fb131dbfec",
-  "01-cotw-contracts/harness/harness-result.json": "3a2040a9bc67174fcadd66cefc0796521c5769809af73d860865245a72a87b35"
+  "session-summary.json": "a0653aa497d3371511bf38232b2109015ccd809be69625d55fe56893dffe89ca",
+  "01-cotw-contracts/launch-summary.json": "7b24aaf944a0d23688b06ef5aeddd46dd0be06d6ffe861663a778c04e112523c",
+  "01-cotw-contracts/harness/harness-result.json": "852d9f0c312e122fcaf6cdb01c9695079b590bc08c495b06aefa4607da624b66"
  },
  "problems": [],
  "moduleStatus": "published",

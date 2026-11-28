@@ -25,9 +25,9 @@ In-game extract: the harness `contracts` mode, run inside the game on the
 candidate, hashes each named method's IL from the loaded assembly and reads
 every blueprint value Turn depends on:
 [`docs/evidence/turn-undead/contracts-vanilla.json`](evidence/turn-undead/contracts-vanilla.json)
-(run `20261128T105226Z`) and
+(run `20261128T115645Z`) and
 [`contracts-cotw.json`](evidence/turn-undead/contracts-cotw.json) (run
-`20261128T105459Z`; identical method IL with CotW loaded). Each extract names
+`20261128T115425Z`; identical method IL with CotW loaded). Each extract names
 the SHA-256 of the lab records it came from.
 
 | Seam | Installed behavior (reference inspection) | Consequence | In-game extract (method IL sha256) |
@@ -68,18 +68,42 @@ run on donor drift (`TurnUndeadBlueprints.ValidateNativeSource`).
 Damage dice progressions (Hospitaler starting at 4th, Empyreal at 9th) are not
 used for the DC.
 
-Selected CotW profile boundary (`contracts-cotw.json`,
-`callOfTheWild.positiveHarmEntries`): Call of the Wild 1.14.4c registers 20
-plain positive-harm channel entries. The four sources above are supported.
-The other 16 entries, from 13 CotW features, are unsupported (no Turn
-action, not prerequisites): Antipaladin (positive), Evangelist, Oracle
-Channel revelation, Oracle Spirit Guide life spirit, Priest of the Fallen,
-Shaman life spirit, Shaman Spirit Warden, Shaman Witch Doctor, Spirit
-Summoner life spirit, Spirit Whisperer life spirit, Sunsinger, Warpriest
-and Witch. Whether any of them should qualify is an open owner decision
-recorded here, not implemented. Negative channels, the positive-permission fact
+Selected CotW profile boundary (`contracts-cotw.json`, `callOfTheWild`).
+Qualifying features are exactly the four above. Call of the Wild 1.14.4c
+registers 533 channel entries of every form (`channelEntriesByType`: plain,
+quick, smite, swift, cone, line, Holy Vindicator shield, Back to the Grave);
+none is a Turn identity (`channelEntriesThatAreTurn` 0). Of its 20 plain
+positive-harm entries (`positiveHarmEntries`), 5 belong to the four
+qualifying features. The paladin has two: the native `ChannelEnergyPaladinHarm`
+(`LayOnHandsResource` x2, the contract Turn binds to) and CotW's
+`PaladinChannelEnergyHarmUndeadExtra` (`PaladinExtraChannelResource` x1, the
+pool CotW's Extra Channel gives paladins). Turn spends only lay on hands x2;
+whether extra-channel uses should also fuel a paladin's Turn is an open owner
+decision. The other 15 entries, from 13 CotW features, are unsupported (no
+Turn action, not prerequisites): Antipaladin (positive, 2 entries),
+Evangelist, Oracle Channel revelation, Oracle Spirit Guide life spirit,
+Priest of the Fallen, Shaman life spirit, Shaman Spirit Warden, Shaman Witch
+Doctor, Spirit Summoner life spirit, Spirit Whisperer life spirit, Sunsinger,
+Warpriest (2 entries) and Witch. Whether any of them should qualify is an
+open owner decision recorded here, not implemented. Negative channels, the positive-permission fact
 `ChannelPositiveAllowed`, the wizard necromancer turning power and items do not
 qualify. No source pool is created, refilled or shared.
+
+## Installed contract fields (in-game extract)
+
+From `contracts-vanilla.json` `nativeFacts` (full component dumps) and
+`contracts-cotw.json` `callOfTheWild`:
+
+| Blueprint | Observed fields | Consequence for Turn |
+| --- | --- | --- |
+| Native harm donors (4) | `AbilityTargetsAround` 30 ft, `Any`, no target condition; effect-level save `Unknown`; effect: `Conditional(CasterHasFact SelectiveChannel fd30c694)` -> `Conditional(IsEnemy, HasFact UndeadType)` -> ... `ContextActionSavingThrow(Will)`, else `Conditional(HasFact UndeadType)` -> ... `ContextActionSavingThrow(Will)`; no `SpellDescriptorComponent` | Turn copies the burst and this selective structure (save inside each branch, enemy-only with Selective Channel) and filters targets to `UndeadType` |
+| Wizard Turn Undead `71b8898b` (native turning donor) | 30 ft `Any` burst with target condition `HasFact(UndeadType)`; `AbilityEffectRunAction` Will -> `ContextActionConditionalSaved`; `NecromancySchoolTurnUndeadResource` x1; no descriptor | Turn's target filter matches the native turning power; the wizard power is untouched |
+| `FrightenedUndead` `1265c0b2` | `BuffStatusCondition` Frightened, SaveType Will, SaveEachRound; no descriptor | the flight clone keeps Replace stacking and replaces the logic with the owned intelligent-only state |
+| `UndeadType` -> `UndeadImmunities` `8a75eb16` | condition immunities Nauseated, Fatigued, Sickened (not Frightened); `BuffDescriptorImmunity` masks 6597704040704 and 4366631152 (the latter ignored by Bloodline Undead Arcana); `SpellImmunityToSpellDescriptor` masks 2199657529600 and 4366631152; drain and negative-energy immunity | the Turn actions and flight effect carry no descriptor and Frightened is not condition-immune, so undead remain turnable while every other immunity stands |
+| `ChannelEnergyEmpyrealFeature` | `ReplaceAbilityDC` Wisdom on `ChannelEnergyEmpyrealHarm` and `ChannelEnergyEmpyrealHeal` only | the override does not reach Turn, so the Empyreal Turn's own calculator uses Wisdom |
+| `ChannelResistance4` `a9ac84c6` | one `SavingThrowBonusAgainstSpecificSpells`: the 4 native harms plus the 8 Turn identities | channel resistance applies to Turn saves (native observation PENDING) |
+| CotW DC holders | `IncreaseSpecifiedSpellsDC.BonusDC`: Improved Channel +2, Sacred Conduit +1, Consecrate +3; each lists all 8 Turn identities (`turnMembership`) | CotW DC bonuses apply to Turn (native observation PENDING) |
+| CotW channel resistances | 13 facts (ChannelResistance4, Undead Bolster, Oracle/Shaman/Spirit deathly-being and revelation facts), each listing all 8 Turn identities | CotW channel resistance applies to Turn (native observation PENDING) |
 
 ## Classification inventory
 
@@ -139,11 +163,11 @@ derives the icon set from the catalog's runtime exports).
 | Repeat saves | Owned round save, intelligent only, at the native buff tick; DC fixed at application | engine read; tests | native timing |
 | Immunity | No descriptors on the owned buff/ability (native turning exception) | engine read | separate Frightened condition immunity still blocks |
 | Resistance / bonuses | Native ChannelResistance4 list extended; CotW resistances, Improved Channel (+2), Sacred Conduit (+1), Consecrate (+3) extended when CotW is present | engine/CotW read | Glory domain (+2 only "to halve the damage") and damage-only items do not apply. Xavorn's Cross: the native `XavornsCrossFeature` (`35f473c4`) is `IncreaseSpellDC` +2 on `ChannelNegativeEnergy` only, and the installed CotW 1.14.4c does not modify it (no `Xavorn` symbol in the DLL), so it never applies to a positive-only Turn. Consecrate's separate -1 save penalty to undead in its area is a target-side modifier; a CotW-present observation must report the caster DC and the target save total separately |
-| Selective Channeling | Neither native nor CotW implements a targeting rule; Turn affects every undead in range, allies included | blueprint/CotW read | |
+| Selective Channeling | The native harm rule: with the caster's Selective Channel feat only enemy undead are affected and excluded allies roll nothing; without it every undead in range, allies included. (An earlier version of this record said no native rule existed; the in-game dump showed otherwise and Turn now mirrors it, reading the fact from the installed donor.) | native `selective` step (run `20261128T115645Z`): without the feat an enemy and an allied skeleton were both turned; with it only the enemy, the ally made no save | |
 | Caster | An undead channeler is a target of its own Turn, like any undead in the native burst (no caster exception) | native `undead-caster`: an undead cleric made one Will save at DC 15 against its own Turn; a living cleric is never a target | a failed undead channeler flees from visible enemies like any other target |
 | Overlap | Native `FrightenedUndead` stacking kept by the clone | engine | a new failed save replaces the effect |
 | Menu | CotW: source child under that source's harm wrapper, direct action hidden; vanilla: direct action. A CotW contract drift (ambiguous wrapper, missing field) rolls back only the CotW changes and logs `[turn-undead][cotw.unavailable]`; the direct actions stay | CotW read (`IncreaseSpecifiedSpellsDC.spells`, `ContextSavingThrowBonusAgainstSpecificSpells.Spells` are public fields in the installed 1.14.4c DLL) | PENDING native |
-| Module | Optional default-ON `turn-undead` key outside the 13-module matrix. A file without the key (earlier releases) keeps it ON. Generated profiles write it explicitly and turn it OFF in the all-off profile (`New-KmgFeatureModuleSettingsDocument`, compatibility runner) | `turn-undead.settings-key` (legacy default, OFF round trip, generated all-off load); `Test-FeatureModuleCompatibilityParameters.ps1` (8228 checks: OFF only in the all-off mask, both generators identical) | owner may prefer a full matrix module |
+| Module | Optional default-ON `turn-undead` key outside the 13-module matrix. A file without the key (earlier releases) keeps it ON. Generated profiles carry an independent `turnUndead` value (module matrix `-TurnUndead`, compatibility runner parameter, shared `New-KmgFeatureModuleSettingsDocument`; stripped before the product observation); without it they write OFF only in the all-off profile | `Test-FeatureModuleCompatibilityParameters.ps1` (8240 checks, generator side of `tests/fixtures/turn-undead/generated-profiles/*`); `turn-undead.settings-key` (legacy default, OFF round trip, the same generated files loaded) | owner may prefer a full matrix module |
 
 ## Call of the Wild seams (review targets)
 
@@ -151,9 +175,10 @@ derives the icon set from the catalog's runtime exports).
 | --- | --- | --- | --- |
 | DC bonus matching | `IncreaseSpecifiedSpellsDC` matches the executed ability or its parent | the Turn identities themselves are appended (the menu child's parent is a CotW wrapper not in the list) | CotW read; native PENDING |
 | Resistance matching | `ContextSavingThrowBonusAgainstSpecificSpells` matches `Reason.Context.SourceAbility` exactly and reads the caster from that context for bypass features | initial save `Reason` = the Turn ability context; repeat save `Reason` = the flight buff, whose context `SourceAbility` is the Turn ability and whose caster is the channeler | engine/CotW read; native initial and repeat resistance PENDING |
-| Timing | CotW builds its channel engine and later its new spells (Consecrate) inside its `LoadDictionary` postfix | the adapter runs in publication, on the first UMM update after core bootstrap reports ready (no update cap), i.e. after the whole synchronous `LoadDictionary` postfix chain has returned, so every CotW field is final | CotW run `20261128T105459Z`: completion line `cotw=present 1.14.4c-2.1`, four menu children placed, no drift |
+| Timing | CotW builds its channel engine and later its new spells (Consecrate) inside its `LoadDictionary` postfix | the adapter runs in publication, on the first UMM update after core bootstrap reports ready (no update cap), i.e. after the whole synchronous `LoadDictionary` postfix chain has returned, so every CotW field is final | CotW run `20261128T115425Z`: completion line `cotw=present 1.14.4c-2.1`, four menu children placed, no drift |
 | Registration lifecycle | | registration of the ten saved identities waits for the core ready or terminal-failure state and is a separate phase: a publication failure (resistance, CotW, feat offer) rolls back only its own foreign changes, keeps the identities resolvable and logs `[turn-undead][publication.failed]` (`TurnUndeadLifecyclePolicy`) | `turn-undead.lifecycle` |
 | Seam shape | each reflected member is required contract, its value optional | a missing or mistyped member, a missing `ChannelEnergyEngine`, a present holder without `IncreaseSpecifiedSpellsDC`, or a resistance fact without an ability-specific list is drift; a member whose value CotW never created is `=absent` (`TurnUndeadCotwSeamPolicy`) | `turn-undead.cotw-seams` |
+| Failure boundary (observed) | | `cotw-rollback` (run `20261128T115425Z`): after the live publication was rolled back, a substitute engine with a valid Improved Channel holder and no `sacred_conduit` member threw "Call of the Wild DC seam sacred_conduit drifted (field missing)" after placing all four menu children and appending to Improved Channel; every child parent, wrapper variant list (element identity and order), direct visibility and list matched the pre-publication snapshot exactly. An optional-null `consecrate_buff` was reported `=absent`; an already-populated second publication changed nothing; re-publication equalled the original; removed and swapped children failed the independent placement checker | `TurnUndeadCotwPublication.PublishWithEngine` |
 | Fallback | drift throws inside the adapter | the adapter restores every recorded change (variants, parent links, direct visibility, every list) and the module logs `[turn-undead][cotw.unavailable]` naming the missing behavior, with `cotw=failed` in the completion line. That state is baseline Turn Undead with reduced CotW compatibility (no submenu, no CotW DC/resistance), never reported as full compatibility | code read; CotW run logged `cotw=present` with no drift warning |
 
 ## Validation time
@@ -163,7 +188,7 @@ Development candidate builds on DATA, measured: `Build-Local -DevelopmentPurpose
 ## Native evidence (intermediate checkpoint)
 
 Machine-generated extract of every admitted Turn Undead run, with source-record
-hashes, restoration receipts and the probe results:
+hashes, restoration receipts and probe results:
 [`docs/evidence/turn-undead/native-runs.json`](evidence/turn-undead/native-runs.json),
 produced by `docs/evidence/turn-undead/extract_native_evidence.py` from the
 lab's retained session and harness records. Raw logs, saves and profiles stay
@@ -171,27 +196,25 @@ in the lab.
 
 | Field | Value |
 | --- | --- |
-| Runs | `20261128T105226Z-umm-0.31.1-turn-undead-first` (vanilla; steps contracts, first-turn, undead-caster, abandon; PASS 136 s) and `20261128T105459Z-umm-0.31.1-turn-undead-cotw-contracts` (Call of the Wild alone; contracts; PASS 102 s) |
-| Candidate | producer commit `d634f3bedd305e8161dc25e9c0133cf6e6a94ea8`, package `7affa28eaa957d98abf95913ec48ec471e737fa6a74c8b60ea7aeb832b6bf5d1`, DLL `7da2b4aeeb9a615aa966ef8132ca820a3d4d0e7ae8390a26c5a3d811aa409bf9` (loaded DLL identical, `identity.productSha256`); product sources identical to `5e95559c2` |
-| Runtime | disposable copy `game-copies/loader-compat`, profile `umm-0.31.1` (UMM `2e038ff2...`, Harmony12 `aa1cd483...`), `locale=enGB`; fixture save `KMCS_AFTER_NORMAL_012_MODONLY.zks` (sha256 `0be64b3f58a0e0bea1b4951f0f6d145e27fd72e6da566acbf5b0b4aff8eda249`) |
-| Observer | `tools/LoaderCompatHarness` at the producer commit (`TurnUndeadProbes.cs`, `TurnUndeadContractProbes.cs`); harness DLL `ea7a838d3f9399292c02cace33ba503c25a2c6c7fda35577c6e78f314b6c98c6` |
-| Restoration (vanilla run) | lease `runtime-20261128T105234Z-74d7...`, transaction `31df9c79...`: transaction succeeded, ownership completed, registry restored and verified, owner integrity verified (95 owner saves and the owner install unchanged); every probe step `isolationRestored`, cleanup with no failures |
-| Fixture disclosure | 25 pre-existing units (area NPCs and the party character) silenced and restored on release; 2 of them had a command interrupted, which is not restorable and is contained to the disposable launch (recorded as `cleanupScope`); spawned units brain-off; Will totals set on spawned undead; positive channel and feat added as facts |
+| Runs | vanilla `20261128T115645Z-umm-0.31.1-turn-undead-first` (steps contracts, first-turn, undead-caster, selective, abandon, abandon-interrupt; PASS 142 s) and Call of the Wild alone `20261128T115425Z-umm-0.31.1-turn-undead-cotw-contracts` (contracts, cotw-rollback; PASS 100 s) |
+| Candidate | producer commit `e06386e19d7d1b42b61d341a9ff9f5db96c7f4d2`, package `6e692d4e119658866b5e4aaf0d74c19deb9533ebb01dd9a1072b5f19b1b25f4f`, DLL `a2c0f2191815cad61964ca4500a95ccd545c32338c42dd9d136ca5bec10636ab` (the loaded DLL, `identity.productSha256`); product sources identical to `29d08f7d1` |
+| Runtime | disposable copy `game-copies/loader-compat`, profile `umm-0.31.1` (UMM `2e038ff2...`, Harmony12 `aa1cd483...`), `locale=enGB`; fixture `KMCS_AFTER_NORMAL_012_MODONLY.zks` (`referenceFixture.sha256AtExtraction` `0be64b3f...a249`; each session staged its own copy) |
+| Observer | `tools/LoaderCompatHarness` at the producer commit (`TurnUndeadProbes.cs`, `TurnUndeadContractProbes.cs`, `TurnUndeadCotwProbes.cs`); harness DLL `224116ace1b325a105c4cf3b404b5b56a16bfc2385695e73a43301f4d1900841` |
+| Restoration | vanilla: lease `runtime-20261128T115652Z-4304...`, transaction `403080b8...`; CotW: lease `runtime-20261128T115433Z-0285...`, transaction `4231171c...`. Both: transaction succeeded, ownership completed, registry restored and verified, owner integrity verified (owner saves and install unchanged); every probe step `isolationRestored`, cleanup without failures |
+| Fixture disclosure | pre-existing units (25 at the first turn) silenced and restored on release; units that had a command (2 at the first turn) were interrupted, which is not restorable and is contained to the disposable launch (`cleanupScope`); spawned units brain-off; Will totals set on spawned undead; positive channel, feat and Selective Channel added as facts |
 
-Observed in the vanilla run:
+Observed in the vanilla run (unit identities and values in `native-runs.json`):
 
-- Completion line `registered=10;featPublished=True;resistance=a9ac84c6...:4+8;cotw=absent;menuChildren=0`; no failure, publication-failure or drift lines.
-- Contracts: no problems (every constructed component matched its literal expectation).
-- First turn, cleric 5 / fighter 2, Charisma +3: the feat granted exactly the cleric action and did not change the pool (6). Negative control (same build, pool 6, no feat): no Turn action, blueprint refused by its caster checks; the feat holder passes them.
-- One `UnitUseAbility` command (Success): pool 6 -> 5. Initial Will saves at DC 15 (10 + 5/2 + 3; character level would give 16): skeleton fail, zombie lord fail, Will-raised zombie lord pass (no effect). The living channeler made no save. A skeleton 16.0 m away (beyond 30 feet, not at the boundary) and a living hostile 3.0 m away were unaffected. No Turn damage or healing; no other damage to tracked units.
-- Persisted flight state: skeleton `mindless-family`, zombie lord `intelligent-identity-fact`, DC 15, source = the cleric action; both Frightened.
-- 13 s real time: skeleton 2.30 -> 20.80 m, zombie lord 4.51 -> 20.80 m; skeleton no repeat save; zombie lord two failed round saves (DC 15, reason = the flight effect), then a success 4.7 s after its Will was raised ended the effect.
-- The skeleton's effect ended 61.9 s after the cast, unrefreshed.
-- Undead caster: an undead cleric made exactly one Will save (DC 15, passed) against its own Turn; the skeleton beside it was turned; a living control in range was untouched.
-- Abandon: a first-turn probe released while suspended after pausing and silencing restored the prior pause flag (false), all 15 brains and its spawned unit (destroyed one frame later), with a clean cleanup verdict.
-- `AbilityData.CalculateParams()` reports 16 (no ability calculators on that path); the tooltip shows only "Will negates", and every rolled save used 15.
+- Completion line `registered=10;featPublished=True;resistance=a9ac84c6...:4+8;cotw=absent;menuChildren=0`; no failure, publication-failure or drift lines. Contracts: no problems.
+- First turn, cleric 5 / fighter 2, Charisma +3: the feat granted exactly the cleric action without changing the pool (6). Negative control: same build, pool 6, no feat: no Turn action and the blueprint fails its caster checks; the feat holder passes them.
+- One `UnitUseAbility` command (Success): pool 6 -> 5. Three values are kept apart: the blueprint's localized texts "Will negates" and "1 minute" (strings, not a rendered tooltip), the `AbilityData.CalculateParams()` preview 16 (that path runs no ability calculator), and the rolled DC 15 on every Turn save (10 + 5/2 + 3). Skeleton fail, zombie lord fail, Will-raised zombie lord pass (no effect); the living channeler made no save; an undead 16.0 m away (beyond 30 feet, not at the boundary) and a living hostile 3.0 m away were unaffected; no Turn damage or healing and no other damage to tracked units.
+- Persisted flight state: skeleton `mindless-family`, zombie lord `intelligent-identity-fact`, DC 15, source = the cleric action.
+- 13 s real time: skeleton 2.40 -> 18.57 m, zombie lord 4.51 -> 20.84 m; skeleton no repeat save; zombie lord two failed round saves 6 s apart, then a success after its Will was raised ended the effect. The skeleton's effect ended 61.9 s after the cast, unrefreshed.
+- Undead caster: an undead cleric made exactly one Will save (DC 15, passed) against its own Turn; a living control in range was untouched.
+- Selective: without Selective Channel an enemy and an allied (player-faction) skeleton were both turned; with it only the enemy, and the ally rolled no save.
+- Abandon: a suspended first-turn probe's release restored the prior pause flag, 15/15 brains and its spawned unit. Abandon-interrupt: interrupting the abandon check itself after its nested probe's first yield restored pause, brains, the nested rule subscription and the spawned unit; with an injected nested cleanup failure the same state was restored but the verdict was correctly not restored.
 
-Earlier admitted attempts, all restored (transaction succeeded, owner integrity verified, registry restored; details in `native-runs.json`): `20261128T094042Z` (preview-API assertion; far target collapsed to 2.11 m), `20261128T095145Z` (an area unit damaged the fleeing skeleton), `20261128T095946Z` (the party character attacked tracked units), `20261128T100756Z` (PASS on candidate `4b5f14e11297` before the round-1 corrections), `20261128T104421Z` (abandon check judged destruction in the same frame). One further attempt at `d37f4af63` was refused at admission before anything was acquired.
+Other admitted attempts, all restored (details in `native-runs.json`): `094042Z`, `095145Z`, `095946Z` (probe/fixture faults), `100756Z` (PASS before round 1), `104421Z` (abandon judged in the same frame), `115645Z`/`105459Z` (PASS at round 1), `112755Z`/`113029Z` and `113902Z`/`114135Z` (PASS during round 2, before the dump and selective corrections), `115155Z` (fixture-inconclusive: the zombie lord rolled a natural 20 on its second repeat save, an automatic success, so its effect ended as the rules require; rerun unchanged as `115645Z`). One attempt at `d37f4af63` was refused at admission before anything was acquired.
 
 ## Acceptance evidence index
 
@@ -202,20 +225,21 @@ contracts extracts.
 | IDs | Result | Evidence and candidate | Limits |
 | --- | --- | --- | --- |
 | TU-01 | PASS | intake commit `5236e51a`; INTAKE.md; enrollment above | |
-| TU-02 | PARTIAL | reference inspection + in-game contracts extract (method IL, blueprint values) on `d634f3be` | full 2.1.7b undead census PENDING |
+| TU-02 | PARTIAL | reference inspection + in-game contracts extract (method IL, full donor/immunity/override/resistance dumps) on `e06386e1` | full 2.1.7b undead census PENDING |
 | TU-03 | PARTIAL | source table; contracts extract asserts all four constructed sources | paladin/Hospitaler/Empyreal gameplay PENDING |
 | TU-04 | PARTIAL | policy and reviewed historical (2.1.4) inventory; native 2.1.7b skeleton and level-1 zombie lord classification | installed-2.1.7b census PENDING |
-| TU-06 | PARTIAL | `105226Z` negative control: positive channel without the feat has no Turn action and fails caster checks | negative-only cleric, non-channel class and permission-only fixtures through normal acquisition PENDING |
-| TU-08 | PARTIAL | `105226Z`: one cleric activation affecting several undead spent one use (6 -> 5) | paladin two uses, Hospitaler, Empyreal PENDING |
-| TU-13 | PARTIAL | `105226Z`: one real-time `UnitUseAbility` command succeeded once | standard-action spending, attack-of-opportunity behavior and turn-based PENDING |
-| TU-14 | PARTIAL | `105226Z`: in-range undead affected; an undead 16.0 m away and an in-range living hostile unaffected; `undead-caster`: an undead channeler targeted, a living one never | the 30-foot boundary itself not probed |
-| TU-17 | PASS | `105226Z`: success prevents, failure applies; mindless and intelligent both saved initially | |
-| TU-18 | PASS | `105226Z`: mindless skeleton fled the whole minute with no repeat save | |
-| TU-19 | PARTIAL | `105226Z`: round saves 6 s apart, failure retains, success ends | resource after recovery not measured; turn-based PENDING |
-| TU-20 | PASS | `105226Z`: unrefreshed end 61.9 s after the cast | |
-| TU-21 | PARTIAL | `105226Z`: cleric 5 + fighter 2, Cha +3 -> rolled DC 15 (unrelated levels excluded); constructed calculator class/statistic asserted for all sources | odd/even levels and other statistics PENDING; the tooltip exposes no number |
-| TU-24 | PARTIAL | `105226Z`: no Turn damage or healing | allegiance and altered-HP group PENDING |
-| TU-28 | PARTIAL | `105226Z`: vanilla direct action, source, tooltip texts and icon identity | UI/hotbar presentation PENDING |
-| TU-32 | PARTIAL | vanilla run (CotW absent, no dependency) and CotW run (menu placement, no drift) | CotW gameplay, DC and resistance observations PENDING |
-| TU-33 | PARTIAL | CotW run: none of the 20 positive-harm entries is a Turn identity (no generated quick/smite/cone/line forms) | existing heal/harm action behavior PENDING |
+| TU-06 | PARTIAL | `115645Z` negative control: positive channel without the feat has no Turn action and fails caster checks | negative-only cleric, non-channel class and permission-only fixtures through normal acquisition PENDING |
+| TU-08 | PARTIAL | `115645Z`: one cleric activation affecting several undead spent one use (6 -> 5) | paladin two uses, Hospitaler, Empyreal PENDING |
+| TU-13 | PARTIAL | `115645Z`: one real-time `UnitUseAbility` command succeeded once | standard-action spending, attack-of-opportunity behavior and turn-based PENDING |
+| TU-14 | PARTIAL | `115645Z`: in-range undead affected; an undead 16.0 m away and an in-range living hostile unaffected; `undead-caster`: an undead channeler targeted, a living one never | the 30-foot boundary itself not probed |
+| TU-16 | PASS (cleric, real time) | `115645Z` selective: without Selective Channel allied and enemy undead are turned; with it only enemy undead, allies roll nothing (the native harm rule) | turn-based PENDING |
+| TU-17 | PASS | `115645Z`: success prevents, failure applies; mindless and intelligent both saved initially | |
+| TU-18 | PASS | `115645Z`: mindless skeleton fled the whole minute with no repeat save | |
+| TU-19 | PARTIAL | `115645Z`: round saves 6 s apart, failure retains, success ends | resource after recovery not measured; turn-based PENDING |
+| TU-20 | PASS | `115645Z`: unrefreshed end 61.9 s after the cast | |
+| TU-21 | PARTIAL | `115645Z`: cleric 5 + fighter 2, Cha +3 -> rolled DC 15 (unrelated levels excluded); constructed calculator class/statistic asserted for all sources | odd/even levels and other statistics PENDING; the tooltip exposes no number |
+| TU-24 | PARTIAL | `115645Z`: no Turn damage or healing | allegiance and altered-HP group PENDING |
+| TU-28 | PARTIAL | vanilla direct action, source and icon identity; blueprint save/duration strings recorded separately from the preview DC 16 and the rolled DC 15 | rendered tooltip, UI and hotbar presentation PENDING |
+| TU-32 | PARTIAL | vanilla run (no dependency) and CotW run (menu placement checked against the grant graph, DC/resistance list membership, failure boundary observed) | CotW gameplay, DC and resistance observations PENDING |
+| TU-33 | PARTIAL | CotW run: none of the 533 channel entries of any form (quick, smite, swift, cone, line, ...) is a Turn identity | existing heal/harm action behavior and the CotW negative-affinity rewrite PENDING |
 | others | NOT RUN | | |
