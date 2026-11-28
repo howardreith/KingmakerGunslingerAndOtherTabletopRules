@@ -1,20 +1,20 @@
 {
  "schema": "kmg.turn-undead.contracts.v1",
- "run": "20261128T105226Z-umm-0.31.1-turn-undead-first",
+ "run": "20261128T112755Z-umm-0.31.1-turn-undead-first",
  "loaderProfile": "umm-0.31.1",
  "candidate": {
-  "producerCommit": "d634f3bedd305e8161dc25e9c0133cf6e6a94ea8",
-  "packageSha256": "7affa28eaa957d98abf95913ec48ec471e737fa6a74c8b60ea7aeb832b6bf5d1",
-  "dllSha256": "7da2b4aeeb9a615aa966ef8132ca820a3d4d0e7ae8390a26c5a3d811aa409bf9"
+  "producerCommit": "4c09b15b5cd06b8ec77f324d748b26dcc928e93c",
+  "packageSha256": "b03d65bf713ab2e4e0921cd52a5902f1651e92f0837f914caa7754975a72be8f",
+  "dllSha256": "e50d27c799679d31fbe950e8aa901a23442f020843da197fc8aada68ffce0b03"
  },
  "activeMods": [
   "KingmakerGunslinger 0.0.197",
   "KmgLoaderCompatHarness 0.1.0"
  ],
  "sourceRecords": {
-  "session-summary.json": "c817448054d42147a990576bb94fdf1ec92bdff3ffda4974cad2af66f6f5c1b1",
-  "01-first-turn/launch-summary.json": "358116734347e93008e0b7b3c30a16561dcf10abde531a2f1f78ea9794d2101a",
-  "01-first-turn/harness/harness-result.json": "3ede3aae753ef2719aeff8a5825867193f3783b0a0eacd8800d66b691121fc81"
+  "session-summary.json": "21af9436012f7f5c5d19c810b5b48df491592048d09c3d038acae4bb41a54b95",
+  "01-first-turn/launch-summary.json": "a679ad399020557ade79c1abea61beb902e63da936e9b096654c875453025cc3",
+  "01-first-turn/harness/harness-result.json": "eb4175791d0194d842fca4460fb72d8e036beec2d459d09f9e840aea27569d99"
  },
  "problems": [],
  "moduleStatus": "published",
@@ -429,5 +429,704 @@
   "entries": 12,
   "turnEntries": 8
  },
- "callOfTheWild": "absent"
+ "nativeFacts": {
+  "harmDonors": [
+   {
+    "guid": "279447a6bf2d3544d93a0a39c3b8e91d",
+    "name": "ChannelPositiveHarm",
+    "components": [
+     {
+      "$type": "AbilityResourceLogic",
+      "$name": "$AbilityResourceLogic$90f5c894-592c-44bf-87e0-cff854149038",
+      "RequiredResource": "5e2bba3e07c37be42909a12945c27de7:ChannelEnergyResource",
+      "IsSpendResource": true,
+      "CostIsCustom": false,
+      "Amount": 1,
+      "ResourceCostIncreasingFacts": []
+     },
+     {
+      "$type": "AbilityTargetsAround",
+      "$name": "$AbilityTargetsAround$d808edf4-218d-4428-98ce-a1b2d146ac77",
+      "m_Radius": "30 ft",
+      "m_TargetType": "Any",
+      "m_IncludeDead": false,
+      "m_Condition": {
+       "$type": "ConditionsChecker",
+       "Operation": "And",
+       "Conditions": []
+      },
+      "m_SpreadSpeed": "0 ft"
+     },
+     {
+      "$type": "AbilityEffectRunAction",
+      "$name": "$AbilityEffectRunAction$1e3ed85e-608f-4636-93dd-f73f0a2cc5fd",
+      "SavingThrowType": "Unknown",
+      "Actions": {
+       "$type": "ActionList",
+       "Actions": [
+        {
+         "$type": "Conditional",
+         "Comment": "",
+         "ConditionsChecker": {
+          "$type": "ConditionsChecker",
+          "Operation": "And",
+          "Conditions": "Condition[]"
+         },
+         "IfTrue": {
+          "$type": "ActionList",
+          "Actions": "GameAction[]"
+         },
+         "IfFalse": {
+          "$type": "ActionList",
+          "Actions": "GameAction[]"
+         }
+        }
+       ]
+      }
+     },
+     {
+      "$type": "AbilitySpawnFx",
+      "$name": "$AbilitySpawnFx$36d09a24-03db-4769-89a5-39ba7d1594c2",
+      "PrefabLink": {
+       "$type": "PrefabLink",
+       "AssetId": "d58c16961298c6f4490ed4c158c142e6"
+      },
+      "Time": "OnApplyEffect",
+      "Anchor": "Caster",
+      "WeaponTarget": "None",
+      "DestroyOnCast": false,
+      "Delay": 0.0,
+      "PositionAnchor": "None",
+      "OrientationAnchor": "None",
+      "OrientationMode": "Copy"
+     },
+     {
+      "$type": "ContextRankConfig",
+      "$name": "$AbilityRankConfig$a8f474f1-ee0f-44e3-96a8-9db3970f668d",
+      "m_Type": "Default",
+      "m_BaseValueType": "ClassLevel",
+      "m_Feature": "a79013ff4bcd4864cb669622a29ddafb:ChannelEnergyFeature",
+      "m_FeatureList": [],
+      "m_Stat": "Unknown",
+      "m_Progression": "OnePlusDiv2",
+      "m_CustomProgression": [],
+      "m_StartLevel": 0,
+      "m_StepLevel": 0,
+      "m_UseMin": false,
+      "m_Min": 0,
+      "m_UseMax": false,
+      "m_Max": 20,
+      "m_ExceptClasses": false,
+      "Archetype": null,
+      "m_Class": [
+       "67819271767a9dd4fbfd4ae700befea0:ClericClass"
+      ],
+      "m_CustomProperty": null
+     }
+    ]
+   },
+   {
+    "guid": "4937473d1cfd7774a979b625fb833b47",
+    "name": "ChannelEnergyPaladinHarm",
+    "components": [
+     {
+      "$type": "AbilityResourceLogic",
+      "$name": "$AbilityResourceLogic$90f5c894-592c-44bf-87e0-cff854149038",
+      "RequiredResource": "9dedf41d995ff4446a181f143c3db98c:LayOnHandsResource",
+      "IsSpendResource": true,
+      "CostIsCustom": false,
+      "Amount": 2,
+      "ResourceCostIncreasingFacts": []
+     },
+     {
+      "$type": "AbilityTargetsAround",
+      "$name": "$AbilityTargetsAround$d808edf4-218d-4428-98ce-a1b2d146ac77",
+      "m_Radius": "30 ft",
+      "m_TargetType": "Any",
+      "m_IncludeDead": false,
+      "m_Condition": {
+       "$type": "ConditionsChecker",
+       "Operation": "And",
+       "Conditions": []
+      },
+      "m_SpreadSpeed": "0 ft"
+     },
+     {
+      "$type": "AbilityEffectRunAction",
+      "$name": "$AbilityEffectRunAction$1e3ed85e-608f-4636-93dd-f73f0a2cc5fd",
+      "SavingThrowType": "Unknown",
+      "Actions": {
+       "$type": "ActionList",
+       "Actions": [
+        {
+         "$type": "Conditional",
+         "Comment": "",
+         "ConditionsChecker": {
+          "$type": "ConditionsChecker",
+          "Operation": "And",
+          "Conditions": "Condition[]"
+         },
+         "IfTrue": {
+          "$type": "ActionList",
+          "Actions": "GameAction[]"
+         },
+         "IfFalse": {
+          "$type": "ActionList",
+          "Actions": "GameAction[]"
+         }
+        }
+       ]
+      }
+     },
+     {
+      "$type": "AbilitySpawnFx",
+      "$name": "$AbilitySpawnFx$36d09a24-03db-4769-89a5-39ba7d1594c2",
+      "PrefabLink": {
+       "$type": "PrefabLink",
+       "AssetId": "d58c16961298c6f4490ed4c158c142e6"
+      },
+      "Time": "OnApplyEffect",
+      "Anchor": "Caster",
+      "WeaponTarget": "None",
+      "DestroyOnCast": false,
+      "Delay": 0.0,
+      "PositionAnchor": "None",
+      "OrientationAnchor": "None",
+      "OrientationMode": "Copy"
+     },
+     {
+      "$type": "ContextRankConfig",
+      "$name": "$AbilityRankConfig$a8f474f1-ee0f-44e3-96a8-9db3970f668d",
+      "m_Type": "Default",
+      "m_BaseValueType": "ClassLevel",
+      "m_Feature": null,
+      "m_FeatureList": [],
+      "m_Stat": "Unknown",
+      "m_Progression": "OnePlusDiv2",
+      "m_CustomProgression": [],
+      "m_StartLevel": 0,
+      "m_StepLevel": 0,
+      "m_UseMin": false,
+      "m_Min": 0,
+      "m_UseMax": false,
+      "m_Max": 20,
+      "m_ExceptClasses": false,
+      "Archetype": null,
+      "m_Class": [
+       "bfa11238e7ae3544bbeb4d0b92e897ec:PaladinClass"
+      ],
+      "m_CustomProperty": null
+     },
+     {
+      "$type": "AbilityCasterAlignment",
+      "$name": "$AbilityCasterAlignment$14caf525-f46c-4450-b00a-e25629e65c7e",
+      "Alignment": "LawfulGood"
+     }
+    ]
+   },
+   {
+    "guid": "cc17243b2185f814aa909ac6b6599eaa",
+    "name": "ChannelEnergyHospitalerHarm",
+    "components": [
+     {
+      "$type": "AbilityResourceLogic",
+      "$name": "$AbilityResourceLogic$90f5c894-592c-44bf-87e0-cff854149038",
+      "RequiredResource": "b0e0c7716ab27c64fb4b131c9845c596:ChannelEnergyHospitalerResource",
+      "IsSpendResource": true,
+      "CostIsCustom": false,
+      "Amount": 1,
+      "ResourceCostIncreasingFacts": []
+     },
+     {
+      "$type": "AbilityTargetsAround",
+      "$name": "$AbilityTargetsAround$d808edf4-218d-4428-98ce-a1b2d146ac77",
+      "m_Radius": "30 ft",
+      "m_TargetType": "Any",
+      "m_IncludeDead": false,
+      "m_Condition": {
+       "$type": "ConditionsChecker",
+       "Operation": "And",
+       "Conditions": []
+      },
+      "m_SpreadSpeed": "0 ft"
+     },
+     {
+      "$type": "AbilityEffectRunAction",
+      "$name": "$AbilityEffectRunAction$1e3ed85e-608f-4636-93dd-f73f0a2cc5fd",
+      "SavingThrowType": "Unknown",
+      "Actions": {
+       "$type": "ActionList",
+       "Actions": [
+        {
+         "$type": "Conditional",
+         "Comment": "",
+         "ConditionsChecker": {
+          "$type": "ConditionsChecker",
+          "Operation": "And",
+          "Conditions": "Condition[]"
+         },
+         "IfTrue": {
+          "$type": "ActionList",
+          "Actions": "GameAction[]"
+         },
+         "IfFalse": {
+          "$type": "ActionList",
+          "Actions": "GameAction[]"
+         }
+        }
+       ]
+      }
+     },
+     {
+      "$type": "AbilitySpawnFx",
+      "$name": "$AbilitySpawnFx$36d09a24-03db-4769-89a5-39ba7d1594c2",
+      "PrefabLink": {
+       "$type": "PrefabLink",
+       "AssetId": "d58c16961298c6f4490ed4c158c142e6"
+      },
+      "Time": "OnApplyEffect",
+      "Anchor": "Caster",
+      "WeaponTarget": "None",
+      "DestroyOnCast": false,
+      "Delay": 0.0,
+      "PositionAnchor": "None",
+      "OrientationAnchor": "None",
+      "OrientationMode": "Copy"
+     },
+     {
+      "$type": "ContextRankConfig",
+      "$name": "$AbilityRankConfig$a8f474f1-ee0f-44e3-96a8-9db3970f668d",
+      "m_Type": "Default",
+      "m_BaseValueType": "ClassLevel",
+      "m_Feature": null,
+      "m_FeatureList": [],
+      "m_Stat": "Unknown",
+      "m_Progression": "DelayedStartPlusDivStep",
+      "m_CustomProgression": [],
+      "m_StartLevel": 4,
+      "m_StepLevel": 2,
+      "m_UseMin": false,
+      "m_Min": 0,
+      "m_UseMax": false,
+      "m_Max": 20,
+      "m_ExceptClasses": false,
+      "Archetype": null,
+      "m_Class": [
+       "bfa11238e7ae3544bbeb4d0b92e897ec:PaladinClass"
+      ],
+      "m_CustomProperty": null
+     },
+     {
+      "$type": "AbilityCasterAlignment",
+      "$name": "$AbilityCasterAlignment$14caf525-f46c-4450-b00a-e25629e65c7e",
+      "Alignment": "LawfulGood"
+     }
+    ]
+   },
+   {
+    "guid": "e1536ee240c5d4141bf9f9485a665128",
+    "name": "ChannelEnergyEmpyrealHarm",
+    "components": [
+     {
+      "$type": "AbilityResourceLogic",
+      "$name": "$AbilityResourceLogic$90f5c894-592c-44bf-87e0-cff854149038",
+      "RequiredResource": "f9af9354fb8a79649a6e512569387dc5:ChannelEnergyEmpyrealResource",
+      "IsSpendResource": true,
+      "CostIsCustom": false,
+      "Amount": 1,
+      "ResourceCostIncreasingFacts": []
+     },
+     {
+      "$type": "AbilityTargetsAround",
+      "$name": "$AbilityTargetsAround$d808edf4-218d-4428-98ce-a1b2d146ac77",
+      "m_Radius": "30 ft",
+      "m_TargetType": "Any",
+      "m_IncludeDead": false,
+      "m_Condition": {
+       "$type": "ConditionsChecker",
+       "Operation": "And",
+       "Conditions": []
+      },
+      "m_SpreadSpeed": "0 ft"
+     },
+     {
+      "$type": "AbilityEffectRunAction",
+      "$name": "$AbilityEffectRunAction$1e3ed85e-608f-4636-93dd-f73f0a2cc5fd",
+      "SavingThrowType": "Unknown",
+      "Actions": {
+       "$type": "ActionList",
+       "Actions": [
+        {
+         "$type": "Conditional",
+         "Comment": "",
+         "ConditionsChecker": {
+          "$type": "ConditionsChecker",
+          "Operation": "And",
+          "Conditions": "Condition[]"
+         },
+         "IfTrue": {
+          "$type": "ActionList",
+          "Actions": "GameAction[]"
+         },
+         "IfFalse": {
+          "$type": "ActionList",
+          "Actions": "GameAction[]"
+         }
+        }
+       ]
+      }
+     },
+     {
+      "$type": "AbilitySpawnFx",
+      "$name": "$AbilitySpawnFx$36d09a24-03db-4769-89a5-39ba7d1594c2",
+      "PrefabLink": {
+       "$type": "PrefabLink",
+       "AssetId": "d58c16961298c6f4490ed4c158c142e6"
+      },
+      "Time": "OnApplyEffect",
+      "Anchor": "Caster",
+      "WeaponTarget": "None",
+      "DestroyOnCast": false,
+      "Delay": 0.0,
+      "PositionAnchor": "None",
+      "OrientationAnchor": "None",
+      "OrientationMode": "Copy"
+     },
+     {
+      "$type": "ContextRankConfig",
+      "$name": "$AbilityRankConfig$a8f474f1-ee0f-44e3-96a8-9db3970f668d",
+      "m_Type": "Default",
+      "m_BaseValueType": "ClassLevel",
+      "m_Feature": null,
+      "m_FeatureList": [],
+      "m_Stat": "Unknown",
+      "m_Progression": "DelayedStartPlusDivStep",
+      "m_CustomProgression": [],
+      "m_StartLevel": 5,
+      "m_StepLevel": 2,
+      "m_UseMin": false,
+      "m_Min": 0,
+      "m_UseMax": false,
+      "m_Max": 20,
+      "m_ExceptClasses": false,
+      "Archetype": null,
+      "m_Class": [
+       "b3a505fb61437dc4097f43c3f8f9a4cf:SorcererClass"
+      ],
+      "m_CustomProperty": null
+     }
+    ]
+   }
+  ],
+  "sourceFeatures": [
+   {
+    "guid": "a79013ff4bcd4864cb669622a29ddafb",
+    "name": "ChannelEnergyFeature",
+    "components": [
+     {
+      "$type": "AddFacts",
+      "$name": "$AddFacts$e4eb907e-f159-435f-90ea-e134077206d1",
+      "Facts": [
+       "93f062bc0bf70e84ebae436e325e30e8:ChannelEnergyFact",
+       "f5fc9a1a2a3c1a946a31b320d1dd31b2:ChannelEnergy",
+       "279447a6bf2d3544d93a0a39c3b8e91d:ChannelPositiveHarm",
+       "5e4620cea099c9345a9207c11d7bc916:ClericSpontaneousCure"
+      ],
+      "DoNotRestoreMissingFacts": false
+     },
+     {
+      "$type": "PrerequisiteFeature",
+      "$name": "$PrerequisiteFeature$8416810c-ca4e-4bf3-a93c-be7b663a8647",
+      "Feature": "8c769102f3996684fb6e09a2c4e7e5b9:ChannelPositiveAllowed",
+      "Group": "All",
+      "HideInUI": true
+     }
+    ]
+   },
+   {
+    "guid": "cb6d55dda5ab906459d18a435994a760",
+    "name": "ChannelEnergyPaladinFeature",
+    "components": [
+     {
+      "$type": "AddFacts",
+      "$name": "$AddFacts$e4eb907e-f159-435f-90ea-e134077206d1",
+      "Facts": [
+       "4937473d1cfd7774a979b625fb833b47:ChannelEnergyPaladinHarm",
+       "6670f0f21a1d7f04db2b8b115e8e6abf:ChannelEnergyPaladinHeal"
+      ],
+      "DoNotRestoreMissingFacts": false
+     }
+    ]
+   },
+   {
+    "guid": "a9ab1bbc79ecb174d9a04699986ce8d5",
+    "name": "ChannelEnergyHospitalerFeature",
+    "components": [
+     {
+      "$type": "AddFacts",
+      "$name": "$AddFacts$e4eb907e-f159-435f-90ea-e134077206d1",
+      "Facts": [
+       "cc17243b2185f814aa909ac6b6599eaa:ChannelEnergyHospitalerHarm",
+       "0c0cf7fcb356d2448b7d57f2c4db3c0c:ChannelEnergyHospitalerHeal"
+      ],
+      "DoNotRestoreMissingFacts": false
+     },
+     {
+      "$type": "AddAbilityResources",
+      "$name": "$AddAbilityResources$9ea7fb02-6c96-4344-b13a-6612f384f4dd",
+      "UseThisAsResource": false,
+      "Resource": "b0e0c7716ab27c64fb4b131c9845c596:ChannelEnergyHospitalerResource",
+      "Amount": 0,
+      "RestoreAmount": true,
+      "RestoreOnLevelUp": false
+     }
+    ]
+   },
+   {
+    "guid": "7d49d7f590dc9a948b3bd1c8b7979854",
+    "name": "ChannelEnergyEmpyrealFeature",
+    "components": [
+     {
+      "$type": "AddFacts",
+      "$name": "$AddFacts$e4eb907e-f159-435f-90ea-e134077206d1",
+      "Facts": [
+       "e1536ee240c5d4141bf9f9485a665128:ChannelEnergyEmpyrealHarm",
+       "574cf074e8b65e84d9b69a8c6f1af27b:ChannelEnergyEmpyrealHeal"
+      ],
+      "DoNotRestoreMissingFacts": false
+     },
+     {
+      "$type": "AddAbilityResources",
+      "$name": "$AddAbilityResources$d51ae737-eeaa-481b-ac69-ed535be7131f",
+      "UseThisAsResource": false,
+      "Resource": "f9af9354fb8a79649a6e512569387dc5:ChannelEnergyEmpyrealResource",
+      "Amount": 0,
+      "RestoreAmount": true,
+      "RestoreOnLevelUp": false
+     },
+     {
+      "$type": "ReplaceAbilityDC",
+      "$name": "$ReplaceAbilityDC$54f0757d-a844-4c09-a2e4-945632cfa1bc",
+      "Ability": "e1536ee240c5d4141bf9f9485a665128:ChannelEnergyEmpyrealHarm",
+      "Stat": "Wisdom"
+     },
+     {
+      "$type": "ReplaceAbilityDC",
+      "$name": "$ReplaceAbilityDC$28995e4c-0fc2-4813-b55a-814e28be8329",
+      "Ability": "574cf074e8b65e84d9b69a8c6f1af27b:ChannelEnergyEmpyrealHeal",
+      "Stat": "Wisdom"
+     }
+    ]
+   }
+  ],
+  "frightenedUndeadDonor": {
+   "guid": "1265c0b27ef559c4e980a900dfc68d1e",
+   "name": "FrightenedUndead",
+   "components": [
+    {
+     "$type": "BuffStatusCondition",
+     "$name": "$BuffStatusCondition$9fc252bf-c54f-461b-b4a7-a908b8219b54",
+     "SaveEachRound": true,
+     "Condition": "Frightened",
+     "SaveType": "Will"
+    }
+   ]
+  },
+  "wizardTurnUndead": {
+   "guid": "71b8898b1d26d654b9a3eeac87e3e2f8",
+   "name": "TurnUndeadNecromancy",
+   "components": [
+    {
+     "$type": "AbilityEffectRunAction",
+     "$name": "$AbilityEffectRunAction$e22277f5-7022-422f-97a0-fc061eb83ece",
+     "SavingThrowType": "Will",
+     "Actions": {
+      "$type": "ActionList",
+      "Actions": [
+       {
+        "$type": "ContextActionConditionalSaved",
+        "Succeed": {
+         "$type": "ActionList",
+         "Actions": "GameAction[]"
+        },
+        "Failed": {
+         "$type": "ActionList",
+         "Actions": "GameAction[]"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "$type": "ContextRankConfig",
+     "$name": "$AbilityRankConfig$f0e26304-366b-49c1-865f-02f269e8d043",
+     "m_Type": "Default",
+     "m_BaseValueType": "ClassLevel",
+     "m_Feature": null,
+     "m_FeatureList": [],
+     "m_Stat": "Unknown",
+     "m_Progression": "AsIs",
+     "m_CustomProgression": [],
+     "m_StartLevel": 0,
+     "m_StepLevel": 0,
+     "m_UseMin": false,
+     "m_Min": 0,
+     "m_UseMax": false,
+     "m_Max": 20,
+     "m_ExceptClasses": false,
+     "Archetype": null,
+     "m_Class": [
+      "ba34257984f4c41408ce1dc2004e342e:WizardClass"
+     ],
+     "m_CustomProperty": null
+    },
+    {
+     "$type": "AbilityTargetsAround",
+     "$name": "$AbilityTargetsAround$cb616747-acd8-4fbc-9805-6d7a0a05dff9",
+     "m_Radius": "30 ft",
+     "m_TargetType": "Any",
+     "m_IncludeDead": false,
+     "m_Condition": {
+      "$type": "ConditionsChecker",
+      "Operation": "And",
+      "Conditions": [
+       {
+        "$type": "ContextConditionHasFact",
+        "Fact": "734a29b693e9ec346ba2951b27987e33:UndeadType",
+        "Not": false
+       }
+      ]
+     },
+     "m_SpreadSpeed": "0 ft"
+    },
+    {
+     "$type": "AbilityResourceLogic",
+     "$name": "$AbilityResourceLogic$89784c8f-6c6c-4ca8-983b-2b35f710d38a",
+     "RequiredResource": "16394ff73175b5745957750040a2c99e:NecromancySchoolTurnUndeadResource",
+     "IsSpendResource": true,
+     "CostIsCustom": false,
+     "Amount": 1,
+     "ResourceCostIncreasingFacts": []
+    },
+    {
+     "$type": "AbilitySpawnFx",
+     "$name": "$AbilitySpawnFx$d3a0724c-09c4-4c87-80ca-4ca3a1fa553a",
+     "PrefabLink": {
+      "$type": "PrefabLink",
+      "AssetId": "d58c16961298c6f4490ed4c158c142e6"
+     },
+     "Time": "OnApplyEffect",
+     "Anchor": "Caster",
+     "WeaponTarget": "None",
+     "DestroyOnCast": false,
+     "Delay": 0.0,
+     "PositionAnchor": "None",
+     "OrientationAnchor": "None",
+     "OrientationMode": "Copy"
+    }
+   ]
+  },
+  "undeadType": {
+   "guid": "734a29b693e9ec346ba2951b27987e33",
+   "name": "UndeadType",
+   "components": [
+    {
+     "$type": "UndeadHealth",
+     "$name": "$UndeadHealth$1503981b-ebd8-4b6d-829c-e5af8ca7a164"
+    },
+    {
+     "$type": "AddFacts",
+     "$name": "$AddFacts$6c1f8290-b2a9-4bc7-84af-511dbc33110e",
+     "Facts": [
+      "8a75eb16bfff86949a4ddcb3dd2f83ae:UndeadImmunities"
+     ],
+     "DoNotRestoreMissingFacts": false
+    }
+   ]
+  },
+  "channelResistance4": {
+   "guid": "a9ac84c6f48b491438f91bb237bc9212",
+   "name": "ChannelResistance4",
+   "components": [
+    {
+     "$type": "SavingThrowBonusAgainstSpecificSpells",
+     "$name": "$SavingThrowBonusAgainstSpecificSpells$9976f458-287e-4994-bdbe-8947c75daa07",
+     "Spells": [
+      "279447a6bf2d3544d93a0a39c3b8e91d:ChannelPositiveHarm",
+      "cc17243b2185f814aa909ac6b6599eaa:ChannelEnergyHospitalerHarm",
+      "4937473d1cfd7774a979b625fb833b47:ChannelEnergyPaladinHarm",
+      "e1536ee240c5d4141bf9f9485a665128:ChannelEnergyEmpyrealHarm",
+      "8ec33a2aab964efc8b02448c2a3257c0:KMG_TurnUndead_Cleric_Ability",
+      "f912eecd256d4fec847a3176e46fb1ca:KMG_TurnUndead_Cleric_MenuChild",
+      "7283033206e24c40bb5493e49f1caab5:KMG_TurnUndead_Paladin_Ability",
+      "1f5435313e6f44afa9b9f71b2001ef10:KMG_TurnUndead_Paladin_MenuChild",
+      "b5f405c1b3064a1fb3ad0f64fb81551d:KMG_TurnUndead_Hospitaler_Ability",
+      "f0d424709d034a198cb440ceefcc6f1e:KMG_TurnUndead_Hospitaler_MenuChild",
+      "e4174ef789e84c1ab1d7d9728be19043:KMG_TurnUndead_Empyreal_Ability",
+      "be2eeaa2ea51420f83496d374689377d:KMG_TurnUndead_Empyreal_MenuChild"
+     ],
+     "ModifierDescriptor": "None",
+     "Value": 4,
+     "BypassFeatures": [
+      "3d8e38c9ed54931469281ab0cec506e9:SunDomainBaseFeature"
+     ]
+    }
+   ]
+  },
+  "turnFlight": {
+   "guid": "230ec4917d7d4ec0b0c8f58f4e5c81e3",
+   "name": "KMG_TurnUndead_Fleeing",
+   "components": [
+    {
+     "$type": "TurnUndeadFleeingState",
+     "$name": "$KMG_TurnUndead_FleeingState"
+    }
+   ]
+  }
+ },
+ "callOfTheWild": {
+  "status": "absent",
+  "turnMenu": [
+   {
+    "kind": "Cleric",
+    "wrapperCandidates": 0,
+    "expectedWrapper": null,
+    "childParent": null,
+    "childInExpectedWrapper": 0,
+    "childInOtherWrappers": 0,
+    "wrapperVariants": 0,
+    "directHidden": false
+   },
+   {
+    "kind": "Paladin",
+    "wrapperCandidates": 0,
+    "expectedWrapper": null,
+    "childParent": null,
+    "childInExpectedWrapper": 0,
+    "childInOtherWrappers": 0,
+    "wrapperVariants": 0,
+    "directHidden": false
+   },
+   {
+    "kind": "Hospitaler",
+    "wrapperCandidates": 0,
+    "expectedWrapper": null,
+    "childParent": null,
+    "childInExpectedWrapper": 0,
+    "childInOtherWrappers": 0,
+    "wrapperVariants": 0,
+    "directHidden": false
+   },
+   {
+    "kind": "Empyreal",
+    "wrapperCandidates": 0,
+    "expectedWrapper": null,
+    "childParent": null,
+    "childInExpectedWrapper": 0,
+    "childInOtherWrappers": 0,
+    "wrapperVariants": 0,
+    "directHidden": false
+   }
+  ]
+ }
 }

@@ -22,6 +22,8 @@ RUNS = [
     "20261128T104421Z-umm-0.31.1-turn-undead-first",
     "20261128T105226Z-umm-0.31.1-turn-undead-first",
     "20261128T105459Z-umm-0.31.1-turn-undead-cotw-contracts",
+    "20261128T112755Z-umm-0.31.1-turn-undead-first",
+    "20261128T113029Z-umm-0.31.1-turn-undead-cotw-contracts",
 ]
 SESSION_FIELDS = [
     "sessionId", "session", "loaderProfile", "candidateZipSha256", "candidateDllSha256", "admission", "git",
@@ -29,7 +31,7 @@ SESSION_FIELDS = [
     "ownerIntegrity", "ownerSavesUnchanged", "ownerInstallUnchanged", "ownerSaveFiles", "scenarioPassed",
     "transactionSucceeded", "candidateVersion", "hostConflict",
 ]
-CONTRACT_KEYS = ["engine", "methods", "sources", "feat", "flight", "channelResistance4", "callOfTheWild"]
+CONTRACT_KEYS = ["engine", "methods", "sources", "feat", "flight", "channelResistance4", "nativeFacts", "callOfTheWild"]
 
 
 def sha256(path):
@@ -117,8 +119,8 @@ def main():
         json.dump(document, handle, indent=1, sort_keys=False)
         handle.write("\n")
     # Contract extracts (vanilla and CotW) from the passing runs.
-    for run, name in (("20261128T105226Z-umm-0.31.1-turn-undead-first", "contracts-vanilla.json"),
-                      ("20261128T105459Z-umm-0.31.1-turn-undead-cotw-contracts", "contracts-cotw.json")):
+    for run, name in (("20261128T112755Z-umm-0.31.1-turn-undead-first", "contracts-vanilla.json"),
+                      ("20261128T113029Z-umm-0.31.1-turn-undead-cotw-contracts", "contracts-cotw.json")):
         record = next(r for r in runs if r["sessionId"] == run)
         probe = record["launches"][0]["probes"]["contracts"]
         contract = {
