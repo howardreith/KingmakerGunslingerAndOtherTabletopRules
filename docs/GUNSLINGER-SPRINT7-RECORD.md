@@ -1,9 +1,46 @@
 # Sprint 7 record: presentation and audio remediation (S7 T1–T7)
 
-Status (pre-review-8 snapshot, 2026-11-28T02:43Z UTC): **ACTIVE in `develop` under owner amendment 4; seven of nine
-authorized reviews completed; review 8 not yet run.** The parent's nine findings (R4-F1, R5-F1, R6-F5 and R7-F1 to R7-F6)
-are **addressed by accepted successor work, pending parent reconciliation** (matrix in §7). The parent reviewer has not
-assessed them. Nothing is merged or released, and no visual or listening choice has been accepted.
+Status (pre-submission snapshot for formal review 8, 2026-11-28T09:11Z UTC): **ACTIVE in `develop` under owner amendment 5;
+seven of nine authorized reviews completed; formal review 8 not yet run.** The parent's nine findings (R4-F1, R5-F1, R6-F5
+and R7-F1 to R7-F6) remain **addressed by accepted successor work, pending parent reconciliation** (matrix in §7). The
+parent reviewer has not assessed them. Nothing is merged or released, and no visual or listening choice has been accepted.
+
+**Pre-review stop (2026-11-28T03:07:27Z–04:25:11Z UTC).** The first review-8 submission, on `84d2636e01`, never reached a
+reviewer.
+- Before launching one, the controller checks the merge-base-to-head delta of the whole `docs/agent-reviews/` tree and
+  admits only records in this enrollment's own archive inventory.
+- The fast-forward integration had brought in the child enrollments' archived transcripts, so it stopped BLOCKED:
+  "transcript tree change outside the controller's records: A docs/agent-reviews/pr-221/001-r01-request.md".
+- No round was recorded, no finding was opened and no reviewer was launched; the count stayed at seven of nine.
+- The invocation's 77 min 44 s is controller pre-review wall time (mostly slow Git reads on the shared object store). It is
+  not model review time and not validation-command time. The stop stays recorded as history.
+
+**Owner amendment 5** (revision 5, sha256 `9fbfc53b89b5f9110f847f24ac19e3023c623f97a6f4757bbadd296699c617c5`, captured
+2026-11-28T09:07:08Z; message sha256 `8203ea56…8350`; stored outside the worktree at
+`<lab>/owner-guidance/S7-OWNER-AMENDMENT-5-2026-11-28.md`). It was applied with `resume --amend-mission`, which returned
+ACTIVE/develop (the 9-review cap is not exhausted), and all nine effective-task parts were displayed in the enrolled
+session. Counters, findings, models, permissions and thresholds were not changed. The amendment:
+- authorizes one bounded commit removing the 85 inherited child transcript copies from this branch's current tree:
+  `docs/agent-reviews/pr-221/` (25 files), `pr-222/` (24) and `pr-223/` (36); `pr-195/` (51) is untouched;
+- replaces amendment 4's four fresh filter selections with one fresh `focused` gate, `-Filter sprint7-visual`, on the new
+  submission head; the four receipts on `84d2636e01` stay evidence on that head (§5);
+- keeps the 85-minute ceiling (71 min 31.0 s spent, 13 min 29.0 s remaining), review 8, the conditional records-only review
+  9, and no review 10, package, candidate, native session, capture or listening session.
+
+**Evidence-location policy (owner amendment 5).**
+- The child review records are not deleted. They stay byte for byte in the accepted child archive commits C1
+  `2c67a049ee`, C2 `eab90a5ac8` and C3 `3bfc570090`, which remain ancestors of this branch and stay pinned by the
+  unchanged child branches.
+- The parent cites them only by immutable commit links (§7). They were not moved or recreated elsewhere, and no parent
+  archive record was written by hand.
+- The parent tree's `docs/agent-reviews/` holds only the older `pr-195/` records and whatever this enrollment's own
+  controller archives under `pr-219/` at finalization.
+- The recovery manifest `docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md` (unchanged) and the child evidence under
+  `docs/evidence/` stay in the parent tree. None of their relative links point into the removed folders, so they still
+  resolve here.
+
+Earlier snapshot (pre-review-8, 2026-11-28T02:43Z UTC, historical): ACTIVE in `develop` under owner amendment 4; seven of
+nine authorized reviews completed; review 8 not yet run.
 
 **Owner amendment 4** (revision 4, sha256 `5442d02aa9a034f2eda3204b7c53e7e61c7d9740ddb8f80c6412ad33e274245d`, captured
 2026-11-28T02:42:55Z; message sha256 `4b9ddb05…228a`; stored outside the worktree at
@@ -214,7 +251,8 @@ other Kingmaker session on this machine and handed back at 20:35Z.
 
 ## 2. Outcome
 
-The seven-story outcome table below is a pre-review-8 snapshot (2026-11-28, owner amendment 4).
+The seven-story outcome table below is a pre-review-8 snapshot (2026-11-28, owner amendment 4), carried unchanged
+under owner amendment 5.
 - **Product presentation, assets and mechanics are unchanged since the stories were verified.** From the round-5 head to the
   integrated head `3bfc570090`, nothing changed outside `RuntimeTesting/`, the loader-compat harness, the sessions, the
   tests and the records (§3).
@@ -899,7 +937,24 @@ Reload (`…162605Z`, R2-F2, R3-F2):
 
 ## 5. Validation
 
-**Owner amendment 4 (this checkpoint).**
+**Owner amendment 5 (this checkpoint).**
+- **Ceiling:** 85 minutes. Spent 71 min 31.0 s: 65 min 42 s through round 7 plus 349.0 s of outer time for the four
+  amendment-4 gates on `84d2636e01`. Remaining: 13 min 29.0 s. The C3 ledger stays separate and unchanged.
+- **Required:** one controller `focused` gate with `-Filter sprint7-visual` (25 tests at selection time) on the new
+  submission head, through the normal `verify` mechanism.
+- **Why one gate suffices:** the new head differs from `84d2636e01` only by removing the 85 inherited transcript copies
+  and by this record and the status page. No compiled source, test, harness, session definition, asset, dependency, build
+  script or controller configuration changed.
+- **Supporting receipts, on `84d2636e0105f79dc7a6416334aa600ee5fbb8b5` only (not relabelled as runs on the new head):**
+  `sprint7-visual` 25 tests passed (receipt 58.8 s, outer 99.3 s), `summon-playtest-r6` 11 (40.1 s, 80.5 s),
+  `native-profile` 9 (46.1 s, 86.3 s) and `loader-compat-probe` 5 (40.9 s, 81.8 s). Batch outer time was 349.0 s, run
+  2026-11-28T03:00:36Z–03:06:25Z with the worktree unchanged.
+- **Estimate:** the same gate took 99.3 s of outer time at 03:02Z. Allowing for current peer load, about 2–4 minutes, which
+  fits within 13 min 29.0 s.
+- **Where the result goes:** the new gate's receipt and outer time go in the amendment-5 developer report and the
+  controller's records. No commit follows the gate.
+
+**Owner amendment 4 (the previous submission, `84d2636e01`; its filter requirement is replaced by amendment 5).**
 - **Ceiling:** 85 minutes, with 65 min 42 s carried and 19 min 18 s remaining before new validation.
 - **Selected boundary:** four controller `focused` gates on the final submission head, each a separate `verify` call:
   - `sprint7-visual`: 25 tests at selection time;
@@ -977,8 +1032,8 @@ records the required gate receipts on the reviewed head.
 
 ## 7. Review findings and corrections
 
-**Parent reconciliation matrix, owner amendment 4 (pre-review-8 snapshot).** These are the nine findings open after
-round 7.
+**Parent reconciliation matrix, owner amendment 4 (pre-review-8 snapshot, carried unchanged under owner amendment 5).**
+These are the nine findings open after round 7.
 - Each is **addressed by accepted successor work, pending parent reconciliation**. The parent reviewer has not assessed
   any of them, and none is claimed verified at the parent level.
 - A child PASS is not a retrospective parent PASS.
@@ -996,8 +1051,11 @@ Child identities:
   - Eight formal reviews; review 8 returned `ready_for_owner_review` with no open findings.
   - Owner-accepted (owner amendment 4).
 
-The histories are in `docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md`, kept unchanged, and the archived child
-records are under `docs/agent-reviews/pr-221/`, `pr-222/` and `pr-223/`.
+The histories are in `docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md`, kept unchanged. The archived child review
+records are cited at their accepted archive commits (owner amendment 5; this branch's tree no longer carries copies):
+- C1 #221: https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/tree/2c67a049ee33e0b29621fd29a8b25608ed31e956/docs/agent-reviews/pr-221
+- C2 #222: https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/tree/eab90a5ac82f661ecb903c5456d951a57a085eb9/docs/agent-reviews/pr-222
+- C3 #223: https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/tree/3bfc570090b9772cac4b92e79983d31455510bca/docs/agent-reviews/pr-223
 
 | Parent finding | Accepted successor | Implementation | Behavioural evidence | Native evidence and scope | Child review disposition |
 |---|---|---|---|---|---|

@@ -237,8 +237,17 @@ from RISK-01).
 
 ## Sprint 7 (started 2026-11-23; agent-review controller, foreground)
 
-**Current state (pre-review-8 snapshot, 2026-11-28T02:43Z UTC): ACTIVE in `develop` under owner amendment 4; 7 of 9 authorized reviews completed.**
-- **Amendment 4:** revision 4, sha256 `5442d02a…245d`, applied through `resume --amend-mission`, then `resume --max-rounds 9`.
+**Current state (pre-submission snapshot for formal review 8, 2026-11-28T09:11Z UTC): ACTIVE in `develop` under owner amendment 5; 7 of 9 authorized reviews completed.**
+- **Pre-review stop:** the first review-8 submission (`84d2636e01`, 2026-11-28T03:07Z–04:25Z) stopped BLOCKED before any
+  reviewer launched: the controller admits no `docs/agent-reviews/` change outside its own records, and the integration
+  had brought in the child transcripts. No round, finding or reviewer was recorded. Its 77 min 44 s was controller wall
+  time, not review or validation time.
+- **Amendment 5:** revision 5, sha256 `9fbfc53b…17c5`, applied through `resume --amend-mission`. It authorizes removing
+  the 85 inherited child transcript copies (`docs/agent-reviews/pr-221/` 25, `pr-222/` 24, `pr-223/` 36) and requires
+  one fresh `focused` gate, `-Filter sprint7-visual`, on the new head.
+- **Evidence location:** the child review records stay in the accepted archives C1 `2c67a049ee`, C2 `eab90a5ac8` and C3
+  `3bfc570090`, which remain ancestors of this branch. They are cited by immutable links in the record (§7).
+- **Amendment 4 (earlier):** revision 4, sha256 `5442d02a…245d`, applied through `resume --amend-mission`, then `resume --max-rounds 9`.
 - **Integration:** the owner accepted the fast-forward integration of the accepted recovery onto this branch at C3's
   archive `3bfc570090`. C1 #221, C2 #222 and C3 #223 are accepted at their reviewed and archive identities. #221 shows
   "merged" because the parent advanced.
@@ -247,7 +256,8 @@ from RISK-01).
   `docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md`.
 - **Candidate 6 is reused, not rebuilt:** package `6c71d928…d55a`, DLL `6af754eb…1411`, session `20261127T133020Z`
   PASS 43/43, mechanics only. Earlier presentation evidence stays on its original candidates.
-- **Validation:** 65 min 42 s of 85 spent; four focused controller gates selected.
+- **Validation:** 71 min 31.0 s of 85 spent (including the four amendment-4 gates on `84d2636e01`, 349.0 s); one
+  `sprint7-visual` focused gate required on the new head.
 - **Allowances stay separate.** The recovery's own 345 min 5.6 s, six candidates and eight C3 reviews are kept apart
   from the parent's.
 - **Not authorized:** review 10, a new package or a native session. Nothing is merged or released. Visual (T2, T3, T6)
