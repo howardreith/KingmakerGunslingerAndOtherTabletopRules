@@ -546,6 +546,17 @@ namespace KmgLoaderCompatHarness
                     return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
                 }
 
+                case "kmgTurnUndead":
+                {
+                    // Turn Undead mission: "match" is the mode (see TurnUndeadProbes.cs).
+                    string identity = StepIdentity(step);
+                    if (!probes.IsActive) probes.Begin(identity, new TurnUndeadProbe(step.Match));
+                    ProbeOutcome outcome = probes.Poll(identity);
+                    if (outcome == null) return StepStatus.Running;
+                    RecordProbe(outcome);
+                    return outcome.Passed ? StepStatus.Done : Fail(outcome.Failure);
+                }
+
                 case "kmgStirge":
                 {
                     // S6 checkpoint G4 / VER-02: "match" is lifecycle, save or reload (see StirgeProbes.cs).
