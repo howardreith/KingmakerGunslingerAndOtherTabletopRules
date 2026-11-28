@@ -237,7 +237,23 @@ from RISK-01).
 
 ## Sprint 7 (started 2026-11-23; agent-review controller, foreground)
 
-**Current state (2026-11-24): BLOCKED at the review cap after round 7 of 7 on `3e2baea4b4` (changes_required; mandatory stop under owner amendment 3).** Verified in round 7: R5-F3, R6-F1, R6-F2, R6-F3, R6-F4. Open: R4-F1, R5-F1, R6-F5 (corrected in the records) and R7-F1 to R7-F6, all verification code or records; continuing needs a new owner decision. Round 7 ran under owner amendment 3 (revision 3, `3321dd31…44e0`; one resumption after the round-6 no-progress stop, a third candidate, a 75-minute ceiling). Candidate 3 `9c39b1ff7f` (package `49f8b88c…6413`) ran `…223809Z` and `…224949Z` effects (35/36 each; every new isolation path passed; the callback-loss predicate is a retained FAIL in both, the second from an evaluator null-typing defect whose fix would need a fourth candidate) and `…224649Z` Ghaele lifecycle/visibility (PASS). Validation used 65 min 42 s of 75 (including the round-7 controller gates). Round 6 (historical) stopped on R4-F1 after verifying seven findings and accepting the R4-F5 conditional disposition. Earlier in round 6: The owner extended the review cap from five to seven. Round 6 corrects the eleven findings open after round 5 (matrix in the record, §7). Validation used 38 min 25 s of the 60-minute exception and both authorized candidates, before the controller gates. The owner resumed the round-3 BLOCKED enrollment through owner
+**Current state (pre-review-8 snapshot, 2026-11-28T02:43Z UTC): ACTIVE in `develop` under owner amendment 4; 7 of 9 authorized reviews completed.**
+- **Amendment 4:** revision 4, sha256 `5442d02a…245d`, applied through `resume --amend-mission`, then `resume --max-rounds 9`.
+- **Integration:** the owner accepted the fast-forward integration of the accepted recovery onto this branch at C3's
+  archive `3bfc570090`. C1 #221, C2 #222 and C3 #223 are accepted at their reviewed and archive identities. #221 shows
+  "merged" because the parent advanced.
+- **The nine parent findings** (R4-F1, R5-F1, R6-F5 and R7-F1 to R7-F6) are addressed by accepted successor work,
+  pending parent reconciliation in review 8. Matrix: `docs/GUNSLINGER-SPRINT7-RECORD.md` §7. Recovery map:
+  `docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md`.
+- **Candidate 6 is reused, not rebuilt:** package `6c71d928…d55a`, DLL `6af754eb…1411`, session `20261127T133020Z`
+  PASS 43/43, mechanics only. Earlier presentation evidence stays on its original candidates.
+- **Validation:** 65 min 42 s of 85 spent; four focused controller gates selected.
+- **Allowances stay separate.** The recovery's own 345 min 5.6 s, six candidates and eight C3 reviews are kept apart
+  from the parent's.
+- **Not authorized:** review 10, a new package or a native session. Nothing is merged or released. Visual (T2, T3, T6)
+  and listening (T5, T7) choices stay with the owner.
+
+Earlier state (2026-11-24, historical): **BLOCKED at the review cap after round 7 of 7 on `3e2baea4b4` (changes_required; mandatory stop under owner amendment 3).** Verified in round 7: R5-F3, R6-F1, R6-F2, R6-F3, R6-F4. Open: R4-F1, R5-F1, R6-F5 (corrected in the records) and R7-F1 to R7-F6, all verification code or records; continuing needs a new owner decision. Round 7 ran under owner amendment 3 (revision 3, `3321dd31…44e0`; one resumption after the round-6 no-progress stop, a third candidate, a 75-minute ceiling). Candidate 3 `9c39b1ff7f` (package `49f8b88c…6413`) ran `…223809Z` and `…224949Z` effects (35/36 each; every new isolation path passed; the callback-loss predicate is a retained FAIL in both, the second from an evaluator null-typing defect whose fix would need a fourth candidate) and `…224649Z` Ghaele lifecycle/visibility (PASS). Validation used 65 min 42 s of 75 (including the round-7 controller gates). Round 6 (historical) stopped on R4-F1 after verifying seven findings and accepting the R4-F5 conditional disposition. Earlier in round 6: The owner extended the review cap from five to seven. Round 6 corrects the eleven findings open after round 5 (matrix in the record, §7). Validation used 38 min 25 s of the 60-minute exception and both authorized candidates, before the controller gates. The owner resumed the round-3 BLOCKED enrollment through owner
 amendment 1 (revision 1, sha256 `59be8e3f…31e0`). The round-3 no-progress stop on `511160dc6e` and every earlier failure
 remain recorded. Draft PR #219; record `docs/GUNSLINGER-SPRINT7-RECORD.md`; enrollment
 `kmg-codex-s7-visual-audio-remediation-20261123180106-d1e1`; base post-release master `35763430ac` (v0.0.195). Nothing is

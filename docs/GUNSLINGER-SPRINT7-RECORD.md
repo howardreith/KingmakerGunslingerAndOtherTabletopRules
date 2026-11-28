@@ -1,15 +1,50 @@
 # Sprint 7 record: presentation and audio remediation (S7 T1–T7)
 
-Status: **BLOCKED (2026-11-24): review round 7 of 7 on `3e2baea4b4` returned changes_required and the controller stopped
-the enrollment at the review cap ("review-round cap reached for final (7/7)"). Owner amendment 3 makes this a mandatory
-stop: it authorizes no further review, candidate or resumption. Nothing is merged or released, and no visual or listening
-choice has been accepted.**
+Status (pre-review-8 snapshot, 2026-11-28T02:43Z UTC): **ACTIVE in `develop` under owner amendment 4; seven of nine
+authorized reviews completed; review 8 not yet run.** The parent's nine findings (R4-F1, R5-F1, R6-F5 and R7-F1 to R7-F6)
+are **addressed by accepted successor work, pending parent reconciliation** (matrix in §7). The parent reviewer has not
+assessed them. Nothing is merged or released, and no visual or listening choice has been accepted.
 
-**Recovery (owner instruction of 2026-11-25).** The remaining findings are repaired in three scoped, dependent PRs against
-this frozen branch; this enrollment stays BLOCKED at 7/7 and its findings stay historically open until reconciled. Map,
-dependencies and the shared 45-minute ledger: `docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md`. C1 (PR #221,
-R7-F1 and R7-F6) is a code and domain correction only: its changed compiled evaluator is not executed in game until C3's
-combined qualification.
+**Owner amendment 4** (revision 4, sha256 `5442d02aa9a034f2eda3204b7c53e7e61c7d9740ddb8f80c6412ad33e274245d`, captured
+2026-11-28T02:42:55Z; message sha256 `4b9ddb05…228a`; stored outside the worktree at
+`<lab>/owner-guidance/S7-OWNER-AMENDMENT-4-2026-11-27.md`):
+- accepts the fast-forward integration of the accepted recovery (C1 → C2 → C3) onto this branch at
+  `3bfc570090b9772cac4b92e79983d31455510bca`, C3's archive A; C1–C3 acceptance stands at their reviewed and archive
+  identities, and C1's GitHub "merged" status, caused by that advance, is accepted;
+- authorizes parent review 8, one conditional records-only review 9, no review 10;
+- raises the validation ceiling from 75 to 85 minutes, carrying 65 min 42 s spent (19 min 18 s remaining);
+- reuses recovery candidate 6 as successor evidence (§3), with no new package, candidate, native session or runtime change.
+
+It was applied with `resume --amend-mission` (which stopped BLOCKED at the exhausted 7/7 cap, applied but not delivered, as
+expected), then the separate extension `resume --max-rounds 9` returned ACTIVE/develop. All eight effective-task parts
+were displayed in the enrolled session. Counters, findings, models, permissions and thresholds were not changed:
+developer invocations 0, rounds completed 7.
+
+Prior status (historical, 2026-11-24): BLOCKED. Review round 7 of 7 on `3e2baea4b4` returned changes_required, and the
+controller stopped the enrollment at the review cap ("review-round cap reached for final (7/7)"). Owner amendment 3 made
+that a mandatory stop. Amendment 4 supersedes it only for the reconciliation, focused validation, review and handoff it
+describes. That stop and its verdict stay recorded.
+
+**Integration (owner authorization of 2026-11-27, carried out 2026-11-28T01:18Z–01:25Z).**
+- The branch was fast-forwarded from the frozen head `0542b0592a` through C1 `2c67a049ee`, C2 `eab90a5ac8` and C3
+  `3bfc570090`, with one guarded push.
+- There was no merge commit, rebase, squash, records commit or retargeting. The child branches are unchanged.
+- Every reviewed H stays reachable: C1 `5a56d480a2`, C2 `da811b123c`, C3 `fa43536ccd` and parent round 7 `3e2baea4b4`.
+- GitHub then marked #221 (C1, based on this branch) merged by itself, because its head became reachable from its base.
+  #222 and #223 stay open.
+- C3's archive `3bfc570090` is this checkpoint's integration input, not a parent archive.
+
+**Recovery (owner instruction of 2026-11-25; historical).** The remaining findings were repaired in three scoped,
+dependent PRs against the frozen branch. Throughout the recovery this enrollment stayed BLOCKED at 7/7, with its findings
+historically open until reconciled.
+- The map, the dependencies and the recovery's own ledger are in
+  `docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md`, kept unchanged.
+- The ledger began as a shared 45-minute allowance. The recovery finally spent 345 min 5.6 s of 360, across six
+  candidates, eight C3 reviews and 22 failed validation attempts, plus separately classified mutation failures. That
+  allowance is separate and nothing unused moves to the parent.
+- C1 (PR #221, R7-F1 and R7-F6) was a code and domain correction only. Its deferred native criterion, executing the
+  changed evaluator in game, was fulfilled by C3's combined qualification `20261126T054228Z`, owner-accepted. Candidate 6
+  repeated it in `20261127T133020Z`.
 
 Round-7 review outcome:
 - verified: R5-F3, R6-F1, R6-F2, R6-F3 and R6-F4 (the final collector was executed natively in `…224949Z`);
@@ -47,9 +82,13 @@ the effects phase (cell admission and final restoration) and the probe slot. The
   bytes after the third candidate, which amendment 3 does not allow; it is the remaining blocker for an in-game PASS of
   that predicate.
 
-Validation spent: 65 min 42 s of the 75-minute ceiling: 39 min 4 s in round 6, 25 min 58 s of round-7 commands, and the
-eleven round-7 controller gates (40.1 s wrapper wall time; their receipts record 19.1 s inside the gates). 9 min 18 s of
-the ceiling remain unused.
+Validation spent through round 7: 65 min 42 s of the then 75-minute ceiling.
+- 39 min 4 s in round 6.
+- 25 min 58 s of round-7 commands.
+- The eleven round-7 controller gates: 40.1 s wrapper wall time; their receipts record 19.1 s inside the gates.
+
+At the round-7 stop, 9 min 18 s of that ceiling was unused. Owner amendment 4 raised the ceiling to 85 minutes, carrying
+the same 65 min 42 s, which leaves 19 min 18 s for this continuation (§5).
 
 Round-6 stop (historical): after review round 6 on `b37faaf883` the controller stopped the enrollment under its mandatory
 no-progress rule ("no progress: R4-F1 open for 3 consecutive reviews"). Owner amendment 3 authorized the resumption.
@@ -175,17 +214,82 @@ other Kingmaker session on this machine and handed back at 20:35Z.
 
 ## 2. Outcome
 
-| Story / record | Original problem | Result | Evidence | Technical status | Retained limitation / owner decision |
+The seven-story outcome table below is a pre-review-8 snapshot (2026-11-28, owner amendment 4).
+- **Product presentation, assets and mechanics are unchanged since the stories were verified.** From the round-5 head to the
+  integrated head `3bfc570090`, nothing changed outside `RuntimeTesting/`, the loader-compat harness, the sessions, the
+  tests and the records (§3).
+- **Observer and record findings.** The nine parent findings about verification code and records are addressed by
+  accepted successor work, pending parent reconciliation (§7). The parent reviewer has not yet assessed them.
+- **Evidence stays bound to the candidate and recording it was produced on.** Recovery candidate 6 ran a mechanics
+  selection only. This is not a new presentation campaign on its bytes.
+
+| Story / record | Original problem | Delivered behaviour or accepted disposition | Evidence identity | Technical status (pre-review-8) | Remaining owner decision |
 |---|---|---|---|---|---|
-| S7 T1 / REP-04 | October review: "increasing" Ghaele dissolve; a scripted move that did not start | **No product change.** On released v0.0.195 and on the candidate, an ordinary Ghaele keeps its body (cutout 0.00) to its native 120 s expiry, moves, and fights. Its raw `_Dissolve` is the native looping non-cutout animation the unsummoned donor also runs: 11/11 positive samples per package, with driven body-material identity recorded. | Harness `…182757Z` (released) and `…183206Z` (candidate) in round 5; `…162819Z`/`…163235Z` in round 4; product `…050957Z` `gh`/`ghd` (round 3) | Current-build disposition, bounded to the observed packages and conditions | Released baseline observed only in the admitted fixture's interior throne room. The outdoor/bright released case has no admitted route (§4.1). **October incident unattributed.** Bounded scope accepted by owner amendment 2. |
-| S7 T2 / VIS-01 | 48 zero-area wing-root triangles (and inside-out welded membranes) | **Repaired at the generator.** 0 zero-area triangles, 0 repeated edges, all parts outward | `ed88ad994e`; export receipt; models `…162110Z` (round 4, party views bound to the body) and `…050957Z` | Implemented and verified | Owner visual acceptance |
-| S7 T3 / VIS-02 | 19/12,924 normal corners at a waist pleat and the left-hand fingers | **Repaired from the exact private input.** 16 → 0 opposing corners | `d864e7b01f`; export receipt; `…162110Z`, `…050957Z` | Implemented and verified | Owner visual acceptance |
-| S7 T4 / VIS-03 | Owned Trample/Overrun windows: "Target point within 0 ft. feet." and school "None" | **Scoped presentation override:** "Target point within twice this creature's speed." (owner-approved wording), no school | `2614ea3bd6`; `…050957Z` `ui` | Implemented and verified for desktop fact and HUD | **Controller mode unexecuted** (§4.4): no admitted route creates or selects a summon in the console UI. Not a controller PASS. |
-| S7 T5 / VIS-04 | No added impact sound on the Ankylosaurus tail strike | **One owned cue per resolved tail roll on the roll's own in-game target** (`Sweetener_Low_06_Quake`, provisional) | `90bc2ae7eb`; fx `…180635Z` (round 5), `…170720Z` and `…061437Z`; concurrent retirement also passed in round 6 (`…200320Z`, `…202648Z`) and round 7 (`…223809Z`, `…224949Z`) | Cue ownership and timing verified; private packet delivered | **R4-F5 disposition accepted by the round-6 review** (amendment 2 §4): under synthetic callback loss playback ends normally, no other source is affected, and the residual tracking belongs to the survivor's own source and ends with its disposal. The cause of the `…164749Z` missing callback stays unknown (§4.5). **Listening and choice pending (owner).** |
-| S7 T6 / VIS-05 | The Dust Mephit breath shows the ice cone | **Owned per-instance dust recolour** of the one cone CreateView spawns for the executing owned Dust breath, now bound to that native spawn call; restored on release; released mechanics (Sickened, damage, save, enemies only, action) unchanged | `9733a0c9b7`; fx `…180635Z` and `…170720Z` | Implemented and verified | Owner visual acceptance. Allies' harmless saves stay documented. |
-| S7 T7 / VIS-06 | Provisional `InspireCourage` cue on the Trumpet Blast | **Kept provisionally** (no code change); six alternatives sampled; cue verified across an in-process save and load. The current probe (`…201133Z`) marks only the observed blast's own save passed through its `AutoPass` field; all dice roll natively | `r6` in `…180635Z` and `…170720Z`; Trumpet reload `…182558Z` (round 5) and `…162605Z` | Cue technically verified; private packet delivered | **Listening and choice pending (owner).** |
+| S7 T1 / REP-04 | October review: "increasing" Ghaele dissolve; a scripted move that did not start | **No product change.** On released v0.0.195 and on the candidate, an ordinary Ghaele keeps its body (cutout 0.00) to its native 120 s expiry, moves, and fights. Its raw `_Dissolve` is the native looping non-cutout animation the unsummoned donor also runs: 11/11 positive samples per package, with driven body-material identity recorded. | Harness sessions `…182757Z` (released `456d504d…9444`) and `…183206Z` (candidate `ac96bab4c2`) in round 5; `…162819Z`/`…163235Z` in round 4; product `…050957Z` `gh`/`ghd` (round 3). Probe lifecycle `…224649Z` (candidate 3 `9c39b1ff7f`). C2 late-unit lifecycle `20261126T033419Z` (candidate 3, harness `d77754ba…b4f1`). | Current-build disposition, bounded to the observed packages and conditions. The probe's late-unit isolation (R5-F1) is addressed by C2, pending parent reconciliation. | **Bounded scope accepted** (owner amendment 2). The outdoor/bright released case is unexecuted (§4.1). **October incident unattributed.** |
+| S7 T2 / VIS-01 | 48 zero-area wing-root triangles (and inside-out welded membranes) | **Repaired at the generator.** 0 zero-area triangles, 0 repeated edges, all parts outward. | `ed88ad994e`; mesh `6ff85493…`, albedo `1e9f5303…` (`docs/evidence/sprint7/exports.json`); models `…162110Z` (`a07716e3ab`, party views bound to the body) and `…050957Z` (`6f2f16ca88`); stills `evidence/sprint7-review/T2-VIS-01/` | Implemented and verified. The assets are unchanged through `3bfc570090`. | **Visual acceptance** |
+| S7 T3 / VIS-02 | 19/12,924 normal corners at a waist pleat and the left-hand fingers | **Repaired from the exact private input.** 16 → 0 opposing corners. | `d864e7b01f`; capture `eb0d5eaa…` → `0837e796…`; `…162110Z`, `…050957Z`; stills `evidence/sprint7-review/T3-VIS-02/` | Implemented and verified. The assets are unchanged through `3bfc570090`. | **Visual acceptance** |
+| S7 T4 / VIS-03 | Owned Trample/Overrun windows: "Target point within 0 ft. feet." and school "None" | **Scoped presentation override:** "Target point within twice this creature's speed." (owner-approved wording), no school. | `2614ea3bd6`; `…050957Z` `ui` | Implemented and verified for the desktop fact and HUD. **Controller mode unexecuted** (§4.4), not a controller PASS. | None for the wording. Controller-admission disposition accepted (owner amendment 2). |
+| S7 T5 / VIS-04 | No added impact sound on the Ankylosaurus tail strike | **One owned cue per resolved tail roll on the roll's own in-game target** (`Sweetener_Low_06_Quake`, provisional). | `90bc2ae7eb`; fx `…180635Z` (`ac96bab4c2`), `…170720Z` (`bc67438f3b`) and `…061437Z`. Callback-loss evaluator (C1): candidate 6 `20261127T133020Z` callback row (constructed same-frame overlap, verdict null), earlier `…054228Z`. Private packet `2b5f4610…2565`. | Cue ownership and timing verified, and private packet delivered. **R4-F5 disposition accepted** by the round-6 review (amendment 2 §4). The evaluator findings (R7-F1, R7-F6) are addressed by C1, with native fulfilment through C3, pending parent reconciliation. In-run FAILs `…200320Z`, `…202648Z`, `…223809Z` and `…224949Z` are retained. The `…164749Z` cause is unknown. | **Listening and choice** |
+| S7 T6 / VIS-05 | The Dust Mephit breath shows the ice cone | **Owned per-instance dust recolour** of the one cone CreateView spawns for the executing owned Dust breath, bound to that native spawn call and restored on release. Released mechanics (Sickened, damage, save, enemies only, action) are unchanged. | `9733a0c9b7`; fx `…180635Z` and `…170720Z`; stills `evidence/sprint7-review/T6-VIS-05/` (round 3 `…061437Z`). Dust observer ownership: candidate 6 `20261127T133020Z`. | Implemented and verified. The observer ownership findings (R4-F1, R7-F2, R7-F5) are addressed by C3, pending parent reconciliation. | **Visual acceptance.** Allies' harmless saves stay documented. |
+| S7 T7 / VIS-06 | Provisional `InspireCourage` cue on the Trumpet Blast | **Kept provisionally** (no code change). Six alternatives were sampled. The cue was verified across an in-process save and load. The probe (`…201133Z`) marks only the observed blast's own save passed, through its `AutoPass` field; all dice roll natively. | `r6` in `…180635Z` and `…170720Z`; Trumpet reload `…201133Z` (candidate `f3bfab1303`, harness `9240a3d6…`), earlier `…182558Z` and `…162605Z`; private packet | Cue technically verified, and private packet delivered. The Trumpet probe's harness use is unchanged in behaviour since `…201133Z` (§3): round 7 added destruction-request recording, which the parent accepted for reuse in round 7. The recovery's `TrumpetCueVerdict.cs` changes are additive and are not used by the Trumpet probe. | **Listening and choice** |
 
 ## 3. Candidates, sessions and identities
+
+**Integrated head (owner amendment 4): recovery candidate 6 is reused, not rebuilt.** No parent candidate was built for
+this checkpoint.
+- **Candidate histories stay separate.**
+  - The parent built three candidates under amendments 2–3: `f3bfab1303`, `740d94a995` and `9c39b1ff7f`.
+  - The recovery built six, recorded in the recovery manifest, among them `6abd692fa7` and candidates 3–6.
+  - Reusing candidate 6 does not create a fourth parent candidate.
+- **Recovery candidate 6:**
+  - product code `360ce86f54174db631e20a6a7fb4420a1fe0b92a`;
+  - build source `962bf27694a797e7a06d674599dfdbba341b00a7`;
+  - package `6c71d928ea4293945af43a4b33f81238047176b07ed10fc88edee342649cd55a`;
+  - DLL `6af754eb06f72a261916d2dcd6e5fea125b62b13dcc9eeae53ad000e94341411`;
+  - C2 harness `d77754bad4377734e87c9a70aaf0c980a306db82dbee25e335b9e9ba47ebb4f1`, built from `d631d283aa`.
+- **Qualified session** `20261127T133020Z-owner-0.33.0-s7-c3-mechanics`: PASS 43/43.
+  - It covers the seven required mechanics cells, all admitted and completed.
+  - Physical restoration is recorded separately (true).
+  - Extracts: `docs/evidence/sprint7/recovery-c3/20261127T133020Z-*`.
+  - It was a mechanics selection. It captured no frames or listening samples and did not run the parent's models, UI,
+    Trumpet-reload or Ghaele phases.
+- **Why candidate 6 stands for the integrated head.** From `962bf27694` to `3bfc570090`, the diff over `src`, `tools`,
+  `scripts`, `assets-source` and the project files is one test-only line, not compiled into the DLL. That line adds the
+  `…133020Z` row to the same-run agreement test. Candidate 6's package, DLL and qualification are therefore reused under
+  validation-policy rule 4.
+- **Unchanged basis for carrying earlier evidence forward.**
+  - **Product code and assets:** product code outside `RuntimeTesting/` and everything under `assets-source/` are
+    byte-identical from the round-5 head `091446a079` to `3bfc570090` (`git diff` empty). So models (`…162110Z`,
+    `…050957Z`), desktop UI (`…050957Z`) and audio (`…170720Z`, `…180635Z` and the private packet) keep their product
+    basis.
+    - Each of those DLLs differs from candidate 6 only in compiled `RuntimeTesting/`, which is validation-policy rule 5.
+    - That evidence is therefore cited as execution on its original candidate and recording, never as execution on
+      candidate 6.
+  - **Shared compiled changes since the parent's round 7:**
+    - `RuntimeTestRunner.ExpandedSummoningCorrection.cs`: the fixture teardown skips units whose retirement the Sprint 7
+      phase already attempted; with an empty list, behaviour is unchanged.
+    - `RuntimeTestRunner.ExpandedSummoningSprint26Review.cs`: an optional non-subscribing constructor, with an unchanged
+      default.
+    - `RuntimeTestRunner.SummonPlaytestR6Presentation.cs`: `R6RunPassive` takes a `submit` delegate, and the default plain
+      native run is unchanged.
+    - `ExpandedSummoningNativeProfilePolicy.cs` and `RuntimeTestRunner.ExpandedSummoningSatyr32.cs`: admit and route the
+      new `summon-s7-effects-mechanics` phase.
+  - **Harness, Trumpet probe:** since the parent's round 7, `TrumpetCueProbes.cs` is unchanged. In
+    `TrumpetCueVerdict.cs`, the recovery added new members, plus an optional settlement-reader constructor for
+    `OwnedDisposables`. The Trumpet probe still uses the original four-argument constructor, and no existing member
+    changed. So `…201133Z` (harness `9240a3d6…`) stays applicable at its identity. Round 7's earlier
+    destruction-request change was already accepted for that reuse.
+  - **Harness, Ghaele:** `GhaeleLifetimeProbes.cs` changed in C2. C2's lifecycle evidence stays bound to candidate 3
+    (`9c39b1ff7f`) and harness `d77754ba…b4f1`. The owner directed that it is not rerun, even though C3 later changed the
+    shared teardown above. The full Ghaele lifetimes (`…182757Z`, `…183206Z`, `…201333Z`) stay at their own harnesses.
+- **C3 limits that carry into the parent unchanged:**
+  - Callback-loss coverage is the constructed same-frame overlap only (survivor 537 and other 538, both playing in frame
+    5312, verdict null).
+  - The cancellation branch was classified natively once. The future cancellation guarantee is derived from the source.
+  - The pending-command, uncertainty-recovery and cross-owner-transfer failure cases are focused evidence only. None was
+    reached natively.
+  - No player-facing Dust defect was reproduced.
+  - The cause of candidate 6's 216-minute build is unknown.
 
 **Round 7 (owner amendment 3).** No product change: only `RuntimeTesting/`, the harness, the tests and the sessions changed.
 - **Candidate 3** `9c39b1ff7f95c995ead0ecdfca2e679e62506825`: package
@@ -795,6 +899,27 @@ Reload (`…162605Z`, R2-F2, R3-F2):
 
 ## 5. Validation
 
+**Owner amendment 4 (this checkpoint).**
+- **Ceiling:** 85 minutes, with 65 min 42 s carried and 19 min 18 s remaining before new validation.
+- **Selected boundary:** four controller `focused` gates on the final submission head, each a separate `verify` call:
+  - `sprint7-visual`: 25 tests at selection time;
+  - `summon-playtest-r6`: 11;
+  - `native-profile`: 9;
+  - `loader-compat-probe`: 5.
+- **Why these four:** they cover every area changed since the parent's round 7:
+  - the observer policy, the presentation collector and the teardown candidates;
+  - `R6RunPassive`;
+  - the phase admission;
+  - the loader-compat harness and sessions.
+- **Not run:** no eleven-filter replay, broad suite, mutation campaign, package build or game session.
+- **Estimate:** recent four-gate batches under peer load took 370.4–432.3 s of outer time, about 6 min 10 s to 7 min
+  12 s, which fits within 19 min 18 s.
+- **Where the results go:** the actual receipts, counts and outer time are reported in the amendment-4 developer report
+  and the controller's review records. No bookkeeping commit follows the gates, so the receipts stay bound to this
+  submission head.
+- **Historical results stay as they ran.** The eleven-filter results below (rounds 6–7) stay historical execution on
+  their own heads, not new runs.
+
 Focused domain tests, `sprint7-visual.*`: 20 cases. Round 6 changes:
 - replaces `trumpet-owned-d20` with `trumpet-owned-save`;
 - adds `probe-slot-destroys-each-unit-once`, which runs the real ProbeSlot → Release → iterator finally → remaining
@@ -836,8 +961,55 @@ records the required gate receipts on the reviewed head.
    `…202648Z` records (§4.5). The cause of the `…164749Z` missing callback stays unknown. The in-run callback-loss
    predicates of `…200320Z`, `…202648Z`, `…223809Z` and `…224949Z` stay FAIL as recorded.
 6. Merge and release remain the owner's; this sprint authorizes neither.
+7. Later integration with `master`, not part of this checkpoint.
+   - **Comparison inputs at this snapshot:** `origin/master` `52755b617c79328a972ae5b74bc05784422e332d` (v0.0.197) and
+     merge base `35763430acc9eefc306b861045526a444690bc77`, fetched 2026-11-28T02:44Z. `master` is 60 commits ahead of
+     the merge base and this branch 100.
+   - **A clean textual merge would not qualify the merged build.** A read-only `git merge-tree` on 2026-11-28 found no
+     conflicts.
+   - **Still owed later:**
+     - the version reconciliation (`Info.json` here is 0.0.195, `master` 0.0.197);
+     - `master`'s newer build and candidate-admission contract (#220), under which candidate 6 cannot stand in for a
+       merged build;
+     - a compile of the merged tree, including the shared test project;
+     - any affected post-merge qualification, which would be new evidence on new bytes.
+   - Nothing from `master` is merged or rebased into this branch.
 
 ## 7. Review findings and corrections
+
+**Parent reconciliation matrix, owner amendment 4 (pre-review-8 snapshot).** These are the nine findings open after
+round 7.
+- Each is **addressed by accepted successor work, pending parent reconciliation**. The parent reviewer has not assessed
+  any of them, and none is claimed verified at the parent level.
+- A child PASS is not a retrospective parent PASS.
+- The parent's original findings and every historical FAIL stay as recorded below.
+
+Child identities:
+- **C1 (#221):** reviewed H `5a56d480a2827e0ddd3918e30d32a07c7554e112`, archive A `2c67a049ee33e0b29621fd29a8b25608ed31e956`.
+  - Five formal reviews, ending `ready_for_owner_review` with no open findings.
+  - Owner-accepted for its implementation and domain scope.
+  - Its deferred native criterion was fulfilled by `20261126T054228Z` (owner-accepted).
+- **C2 (#222):** reviewed H `da811b123c5720ad2d174db17142d8f4ef8fa5d6`, archive A `eab90a5ac82f661ecb903c5456d951a57a085eb9`.
+  - Five formal reviews, ending `ready_for_owner_review` with no open findings.
+  - Owner-accepted for its external-harness implementation and native lifecycle scope.
+- **C3 (#223):** reviewed H `fa43536ccd75484e31727de7e7b2e439805ee581`, archive A `3bfc570090b9772cac4b92e79983d31455510bca`.
+  - Eight formal reviews; review 8 returned `ready_for_owner_review` with no open findings.
+  - Owner-accepted (owner amendment 4).
+
+The histories are in `docs/missions/sprint7/recovery/S7-RECOVERY-MANIFEST.md`, kept unchanged, and the archived child
+records are under `docs/agent-reviews/pr-221/`, `pr-222/` and `pr-223/`.
+
+| Parent finding | Accepted successor | Implementation | Behavioural evidence | Native evidence and scope | Child review disposition |
+|---|---|---|---|---|---|
+| R7-F1 (P1) live and persisted callback verdicts disagree | C1 | Strict evaluator in `Sprint7ObserverPolicy`. Absent, undefined, unreadable and out-of-range values are distinct from an explicit null in both representations. One row-based round-7 entry point serves the in-game collector and every reader. | `sprint7-visual.impact-cue-playback-verdicts`: the persisted `…224949Z` row and its collector-shaped live counterpart (String-typed nulls) both characterize; omitted fields read "missing" in both. `sprint7-visual.combined-run-verdicts-agree` gives one verdict for the persisted and live-shaped rows of `…054228Z`, `…134425Z`, `…232851Z`, `…022022Z` and `…133020Z`. | Deferred criterion fulfilled: `20261126T054228Z` PASS 41/41 on `6abd692fa7` (package `de63d6f4…4b46`, DLL `ef66c870…b57a`), verdict null, owner-accepted. Repeated by candidate 6 `20261127T133020Z`: survivor 537 and other 538 both playing in frame 5312, verdict null (`docs/evidence/sprint7/recovery-c3/20261127T133020Z-callback-loss-row.json`). The overlap is a constructed same-frame delivery, labelled as such. | C1 review 5: `ready_for_owner_review`; owner-accepted |
+| R7-F6 (P2) settled verdict not bound to the recorded cue IDs and stop attempts | C1 | Identity binding and stop/callback reconciliation across every emitted snapshot (S0–S4, W samples). Retained round-6 rows are judged by their own collector generation (`Round6First`, `Round6Second`). | Same cases. All of these refuse, in both forms: substituted IDs, a survivor substitution contradicted by the inventory, a duplicate ID, invalid or oversized IDs, positive stop counts, and placeholder or uncounted withheld callbacks. | As for R7-F1 | As for R7-F1 |
+| R6-F5 (P2) round-7 expenditure, counts and harness suffix | C1 (records disposition; no build or run) | Confirmed from the receipts at the frozen head `0542b0592a` | `docs/evidence/sprint7/r7/GATES-3e2baea4b4.json`. 65 min 42 s for rounds 6–7. 118 selected-test executions on `3e2baea4b4`, all passing. Harness `…a373` (the wrong `…a395` was corrected in `0542b0592a`). | n/a | C1, owner-accepted. This record carries the disposition (status block, §5). |
+| R5-F1 (P1) an unaccounted late Ghaele does not fail slot isolation | C2 | External harness `GhaeleLifetimeProbes.cs` and `TrumpetCueVerdict.cs` (`LateResultReconciliation`, `LateUnitFinalRelease`, `OwnedDisposables` settlement reader). Every correlated late unit is reconciled with the destruction owner. A unit still present, unreadable, or of unknown ownership fails `ProbeSlot` isolation. | `sprint7-visual.ghaele-late-units-reach-slot` through `ProbeSlot` / `Poll` / `Release` / unwind | `20261126T033419Z-…-s7-ghaele-lifecycle` PASS with harness `d77754ba…b4f1` on candidate 3 (package `49f8b88c…6413`, DLL `5969f596…e2c3`). The post-disposal late unit was requested once and observed destroyed. Foreign controls were known and unrequested, nothing was unsettled, and isolation was restored. The earlier C2 PASSes (`…002852Z`, `…005206Z`, `…024816Z`) are retained. Scope: the owner-accepted native lifecycle on its original candidate and harness, not rerun. | C2 review 5: `ready_for_owner_review`; owner-accepted |
+| R4-F1 (P1) independent release failures not carried past the abandonment drivers | C3 | `Sprint7Abandonment`: each driver records its complete child outcome. Unexpected child failures reach the phase by name and survive the repair. | `sprint7-visual.effects-ownership-recovery`: a paired injected fault plus an independent command-release failure through the phase sequence; C3 focused cases. Mutation controls fail by design and are classified separately. | Candidate 6 `20261127T133020Z` PASS 43/43: all drivers proven, no unexpected child failure, physical restoration. The abandoned driver's two residuals (`childAfterDisposal.pending`) both settled per `childAfterResume.recoveries`. No transfer failure was shown natively. | C3 reviews 1–8; review 8 `ready_for_owner_review`; owner-accepted |
+| R7-F2 (P1) ordinary Dust executions interrupted before retention | C3 | `Sprint7OwnedCommands`: the process is retained before interruption, commands are released independently, and the ledger owns executions by retained process. `SubmitCellCommand` uses production submission through `R6RunPassive`'s `submit`. Settlement correction at code `360ce86f54`: one observation per command per evaluation, and a readable null replaces earlier uncertainty. | Focused cases (A)–(D) at `360ce86f54`; the forwarded-interruption domain test | `20261127T133020Z`: settlement observations were ended or cancelled only, and the cancellation branch was classified natively once. **No native pending pre-start command and no cross-owner transfer were reached.** The null-after-uncertainty and null-before-start branches are focused evidence only. | C3 review 6 verified the settlement findings; review 8 had no open findings; owner-accepted |
+| R7-F3 (P1) incomplete hook set-up rollback not reaching the phase | C3 | `Sprint7HookAttempt` is registered before set-up, with readback by identity. `IsolatedCell` keeps cell exceptions sticky. The caller chooses the trace identity. | Domain: failed rollback, null result, unreadable readback, sticky exception | Callback and trace set-up-failed controls in `…054228Z` and in the recovery mechanics sessions through candidate 6. Set-up and rollback errors were reported, readback read 1 and 2 hooks, the next cell was refused, and repair brought it to 0. | As for R4-F1 |
+| R7-F4 (P1) failed direct cue-source retirement lost | C3 | `Sprint7OwnedRequests`: one probe-wide request record per phase, shared by direct retirements, the unwinding release and teardown. Failures are named, sticky and published once. An unsettled source is a residual. The fixture teardown skips units already attempted. | Domain: a throwing retirement through the phase sequence; the teardown-candidate case | `20261127T133020Z`: 19 retirement requests through the phase's one record (8 by the teardown fallback), none failed. A failing retirement was not shown natively. | As for R4-F1 |
+| R7-F5 (P2) Dust driver disposed during recovery leaves its injected condition | C3 | The exact injected condition is repaired once on every exit, including disposal in the recovery wait. A failed repair is kept. | Domain: disposal in the recovery wait, successful and failed repair, foreign condition kept | `20261127T133020Z` Dust driver: the two residuals settled on resume, and the foreign Sickened control stayed intact. | As for R4-F1 |
 
 Round-7 correction matrix (the eight findings open after round 6; owner amendment 3). Sessions are in
 `docs/evidence/sprint7/r7/`.
