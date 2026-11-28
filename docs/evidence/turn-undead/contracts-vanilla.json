@@ -1,0 +1,433 @@
+{
+ "schema": "kmg.turn-undead.contracts.v1",
+ "run": "20261128T105226Z-umm-0.31.1-turn-undead-first",
+ "loaderProfile": "umm-0.31.1",
+ "candidate": {
+  "producerCommit": "d634f3bedd305e8161dc25e9c0133cf6e6a94ea8",
+  "packageSha256": "7affa28eaa957d98abf95913ec48ec471e737fa6a74c8b60ea7aeb832b6bf5d1",
+  "dllSha256": "7da2b4aeeb9a615aa966ef8132ca820a3d4d0e7ae8390a26c5a3d811aa409bf9"
+ },
+ "activeMods": [
+  "KingmakerGunslinger 0.0.197",
+  "KmgLoaderCompatHarness 0.1.0"
+ ],
+ "sourceRecords": {
+  "session-summary.json": "c817448054d42147a990576bb94fdf1ec92bdff3ffda4974cad2af66f6f5c1b1",
+  "01-first-turn/launch-summary.json": "358116734347e93008e0b7b3c30a16561dcf10abde531a2f1f78ea9794d2101a",
+  "01-first-turn/harness/harness-result.json": "3ede3aae753ef2719aeff8a5825867193f3783b0a0eacd8800d66b691121fc81"
+ },
+ "problems": [],
+ "moduleStatus": "published",
+ "cotw": "absent",
+ "engine": {
+  "assembly": "Assembly-CSharp",
+  "sha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+  "gameVersion": "UNKNOWN"
+ },
+ "methods": [
+  {
+   "type": "Kingmaker.RuleSystem.Rules.Abilities.RuleCalculateAbilityParams",
+   "method": "OnTrigger",
+   "observation": "DC route: caster level = spellbook CL or character level; DC = 10 + stat bonus + spell level (+ bonuses)",
+   "ilSha256": [
+    "da1f545522690e9a9c91280a2654e1dd45d686a6978ad8e7ffdfe8d2ad6f20c7"
+   ]
+  },
+  {
+   "type": "Kingmaker.UnitLogic.Mechanics.Components.ContextCalculateAbilityParamsBasedOnClass",
+   "method": "Calculate",
+   "observation": "replaces caster level with the class level and spell level with half of it, and the statistic",
+   "ilSha256": [
+    "08b22ff3be628ece1c507c0a5cc4617952016537ba63d17425e0e7ccdc3df9d3"
+   ]
+  },
+  {
+   "type": "Kingmaker.UnitLogic.Abilities.AbilityData",
+   "method": "CalculateParams",
+   "observation": "preview path: triggers RuleCalculateAbilityParams without ability calculators",
+   "ilSha256": [
+    "4c712e79fab9e6b659ed19e69e3b36a72aed291aa84d46babd39b92058d7032d"
+   ]
+  },
+  {
+   "type": "Kingmaker.Designers.Mechanics.Facts.SavingThrowBonusAgainstSpecificSpells",
+   "method": "OnEventAboutToTrigger",
+   "observation": "channel resistance matches Reason.Context.SourceAbility",
+   "ilSha256": [
+    "2d3d7eff5b55bd7a9e1c125e0f4a240de708b9fb347cf4154e68a579c5fcb673"
+   ]
+  },
+  {
+   "type": "Kingmaker.Designers.Mechanics.Buffs.BuffStatusCondition",
+   "method": "OnNewRound",
+   "observation": "native fear buffs re-save each round with Reason = the buff fact",
+   "ilSha256": [
+    "7749d2cd332c2be276242248f337711be0fd05fa4595a606359068f387269e24"
+   ]
+  },
+  {
+   "type": "Kingmaker.UnitLogic.Abilities.Components.AbilityTargetsAround",
+   "method": "Select",
+   "observation": "all units within the radius with line of sight, filtered by target type and condition; includes the caster",
+   "ilSha256": [
+    "1de1511c7b61dd109ea8ec2cf85847c35e75570f6a652b4b2aa01dff639114a9"
+   ]
+  },
+  {
+   "type": "Kingmaker.UnitLogic.Abilities.Components.CasterCheckers.AbilityCasterHasFacts",
+   "method": "CorrectCaster",
+   "observation": "caster restriction by facts (NeedsAll tests only the last fact)",
+   "ilSha256": [
+    "daed92021959624a30365d5c37650651d78b61d6007b5ef29fcfae6f77b98867"
+   ]
+  },
+  {
+   "type": "Kingmaker.Designers.Mechanics.Facts.AddFeatureIfHasFact",
+   "method": "OnFactActivate",
+   "observation": "grants the feature on activation when the checked fact is present",
+   "ilSha256": [
+    "7ebb2355b5b999aadaf66189f369e02d231a651d0f40512a5c27fe2f9b4124e2"
+   ]
+  },
+  {
+   "type": "Kingmaker.Designers.Mechanics.Facts.AddFeatureIfHasFact",
+   "method": "HandleUnitGainLevel",
+   "observation": "re-checks on every level-up; never removes",
+   "ilSha256": [
+    "7ebb2355b5b999aadaf66189f369e02d231a651d0f40512a5c27fe2f9b4124e2"
+   ]
+  },
+  {
+   "type": "Kingmaker.Controllers.Units.UnitFearController",
+   "method": "TickOnUnit",
+   "observation": "Frightened units flee from visible enemies",
+   "ilSha256": [
+    "ba1723956cb32275030e1bb44c4a6afdbdeac540c2c278c2c2c90321413bdfc8"
+   ]
+  }
+ ],
+ "sources": [
+  {
+   "kind": "Cleric",
+   "sourceFeature": "a79013ff4bcd4864cb669622a29ddafb:ChannelEnergyFeature",
+   "sourceGrants": [
+    "93f062bc0bf70e84ebae436e325e30e8:ChannelEnergyFact",
+    "f5fc9a1a2a3c1a946a31b320d1dd31b2:ChannelEnergy",
+    "279447a6bf2d3544d93a0a39c3b8e91d:ChannelPositiveHarm",
+    "5e4620cea099c9345a9207c11d7bc916:ClericSpontaneousCure"
+   ],
+   "nativeHarm": {
+    "guid": "279447a6bf2d3544d93a0a39c3b8e91d",
+    "name": "ChannelPositiveHarm",
+    "type": "Special",
+    "action": "Standard",
+    "parent": null,
+    "hidden": false,
+    "resource": "5e2bba3e07c37be42909a12945c27de7 x1",
+    "radiusFeet": 30,
+    "targetType": "Any",
+    "dcCalculator": null,
+    "components": [
+     "AbilityResourceLogic:$AbilityResourceLogic$90f5c894-592c-44bf-87e0-cff854149038",
+     "AbilityTargetsAround:$AbilityTargetsAround$d808edf4-218d-4428-98ce-a1b2d146ac77",
+     "AbilityEffectRunAction:$AbilityEffectRunAction$1e3ed85e-608f-4636-93dd-f73f0a2cc5fd",
+     "AbilitySpawnFx:$AbilitySpawnFx$36d09a24-03db-4769-89a5-39ba7d1594c2",
+     "ContextRankConfig:$AbilityRankConfig$a8f474f1-ee0f-44e3-96a8-9db3970f668d"
+    ]
+   },
+   "Direct": {
+    "guid": "8ec33a2aab964efc8b02448c2a3257c0",
+    "name": "KMG_TurnUndead_Cleric_Ability",
+    "type": "Supernatural",
+    "action": "Standard",
+    "parent": null,
+    "hidden": false,
+    "resource": "5e2bba3e07c37be42909a12945c27de7 x1",
+    "radiusFeet": 30,
+    "targetType": "Any",
+    "dcCalculator": "67819271767a9dd4fbfd4ae700befea0/Charisma",
+    "components": [
+     "ContextCalculateAbilityParamsBasedOnClass:$KMG_TurnUndead_Cleric_Dc",
+     "AbilityResourceLogic:$KMG_TurnUndead_Cleric_Resource",
+     "AbilityTargetsAround:$KMG_TurnUndead_Cleric_Targets",
+     "AbilityEffectRunAction:$KMG_TurnUndead_Cleric_Effect",
+     "AbilitySpawnFx:$KMG_TurnUndead_Cleric_Fx",
+     "AbilityCasterHasFacts:$KMG_TurnUndead_Cleric_RequiresFeat",
+     "AbilityCasterHasFacts:$KMG_TurnUndead_Cleric_RequiresSource"
+    ]
+   },
+   "MenuChild": {
+    "guid": "f912eecd256d4fec847a3176e46fb1ca",
+    "name": "KMG_TurnUndead_Cleric_MenuChild",
+    "type": "Supernatural",
+    "action": "Standard",
+    "parent": null,
+    "hidden": false,
+    "resource": "5e2bba3e07c37be42909a12945c27de7 x1",
+    "radiusFeet": 30,
+    "targetType": "Any",
+    "dcCalculator": "67819271767a9dd4fbfd4ae700befea0/Charisma",
+    "components": [
+     "ContextCalculateAbilityParamsBasedOnClass:$KMG_TurnUndead_Cleric_Dc",
+     "AbilityResourceLogic:$KMG_TurnUndead_Cleric_Resource",
+     "AbilityTargetsAround:$KMG_TurnUndead_Cleric_Targets",
+     "AbilityEffectRunAction:$KMG_TurnUndead_Cleric_Effect",
+     "AbilitySpawnFx:$KMG_TurnUndead_Cleric_Fx",
+     "AbilityCasterHasFacts:$KMG_TurnUndead_Cleric_RequiresFeat",
+     "AbilityCasterHasFacts:$KMG_TurnUndead_Cleric_RequiresSource",
+     "AbilityShowIfCasterHasFact:$KMG_TurnUndead_Cleric_ShowIfFeat",
+     "AbilityShowIfCasterHasFact:$KMG_TurnUndead_Cleric_ShowIfSource"
+    ]
+   }
+  },
+  {
+   "kind": "Paladin",
+   "sourceFeature": "cb6d55dda5ab906459d18a435994a760:ChannelEnergyPaladinFeature",
+   "sourceGrants": [
+    "4937473d1cfd7774a979b625fb833b47:ChannelEnergyPaladinHarm",
+    "6670f0f21a1d7f04db2b8b115e8e6abf:ChannelEnergyPaladinHeal"
+   ],
+   "nativeHarm": {
+    "guid": "4937473d1cfd7774a979b625fb833b47",
+    "name": "ChannelEnergyPaladinHarm",
+    "type": "Supernatural",
+    "action": "Standard",
+    "parent": null,
+    "hidden": false,
+    "resource": "9dedf41d995ff4446a181f143c3db98c x2",
+    "radiusFeet": 30,
+    "targetType": "Any",
+    "dcCalculator": null,
+    "components": [
+     "AbilityResourceLogic:$AbilityResourceLogic$90f5c894-592c-44bf-87e0-cff854149038",
+     "AbilityTargetsAround:$AbilityTargetsAround$d808edf4-218d-4428-98ce-a1b2d146ac77",
+     "AbilityEffectRunAction:$AbilityEffectRunAction$1e3ed85e-608f-4636-93dd-f73f0a2cc5fd",
+     "AbilitySpawnFx:$AbilitySpawnFx$36d09a24-03db-4769-89a5-39ba7d1594c2",
+     "ContextRankConfig:$AbilityRankConfig$a8f474f1-ee0f-44e3-96a8-9db3970f668d",
+     "AbilityCasterAlignment:$AbilityCasterAlignment$14caf525-f46c-4450-b00a-e25629e65c7e"
+    ]
+   },
+   "Direct": {
+    "guid": "7283033206e24c40bb5493e49f1caab5",
+    "name": "KMG_TurnUndead_Paladin_Ability",
+    "type": "Supernatural",
+    "action": "Standard",
+    "parent": null,
+    "hidden": false,
+    "resource": "9dedf41d995ff4446a181f143c3db98c x2",
+    "radiusFeet": 30,
+    "targetType": "Any",
+    "dcCalculator": "bfa11238e7ae3544bbeb4d0b92e897ec/Charisma",
+    "components": [
+     "ContextCalculateAbilityParamsBasedOnClass:$KMG_TurnUndead_Paladin_Dc",
+     "AbilityResourceLogic:$KMG_TurnUndead_Paladin_Resource",
+     "AbilityTargetsAround:$KMG_TurnUndead_Paladin_Targets",
+     "AbilityEffectRunAction:$KMG_TurnUndead_Paladin_Effect",
+     "AbilitySpawnFx:$KMG_TurnUndead_Paladin_Fx",
+     "AbilityCasterAlignment:$KMG_TurnUndead_Paladin_Alignment",
+     "AbilityCasterHasFacts:$KMG_TurnUndead_Paladin_RequiresFeat",
+     "AbilityCasterHasFacts:$KMG_TurnUndead_Paladin_RequiresSource"
+    ]
+   },
+   "MenuChild": {
+    "guid": "1f5435313e6f44afa9b9f71b2001ef10",
+    "name": "KMG_TurnUndead_Paladin_MenuChild",
+    "type": "Supernatural",
+    "action": "Standard",
+    "parent": null,
+    "hidden": false,
+    "resource": "9dedf41d995ff4446a181f143c3db98c x2",
+    "radiusFeet": 30,
+    "targetType": "Any",
+    "dcCalculator": "bfa11238e7ae3544bbeb4d0b92e897ec/Charisma",
+    "components": [
+     "ContextCalculateAbilityParamsBasedOnClass:$KMG_TurnUndead_Paladin_Dc",
+     "AbilityResourceLogic:$KMG_TurnUndead_Paladin_Resource",
+     "AbilityTargetsAround:$KMG_TurnUndead_Paladin_Targets",
+     "AbilityEffectRunAction:$KMG_TurnUndead_Paladin_Effect",
+     "AbilitySpawnFx:$KMG_TurnUndead_Paladin_Fx",
+     "AbilityCasterAlignment:$KMG_TurnUndead_Paladin_Alignment",
+     "AbilityCasterHasFacts:$KMG_TurnUndead_Paladin_RequiresFeat",
+     "AbilityCasterHasFacts:$KMG_TurnUndead_Paladin_RequiresSource",
+     "AbilityShowIfCasterHasFact:$KMG_TurnUndead_Paladin_ShowIfFeat",
+     "AbilityShowIfCasterHasFact:$KMG_TurnUndead_Paladin_ShowIfSource"
+    ]
+   }
+  },
+  {
+   "kind": "Hospitaler",
+   "sourceFeature": "a9ab1bbc79ecb174d9a04699986ce8d5:ChannelEnergyHospitalerFeature",
+   "sourceGrants": [
+    "cc17243b2185f814aa909ac6b6599eaa:ChannelEnergyHospitalerHarm",
+    "0c0cf7fcb356d2448b7d57f2c4db3c0c:ChannelEnergyHospitalerHeal"
+   ],
+   "nativeHarm": {
+    "guid": "cc17243b2185f814aa909ac6b6599eaa",
+    "name": "ChannelEnergyHospitalerHarm",
+    "type": "Supernatural",
+    "action": "Standard",
+    "parent": null,
+    "hidden": false,
+    "resource": "b0e0c7716ab27c64fb4b131c9845c596 x1",
+    "radiusFeet": 30,
+    "targetType": "Any",
+    "dcCalculator": null,
+    "components": [
+     "AbilityResourceLogic:$AbilityResourceLogic$90f5c894-592c-44bf-87e0-cff854149038",
+     "AbilityTargetsAround:$AbilityTargetsAround$d808edf4-218d-4428-98ce-a1b2d146ac77",
+     "AbilityEffectRunAction:$AbilityEffectRunAction$1e3ed85e-608f-4636-93dd-f73f0a2cc5fd",
+     "AbilitySpawnFx:$AbilitySpawnFx$36d09a24-03db-4769-89a5-39ba7d1594c2",
+     "ContextRankConfig:$AbilityRankConfig$a8f474f1-ee0f-44e3-96a8-9db3970f668d",
+     "AbilityCasterAlignment:$AbilityCasterAlignment$14caf525-f46c-4450-b00a-e25629e65c7e"
+    ]
+   },
+   "Direct": {
+    "guid": "b5f405c1b3064a1fb3ad0f64fb81551d",
+    "name": "KMG_TurnUndead_Hospitaler_Ability",
+    "type": "Supernatural",
+    "action": "Standard",
+    "parent": null,
+    "hidden": false,
+    "resource": "b0e0c7716ab27c64fb4b131c9845c596 x1",
+    "radiusFeet": 30,
+    "targetType": "Any",
+    "dcCalculator": "bfa11238e7ae3544bbeb4d0b92e897ec/Charisma",
+    "components": [
+     "ContextCalculateAbilityParamsBasedOnClass:$KMG_TurnUndead_Hospitaler_Dc",
+     "AbilityResourceLogic:$KMG_TurnUndead_Hospitaler_Resource",
+     "AbilityTargetsAround:$KMG_TurnUndead_Hospitaler_Targets",
+     "AbilityEffectRunAction:$KMG_TurnUndead_Hospitaler_Effect",
+     "AbilitySpawnFx:$KMG_TurnUndead_Hospitaler_Fx",
+     "AbilityCasterAlignment:$KMG_TurnUndead_Hospitaler_Alignment",
+     "AbilityCasterHasFacts:$KMG_TurnUndead_Hospitaler_RequiresFeat",
+     "AbilityCasterHasFacts:$KMG_TurnUndead_Hospitaler_RequiresSource"
+    ]
+   },
+   "MenuChild": {
+    "guid": "f0d424709d034a198cb440ceefcc6f1e",
+    "name": "KMG_TurnUndead_Hospitaler_MenuChild",
+    "type": "Supernatural",
+    "action": "Standard",
+    "parent": null,
+    "hidden": false,
+    "resource": "b0e0c7716ab27c64fb4b131c9845c596 x1",
+    "radiusFeet": 30,
+    "targetType": "Any",
+    "dcCalculator": "bfa11238e7ae3544bbeb4d0b92e897ec/Charisma",
+    "components": [
+     "ContextCalculateAbilityParamsBasedOnClass:$KMG_TurnUndead_Hospitaler_Dc",
+     "AbilityResourceLogic:$KMG_TurnUndead_Hospitaler_Resource",
+     "AbilityTargetsAround:$KMG_TurnUndead_Hospitaler_Targets",
+     "AbilityEffectRunAction:$KMG_TurnUndead_Hospitaler_Effect",
+     "AbilitySpawnFx:$KMG_TurnUndead_Hospitaler_Fx",
+     "AbilityCasterAlignment:$KMG_TurnUndead_Hospitaler_Alignment",
+     "AbilityCasterHasFacts:$KMG_TurnUndead_Hospitaler_RequiresFeat",
+     "AbilityCasterHasFacts:$KMG_TurnUndead_Hospitaler_RequiresSource",
+     "AbilityShowIfCasterHasFact:$KMG_TurnUndead_Hospitaler_ShowIfFeat",
+     "AbilityShowIfCasterHasFact:$KMG_TurnUndead_Hospitaler_ShowIfSource"
+    ]
+   }
+  },
+  {
+   "kind": "Empyreal",
+   "sourceFeature": "7d49d7f590dc9a948b3bd1c8b7979854:ChannelEnergyEmpyrealFeature",
+   "sourceGrants": [
+    "e1536ee240c5d4141bf9f9485a665128:ChannelEnergyEmpyrealHarm",
+    "574cf074e8b65e84d9b69a8c6f1af27b:ChannelEnergyEmpyrealHeal"
+   ],
+   "nativeHarm": {
+    "guid": "e1536ee240c5d4141bf9f9485a665128",
+    "name": "ChannelEnergyEmpyrealHarm",
+    "type": "Supernatural",
+    "action": "Standard",
+    "parent": null,
+    "hidden": false,
+    "resource": "f9af9354fb8a79649a6e512569387dc5 x1",
+    "radiusFeet": 30,
+    "targetType": "Any",
+    "dcCalculator": null,
+    "components": [
+     "AbilityResourceLogic:$AbilityResourceLogic$90f5c894-592c-44bf-87e0-cff854149038",
+     "AbilityTargetsAround:$AbilityTargetsAround$d808edf4-218d-4428-98ce-a1b2d146ac77",
+     "AbilityEffectRunAction:$AbilityEffectRunAction$1e3ed85e-608f-4636-93dd-f73f0a2cc5fd",
+     "AbilitySpawnFx:$AbilitySpawnFx$36d09a24-03db-4769-89a5-39ba7d1594c2",
+     "ContextRankConfig:$AbilityRankConfig$a8f474f1-ee0f-44e3-96a8-9db3970f668d"
+    ]
+   },
+   "Direct": {
+    "guid": "e4174ef789e84c1ab1d7d9728be19043",
+    "name": "KMG_TurnUndead_Empyreal_Ability",
+    "type": "Supernatural",
+    "action": "Standard",
+    "parent": null,
+    "hidden": false,
+    "resource": "f9af9354fb8a79649a6e512569387dc5 x1",
+    "radiusFeet": 30,
+    "targetType": "Any",
+    "dcCalculator": "b3a505fb61437dc4097f43c3f8f9a4cf/Wisdom",
+    "components": [
+     "ContextCalculateAbilityParamsBasedOnClass:$KMG_TurnUndead_Empyreal_Dc",
+     "AbilityResourceLogic:$KMG_TurnUndead_Empyreal_Resource",
+     "AbilityTargetsAround:$KMG_TurnUndead_Empyreal_Targets",
+     "AbilityEffectRunAction:$KMG_TurnUndead_Empyreal_Effect",
+     "AbilitySpawnFx:$KMG_TurnUndead_Empyreal_Fx",
+     "AbilityCasterHasFacts:$KMG_TurnUndead_Empyreal_RequiresFeat",
+     "AbilityCasterHasFacts:$KMG_TurnUndead_Empyreal_RequiresSource"
+    ]
+   },
+   "MenuChild": {
+    "guid": "be2eeaa2ea51420f83496d374689377d",
+    "name": "KMG_TurnUndead_Empyreal_MenuChild",
+    "type": "Supernatural",
+    "action": "Standard",
+    "parent": null,
+    "hidden": false,
+    "resource": "f9af9354fb8a79649a6e512569387dc5 x1",
+    "radiusFeet": 30,
+    "targetType": "Any",
+    "dcCalculator": "b3a505fb61437dc4097f43c3f8f9a4cf/Wisdom",
+    "components": [
+     "ContextCalculateAbilityParamsBasedOnClass:$KMG_TurnUndead_Empyreal_Dc",
+     "AbilityResourceLogic:$KMG_TurnUndead_Empyreal_Resource",
+     "AbilityTargetsAround:$KMG_TurnUndead_Empyreal_Targets",
+     "AbilityEffectRunAction:$KMG_TurnUndead_Empyreal_Effect",
+     "AbilitySpawnFx:$KMG_TurnUndead_Empyreal_Fx",
+     "AbilityCasterHasFacts:$KMG_TurnUndead_Empyreal_RequiresFeat",
+     "AbilityCasterHasFacts:$KMG_TurnUndead_Empyreal_RequiresSource",
+     "AbilityShowIfCasterHasFact:$KMG_TurnUndead_Empyreal_ShowIfFeat",
+     "AbilityShowIfCasterHasFact:$KMG_TurnUndead_Empyreal_ShowIfSource"
+    ]
+   }
+  }
+ ],
+ "feat": {
+  "guid": "fd2d5083cb294a9396c390e8d39f4efd",
+  "groups": "Feat",
+  "ranks": 1,
+  "grants": [
+   "a79013ff4bcd4864cb669622a29ddafb->8ec33a2aab964efc8b02448c2a3257c0",
+   "cb6d55dda5ab906459d18a435994a760->7283033206e24c40bb5493e49f1caab5",
+   "a9ab1bbc79ecb174d9a04699986ce8d5->b5f405c1b3064a1fb3ad0f64fb81551d",
+   "7d49d7f590dc9a948b3bd1c8b7979854->e4174ef789e84c1ab1d7d9728be19043"
+  ],
+  "prerequisite": [
+   "1 of a79013ff4bcd4864cb669622a29ddafb,cb6d55dda5ab906459d18a435994a760,a9ab1bbc79ecb174d9a04699986ce8d5,7d49d7f590dc9a948b3bd1c8b7979854"
+  ],
+  "inBasicFeatSelection": true
+ },
+ "flight": {
+  "guid": "230ec4917d7d4ec0b0c8f58f4e5c81e3",
+  "stacking": "Replace",
+  "nativeDonorStacking": "Replace",
+  "components": [
+   "TurnUndeadFleeingState:$KMG_TurnUndead_FleeingState"
+  ],
+  "descriptors": []
+ },
+ "channelResistance4": {
+  "components": 1,
+  "entries": 12,
+  "turnEntries": 8
+ },
+ "callOfTheWild": "absent"
+}
