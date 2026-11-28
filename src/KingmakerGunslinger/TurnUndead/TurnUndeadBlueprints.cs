@@ -6,6 +6,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Prerequisites;
 using Kingmaker.Blueprints.Facts;
+using Kingmaker.Designers.EventConditionActionSystem.Actions;
 using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Stats;
@@ -263,31 +264,77 @@ namespace KingmakerGunslinger.TurnUndead
             });
             components.Add(targets);
 
-            var apply = new ContextActionApplyBuff
+            // The native harm channel's own structure: with Selective Channel the burst
+            // reaches only enemy undead, otherwise every undead; only included units
+            // roll (the save is inside each branch, the effect's own save is Unknown).
+            BlueprintUnitFact selective = NativeSelectiveChannel(harm);
+            Func<GameAction> turnSave = () => new ContextActionSavingThrow
             {
-                Buff = fleeing,
-                DurationValue = new ContextDurationValue
+                Type = SavingThrowType.Will,
+                Actions = new ActionList
                 {
-                    Rate = DurationRate.Minutes,
-                    DiceType = Kingmaker.RuleSystem.DiceType.Zero,
-                    DiceCountValue = 0,
-                    BonusValue = TurnUndeadRules.DurationMinutes
-                },
-                IsFromSpell = false,
-                IsNotDispelable = true,
-                AsChild = true
+                    Actions = new GameAction[]
+                    {
+                        new ContextActionConditionalSaved
+                        {
+                            Succeed = new ActionList { Actions = Array.Empty<GameAction>() },
+                            Failed = new ActionList
+                            {
+                                Actions = new GameAction[]
+                                {
+                                    new ContextActionApplyBuff
+                                    {
+                                        Buff = fleeing,
+                                        DurationValue = new ContextDurationValue
+                                        {
+                                            Rate = DurationRate.Minutes,
+                                            DiceType = Kingmaker.RuleSystem.DiceType.Zero,
+                                            DiceCountValue = 0,
+                                            BonusValue = TurnUndeadRules.DurationMinutes
+                                        },
+                                        IsFromSpell = false,
+                                        IsNotDispelable = true,
+                                        AsChild = true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             };
             var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
             effect.name = "$KMG_TurnUndead_" + contract.DisplayName + "_Effect";
-            effect.SavingThrowType = SavingThrowType.Will;
+            effect.SavingThrowType = SavingThrowType.Unknown;
             effect.Actions = new ActionList
             {
                 Actions = new GameAction[]
                 {
-                    new ContextActionConditionalSaved
+                    new Conditional
                     {
-                        Succeed = new ActionList { Actions = Array.Empty<GameAction>() },
-                        Failed = new ActionList { Actions = new GameAction[] { apply } }
+                        Comment = "Selective Channel: enemy undead only",
+                        ConditionsChecker = new ConditionsChecker
+                        {
+                            Operation = Operation.And,
+                            Conditions = new Condition[] { new ContextConditionCasterHasFact { Fact = selective, Not = false } }
+                        },
+                        IfTrue = new ActionList
+                        {
+                            Actions = new GameAction[]
+                            {
+                                new Conditional
+                                {
+                                    Comment = "enemy",
+                                    ConditionsChecker = new ConditionsChecker
+                                    {
+                                        Operation = Operation.And,
+                                        Conditions = new Condition[] { new ContextConditionIsEnemy { Not = false } }
+                                    },
+                                    IfTrue = new ActionList { Actions = new GameAction[] { turnSave() } },
+                                    IfFalse = new ActionList { Actions = Array.Empty<GameAction>() }
+                                }
+                            }
+                        },
+                        IfFalse = new ActionList { Actions = new GameAction[] { turnSave() } }
                     }
                 }
             };
@@ -345,9 +392,57 @@ namespace KingmakerGunslinger.TurnUndead
                 throw new InvalidOperationException("Native FrightenedUndead has no icon.");
         }
 
+        /// <summary>
+        /// The Selective Channel fact the installed native harm channel branches on
+        /// (its top-level effect Conditional on ContextConditionCasterHasFact). Turn
+        /// mirrors that rule; registration refuses if the donor no longer carries it.
+        /// </summary>
+        private static BlueprintUnitFact NativeSelectiveChannel(BlueprintAbility harm)
+        {
+            AbilityEffectRunAction run = (harm.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .OfType<AbilityEffectRunAction>().SingleOrDefault();
+            BlueprintUnitFact[] facts = run == null || run.Actions == null || run.Actions.Actions == null
+                ? Array.Empty<BlueprintUnitFact>()
+                : run.Actions.Actions.OfType<Conditional>()
+                    .Where(c => c.ConditionsChecker != null && c.ConditionsChecker.Conditions != null)
+                    .SelectMany(c => c.ConditionsChecker.Conditions.OfType<ContextConditionCasterHasFact>())
+                    .Where(c => !c.Not && c.Fact != null).Select(c => c.Fact).Distinct().ToArray();
+            if (facts.Length != 1 || facts[0].AssetGuid != TurnUndeadSourceCatalog.SelectiveChannelGuid)
+                throw new InvalidOperationException("The installed " + harm.name +
+                    " no longer limits itself through Selective Channel " + TurnUndeadSourceCatalog.SelectiveChannelGuid + ".");
+            return facts[0];
+        }
+
+        /// <summary>Every flight application inside a Turn effect, with the branch structure checked.</summary>
+        private static ContextActionApplyBuff[] TurnApplications(AbilityEffectRunAction effect, BlueprintUnitFact selective)
+        {
+            Conditional top = effect.Actions.Actions.Length == 1 ? effect.Actions.Actions[0] as Conditional : null;
+            Conditional enemy = top == null || top.IfTrue.Actions.Length != 1 ? null : top.IfTrue.Actions[0] as Conditional;
+            if (top == null || enemy == null || top.ConditionsChecker.Conditions.Length != 1 ||
+                !(top.ConditionsChecker.Conditions[0] is ContextConditionCasterHasFact) ||
+                ((ContextConditionCasterHasFact)top.ConditionsChecker.Conditions[0]).Fact != selective ||
+                top.ConditionsChecker.Conditions[0].Not || enemy.ConditionsChecker.Conditions.Length != 1 ||
+                !(enemy.ConditionsChecker.Conditions[0] is ContextConditionIsEnemy) ||
+                enemy.ConditionsChecker.Conditions[0].Not || enemy.IfFalse.Actions.Length != 0 ||
+                enemy.IfTrue.Actions.Length != 1 || top.IfFalse.Actions.Length != 1)
+                return null;
+            var result = new List<ContextActionApplyBuff>();
+            foreach (GameAction branch in new[] { enemy.IfTrue.Actions[0], top.IfFalse.Actions[0] })
+            {
+                var save = branch as ContextActionSavingThrow;
+                ContextActionConditionalSaved saved = save == null || save.Type != SavingThrowType.Will ||
+                    save.Actions.Actions.Length != 1 ? null : save.Actions.Actions[0] as ContextActionConditionalSaved;
+                if (saved == null || saved.Succeed.Actions.Length != 0 || saved.Failed.Actions.Length != 1 ||
+                    !(saved.Failed.Actions[0] is ContextActionApplyBuff)) return null;
+                result.Add((ContextActionApplyBuff)saved.Failed.Actions[0]);
+            }
+            return result.ToArray();
+        }
+
         private static void ValidateNativeSource(TurnUndeadSourceContract contract,
             BlueprintAbility harm, BlueprintAbilityResource resource)
         {
+            NativeSelectiveChannel(harm);
             AbilityResourceLogic[] logic = (harm.ComponentsArray ?? Array.Empty<BlueprintComponent>())
                 .OfType<AbilityResourceLogic>().ToArray();
             if (logic.Length != 1 || !ReferenceEquals(logic[0].RequiredResource, resource) ||
@@ -398,9 +493,7 @@ namespace KingmakerGunslinger.TurnUndead
                     ContextCalculateAbilityParamsBasedOnClass dc = ability.ComponentsArray
                         .OfType<ContextCalculateAbilityParamsBasedOnClass>().Single();
                     AbilityEffectRunAction effect = ability.ComponentsArray.OfType<AbilityEffectRunAction>().Single();
-                    ContextActionApplyBuff apply = effect.Actions.Actions
-                        .OfType<ContextActionConditionalSaved>().Single().Failed.Actions
-                        .OfType<ContextActionApplyBuff>().Single();
+                    ContextActionApplyBuff[] applications = TurnApplications(effect, NativeSelectiveChannel(source.NativeHarm));
                     if (ability.Type != AbilityType.Supernatural ||
                         ability.ActionType != UnitCommand.CommandType.Standard ||
                         ability.AvailableMetamagic != 0 || ability.Parent != null ||
@@ -409,9 +502,10 @@ namespace KingmakerGunslinger.TurnUndead
                         resource.RequiredResource.AssetGuid != source.Contract.ResourceGuid ||
                         resource.Amount != source.Contract.ResourceCost || !resource.IsSpendResource ||
                         dc.CharacterClass == null || dc.CharacterClass.AssetGuid != source.Contract.DcClassGuid ||
-                        effect.SavingThrowType != SavingThrowType.Will ||
-                        !ReferenceEquals(apply.Buff, set.Fleeing) ||
-                        apply.DurationValue.Rate != DurationRate.Minutes ||
+                        effect.SavingThrowType != SavingThrowType.Unknown || applications == null ||
+                        applications.Any(apply => !ReferenceEquals(apply.Buff, set.Fleeing) ||
+                            apply.DurationValue.Rate != DurationRate.Minutes ||
+                            apply.DurationValue.BonusValue.Value != TurnUndeadRules.DurationMinutes) ||
                         ability.ComponentsArray.OfType<ContextRankConfig>().Any() ||
                         ability.ComponentsArray.OfType<AbilityCasterHasFacts>().Count() != 2 ||
                         ability.ComponentsArray.Intersect(source.NativeHarm.ComponentsArray).Any() ||

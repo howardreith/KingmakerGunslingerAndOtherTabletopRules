@@ -12,6 +12,7 @@ using Kingmaker.Blueprints.Classes.Prerequisites;
 using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Entities;
@@ -236,13 +237,35 @@ namespace KmgLoaderCompatHarness
                 problems.Add(label + ": caster restriction is not exactly (feat) and (" + expected.Feature + ")");
             bool alignment = ability.GetComponents<AbilityCasterAlignment>().Any();
             if (alignment != expected.LawfulGood) problems.Add(label + ": alignment restriction present=" + alignment + ", expected " + expected.LawfulGood);
+            // Expected: the native harm structure. Top Conditional on CasterHasFact(Selective Channel fd30c694);
+            // its IfTrue a Conditional on IsEnemy whose IfTrue is the save and IfFalse empty; its IfFalse the save.
+            // Each save: ContextActionSavingThrow(Will) -> ConditionalSaved(Succeed empty, Failed ApplyBuff flight 1 min).
             var run = ability.GetComponents<AbilityEffectRunAction>().ToArray();
-            ContextActionConditionalSaved saved = run.Length == 1 ? run[0].Actions.Actions.OfType<ContextActionConditionalSaved>().SingleOrDefault() : null;
-            ContextActionApplyBuff apply = saved == null ? null : saved.Failed.Actions.OfType<ContextActionApplyBuff>().SingleOrDefault();
-            if (run.Length != 1 || run[0].SavingThrowType != Kingmaker.EntitySystem.Stats.SavingThrowType.Will || saved == null ||
-                saved.Succeed.Actions.Length != 0 || apply == null || apply.Buff != fleeing ||
-                apply.DurationValue.Rate != DurationRate.Minutes || apply.DurationValue.BonusValue.Value != 1)
-                problems.Add(label + ": effect is not Will negates -> flight for 1 minute");
+            string effectIssue = run.Length != 1 ? "effect count " + run.Length :
+                run[0].SavingThrowType != Kingmaker.EntitySystem.Stats.SavingThrowType.Unknown ? "effect-level save " + run[0].SavingThrowType : null;
+            var top = effectIssue == null && run[0].Actions.Actions.Length == 1 ? run[0].Actions.Actions[0] as Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional : null;
+            if (effectIssue == null && top == null) effectIssue = "no single top Conditional";
+            if (effectIssue == null)
+            {
+                var casterFact = top.ConditionsChecker.Conditions.Length == 1 ? top.ConditionsChecker.Conditions[0] as ContextConditionCasterHasFact : null;
+                var enemy = top.IfTrue.Actions.Length == 1 ? top.IfTrue.Actions[0] as Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional : null;
+                if (casterFact == null || casterFact.Not || casterFact.Fact == null || casterFact.Fact.AssetGuid != "fd30c69417b434d47b6b03b9c1f568ff")
+                    effectIssue = "top condition is not CasterHasFact(Selective Channel)";
+                else if (enemy == null || enemy.ConditionsChecker.Conditions.Length != 1 || !(enemy.ConditionsChecker.Conditions[0] is ContextConditionIsEnemy) ||
+                    enemy.ConditionsChecker.Conditions[0].Not || enemy.IfFalse.Actions.Length != 0 || enemy.IfTrue.Actions.Length != 1 || top.IfFalse.Actions.Length != 1)
+                    effectIssue = "selective branch is not IsEnemy -> save / nothing";
+                else
+                    foreach (GameAction branch in new[] { enemy.IfTrue.Actions[0], top.IfFalse.Actions[0] })
+                    {
+                        var save = branch as ContextActionSavingThrow;
+                        var saved = save == null || save.Actions.Actions.Length != 1 ? null : save.Actions.Actions[0] as ContextActionConditionalSaved;
+                        var apply = saved == null || saved.Failed.Actions.Length != 1 ? null : saved.Failed.Actions[0] as ContextActionApplyBuff;
+                        if (save == null || save.Type != Kingmaker.EntitySystem.Stats.SavingThrowType.Will || saved == null || saved.Succeed.Actions.Length != 0 ||
+                            apply == null || apply.Buff != fleeing || apply.DurationValue.Rate != DurationRate.Minutes || apply.DurationValue.BonusValue.Value != 1)
+                            effectIssue = "a branch is not Will negates -> flight for 1 minute";
+                    }
+            }
+            if (effectIssue != null) problems.Add(label + ": effect structure: " + effectIssue);
             if (ability.Type != AbilityType.Supernatural || ability.ActionType != UnitCommand.CommandType.Standard)
                 problems.Add(label + ": not a supernatural standard action");
         }
@@ -378,6 +401,66 @@ namespace KmgLoaderCompatHarness
             if (skeletonSaves.Count != 1 || FleeingOn(skeleton) == null) problems.Add("the skeleton beside the undead channeler was not turned");
             if (livingSaves.Count != 0 || FleeingOn(living) != null) problems.Add("the living control was affected");
             if (FleeingOn(cleric) != null) problems.Add("the undead channeler is fleeing although it saved");
+        }
+
+        // ---------------------------------------------------------------- Selective Channel and allied undead
+
+        private UnitEntityData SpawnAlliedUndead(string label, Vector3 at)
+        {
+            BlueprintUnit clone = UnityEngine.Object.Instantiate(Blueprint<BlueprintUnit>(Skeleton));
+            clone.name = "KmgTurnUndead_Allied_" + label + "_" + (++unitIndex);
+            clone.Faction = BlueprintRoot.Instance.PlayerFaction;
+            clones.Add(clone);
+            return Track(Game.Instance.EntityCreator.SpawnUnit(clone, at, Quaternion.identity, Game.Instance.State.LoadedAreaState.MainState), label);
+        }
+
+        private IEnumerable<object> Selective()
+        {
+            SilenceArea();
+            BlueprintAbility clericTurn = Direct("Cleric");
+            turnSource = clericTurn.AssetGuid;
+            Game.Instance.IsPaused = true;
+            var selectiveFact = Blueprint<BlueprintUnitFact>("fd30c69417b434d47b6b03b9c1f568ff");
+            var cases = new JArray();
+            result["selective"] = cases;
+            foreach (bool selective in new[] { false, true })
+            {
+                float side = selective ? 6f : -6f;
+                UnitEntityData cleric = SpawnFriendly(selective ? "SelectiveCleric" : "PlainCleric", Spot(0f, side));
+                cleric.Descriptor.Stats.Charisma.BaseValue = 16;
+                Level(cleric, Blueprint<BlueprintCharacterClass>("67819271767a9dd4fbfd4ae700befea0"), 5);
+                var channel = Blueprint<BlueprintFeature>("a79013ff4bcd4864cb669622a29ddafb");
+                if (!cleric.Descriptor.HasFact(channel)) cleric.Descriptor.AddFact(channel);
+                cleric.Descriptor.AddFact(Feat);
+                if (selective) cleric.Descriptor.AddFact(selectiveFact);
+                UnitEntityData enemy = SpawnNative(Skeleton, "enemy skeleton", Spot(2.5f, side + 1.5f));
+                UnitEntityData ally = SpawnAlliedUndead("allied skeleton", Spot(2.5f, side - 1.5f));
+                enemy.Stats.SaveWill.BaseValue = -100;
+                ally.Stats.SaveWill.BaseValue = -100;
+                yield return null;
+                int seq = Seq;
+                var command = new UnitUseAbility(new AbilityData(cleric.Descriptor.Abilities.GetAbility(clericTurn)), new TargetWrapper(cleric));
+                command.IgnoreCooldown(null);
+                cleric.Commands.InterruptAll(true);
+                cleric.Commands.Run(command);
+                foreach (object step in Settle(0.0, 30f, () => command.IsFinished && (command.ExecutionProcess == null || command.ExecutionProcess.IsEnded))) yield return step;
+                JArray enemySaves = Saves(enemy, seq), allySaves = Saves(ally, seq);
+                var row = new JObject
+                {
+                    ["selectiveChannel"] = cleric.Descriptor.HasFact(selectiveFact), ["commandResult"] = command.Result.ToString(),
+                    ["allyIsEnemy"] = ally.IsEnemy(cleric), ["enemyIsEnemy"] = enemy.IsEnemy(cleric),
+                    ["enemySaves"] = enemySaves, ["allySaves"] = allySaves,
+                    ["enemyFleeing"] = FleeingOn(enemy) != null, ["allyFleeing"] = FleeingOn(ally) != null,
+                    ["enemyDistance"] = Math.Round(Vector3.Distance(enemy.Position, cleric.Position), 2),
+                    ["allyDistance"] = Math.Round(Vector3.Distance(ally.Position, cleric.Position), 2)
+                };
+                cases.Add(row);
+                string label = selective ? "with Selective Channel" : "without Selective Channel";
+                if (ally.IsEnemy(cleric) || !enemy.IsEnemy(cleric)) problems.Add(label + ": fixture allegiance is wrong");
+                if (enemySaves.Count != 1 || FleeingOn(enemy) == null) problems.Add(label + ": the enemy skeleton was not turned");
+                if (selective && (allySaves.Count != 0 || FleeingOn(ally) != null)) problems.Add(label + ": the allied skeleton was affected or rolled a save");
+                if (!selective && (allySaves.Count != 1 || FleeingOn(ally) == null)) problems.Add(label + ": the allied skeleton was not turned (all-undead behavior)");
+            }
         }
 
         // ---------------------------------------------------------------- abandoned probe

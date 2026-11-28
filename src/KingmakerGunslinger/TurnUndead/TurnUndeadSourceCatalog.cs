@@ -106,6 +106,8 @@ namespace KingmakerGunslinger.TurnUndead
         /// <summary>Native undead-turning flight buff: read-only donor of its icon/name.</summary>
         internal const string NativeFrightenedUndeadGuid = "1265c0b27ef559c4e980a900dfc68d1e";
         internal const string UndeadTypeGuid = "734a29b693e9ec346ba2951b27987e33";
+        /// <summary>Native Selective Channel feat; every native harm channel limits itself to enemy undead when the caster has it.</summary>
+        internal const string SelectiveChannelGuid = "fd30c69417b434d47b6b03b9c1f568ff";
         internal const string ChannelResistanceFourGuid = "a9ac84c6f48b491438f91bb237bc9212";
         internal const string BasicFeatSelectionGuid = "247a4068296e8be42890143f451b4b45";
 

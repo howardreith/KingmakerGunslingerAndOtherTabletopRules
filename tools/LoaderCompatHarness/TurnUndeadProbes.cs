@@ -140,6 +140,7 @@ namespace KmgLoaderCompatHarness
             pausedBefore = Game.Instance.IsPaused;
             IEnumerable<object> body = mode == "first-turn" ? FirstTurn() :
                 mode == "undead-caster" ? UndeadCaster() :
+                mode == "selective" ? Selective() :
                 mode == "contracts" ? Contracts() :
                 mode == "abandon" ? Abandon() :
                 mode == "abandon-interrupt" ? AbandonInterrupt() :
